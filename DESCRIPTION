@@ -1,0 +1,20 @@
+Package: domino
+Title: Receptor Ligand Analysis for Single Cell RNA Seq
+Version: 0.1.1
+Authors@R: c(
+    person("Christopher", "Cherry", role = c("aut", "cre"), email = "ccherry.6574@gmail.com", comment = c(ORCID = "0000-0002-5481-0055")),
+    person("Jennifer", "Elisseeff", role = "ctb", email = "jhe@jhu.edu", comment = c(ORCID = "YOUR-ORCID-ID"))
+    )
+Description: domino is a package developed to analyze receptor ligand signaling MORE HERE 
+BugReports: https://github.com/chris-cherry/domino/issues
+Depends:
+    R(>= 3.6.2),
+Imports:
+    biomaRt,
+    plyr,
+    dplyr,
+    igraph,
+License: GPL-3 | file LICENSE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.0.2

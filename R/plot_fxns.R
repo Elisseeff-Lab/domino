@@ -1,0 +1,387 @@
+#' Create a network heatmap
+#' 
+#' Creates a network heatmap using NMF::aheatmap. Alternatively, the network 
+#' matrix can be accessed directly in the signaling slot of a domino object.
+#' 
+#' @param dom A domino object with network built (build_domino)
+#' @param clusts A vector of clusters to be included. If NULL then all clusters are used.
+#' @param min_thresh Minimum signaling threshold for plotting. Defaults to -Inf for no threshold.
+#' @param max_thresh Maximum signaling threshold for plotting. Defaults to Inf for no threshold.
+#' @param scale How to scale the values (after thresholding). Options are 'none', 'sqrt' for square root, or 'log' for log10.
+#' @param normalize Options to normalize the matrix. Normalization is done after thresholding and scaling. Accepted inputs are 'none' for no normalization, 'rec_norm' to normalize to the maximum value with each receptor cluster, or 'lig_norm' to normalize to the maximum value within each ligand cluster 
+#' @param ... Other parameters to pass to NMF::aheatmap
+#' @export
+#' 
+signaling_heatmap = function(dom, clusts = NULL, min_thresh = -Inf, max_thresh = Inf, 
+    scale = 'none', normalize = 'none', ...){
+    if(!dom@misc[['build']]){
+        stop('Please run domino_build prior to generate signaling network.')
+    }
+    mat = dom@signaling
+    if(!is.null(clusts)){
+        mat = mat[paste0('R_', clusts), paste0('L_', clusts)]
+    }
+    
+    mat[which(mat > max_thresh)] = max_thresh
+    mat[which(mat < min_thresh)] = min_thresh
+
+    if(scale == 'sqrt'){
+        mat = sqrt(mat)
+    } else if(scale == 'log'){
+        mat = log10(mat)
+    } else if (scale != 'none'){
+        stop('Do not recognize scale input')
+    }
+    
+
+    if(normalize == 'rec_norm'){
+        mat = do_norm(mat, 'row')
+    } else if(normalize == 'lig_norm'){
+        mat = do_norm(mat, 'col')
+    } else if(normalize != 'none'){
+        stop('Do not recognize normalize input')
+    }
+    NMF::aheatmap(mat, ...)
+}
+
+#' Create a cluster incoming signaling heatmap
+#' 
+#' Creates a heatmap of a cluster incoming signaling matrix. Each cluster has a
+#' list of ligands capable of activating its enriched transcription factors. The
+#' function creates a heatmap of cluster average expression for all of those 
+#' ligands. A list of all cluster incoming signaling matrices can be found in
+#' the cl_signaling_matrices slot of a domino option as an alternative to this
+#' plotting function.
+#' 
+#' @param dom A domino object with network built (build_domino)
+#' @param rec_clust Which cluster to select as the receptor. Must match naming of clusters in the domino object.
+#' @param min_thresh Minimum signaling threshold for plotting. Defaults to -Inf for no threshold.
+#' @param max_thresh Maximum signaling threshold for plotting. Defaults to Inf for no threshold.
+#' @param scale How to scale the values (after thresholding). Options are 'none', 'sqrt' for square root, or 'log' for log10.
+#' @param normalize Options to normalize the matrix. Accepted inputs are 'none' for no normalization, 'rec_norm' to normalize to the maximum value with each receptor cluster, or 'lig_norm' to normalize to the maximum value within each ligand cluster 
+#' @param title Either a string to use as the title or a boolean describing whether to include a title. In order to pass the 'main' parameter to NMF::aheatmap you must set title to FALSE.
+#' @param ... Other parameters to pass to NMF::aheatmap. Note that to use the 'main' parameter of NMF::aheatmap you must set title = FALSE
+#' @export
+#' 
+incoming_signaling_heatmap = function(dom,  rec_clust, min_thresh = -Inf, 
+    max_thresh = Inf, scale = 'none', normalize = 'none', title = TRUE, ...){
+    if(!dom@misc[['build']]){
+        stop('Please run domino_build prior to generate signaling network.')
+    }
+    mat = dom@cl_signaling_matrices[[rec_clust]]
+    mat[which(mat > max_thresh)] = max_thresh
+    mat[which(mat < min_thresh)] = min_thresh
+
+    if(scale == 'sqrt'){
+        mat = sqrt(mat)
+    } else if(scale == 'log'){
+        mat = log10(mat)
+    } else if (scale != 'none'){
+        stop('Do not recognize scale input')
+    }
+
+    if(normalize == 'rec_norm'){
+        mat = do_norm(mat, 'row')
+    } else if(normalize == 'lig_norm'){
+        mat = do_norm(mat, 'col')
+    } else if(normalize != 'none'){
+        stop('Do not recognize normalize input')
+    }
+
+    if(title == TRUE){
+        NMF::aheatmap(mat, main = paste0('Expression of ligands targeting cluster ', rec_clust), ...)
+    } else if(title == FALSE){
+        NMF::aheatmap(mat, ...)
+    } else {
+        NMF::aheatmap(mat, main = title, ...)
+    }
+}
+
+#' Create a cluster to cluster signaling network diagram
+#' 
+#' Creates a network diagram of signaling between clusters. Nodes are clusters
+#' and directed edges indicate signaling from one cluster to another. Edges are
+#' colored based on the color scheme of the ligand expressing cluster.
+#' 
+#' @param dom A domino object with network built (build_domino)
+#' @param cols A named vector indicating the colors for clusters. Values are colors and names must match clusters in the domino object. If left as NULL then ggplot colors are generated for the clusters.
+#' @param edge_weight Weight for determining thickness of edges on plot. Signaling values are multiplied by this value.
+#' @param clusts A vector of clusters to be included in the network plot.
+#' @param min_thresh Minimum signaling threshold. Values lower than the threshold will be set to the threshold. Defaults to -Inf for no threshold.
+#' @param max_thresh Maximum signaling threshold for plotting. Values higher than the threshold will be set to the threshold. Defaults to Inf for no threshold.
+#' @param normalize Options to normalize the signaling matrix. Accepted inputs are 'none' for no normalization, 'rec_norm' to normalize to the maximum value with each receptor cluster, or 'lig_norm' to normalize to the maximum value within each ligand cluster 
+#' @param scale How to scale the values (after thresholding). Options are 'none', 'sqrt' for square root, 'log' for log10, or 'sq' for square.
+#' @param layout Type of layout to use. Options are 'random', 'sphere', 'circle', 'fr' for Fruchterman-Reingold force directed layout, and 'kk' for Kamada Kawai for directed layout.  
+#' @param scale_by How to size vertices. Options are 'lig_sig' for summed outgoing signaling, 'rec_sig' for summed incoming signaling, and 'none'. In the former two cases the values are scaled with asinh after summing all incoming or outgoing signaling.
+#' @param vert_scale Integer used to scale size of vertices with our without variable scaling from size_verts_by.
+#' @param ... Other parameters to be passed to plot when used with an igraph object.
+#' @export
+#' 
+signaling_network = function(dom,  cols = NULL, edge_weight = .3, clusts = NULL, 
+    min_thresh = -Inf, max_thresh = Inf, normalize = 'none', scale = 'sq', 
+    layout = 'circle', scale_by = 'rec_sig', vert_scale = 3, ...){
+    if(!dom@misc[['build']]){
+        stop('Please build a signaling network with domino_build prior to plotting.')
+    }
+    
+    # Deal with nulls and get signaling matrix
+    mat = dom@signaling
+    if(!is.null(clusts)){
+        mat = mat[paste0('R_', clusts), paste0('L_', clusts)]
+    }
+    
+    if(is.null(cols)){
+        cols = ggplot_col_gen(length(levels(dom@clusters)))
+        names(cols) = levels(dom@clusters)
+    }
+    
+    mat[which(mat > max_thresh)] = max_thresh
+    mat[which(mat < min_thresh)] = min_thresh
+
+    if(scale == 'sqrt'){
+        mat = sqrt(mat)
+    } else if(scale == 'log'){
+        mat = log10(mat)
+    } else if (scale == 'sq'){
+        mat = mat^2
+    } else if (scale != 'none'){
+        stop('Do not recognize scale input')
+    }
+
+    if(normalize == 'rec_norm'){
+        mat = do_norm(mat, 'row')
+    } else if(normalize == 'lig_norm'){
+        mat = do_norm(mat, 'col')
+    } else if(normalize != 'none'){
+        stop('Do not recognize normalize input')
+    }    
+
+    links = c()
+    weights = c()
+    for(rcl in levels(dom@clusters)){
+        for(lcl in levels(dom@clusters)){
+            if(mat[paste0('R_', rcl), paste0('L_', lcl)] == 0){
+                next
+            }
+            links = c(links, as.character(lcl), as.character(rcl))
+            weights[paste0(lcl, '|', rcl)] = mat[paste0('R_', rcl), 
+                paste0('L_', lcl)]
+        }
+    }
+
+    graph = igraph::graph(links)
+    
+    # Get vert colors and scale size if desired.
+    igraph::V(graph)$label.dist = 1.5
+    igraph::V(graph)$label.color = 'black'
+
+    if(is.null(cols)){
+        cols = ggplot_col_gen(length(levels(dom@clusters)))
+        names(cols) = levels(dom@clusters)
+    }
+    v_cols = rep('#BBBBBB', length(igraph::V(graph)))
+    names(v_cols) = names(igraph::V(graph))
+    v_cols[names(cols)] = cols
+
+    if(scale_by == 'lig_sig'){
+        vals = asinh(colSums(mat))
+        vals = vals[paste0('L_', names(igraph::V(graph)))]
+        igraph::V(graph)$size = vals*vert_scale
+    } else if(scale_by == 'rec_sig'){
+        vals = asinh(rowSums(mat))
+        vals = vals[paste0('R_', names(igraph::V(graph)))]
+        igraph::V(graph)$size = vals*vert_scale
+    } else if(scale_by == 'none'){
+        igraph::V(graph)$size = vert_scale
+    } else {
+        stop("Don't recognize vert_scale option as 'none', 'rec_sig', or 'lig_sig'")
+    }
+    
+    # Get vert angle for labeling circos plot
+    if(layout == 'circle'){
+        v_angles = 1:length(igraph::V(graph))
+        v_angles = -2*pi*(v_angles-1)/length(v_angles)
+        igraph::V(graph)$label.degree = v_angles
+    }
+
+
+    names(v_cols) = c()
+    igraph::V(graph)$color = v_cols
+
+    # Get edge color. weights, and lines
+    weights = weights[attr(igraph::E(graph), 'vnames')]
+    e_cols = c()
+    for(e in names(weights)){
+        lcl = strsplit(e, '|', fixed = TRUE)[[1]][1]
+        e_cols = c(e_cols, cols[lcl])
+    }
+    names(weights) = c()
+    names(e_cols) = c()
+    igraph::E(graph)$width = weights*edge_weight
+    igraph::E(graph)$color = e_cols
+    igraph::E(graph)$arrow.size = 0
+    igraph::E(graph)$curved = 0.5
+    # Get edge colors
+
+    if(layout == 'random'){
+        l = igraph::layout_randomly(graph)
+    } else if(layout == 'circle'){
+        l = igraph::layout_in_circle(graph)
+    } else if(layout == 'sphere'){
+        l = igraph::layout_on_sphere(graph)
+    } else if(layout == 'fr'){
+        l = igraph::layout_with_fr(graph)
+    } else if(layout == 'kk'){
+        l = igraph::layout_with_kk(graph)
+    }
+    
+    plot(graph, layout = l, ...)
+}
+
+#' Creates a gene associate network
+#' 
+#' Creates a gene association network for genes from a given cluster. The 
+#' selected cluster acts as the receptor for the gene association network, so
+#' only ligands, receptors, and features associated with the receptor cluster
+#' will be included in the plot. For cases where SCENIC was used and 
+#' transcription factor modules were provided during domino object creation
+#' transcription factor targets will also be included.
+#' 
+#' @param dom A domino object with network built (build_domino)
+#' @param clust The receptor cluster to create the gene association network for.
+#' @param cols A named vector of colors to color vertices. Values must be colors and names must be vertices (ie. a specific receptor, ligand, feature, or feature target). If class_cols is also provided then this vector will overwrite class colors for vertices in the data set.
+#' @param class_cols A named vector of colors to color classes of vertices. Values must be colors and names must be classes ('rec', 'lig', and 'feat' for receptors, ligands, and features.). 
+#' @param lig_scale FALSE or a numeric value to scale the size of ligand vertices based on z-scored expression in the data set.
+#' @param layout Type of layout to use. Options are 'grid', 'random', 'sphere', 'circle', 'fr' for Fruchterman-Reingold force directed layout, and 'kk' for Kamada Kawai for directed layout.
+#' @param ... Other parameters to pass to plot() with an igraph object. See igraph manual for options.
+#' @export
+#' 
+gene_network = function(dom, clust, cols = NULL, class_cols = c(lig = '#FF685F', 
+    rec = '#72BCFF', feat = '#39C740'), lig_scale = 1, layout = 'grid', 
+    ...){
+
+    if(!dom@misc[['build']]){
+        stop('Please build a signaling network with domino_build prior to plotting.')
+    }
+
+    # Pull out all ligands for the receptor cluster as well as signaling calcs.
+    mat = dom@cl_signaling_matrices[[as.character(clust)]]
+    
+    # Get connections between TF and recs
+    tfs = dom@linkages$clust_tf[[as.character(clust)]]
+    links = c()
+    all_recs = c()
+    all_tfs = c()
+    for(tf in tfs){
+        recs = dom@linkages$tf_rec[[tf]]
+        all_recs = c(all_recs, recs)
+        if(length(recs)){
+            all_tfs = c(all_tfs, tf)
+        }
+        for(rec in recs){
+            links = c(links, rec, tf)
+        }
+    }
+    all_recs = unique(all_recs)
+    all_tfs = unique(all_tfs)
+
+    # Recs to ligs
+    allowed_ligs = rownames(dom@cl_signaling_matrices[[clust]])
+    all_ligs = c()
+    for(rec in all_recs){
+        ligs = dom@linkages$rec_lig[[rec]]
+        for(lig in ligs){
+            if(length(which(allowed_ligs == lig))){
+                links = c(links, lig, rec)
+                all_ligs = c(all_ligs, lig)
+            }
+        }
+    }
+    all_ligs = unique(all_ligs)
+
+    # Make the graph
+    graph = igraph::graph(links)
+    graph = igraph::simplify(graph, remove.multiple = TRUE, remove.loops = FALSE)
+    
+    v_cols = rep('#BBBBBB', length(igraph::V(graph)))
+    names(v_cols) = names(igraph::V(graph))
+    v_cols[all_tfs] = class_cols['feat']
+    v_cols[all_recs] = class_cols['rec']
+    v_cols[all_ligs] = class_cols['lig']
+    if(!is.null(cols)){
+        v_cols[names(cols)] = cols
+    }
+    names(v_cols) = c()
+    igraph::V(graph)$color = v_cols
+
+
+    v_size = rep(10, length(igraph::V(graph)))
+    names(v_size) = names(igraph::V(graph))
+    if(lig_scale){
+        lig_weights = rowSums(mat)
+        v_size[names(lig_weights)] = 10*lig_weights*lig_scale
+    }
+    names(v_size) = c()
+    igraph::V(graph)$size = v_size
+    igraph::V(graph)$label.dist = 2
+    igraph::V(graph)$label.degree = pi
+    igraph::V(graph)$label.color = 'black'
+    igraph::E(graph)$arrow.size = .5
+
+    if(layout == 'grid'){
+        l = matrix(0, ncol = 2, nrow = length(igraph::V(graph)))
+        rownames(l) = names(igraph::V(graph))
+
+        l[all_ligs,1] = -.75
+        l[all_recs,1] = 0
+        l[all_tfs,1] = .75
+
+        l[all_ligs,2] = (1:length(all_ligs)/mean(1:length(all_ligs)) - 1)*2
+        l[all_recs,2] = (1:length(all_recs)/mean(1:length(all_recs)) - 1)*2
+        l[all_tfs,2] = (1:length(all_tfs)/mean(1:length(all_tfs)) - 1)*2
+        
+        rownames(l) = c()
+    } else if(layout == 'random'){
+        l = igraph::layout_randomly(graph)
+    } else if(layout == 'circle'){
+        l = igraph::layout_in_circle(graph)
+    } else if(layout == 'sphere'){
+        l = igraph::layout_on_sphere(graph)
+    } else if(layout == 'fr'){
+        l = igraph::layout_with_fr(graph)
+    } else if(layout == 'kk'){
+        l = igraph::layout_with_kk(graph)
+    }
+    
+    plot(graph, layout = l, ...)
+}
+
+
+#' Normalize a matrix to its max value by row or column
+#' 
+#' Normalizes a matrix to its max value by row or column
+#' 
+#' @param matrix The matrix to be normalized
+#' @param dir The direction to normalize the matrix c('row', 'col') 
+#' @return Normalized matrix in the direction specified.
+do_norm = function(matrix, dir){
+    if(dir == 'row'){
+        mat = t(apply(mat, 1, function(x){x/max(x)}))
+        return(mat)
+    } else if(dir == 'col'){
+        mat = apply(mat, 2, function(x){x/max(x)})
+        return(mat)
+    }
+}
+
+#' Generate ggplot colors
+#' 
+#' Accepts a number of colors to generate and generates a ggplot color spectrum.
+#' 
+#' @param n Number of colors to generate
+#' @return A vector of colors according to ggplot color generation.
+#' 
+ggplot_col_gen = function(n){
+    hues = seq(15, 375, length = n + 1)
+    return(hcl(h = hues, l = 65, c = 100)[1:n])
+}
