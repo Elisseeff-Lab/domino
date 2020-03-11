@@ -356,6 +356,135 @@ gene_network = function(dom, clust, cols = NULL, class_cols = c(lig = '#FF685F',
     plot(graph, layout = l, ...)
 }
 
+#' Create a heatmap of features organized by cluster
+#' 
+#' Creates a heatmap of feature expression (typically transcription factor
+#' activation scores) by cells organized by cluster.
+#' 
+#' @param dom A domino object with network built (build_domino)
+#' @param bool A boolean indicating whether the heatmap should be continuous or boolean. If boolean then bool_thresh will be used to determine how to define activity as positive or negative.
+#' @param bool_thresh A numeric indicating the threshold separating 'on' or 'off' for feature activity if making a boolean heatmap.
+#' @param title Either a string to use as the title or a boolean describing whether to include a title. In order to pass the 'main' parameter to NMF::aheatmap you must set title to FALSE.
+#' @param norm Boolean indicating whether or not to normalize the transcrption factors to their max value.
+#' @param feats Either a vector of features to include in the heatmap or 'all' for all features. If left NULL then the features selected for the signaling network will be shown.
+#' @param ann_cols Boolean indicating whether to include cell cluster as a column annotation. Colors can be defined with cols. If FALSE then custom annotations can be passed to NMF.
+#' @param cols A named vector of colors to annotate cells by cluster color. Values are taken as colors and names as cluster. If left as NULL then default ggplot colors will be generated.
+#' @param ... Other parameters to pass to NMF::aheatmap. Note that to use the 'main' parameter of NMF::aheatmap you must set title = FALSE and to use 'annCol' or 'annColors' ann_cols must be FALSE.
+#' @export
+#' 
+feat_heatmap = function(dom, bool = TRUE, bool_thresh = .2, title = TRUE, norm = FALSE, feats = NULL, cols = NULL, ann_cols = TRUE, ...){
+    mat = dom@features
+    cl = dom@clusters
+    cl = sort(cl)
+
+    if(norm){
+        mat = do_norm(mat, 'row')
+    }
+
+    if(bool){
+        cp = mat
+        cp[which(mat >= bool_thresh)] = 1
+        cp[which(mat < bool_thresh)] = 0
+        mat = cp
+    }
+
+    if(title == TRUE){
+        title = 'Feature expression by cluster'
+    }
+
+    if(is.null(feats)){
+        feats = c()
+        links = dom@linkages$clust_tf
+        for(i in links){
+            feats = c(feats, i)
+        }
+        feats = unique(feats)
+    } else if(feats == 'all'){
+        feats = rownames(mat)
+    }
+
+    mat = mat[feats, names(cl)]
+
+    if(ann_cols){
+        ac = list('Cluster' = cl)
+        names(ac[[1]]) = c()
+        if(is.null(cols)){
+            cols = ggplot_col_gen(length(levels(cl)))
+            names(cols) = levels(cl)
+        }
+        cols = list('Cluster' = cols)
+    }
+
+    if(title != FALSE & ann_cols != FALSE){
+        NMF::aheatmap(mat, Colv = NA, annCol = ac, annColors = cols, main = title, ...)
+    } else if(title == FALSE & ann_cols != FALSE){
+        NMF::aheatmap(mat, Colv = NA, annCol = ac, annColors = cols, ...)
+    } else if(title != FALSE & ann_cols == FALSE){
+        NMF::aheatmap(mat, Colv = NA, main = title, ...)
+    } else if(title == FALSE & ann_cols == FALSE){
+        NMF::aheatmap(mat, Colv = NA, ...)
+    }
+}
+
+#' Create a heatmap of features organized by cluster
+#' 
+#' Creates a heatmap of feature expression (typically transcription factor
+#' activation scores) by cells organized by cluster.
+#' 
+#' @param dom A domino object with network built (build_domino)
+#' @param bool A boolean indicating whether the heatmap should be continuous or boolean. If boolean then bool_thresh will be used to determine how to define activity as positive or negative.
+#' @param bool_thresh A numeric indicating the threshold separating 'on' or 'off' for feature activity if making a boolean heatmap.
+#' @param title Either a string to use as the title or a boolean describing whether to include a title. In order to pass the 'main' parameter to NMF::aheatmap you must set title to FALSE.
+#' @param feats Either a vector of features to include in the heatmap or 'all' for all features. If left NULL then the features selected for the signaling network will be shown.
+#' @param recs Either a vector of receptors to include in the heatmap or 'all' for all receptors. If left NULL then the receptors selected for the signaling network will be shown.
+#' @param ... Other parameters to pass to NMF::aheatmap. Note that to use the 'main' parameter of NMF::aheatmap you must set title = FALSE and to use 'annCol' or 'annColors' ann_cols must be FALSE.
+#' @export
+#' 
+cor_heatmap = function(dom, bool = TRUE, bool_thresh = .15, title = TRUE, feats = NULL, recs = NULL, ...){
+    mat = dom@cor
+
+    if(bool){
+        cp = mat
+        cp[which(mat >= bool_thresh)] = 1
+        cp[which(mat < bool_thresh)] = 0
+        mat = cp
+    }
+
+    if(title == TRUE){
+        title = 'Correlation of features and receptors'
+    }
+
+    if(is.null(feats)){
+        feats = c()
+        links = dom@linkages$clust_tf
+        for(i in links){
+            feats = c(feats, i)
+        }
+        feats = unique(feats)
+    } else if(feats == 'all'){
+        feats = rownames(mat)
+    }
+
+    if(is.null(recs)){
+        recs = c()
+        links = dom@linkages$tf_rec
+        for(i in links){
+            recs = c(recs, i)
+        }
+        recs = unique(recs)
+    } else if(recs == 'all'){
+        recs = rownames(mat)
+    }
+
+    mat = mat[recs, feats]
+
+
+    if(title != FALSE){
+        NMF::aheatmap(mat, main = title, ...)
+    } else {
+        NMF::aheatmap(mat, ...)
+    }
+}
 
 #' Normalize a matrix to its max value by row or column
 #' 
