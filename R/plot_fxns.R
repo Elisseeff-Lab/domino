@@ -69,6 +69,10 @@ incoming_signaling_heatmap = function(dom,  rec_clust, min_thresh = -Inf,
         stop('Please run domino_build prior to generate signaling network.')
     }
     mat = dom@cl_signaling_matrices[[rec_clust]]
+    if(dim(mat)[1] == 0){
+        print('No signaling found for this cluster under build parameters.')
+        return()
+    }
     mat[which(mat > max_thresh)] = max_thresh
     mat[which(mat < min_thresh)] = min_thresh
 
@@ -263,10 +267,13 @@ gene_network = function(dom, clust, cols = NULL, class_cols = c(lig = '#FF685F',
     if(!dom@misc[['build']]){
         stop('Please build a signaling network with domino_build prior to plotting.')
     }
-
     # Pull out all ligands for the receptor cluster as well as signaling calcs.
     mat = dom@cl_signaling_matrices[[as.character(clust)]]
-    
+    if(dim(mat)[1] == 0){
+        print('No signaling found for this cluster under build parameters.')
+        return()
+    }
+
     # Get connections between TF and recs
     tfs = dom@linkages$clust_tf[[as.character(clust)]]
     links = c()
