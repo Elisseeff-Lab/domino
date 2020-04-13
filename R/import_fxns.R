@@ -118,14 +118,14 @@ create_domino = function(signaling_db, features, ser = NULL, z_scores = NULL,
 
 
     # Get genes for receptors
-    rec_prots = unique(rl_map[,1])
+    rec_prots = as.character(unique(rl_map[,1]))
     rec_orig = genes[match(rec_prots, genes[,2]),3]
     rl_map = data.frame(rl_map)
     rl_map = add_rl_column(rl_map, 'R.uniprot', cbind(rec_prots, rec_orig), 
         'R.orig')
 
     # Get genes for ligands
-    lig_prots = unique(rl_map[,2])
+    lig_prots = as.character(unique(rl_map[,2]))
     lig_orig = genes[match(lig_prots, genes[,2]),3]
     rl_map = add_rl_column(rl_map, 'L.uniprot', cbind(lig_prots, lig_orig), 
         'L.orig')
