@@ -30,3 +30,64 @@ rename_clusters = function(dom, clust_conv){
     }
     return(dom)
 }
+
+#' Extracts all features, receptors, or ligands present in a signaling network.
+#' 
+#' This function collates all of the features, receptors, or ligands found in a
+#' signaling network anywhere in a list of clusters. This can be useful for
+#' comparing signaling networks across two separate conditions. In order to run
+#' this build_domino must be run on the object previously.
+#' 
+#' @param dom A domino object containing a signaling network (i.e. build_domino run)
+#' @param return A string indicating where to collate 'features', 'receptors', or 'ligands'. If 'all' then a list of all three will be returned.
+#' @param clusters A vector indicating clusters to collate network items from. If left as NULL then all clusters will be included.
+#' @return A vector containing all features, receptors, or ligands in the data set or a list containing all three.
+#' @export 
+#' 
+collate_network_items = function(dom, clusters = NULL, return = NULL){
+    if(!dom@misc[['build']]){
+        stop('Please run domino_build prior to generate signaling network.')
+    }
+    if(is.null(clusters)){clusters = levels(dom@clusters)}
+
+    # Get all TFs across specified clusters
+    de_tfs = c()
+    for(cl in clusters){
+        tfs = dom@linkages$clust_tf[[cl]]
+        de_tfs = c(de_tfs, tfs)
+    }
+
+    # Get connections between TF and recs
+    all_recs = c()
+    all_tfs = c()
+    for(tf in de_tfs){
+        recs = dom@linkages$tf_rec[[tf]]
+        all_recs = c(all_recs, recs)
+        if(length(recs)){
+            all_tfs = c(all_tfs, tf)
+        }
+    }
+    all_recs = unique(all_recs)
+    all_tfs = unique(all_tfs)
+
+    # Between ligs and recs
+    all_ligs = c()
+    for(rec in all_recs){
+        ligs = dom@linkages$rec_lig[[rec]]
+        mid = match(ligs, rownames(dom@z_scores))
+        if(anyNA(mid)){
+            ligs = ligs[-which(is.na(mid))]
+        }
+        all_ligs = c(all_ligs, ligs)
+    }
+    all_ligs = unique(all_ligs)
+
+    # Make list and return whats asked for
+    list_out = list('features' = all_tfs, 'receptors' = all_recs, 
+        'ligands' = all_ligs)
+    if(is.null(return)){
+        return(list_out)
+    } else {
+        return(list_out[[return]])
+    }
+}
