@@ -392,7 +392,8 @@ gene_network = function(dom, clust, cols = NULL, class_cols = c(lig = '#FF685F',
 #' @param ... Other parameters to pass to NMF::aheatmap. Note that to use the 'main' parameter of NMF::aheatmap you must set title = FALSE and to use 'annCol' or 'annColors' ann_cols must be FALSE.
 #' @export
 #' 
-feat_heatmap = function(dom, bool = TRUE, bool_thresh = .2, title = TRUE, norm = FALSE, feats = NULL, cols = NULL, ann_cols = TRUE, ...){
+feat_heatmap = function(dom, feats = NULL, bool = TRUE, bool_thresh = .2, 
+    title = TRUE, norm = FALSE, cols = NULL, ann_cols = TRUE, ...){
     mat = dom@features
     cl = dom@clusters
     cl = sort(cl)
@@ -419,6 +420,14 @@ feat_heatmap = function(dom, bool = TRUE, bool_thresh = .2, title = TRUE, norm =
             feats = c(feats, i)
         }
         feats = unique(feats)
+    } else if(feats[1] != 'all'){
+        mid = match(feats, rownames(dom@features))
+        na = which(is.na(mid))
+        na_feats = paste(feats[na], collapse = ' ')
+        if(length(na) != 0){
+            print(paste('Unable to find', na_feats))
+            feats = feats[-na]
+        } 
     } else if(feats == 'all'){
         feats = rownames(mat)
     }
@@ -533,7 +542,7 @@ do_norm = function(matrix, dir){
 ggplot_col_gen = function(n){
     hues = seq(15, 375, length = n + 1)
     return(hcl(h = hues, l = 65, c = 100)[1:n])
-
+}
 
 #' Create correlation plots for features and receptors
 #' 
