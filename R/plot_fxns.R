@@ -261,21 +261,32 @@ signaling_network = function(dom,  cols = NULL, edge_weight = .3, clusts = NULL,
 #' @export
 #' 
 gene_network = function(dom, clust, cols = NULL, class_cols = c(lig = '#FF685F', 
-    rec = '#72BCFF', feat = '#39C740'), lig_scale = 1, layout = 'grid', 
+    rec = '#0070d6', feat = '#39C740'), lig_scale = 1, layout = 'grid', 
     ...){
 
     if(!dom@misc[['build']]){
         stop('Please build a signaling network with domino_build prior to plotting.')
     }
-    # Pull out all ligands for the receptor cluster as well as signaling calcs.
-    mat = dom@cl_signaling_matrices[[as.character(clust)]]
-    if(dim(mat)[1] == 0){
-        print('No signaling found for this cluster under build parameters.')
+    # Get connections between TF and recs
+    tfs = c()
+    cl_with_signaling = c()
+    for(cl in as.character(clust)){
+        # Check if signaling exists for target cluster
+        mat = dom@cl_signaling_matrices[[cl]]
+        if(dim(mat)[1] == 0){
+            print(paste('No signaling found for', cl, 'under build parameters.'))
+            next()
+        }
+        tfs = c(tfs, dom@linkages$clust_tf[[cl]])
+        cl_with_signaling = c(cl_with_signaling, cl)
+    }
+    
+    # If no signaling for target clusters then don't do anything
+    if(length(tfs) == 0){
+        print('No signaling found for provided clusters')
         return()
     }
 
-    # Get connections between TF and recs
-    tfs = dom@linkages$clust_tf[[as.character(clust)]]
     links = c()
     all_recs = c()
     all_tfs = c()
@@ -293,7 +304,10 @@ gene_network = function(dom, clust, cols = NULL, class_cols = c(lig = '#FF685F',
     all_tfs = unique(all_tfs)
 
     # Recs to ligs
-    allowed_ligs = rownames(dom@cl_signaling_matrices[[clust]])
+    allowed_ligs = c()
+    for(cl in cl_with_signaling){
+        allowed_ligs = rownames(dom@cl_signaling_matrices[[cl]])
+    }
     all_ligs = c()
     for(rec in all_recs){
         ligs = dom@linkages$rec_lig[[rec]]
@@ -330,10 +344,9 @@ gene_network = function(dom, clust, cols = NULL, class_cols = c(lig = '#FF685F',
     }
     names(v_size) = c()
     igraph::V(graph)$size = v_size
-    igraph::V(graph)$label.dist = 2
     igraph::V(graph)$label.degree = pi
+    igraph::V(graph)$label.offset = 2
     igraph::V(graph)$label.color = 'black'
-    igraph::E(graph)$arrow.size = .5
 
     if(layout == 'grid'){
         l = matrix(0, ncol = 2, nrow = length(igraph::V(graph)))
