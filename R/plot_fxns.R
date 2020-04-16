@@ -261,7 +261,7 @@ signaling_network = function(dom,  cols = NULL, edge_weight = .3, clusts = NULL,
 #' @export
 #' 
 gene_network = function(dom, clust, cols = NULL, class_cols = c(lig = '#FF685F', 
-    rec = '#0070d6', feat = '#39C740'), lig_scale = 1, layout = 'grid', 
+    rec = '#47a7ff', feat = '#39C740'), lig_scale = 1, layout = 'grid', 
     ...){
 
     if(!dom@misc[['build']]){
@@ -347,6 +347,11 @@ gene_network = function(dom, clust, cols = NULL, class_cols = c(lig = '#FF685F',
     igraph::V(graph)$label.degree = pi
     igraph::V(graph)$label.offset = 2
     igraph::V(graph)$label.color = 'black'
+    igraph::V(graph)$frame.color = 'black'
+
+    igraph::E(graph)$width = .5
+    igraph::E(graph)$arrow.size = 0
+    igraph::E(graph)$color = 'black'
 
     if(layout == 'grid'){
         l = matrix(0, ncol = 2, nrow = length(igraph::V(graph)))
@@ -374,6 +379,7 @@ gene_network = function(dom, clust, cols = NULL, class_cols = c(lig = '#FF685F',
     }
     
     plot(graph, layout = l, ...)
+    return(invisible(list(graph = graph, layout = l)))
 }
 
 #' Create a heatmap of features organized by cluster
@@ -389,17 +395,31 @@ gene_network = function(dom, clust, cols = NULL, class_cols = c(lig = '#FF685F',
 #' @param feats Either a vector of features to include in the heatmap or 'all' for all features. If left NULL then the features selected for the signaling network will be shown.
 #' @param ann_cols Boolean indicating whether to include cell cluster as a column annotation. Colors can be defined with cols. If FALSE then custom annotations can be passed to NMF.
 #' @param cols A named vector of colors to annotate cells by cluster color. Values are taken as colors and names as cluster. If left as NULL then default ggplot colors will be generated.
+#' @param min_thresh Minimum threshold for color scaling if not a boolean heatmap
+#' @param max_thresh Maximum threshold for color scaling if not a boolean heatmap
 #' @param ... Other parameters to pass to NMF::aheatmap. Note that to use the 'main' parameter of NMF::aheatmap you must set title = FALSE and to use 'annCol' or 'annColors' ann_cols must be FALSE.
 #' @export
 #' 
 feat_heatmap = function(dom, feats = NULL, bool = TRUE, bool_thresh = .2, 
-    title = TRUE, norm = FALSE, cols = NULL, ann_cols = TRUE, ...){
+    title = TRUE, norm = FALSE, cols = NULL, ann_cols = TRUE, min_thresh = NULL, 
+    max_thresh = NULL, ...){
     mat = dom@features
     cl = dom@clusters
     cl = sort(cl)
 
+    if(norm & (!is.null(min_thresh) | !is.null(max_thresh))){
+        warning('You are using norm with min_thresh and max_thresh. Note that values will be thresholded AFTER normalization.')
+    }
+
     if(norm){
         mat = do_norm(mat, 'row')
+    }
+
+    if(!is.null(min_thresh)){
+        mat[which(mat < min_thresh)] = min_thresh
+    }
+    if(!is.null(max_thresh)){
+        mat[which(mat > max_thresh)] = max_thresh
     }
 
     if(bool){
@@ -465,11 +485,13 @@ feat_heatmap = function(dom, feats = NULL, bool = TRUE, bool_thresh = .2,
 #' @param bool_thresh A numeric indicating the threshold separating 'on' or 'off' for feature activity if making a boolean heatmap.
 #' @param title Either a string to use as the title or a boolean describing whether to include a title. In order to pass the 'main' parameter to NMF::aheatmap you must set title to FALSE.
 #' @param feats Either a vector of features to include in the heatmap or 'all' for all features. If left NULL then the features selected for the signaling network will be shown.
-#' @param recs Either a vector of receptors to include in the heatmap or 'all' for all receptors. If left NULL then the receptors selected for the signaling network will be shown.
+#' @param recs Either a vector of receptors to include in the heatmap or 'all' for all receptors. If left NULL then the receptors selected in the signaling network connected to the features plotted will be shown.
+#' @param mark_connections A boolean indicating whether to add an 'x' in cells where there is a connected receptor or TF. Default FALSE.
 #' @param ... Other parameters to pass to NMF::aheatmap. Note that to use the 'main' parameter of NMF::aheatmap you must set title = FALSE and to use 'annCol' or 'annColors' ann_cols must be FALSE.
 #' @export
 #' 
-cor_heatmap = function(dom, bool = TRUE, bool_thresh = .15, title = TRUE, feats = NULL, recs = NULL, ...){
+cor_heatmap = function(dom, bool = TRUE, bool_thresh = .15, title = TRUE, 
+    feats = NULL, recs = NULL, mark_connections = FALSE, ...){
     mat = dom@cor
 
     if(bool){
@@ -490,6 +512,14 @@ cor_heatmap = function(dom, bool = TRUE, bool_thresh = .15, title = TRUE, feats 
             feats = c(feats, i)
         }
         feats = unique(feats)
+    } else if(feats[1] != 'all'){
+        mid = match(feats, rownames(dom@features))
+        na = which(is.na(mid))
+        na_feats = paste(feats[na], collapse = ' ')
+        if(length(na) != 0){
+            print(paste('Unable to find', na_feats))
+            feats = feats[-na]
+        } 
     } else if(feats == 'all'){
         feats = rownames(mat)
     }
@@ -497,8 +527,11 @@ cor_heatmap = function(dom, bool = TRUE, bool_thresh = .15, title = TRUE, feats 
     if(is.null(recs)){
         recs = c()
         links = dom@linkages$tf_rec
-        for(i in links){
-            recs = c(recs, i)
+        for(feat in feats){
+            feat_recs = links[[feat]]
+            if(length(feat_recs) > 0){
+                recs = c(recs, feat_recs)
+            }
         }
         recs = unique(recs)
     } else if(recs == 'all'){
@@ -507,9 +540,19 @@ cor_heatmap = function(dom, bool = TRUE, bool_thresh = .15, title = TRUE, feats 
 
     mat = mat[recs, feats]
 
+    if(mark_connections){
+        cons = mat
+        cons[] = ''
+        for(feat in feats){
+            feat_recs = dom@linkages$tf_rec[[feat]]
+            if(length(feat_recs)){
+                cons[feat_recs, feat] = 'X'
+            }
+        }
+    }
 
-    if(title != FALSE){
-        NMF::aheatmap(mat, main = title, ...)
+    if(title != FALSE & mark_connections){
+        NMF::aheatmap(mat, main = title, txt = cons, ...)
     } else {
         NMF::aheatmap(mat, ...)
     }
