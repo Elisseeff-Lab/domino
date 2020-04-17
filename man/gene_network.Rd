@@ -8,7 +8,7 @@ gene_network(
   dom,
   clust,
   cols = NULL,
-  class_cols = c(lig = "#FF685F", rec = "#72BCFF", feat = "#39C740"),
+  class_cols = c(lig = "#FF685F", rec = "#47a7ff", feat = "#39C740"),
   lig_scale = 1,
   layout = "grid",
   ...
