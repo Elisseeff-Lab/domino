@@ -586,37 +586,3 @@ ggplot_col_gen = function(n){
     hues = seq(15, 375, length = n + 1)
     return(hcl(h = hues, l = 65, c = 100)[1:n])
 }
-
-#' Create correlation plots for features and receptors
-#' 
-#' Creates a grid of correlation plots for a list of features and receptors.
-#' Cells with dropout for the specific receptor are not included.
-#' 
-#' @param dom A domino object with network built (build_domino)
-#' @param recs A vector of receptors to create correlation plots for
-#' @param feats A vector of features to create correlation plots for
-#' @export
-#' @importFrom ggplot2 ggplot aes geom_point
-#' @importFrom cowplot plot_grid
-#'
-correlation_grid = function(dom,  recs, feats){
-    ncol = length(recs)
-    plot_list = list()
-    i = 1
-    for(rec in recs){
-        for(feat in feats){
-            trim_cor = round(dom@cor[rec, feat], 2)
-            df = data.frame(dom@z_scores[rec,], dom@features[feat,])
-            colnames(df) = c('rec', 'feat')
-            plot = ggplot2::ggplot(df, ggplot2::aes(x=rec, y=feat)) + 
-                ggplot2::geom_point(size = .75) +
-                ggplot2::theme_classic() +
-                ggplot2::theme(plot.title = ggplot2::element_text(hjust = .5)) +
-                ggplot2::labs(title = trim_cor, x = rec, y = feat)
-            
-            plot_list[[i]] = plot
-            i = i + 1
-        }
-    }
-    cowplot::plot_grid(plotlist = plot_list, ncol = ncol)
-}
