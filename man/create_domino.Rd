@@ -13,7 +13,9 @@ create_domino(
   df = NULL,
   gene_conv = NULL,
   verbose = TRUE,
-  use_complexes = TRUE
+  use_complexes = TRUE,
+  counts = NULL,
+  rec_min_thresh = 0.025
 )
 }
 \arguments{
@@ -34,6 +36,10 @@ create_domino(
 \item{verbose}{Boolean indicating whether or not to print progress during computation.}
 
 \item{use_complexes}{Boolean indicating whether you wish to use receptor/ligand complexes in the receptor ligand signaling database. This may lead to problems if genes which are preserved acrossed many functionally different signaling complexes are found highly expressed or correlated with features in your data set.}
+
+\item{counts}{The counts matrix for the data. If a Seurat object is provided this will be ignored. This is only used to threshold receptors on dropout.}
+
+\item{rec_min_thresh}{Minimum expression level of receptors by cell. Default is 0.025 or 2.5% of all cells in the data set. The lower this threshold the more likely pearson correlation will lead to fasle positives.}
 }
 \value{
 A domino object.
