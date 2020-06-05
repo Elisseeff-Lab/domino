@@ -261,21 +261,32 @@ signaling_network = function(dom,  cols = NULL, edge_weight = .3, clusts = NULL,
 #' @export
 #' 
 gene_network = function(dom, clust, cols = NULL, class_cols = c(lig = '#FF685F', 
-    rec = '#72BCFF', feat = '#39C740'), lig_scale = 1, layout = 'grid', 
+    rec = '#47a7ff', feat = '#39C740'), lig_scale = 1, layout = 'grid', 
     ...){
 
     if(!dom@misc[['build']]){
         stop('Please build a signaling network with domino_build prior to plotting.')
     }
-    # Pull out all ligands for the receptor cluster as well as signaling calcs.
-    mat = dom@cl_signaling_matrices[[as.character(clust)]]
-    if(dim(mat)[1] == 0){
-        print('No signaling found for this cluster under build parameters.')
+    # Get connections between TF and recs
+    tfs = c()
+    cl_with_signaling = c()
+    for(cl in as.character(clust)){
+        # Check if signaling exists for target cluster
+        mat = dom@cl_signaling_matrices[[cl]]
+        if(dim(mat)[1] == 0){
+            print(paste('No signaling found for', cl, 'under build parameters.'))
+            next()
+        }
+        tfs = c(tfs, dom@linkages$clust_tf[[cl]])
+        cl_with_signaling = c(cl_with_signaling, cl)
+    }
+    
+    # If no signaling for target clusters then don't do anything
+    if(length(tfs) == 0){
+        print('No signaling found for provided clusters')
         return()
     }
 
-    # Get connections between TF and recs
-    tfs = dom@linkages$clust_tf[[as.character(clust)]]
     links = c()
     all_recs = c()
     all_tfs = c()
@@ -293,7 +304,10 @@ gene_network = function(dom, clust, cols = NULL, class_cols = c(lig = '#FF685F',
     all_tfs = unique(all_tfs)
 
     # Recs to ligs
-    allowed_ligs = rownames(dom@cl_signaling_matrices[[clust]])
+    allowed_ligs = c()
+    for(cl in cl_with_signaling){
+        allowed_ligs = rownames(dom@cl_signaling_matrices[[cl]])
+    }
     all_ligs = c()
     for(rec in all_recs){
         ligs = dom@linkages$rec_lig[[rec]]
@@ -330,10 +344,14 @@ gene_network = function(dom, clust, cols = NULL, class_cols = c(lig = '#FF685F',
     }
     names(v_size) = c()
     igraph::V(graph)$size = v_size
-    igraph::V(graph)$label.dist = 2
     igraph::V(graph)$label.degree = pi
+    igraph::V(graph)$label.offset = 2
     igraph::V(graph)$label.color = 'black'
-    igraph::E(graph)$arrow.size = .5
+    igraph::V(graph)$frame.color = 'black'
+
+    igraph::E(graph)$width = .5
+    igraph::E(graph)$arrow.size = 0
+    igraph::E(graph)$color = 'black'
 
     if(layout == 'grid'){
         l = matrix(0, ncol = 2, nrow = length(igraph::V(graph)))
@@ -361,6 +379,7 @@ gene_network = function(dom, clust, cols = NULL, class_cols = c(lig = '#FF685F',
     }
     
     plot(graph, layout = l, ...)
+    return(invisible(list(graph = graph, layout = l)))
 }
 
 #' Create a heatmap of features organized by cluster
@@ -376,16 +395,31 @@ gene_network = function(dom, clust, cols = NULL, class_cols = c(lig = '#FF685F',
 #' @param feats Either a vector of features to include in the heatmap or 'all' for all features. If left NULL then the features selected for the signaling network will be shown.
 #' @param ann_cols Boolean indicating whether to include cell cluster as a column annotation. Colors can be defined with cols. If FALSE then custom annotations can be passed to NMF.
 #' @param cols A named vector of colors to annotate cells by cluster color. Values are taken as colors and names as cluster. If left as NULL then default ggplot colors will be generated.
+#' @param min_thresh Minimum threshold for color scaling if not a boolean heatmap
+#' @param max_thresh Maximum threshold for color scaling if not a boolean heatmap
 #' @param ... Other parameters to pass to NMF::aheatmap. Note that to use the 'main' parameter of NMF::aheatmap you must set title = FALSE and to use 'annCol' or 'annColors' ann_cols must be FALSE.
 #' @export
 #' 
-feat_heatmap = function(dom, bool = TRUE, bool_thresh = .2, title = TRUE, norm = FALSE, feats = NULL, cols = NULL, ann_cols = TRUE, ...){
+feat_heatmap = function(dom, feats = NULL, bool = TRUE, bool_thresh = .2, 
+    title = TRUE, norm = FALSE, cols = NULL, ann_cols = TRUE, min_thresh = NULL, 
+    max_thresh = NULL, ...){
     mat = dom@features
     cl = dom@clusters
     cl = sort(cl)
 
+    if(norm & (!is.null(min_thresh) | !is.null(max_thresh))){
+        warning('You are using norm with min_thresh and max_thresh. Note that values will be thresholded AFTER normalization.')
+    }
+
     if(norm){
         mat = do_norm(mat, 'row')
+    }
+
+    if(!is.null(min_thresh)){
+        mat[which(mat < min_thresh)] = min_thresh
+    }
+    if(!is.null(max_thresh)){
+        mat[which(mat > max_thresh)] = max_thresh
     }
 
     if(bool){
@@ -406,6 +440,14 @@ feat_heatmap = function(dom, bool = TRUE, bool_thresh = .2, title = TRUE, norm =
             feats = c(feats, i)
         }
         feats = unique(feats)
+    } else if(feats[1] != 'all'){
+        mid = match(feats, rownames(dom@features))
+        na = which(is.na(mid))
+        na_feats = paste(feats[na], collapse = ' ')
+        if(length(na) != 0){
+            print(paste('Unable to find', na_feats))
+            feats = feats[-na]
+        } 
     } else if(feats == 'all'){
         feats = rownames(mat)
     }
@@ -443,11 +485,13 @@ feat_heatmap = function(dom, bool = TRUE, bool_thresh = .2, title = TRUE, norm =
 #' @param bool_thresh A numeric indicating the threshold separating 'on' or 'off' for feature activity if making a boolean heatmap.
 #' @param title Either a string to use as the title or a boolean describing whether to include a title. In order to pass the 'main' parameter to NMF::aheatmap you must set title to FALSE.
 #' @param feats Either a vector of features to include in the heatmap or 'all' for all features. If left NULL then the features selected for the signaling network will be shown.
-#' @param recs Either a vector of receptors to include in the heatmap or 'all' for all receptors. If left NULL then the receptors selected for the signaling network will be shown.
+#' @param recs Either a vector of receptors to include in the heatmap or 'all' for all receptors. If left NULL then the receptors selected in the signaling network connected to the features plotted will be shown.
+#' @param mark_connections A boolean indicating whether to add an 'x' in cells where there is a connected receptor or TF. Default FALSE.
 #' @param ... Other parameters to pass to NMF::aheatmap. Note that to use the 'main' parameter of NMF::aheatmap you must set title = FALSE and to use 'annCol' or 'annColors' ann_cols must be FALSE.
 #' @export
 #' 
-cor_heatmap = function(dom, bool = TRUE, bool_thresh = .15, title = TRUE, feats = NULL, recs = NULL, ...){
+cor_heatmap = function(dom, bool = TRUE, bool_thresh = .15, title = TRUE, 
+    feats = NULL, recs = NULL, mark_connections = FALSE, ...){
     mat = dom@cor
 
     if(bool){
@@ -468,6 +512,14 @@ cor_heatmap = function(dom, bool = TRUE, bool_thresh = .15, title = TRUE, feats 
             feats = c(feats, i)
         }
         feats = unique(feats)
+    } else if(feats[1] != 'all'){
+        mid = match(feats, rownames(dom@features))
+        na = which(is.na(mid))
+        na_feats = paste(feats[na], collapse = ' ')
+        if(length(na) != 0){
+            print(paste('Unable to find', na_feats))
+            feats = feats[-na]
+        } 
     } else if(feats == 'all'){
         feats = rownames(mat)
     }
@@ -475,8 +527,11 @@ cor_heatmap = function(dom, bool = TRUE, bool_thresh = .15, title = TRUE, feats 
     if(is.null(recs)){
         recs = c()
         links = dom@linkages$tf_rec
-        for(i in links){
-            recs = c(recs, i)
+        for(feat in feats){
+            feat_recs = links[[feat]]
+            if(length(feat_recs) > 0){
+                recs = c(recs, feat_recs)
+            }
         }
         recs = unique(recs)
     } else if(recs == 'all'){
@@ -485,9 +540,19 @@ cor_heatmap = function(dom, bool = TRUE, bool_thresh = .15, title = TRUE, feats 
 
     mat = mat[recs, feats]
 
+    if(mark_connections){
+        cons = mat
+        cons[] = ''
+        for(feat in feats){
+            feat_recs = dom@linkages$tf_rec[[feat]]
+            if(length(feat_recs)){
+                cons[feat_recs, feat] = 'X'
+            }
+        }
+    }
 
-    if(title != FALSE){
-        NMF::aheatmap(mat, main = title, ...)
+    if(title != FALSE & mark_connections){
+        NMF::aheatmap(mat, main = title, txt = cons, ...)
     } else {
         NMF::aheatmap(mat, ...)
     }
@@ -520,38 +585,4 @@ do_norm = function(matrix, dir){
 ggplot_col_gen = function(n){
     hues = seq(15, 375, length = n + 1)
     return(hcl(h = hues, l = 65, c = 100)[1:n])
-
-
-#' Create correlation plots for features and receptors
-#' 
-#' Creates a grid of correlation plots for a list of features and receptors.
-#' Cells with dropout for the specific receptor are not included.
-#' 
-#' @param dom A domino object with network built (build_domino)
-#' @param recs A vector of receptors to create correlation plots for
-#' @param feats A vector of features to create correlation plots for
-#' @export
-#' @importFrom ggplot2 ggplot aes geom_point
-#' @importFrom cowplot plot_grid
-#'
-correlation_grid = function(dom,  recs, feats){
-    ncol = length(recs)
-    plot_list = list()
-    i = 1
-    for(rec in recs){
-        for(feat in feats){
-            trim_cor = round(dom@cor[rec, feat], 2)
-            df = data.frame(dom@z_scores[rec,], dom@features[feat,])
-            colnames(df) = c('rec', 'feat')
-            plot = ggplot2::ggplot(df, ggplot2::aes(x=rec, y=feat)) + 
-                ggplot2::geom_point(size = .75) +
-                ggplot2::theme_classic() +
-                ggplot2::theme(plot.title = ggplot2::element_text(hjust = .5)) +
-                ggplot2::labs(title = trim_cor, x = rec, y = feat)
-            
-            plot_list[[i]] = plot
-            i = i + 1
-        }
-    }
-    cowplot::plot_grid(plotlist = plot_list, ncol = ncol)
 }

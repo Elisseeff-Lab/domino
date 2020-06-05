@@ -17,10 +17,14 @@
 #' @param gene_conv Optional. Vector of length two containing some combination of 'ENSMUSG', 'ENSG', 'MGI', or 'HGNC' where the first vector is the current gene format in the database and the second is the gene format in the data set. If present, the function will use biomaRt to convert the database to the data sets gene format.
 #' @param verbose Boolean indicating whether or not to print progress during computation.
 #' @param use_complexes Boolean indicating whether you wish to use receptor/ligand complexes in the receptor ligand signaling database. This may lead to problems if genes which are preserved acrossed many functionally different signaling complexes are found highly expressed or correlated with features in your data set.
+#' @param counts The counts matrix for the data. If a Seurat object is provided this will be ignored. This is only used to threshold receptors on dropout.
+#' @param rec_min_thresh Minimum expression level of receptors by cell. Default is 0.025 or 2.5% of all cells in the data set. The lower this threshold the more likely pearson correlation will lead to fasle positives.
 #' @return A domino object.
 #' @export
+#'
 create_domino = function(signaling_db, features, ser = NULL, z_scores = NULL, 
-    clusters = NULL, df = NULL, gene_conv = NULL, verbose = TRUE, use_complexes = TRUE){
+    clusters = NULL, df = NULL, gene_conv = NULL, verbose = TRUE, 
+    use_complexes = TRUE, counts = NULL, rec_min_thresh = .025){
     dom = domino()
     dom@misc[['tar_lr_cols']] = c('R.orig', 'L.orig')
     dom@misc[['create']] = TRUE
@@ -160,6 +164,7 @@ create_domino = function(signaling_db, features, ser = NULL, z_scores = NULL,
     if(!is.null(ser)){
         z_scores = ser@assays$RNA@scale.data
         clusters = ser@active.ident
+        counts = ser@assays$RNA@counts
     }
 
     dom@z_scores = z_scores
@@ -215,7 +220,9 @@ create_domino = function(signaling_db, features, ser = NULL, z_scores = NULL,
 
     # Calculate correlation matrix between features and receptors.
     all_receptors = unique(names(dom@linkages$rec_lig))
-    ser_receptors = intersect(rownames(dom@z_scores), all_receptors)
+    zero_sum = Matrix::rowSums(counts == 0)
+    keeps = which(zero_sum < .975*ncol(counts))
+    ser_receptors = intersect(names(keeps), all_receptors)
     rho = matrix(0, nrow = length(ser_receptors), ncol = nrow(dom@features))
     rownames(rho) = ser_receptors
     colnames(rho) = rownames(dom@features)
