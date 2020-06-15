@@ -90,7 +90,16 @@ build_domino = function(dom, max_tf_per_clust = 5, min_tf_pval = .01,
         colnames(cl_sig_mat) = colnames(signaling)
         rownames(cl_sig_mat) = inc_ligs
         for(c2 in levels(dom@clusters)){
-            sig = rowMeans(dom@z_scores[inc_ligs, which(dom@clusters == c2)])
+            n_cell = length(which(dom@clusters == c2))
+            if(n_cell > 1){
+                sig = rowMeans(dom@z_scores[inc_ligs, 
+                    which(dom@clusters == c2)])
+            } else if(n_cell == 1){
+                sig = dom@z_scores[inc_ligs, which(dom@clusters == c2)]
+            } else {
+                sig = rep(0, length(inc_ligs))
+                names(sig) = inc_ligs
+            }
             sig[which(sig < 0)] = 0
             cl_sig_mat[,paste0('L_', c2)] = sig
         }
