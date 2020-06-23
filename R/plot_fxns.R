@@ -1,6 +1,6 @@
 #' Create a network heatmap
 #' 
-#' Creates a network heatmap using NMF::aheatmap. Alternatively, the network 
+#' Creates a heatmap of the signaling network. Alternatively, the network 
 #' matrix can be accessed directly in the signaling slot of a domino object.
 #' 
 #' @param dom A domino object with network built (build_domino)
@@ -17,6 +17,10 @@ signaling_heatmap = function(dom, clusts = NULL, min_thresh = -Inf, max_thresh =
     if(!dom@misc[['build']]){
         stop('Please run domino_build prior to generate signaling network.')
     }
+    if(!length(dom@clusters)){
+        stop("This domino object wasn't built with clusters so intercluster signaling cannot be generated.")
+    }
+
     mat = dom@signaling
     if(!is.null(clusts)){
         mat = mat[paste0('R_', clusts), paste0('L_', clusts)]
@@ -67,6 +71,9 @@ incoming_signaling_heatmap = function(dom,  rec_clust, min_thresh = -Inf,
     max_thresh = Inf, scale = 'none', normalize = 'none', title = TRUE, ...){
     if(!dom@misc[['build']]){
         stop('Please run domino_build prior to generate signaling network.')
+    }
+    if(!length(dom@clusters)){
+        stop("This domino object wasn't build with clusters so cluster specific expression is not possible.")
     }
     mat = dom@cl_signaling_matrices[[rec_clust]]
     if(dim(mat)[1] == 0){
@@ -124,6 +131,9 @@ incoming_signaling_heatmap = function(dom,  rec_clust, min_thresh = -Inf,
 signaling_network = function(dom,  cols = NULL, edge_weight = .3, clusts = NULL, 
     min_thresh = -Inf, max_thresh = Inf, normalize = 'none', scale = 'sq', 
     layout = 'circle', scale_by = 'rec_sig', vert_scale = 3, ...){
+    if(!length(dom@clusters)){
+        stop("This domino object was not built with clusters so there is no intercluster signaling.")
+    }
     if(!dom@misc[['build']]){
         stop('Please build a signaling network with domino_build prior to plotting.')
     }
@@ -242,49 +252,57 @@ signaling_network = function(dom,  cols = NULL, edge_weight = .3, clusts = NULL,
     plot(graph, layout = l, ...)
 }
 
-#' Creates a gene associate network
+#' Creates a gene association network
 #' 
 #' Creates a gene association network for genes from a given cluster. The 
 #' selected cluster acts as the receptor for the gene association network, so
 #' only ligands, receptors, and features associated with the receptor cluster
-#' will be included in the plot. For cases where SCENIC was used and 
-#' transcription factor modules were provided during domino object creation
-#' transcription factor targets will also be included.
+#' will be included in the plot.
 #' 
 #' @param dom A domino object with network built (build_domino)
-#' @param clust The receptor cluster to create the gene association network for.
-#' @param cols A named vector of colors to color vertices. Values must be colors and names must be vertices (ie. a specific receptor, ligand, feature, or feature target). If class_cols is also provided then this vector will overwrite class colors for vertices in the data set.
+#' @param clust The receptor cluster to create the gene association network for. A vector of clusters may be provided.
 #' @param class_cols A named vector of colors to color classes of vertices. Values must be colors and names must be classes ('rec', 'lig', and 'feat' for receptors, ligands, and features.). 
 #' @param lig_scale FALSE or a numeric value to scale the size of ligand vertices based on z-scored expression in the data set.
 #' @param layout Type of layout to use. Options are 'grid', 'random', 'sphere', 'circle', 'fr' for Fruchterman-Reingold force directed layout, and 'kk' for Kamada Kawai for directed layout.
 #' @param ... Other parameters to pass to plot() with an igraph object. See igraph manual for options.
 #' @export
 #' 
-gene_network = function(dom, clust, cols = NULL, class_cols = c(lig = '#FF685F', 
+gene_network = function(dom, clust = NULL, class_cols = c(lig = '#FF685F', 
     rec = '#47a7ff', feat = '#39C740'), lig_scale = 1, layout = 'grid', 
     ...){
-
     if(!dom@misc[['build']]){
-        stop('Please build a signaling network with domino_build prior to plotting.')
+        warning('Please build a signaling network with domino_build prior to plotting.')
     }
-    # Get connections between TF and recs
-    tfs = c()
-    cl_with_signaling = c()
-    for(cl in as.character(clust)){
-        # Check if signaling exists for target cluster
-        mat = dom@cl_signaling_matrices[[cl]]
-        if(dim(mat)[1] == 0){
-            print(paste('No signaling found for', cl, 'under build parameters.'))
-            next()
+    if(!length(dom@clusters)){
+        warning("This domino object wasn't build with clusters. The global signaling network will be shown.")
+        lig_scale = FALSE
+    }
+
+    # Get connections between TF and recs for clusters
+    if(length(dom@clusters)){
+        all_sums = c()
+        tfs = c()
+        cl_with_signaling = c()
+        for(cl in as.character(clust)){
+            # Check if signaling exists for target cluster
+            mat = dom@cl_signaling_matrices[[cl]]
+            if(dim(mat)[1] == 0){
+                print(paste('No signaling found for', cl, 'under build parameters.'))
+                next()
+            }
+            all_sums = c(all_sums, rowSums(mat))
+            tfs = c(tfs, dom@linkages$clust_tf[[cl]])
+            cl_with_signaling = c(cl_with_signaling, cl)
         }
-        tfs = c(tfs, dom@linkages$clust_tf[[cl]])
-        cl_with_signaling = c(cl_with_signaling, cl)
-    }
+        all_sums = all_sums[-which(duplicated(names(all_sums)))]
     
-    # If no signaling for target clusters then don't do anything
-    if(length(tfs) == 0){
-        print('No signaling found for provided clusters')
-        return()
+        # If no signaling for target clusters then don't do anything
+        if(length(tfs) == 0){
+            print('No signaling found for provided clusters')
+            return()
+        }
+    } else {
+        tfs = dom@linkages$clust_tf[['clust']]
     }
 
     links = c()
@@ -304,9 +322,13 @@ gene_network = function(dom, clust, cols = NULL, class_cols = c(lig = '#FF685F',
     all_tfs = unique(all_tfs)
 
     # Recs to ligs
-    allowed_ligs = c()
-    for(cl in cl_with_signaling){
-        allowed_ligs = rownames(dom@cl_signaling_matrices[[cl]])
+    if(length(dom@clusters)){
+        allowed_ligs = c()
+        for(cl in cl_with_signaling){
+            allowed_ligs = rownames(dom@cl_signaling_matrices[[cl]])
+        }
+    } else {
+        allowed_ligs = rownames(dom@z_scores)
     }
     all_ligs = c()
     for(rec in all_recs){
@@ -339,8 +361,7 @@ gene_network = function(dom, clust, cols = NULL, class_cols = c(lig = '#FF685F',
     v_size = rep(10, length(igraph::V(graph)))
     names(v_size) = names(igraph::V(graph))
     if(lig_scale){
-        lig_weights = rowSums(mat)
-        v_size[names(lig_weights)] = 10*lig_weights*lig_scale
+        v_size[names(all_sums)] = 10*all_sums*lig_scale
     }
     names(v_size) = c()
     igraph::V(graph)$size = v_size
@@ -403,6 +424,10 @@ gene_network = function(dom, clust, cols = NULL, class_cols = c(lig = '#FF685F',
 feat_heatmap = function(dom, feats = NULL, bool = TRUE, bool_thresh = .2, 
     title = TRUE, norm = FALSE, cols = NULL, ann_cols = TRUE, min_thresh = NULL, 
     max_thresh = NULL, ...){
+    if(!length(dom@clusters)){
+        warning("This domino object wasn't build with clusters. Cells will not be ordered.")
+        ann_cols = FALSE
+    }
     mat = dom@features
     cl = dom@clusters
     cl = sort(cl)
@@ -452,8 +477,10 @@ feat_heatmap = function(dom, feats = NULL, bool = TRUE, bool_thresh = .2,
         feats = rownames(mat)
     }
 
-    mat = mat[feats, names(cl)]
-
+    if(length(cl)){
+        mat = mat[feats, names(cl)]
+    }
+    
     if(ann_cols){
         ac = list('Cluster' = cl)
         names(ac[[1]]) = c()
@@ -475,10 +502,10 @@ feat_heatmap = function(dom, feats = NULL, bool = TRUE, bool_thresh = .2,
     }
 }
 
-#' Create a heatmap of features organized by cluster
+#' Create a heatmap of correlation between receptors and transcription factors
 #' 
-#' Creates a heatmap of feature expression (typically transcription factor
-#' activation scores) by cells organized by cluster.
+#' Creates a heatmap of correlation values between receptors and transcription 
+#' factors.
 #' 
 #' @param dom A domino object with network built (build_domino)
 #' @param bool A boolean indicating whether the heatmap should be continuous or boolean. If boolean then bool_thresh will be used to determine how to define activity as positive or negative.

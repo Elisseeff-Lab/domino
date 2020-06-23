@@ -14,6 +14,9 @@
 #' @export 
 #' 
 rename_clusters = function(dom, clust_conv){
+    if(is.null(clusters)){
+        stop("There are no clusters in this domino object")
+    }
     if(dom@misc$create){
         dom@clusters = plyr::revalue(dom@clusters, clust_conv)
         colnames(dom@clust_de) = clust_conv
@@ -47,6 +50,9 @@ rename_clusters = function(dom, clust_conv){
 collate_network_items = function(dom, clusters = NULL, return = NULL){
     if(!dom@misc[['build']]){
         stop('Please run domino_build prior to generate signaling network.')
+    }
+    if(is.null(clusters) & is.null(dom@clusters)){
+        stop("There are no clusters in this domino object. Please provide clusters.")
     }
     if(is.null(clusters)){clusters = levels(dom@clusters)}
 

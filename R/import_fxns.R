@@ -11,30 +11,38 @@
 #' @param signaling_db Path to directory of signaling database directory. The directory must include genes.csv, proteins.csv, interactions.csv, and complexes.csv formated according to cellphonedb2 syntax.
 #' @param features Either a path to a csv containing cell level features of interest (ie. the auc matrix from pySCENIC) or named matrix with cells as columns and features as rows.
 #' @param ser A Seurat object containing scaled RNA expression data in the RNA assay slot and cluster identity. Either a ser object OR z_scores and clusters must be provided. If ser is present z_scores and clusters will be ignored.
+#' @param counts The counts matrix for the data. If a Seurat object is provided this will be ignored. This is only used to threshold receptors on dropout.
 #' @param z_scores A matrix containing z-scored expression data for all cells with cells as columns and features as rows. Either z_scores and clusters must be provided OR a ser object. If ser is present z_scores and clusters will be ignored.
 #' @param clusters A named factor containing cell cluster with names as cells. Either clusters and z_scores OR ser must be provided. If ser is present z_scores and clusters will be ignored.
+#' @param use_clusters Boolean indicating whether to use the clusters from a Seurat object. If a Seurat object is not provided then this parameter is ignored.
 #' @param df Optional. Either a path to discovered motifs from pySCENIC as a csv file or a data frame following the format of df.csv from pySCENIC
 #' @param gene_conv Optional. Vector of length two containing some combination of 'ENSMUSG', 'ENSG', 'MGI', or 'HGNC' where the first vector is the current gene format in the database and the second is the gene format in the data set. If present, the function will use biomaRt to convert the database to the data sets gene format.
 #' @param verbose Boolean indicating whether or not to print progress during computation.
 #' @param use_complexes Boolean indicating whether you wish to use receptor/ligand complexes in the receptor ligand signaling database. This may lead to problems if genes which are preserved acrossed many functionally different signaling complexes are found highly expressed or correlated with features in your data set.
-#' @param counts The counts matrix for the data. If a Seurat object is provided this will be ignored. This is only used to threshold receptors on dropout.
 #' @param rec_min_thresh Minimum expression level of receptors by cell. Default is 0.025 or 2.5% of all cells in the data set. The lower this threshold the more likely pearson correlation will lead to fasle positives.
+#' @param tf_selection_method Selection of which method to target transcription factors. If 'clusters' then differential expression for clusters will be calculated. If 'variable' then the most variable transcription factors will be selected. If 'all' then all transcription factors in the feature matrix will be used. Default is 'clusters'. Note that if you wish to use clusters for intercellular signaling downstream to MUST choose clusters.
+#' @param tf_variance_quantile What proportion of variable features to take if using variance to threshold features. Default is 0.5. Higher numbers will keep more features. Ignored if tf_selection_method is not 'variable'
 #' @return A domino object.
 #' @export
 #'
-create_domino = function(signaling_db, features, ser = NULL, z_scores = NULL, 
-    clusters = NULL, df = NULL, gene_conv = NULL, verbose = TRUE, 
-    use_complexes = TRUE, counts = NULL, rec_min_thresh = .025){
+create_domino = function(signaling_db, features, ser = NULL, counts = NULL, 
+    z_scores = NULL, clusters = NULL, use_clusters = TRUE, df = NULL, 
+    gene_conv = NULL, verbose = TRUE, use_complexes = TRUE, 
+    rec_min_thresh = .025, tf_selection_method = 'clusters', 
+    tf_variance_quantile = .5){
     dom = domino()
     dom@misc[['tar_lr_cols']] = c('R.orig', 'L.orig')
     dom@misc[['create']] = TRUE
     dom@misc[['build']] = FALSE
     dom@misc[['build_vars']] = NULL
-    if(!is.null(ser) & (!is.null(clusters) | !is.null(z_scores))){
-        warning("Ser and z_score or clusters provided. Defaulting to ser.")
+    if(!is.null(ser) & (!is.null(clusters) | !is.null(z_scores) | !is.null(counts))){
+        warning("Ser and z_score, clusters, or counts provided. Defaulting to ser.")
     }
-    if(is.null(ser) & (is.null(clusters) | is.null(z_scores))){
+    if(is.null(ser) & (is.null(clusters) | is.null(z_scores) | is.null(counts))){
         stop("Either ser or clusters and z_scores must be provided")
+    }
+    if(!(tf_selection_method %in% c('all', 'clusters', 'variable'))){
+        stop("tf_selection_method must be one of all, clusters, or variable")
     }
 
     # Read in lr db info
@@ -160,15 +168,19 @@ create_domino = function(signaling_db, features, ser = NULL, z_scores = NULL,
     dom@misc[['rl_map']] = rl_map
 
     # Get z-score and cluster info
-    if(verbose){print('Getting z_scores and clusters')}
+    if(verbose){print('Getting z_scores, clusters, and counts')}
     if(!is.null(ser)){
         z_scores = ser@assays$RNA@scale.data
-        clusters = ser@active.ident
+        if(use_clusters){
+            clusters = ser@active.ident
+        }
         counts = ser@assays$RNA@counts
     }
 
     dom@z_scores = z_scores
-    dom@clusters = clusters
+    if(!is.null(clusters)){
+        dom@clusters = clusters
+    }
 
     # Read in features matrix and calculate differential expression by cluster.
     if(class(features) == 'character'){
@@ -177,28 +189,44 @@ create_domino = function(signaling_db, features, ser = NULL, z_scores = NULL,
     features = features[, colnames(dom@z_scores)]
     dom@features = as.matrix(features)
 
-    p_vals = matrix(1.0, nrow = nrow(features), 
-        ncol = length(levels(dom@clusters)))
-    rownames(p_vals) = rownames(features)
-    colnames(p_vals) = levels(dom@clusters)
+    if(tf_selection_method == 'clusters'){
+        p_vals = matrix(1.0, nrow = nrow(features), 
+            ncol = length(levels(dom@clusters)))
+        rownames(p_vals) = rownames(features)
+        colnames(p_vals) = levels(dom@clusters)
 
-    if(verbose){
-        print('Calculating feature enrichment by cluster')
-        clust_n = length(levels(dom@clusters))
-    }
-    for(clust in levels(dom@clusters)){
         if(verbose){
-            cur = which(levels(dom@clusters) == clust)
-            print(paste0(cur, ' of ', clust_n))
+            print('Calculating feature enrichment by cluster')
+            clust_n = length(levels(dom@clusters))
         }
-        cells = which(dom@clusters == clust)
-        for(feat in rownames(dom@features)){
-            p_vals[feat, clust] = wilcox.test(dom@features[feat, cells], 
-                dom@features[feat, -cells], alternative = 'g')$p.value
+        for(clust in levels(dom@clusters)){
+            if(verbose){
+                cur = which(levels(dom@clusters) == clust)
+                print(paste0(cur, ' of ', clust_n))
+            }
+            cells = which(dom@clusters == clust)
+            for(feat in rownames(dom@features)){
+                p_vals[feat, clust] = wilcox.test(dom@features[feat, cells], 
+                    dom@features[feat, -cells], alternative = 'g')$p.value
+            }
         }
+
+        dom@clust_de = p_vals
     }
 
-    dom@clust_de = p_vals
+    if(tf_selection_method == 'all'){
+        dom@clusters = factor()
+    }
+
+    if(tf_selection_method == 'variable'){
+        dom@clusters = factor()
+        variances = apply(dom@features, 1, function(x){
+            sd(x)/mean(x)
+        })
+        keep_n = length(variances) * tf_variance_quantile
+        keep_id = which(rank(variances) > keep_n)
+        dom@features = dom@features[names(keep_id),]
+    }
 
     # If present, read in and process df
     if(class(df) == 'character'){
