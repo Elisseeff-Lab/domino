@@ -2,12 +2,11 @@
 % Please edit documentation in R/plot_fxns.R
 \name{gene_network}
 \alias{gene_network}
-\title{Creates a gene associate network}
+\title{Creates a gene association network}
 \usage{
 gene_network(
   dom,
-  clust,
-  cols = NULL,
+  clust = NULL,
   class_cols = c(lig = "#FF685F", rec = "#47a7ff", feat = "#39C740"),
   lig_scale = 1,
   layout = "grid",
@@ -17,9 +16,7 @@ gene_network(
 \arguments{
 \item{dom}{A domino object with network built (build_domino)}
 
-\item{clust}{The receptor cluster to create the gene association network for.}
-
-\item{cols}{A named vector of colors to color vertices. Values must be colors and names must be vertices (ie. a specific receptor, ligand, feature, or feature target). If class_cols is also provided then this vector will overwrite class colors for vertices in the data set.}
+\item{clust}{The receptor cluster to create the gene association network for. A vector of clusters may be provided.}
 
 \item{class_cols}{A named vector of colors to color classes of vertices. Values must be colors and names must be classes ('rec', 'lig', and 'feat' for receptors, ligands, and features.).}
 
@@ -33,7 +30,5 @@ gene_network(
 Creates a gene association network for genes from a given cluster. The 
 selected cluster acts as the receptor for the gene association network, so
 only ligands, receptors, and features associated with the receptor cluster
-will be included in the plot. For cases where SCENIC was used and 
-transcription factor modules were provided during domino object creation
-transcription factor targets will also be included.
+will be included in the plot.
 }

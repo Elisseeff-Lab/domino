@@ -30,6 +30,6 @@ signaling_heatmap(
 \item{...}{Other parameters to pass to NMF::aheatmap}
 }
 \description{
-Creates a network heatmap using NMF::aheatmap. Alternatively, the network 
+Creates a heatmap of the signaling network. Alternatively, the network 
 matrix can be accessed directly in the signaling slot of a domino object.
 }

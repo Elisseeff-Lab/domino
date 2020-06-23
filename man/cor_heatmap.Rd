@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_fxns.R
 \name{cor_heatmap}
 \alias{cor_heatmap}
-\title{Create a heatmap of features organized by cluster}
+\title{Create a heatmap of correlation between receptors and transcription factors}
 \usage{
 cor_heatmap(
   dom,
@@ -33,6 +33,6 @@ cor_heatmap(
 \item{...}{Other parameters to pass to NMF::aheatmap. Note that to use the 'main' parameter of NMF::aheatmap you must set title = FALSE and to use 'annCol' or 'annColors' ann_cols must be FALSE.}
 }
 \description{
-Creates a heatmap of feature expression (typically transcription factor
-activation scores) by cells organized by cluster.
+Creates a heatmap of correlation values between receptors and transcription 
+factors.
 }
