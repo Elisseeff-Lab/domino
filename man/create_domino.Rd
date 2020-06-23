@@ -8,14 +8,17 @@ create_domino(
   signaling_db,
   features,
   ser = NULL,
+  counts = NULL,
   z_scores = NULL,
   clusters = NULL,
+  use_clusters = TRUE,
   df = NULL,
   gene_conv = NULL,
   verbose = TRUE,
   use_complexes = TRUE,
-  counts = NULL,
-  rec_min_thresh = 0.025
+  rec_min_thresh = 0.025,
+  tf_selection_method = "clusters",
+  tf_variance_quantile = 0.5
 )
 }
 \arguments{
@@ -25,9 +28,13 @@ create_domino(
 
 \item{ser}{A Seurat object containing scaled RNA expression data in the RNA assay slot and cluster identity. Either a ser object OR z_scores and clusters must be provided. If ser is present z_scores and clusters will be ignored.}
 
+\item{counts}{The counts matrix for the data. If a Seurat object is provided this will be ignored. This is only used to threshold receptors on dropout.}
+
 \item{z_scores}{A matrix containing z-scored expression data for all cells with cells as columns and features as rows. Either z_scores and clusters must be provided OR a ser object. If ser is present z_scores and clusters will be ignored.}
 
 \item{clusters}{A named factor containing cell cluster with names as cells. Either clusters and z_scores OR ser must be provided. If ser is present z_scores and clusters will be ignored.}
+
+\item{use_clusters}{Boolean indicating whether to use the clusters from a Seurat object. If a Seurat object is not provided then this parameter is ignored.}
 
 \item{df}{Optional. Either a path to discovered motifs from pySCENIC as a csv file or a data frame following the format of df.csv from pySCENIC}
 
@@ -37,9 +44,11 @@ create_domino(
 
 \item{use_complexes}{Boolean indicating whether you wish to use receptor/ligand complexes in the receptor ligand signaling database. This may lead to problems if genes which are preserved acrossed many functionally different signaling complexes are found highly expressed or correlated with features in your data set.}
 
-\item{counts}{The counts matrix for the data. If a Seurat object is provided this will be ignored. This is only used to threshold receptors on dropout.}
+\item{rec_min_thresh}{Minimum expression level of receptors by cell. Default is 0.025 or 2.5 percent of all cells in the data set. The lower this threshold the more likely pearson correlation will lead to fasle positives.}
 
-\item{rec_min_thresh}{Minimum expression level of receptors by cell. Default is 0.025 or 2.5% of all cells in the data set. The lower this threshold the more likely pearson correlation will lead to fasle positives.}
+\item{tf_selection_method}{Selection of which method to target transcription factors. If 'clusters' then differential expression for clusters will be calculated. If 'variable' then the most variable transcription factors will be selected. If 'all' then all transcription factors in the feature matrix will be used. Default is 'clusters'. Note that if you wish to use clusters for intercellular signaling downstream to MUST choose clusters.}
+
+\item{tf_variance_quantile}{What proportion of variable features to take if using variance to threshold features. Default is 0.5. Higher numbers will keep more features. Ignored if tf_selection_method is not 'variable'}
 }
 \value{
 A domino object.
