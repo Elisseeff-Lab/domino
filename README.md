@@ -111,26 +111,31 @@ Now we just need to visualize the signaling network. First, we visualize the clu
     signaling_network(pbmc_dom, edge_weight = .5, max_thresh = 2.5)
     
 ![Intercluster signaling network](https://github.com/Chris-Cherry/domino/blob/cc_working/readme_images/intercluster_network.png)
+
 By default, the nodes are scaled based on expression of ligands targetting them. They are larger if cells in the data set are expressing high amounts of ligands targetting the cluster. The edges are weighted based on the strength of signaling between two specific clusters. The color of the edge will match the color of the ligand cluster. For example, in the network above the teal line connecting CD8 T cells and DCs represents signaling *from* T cells *to* DCs. In order to determine the ligand-receptor-TF signaling patterns involved in that, we can zoom in on the gene network in the DCs. 
 
     gene_network(pbmc_dom, clust = 'DC', layout = 'fr')
     
 ![DC gene network](https://github.com/Chris-Cherry/domino/blob/cc_working/readme_images/DC_network.png)
+
 By default red nodes are ligands, blue are receptors, and green are transcription factors. Now lets look at the expression of the ligands that are targetting the DCs.
 
     incoming_signaling_heatmap(pbmc_dom, rec_clust = 'DC', max_thresh = 2.5)
 
 ![DC incoming signaling heatmap](https://github.com/Chris-Cherry/domino/blob/cc_working/readme_images/DC_signaling_heatmap.png)
+
 It looks like CCL5 is a major component of the signaling from T cells to DCs. From the gene network above it looks like the CCL5 is predicted to target LILRB1 and would activate IRF4 and IRF8 in the DCs. We can investigate some expression patterns associated with these linkages. First, lets generate a heatmap of the transcription factor activation scores.
 
     feat_heatmap(pbmc_dom, norm = TRUE, bool = FALSE)
 
 ![Transcription factor activation score heatmap](https://github.com/Chris-Cherry/domino/blob/cc_working/readme_images/tfas_heatmap.png)
+
 And to look at the connections between transcription factors and receptores we can create a heatmap of correlations between the two.
 
     cor_heatmap(pbmc_dom, bool = FALSE, mark_connections = TRUE)
     
 ![Rec-TF correlation heatmap](https://github.com/Chris-Cherry/domino/blob/cc_working/readme_images/cor_heatmap.png)
+
 Finally, you can visualize the entire tf-r-l network by including all clusters with gene_network. Note that the function will return the igraph object used to make the plot. This is important if you use a force directed layout and you would like to make two versions of the same plot. Here we will use default settings to allow us to see node labels and then reformat the plot with igraph options to make it less cluttered for smaller formats.
 
     info = gene_network(pbmc_dom, clust = levels(pbmc_dom@clusters), 
