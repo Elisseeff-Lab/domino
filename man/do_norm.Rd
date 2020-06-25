@@ -4,10 +4,10 @@
 \alias{do_norm}
 \title{Normalize a matrix to its max value by row or column}
 \usage{
-do_norm(matrix, dir)
+do_norm(mat, dir)
 }
 \arguments{
-\item{matrix}{The matrix to be normalized}
+\item{mat}{The matrix to be normalized}
 
 \item{dir}{The direction to normalize the matrix c('row', 'col')}
 }

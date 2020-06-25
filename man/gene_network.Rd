@@ -8,6 +8,7 @@ gene_network(
   dom,
   clust = NULL,
   class_cols = c(lig = "#FF685F", rec = "#47a7ff", feat = "#39C740"),
+  cols = NULL,
   lig_scale = 1,
   layout = "grid",
   ...
@@ -18,7 +19,9 @@ gene_network(
 
 \item{clust}{The receptor cluster to create the gene association network for. A vector of clusters may be provided.}
 
-\item{class_cols}{A named vector of colors to color classes of vertices. Values must be colors and names must be classes ('rec', 'lig', and 'feat' for receptors, ligands, and features.).}
+\item{class_cols}{A named vector of colors used to color classes of vertices. Values must be colors and names must be classes ('rec', 'lig', and 'feat' for receptors, ligands, and features.).}
+
+\item{cols}{A named vector of colors for individual genes. Genes not included in this vector will be colored according to class_cols.}
 
 \item{lig_scale}{FALSE or a numeric value to scale the size of ligand vertices based on z-scored expression in the data set.}
 
