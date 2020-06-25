@@ -261,15 +261,16 @@ signaling_network = function(dom,  cols = NULL, edge_weight = .3, clusts = NULL,
 #' 
 #' @param dom A domino object with network built (build_domino)
 #' @param clust The receptor cluster to create the gene association network for. A vector of clusters may be provided.
-#' @param class_cols A named vector of colors to color classes of vertices. Values must be colors and names must be classes ('rec', 'lig', and 'feat' for receptors, ligands, and features.). 
+#' @param class_cols A named vector of colors used to color classes of vertices. Values must be colors and names must be classes ('rec', 'lig', and 'feat' for receptors, ligands, and features.). 
+#' @param cols A named vector of colors for individual genes. Genes not included in this vector will be colored according to class_cols.
 #' @param lig_scale FALSE or a numeric value to scale the size of ligand vertices based on z-scored expression in the data set.
 #' @param layout Type of layout to use. Options are 'grid', 'random', 'sphere', 'circle', 'fr' for Fruchterman-Reingold force directed layout, and 'kk' for Kamada Kawai for directed layout.
 #' @param ... Other parameters to pass to plot() with an igraph object. See igraph manual for options.
 #' @export
 #' 
 gene_network = function(dom, clust = NULL, class_cols = c(lig = '#FF685F', 
-    rec = '#47a7ff', feat = '#39C740'), lig_scale = 1, layout = 'grid', 
-    ...){
+    rec = '#47a7ff', feat = '#39C740'), cols = NULL, lig_scale = 1, 
+    layout = 'grid', ...){
     if(!dom@misc[['build']]){
         warning('Please build a signaling network with domino_build prior to plotting.')
     }
@@ -589,10 +590,10 @@ cor_heatmap = function(dom, bool = TRUE, bool_thresh = .15, title = TRUE,
 #' 
 #' Normalizes a matrix to its max value by row or column
 #' 
-#' @param matrix The matrix to be normalized
+#' @param mat The matrix to be normalized
 #' @param dir The direction to normalize the matrix c('row', 'col') 
 #' @return Normalized matrix in the direction specified.
-do_norm = function(matrix, dir){
+do_norm = function(mat, dir){
     if(dir == 'row'){
         mat = t(apply(mat, 1, function(x){x/max(x)}))
         return(mat)
