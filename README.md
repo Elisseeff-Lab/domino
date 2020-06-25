@@ -74,7 +74,8 @@ First we will need to get some data. [Here](https://www.dropbox.com/s/63gnlw45jf
 The first step is to generate transcription factor activation scores with SCENIC. To following along, you will need to have created a Docker scratch directory and downloaded the necessary HGNC reference files as described in the **Setting up SCENIC** section above. First we will need to write the counts file into the Docker temporary directory from R.
 
     ser = readRDS('pbmc3k_final.rds')
-    write.table(t(as.matrix(ser@assays$RNA@counts)), '~/docker_scratch/counts.tsv', sep = '\t', col.names = NA)
+    write.table(t(as.matrix(ser@assays$RNA@counts)), '~/docker_scratch/counts.tsv', 
+        sep = '\t', col.names = NA)
     
 Now we simply need to run the SCENIC bash script for data with MGI symbols. For this data set on a 32-core EPYC Rome 7002 running this step takes 40m. If you would like to skip this step, the necessary output files are provided [here](https://www.dropbox.com/s/m4wnir4x73vpfhe/basic_analysis_scenic_outputs.zip?dl=0). Either way, move the files into your working directory by terminal or file explorer.
 
@@ -90,49 +91,55 @@ Now that we have the SCENIC data we can run domino. For example's sake, we will 
     counts = ser@assays$RNA@counts
     z_scores = ser@assays$RNA@scale.data
     clusters = ser@active.ident
-    auc = t(read.table('auc_mtx.csv', header = TRUE, row.names = 1, stringsAsFactors = FALSE, sep = ','))
+    auc = t(read.table('auc_mtx.csv', header = TRUE, row.names = 1, 
+        stringsAsFactors = FALSE, sep = ','))
     
 This command generates the domino object and prepares it (compiles the LR database, calculates cluster TF enrichment, and calculates TF - R correlation). Make sure you put the correct directory for the cellphonedb data sets in.
 
-    pbmc_dom = create_domino(signaling_db = '~/work/ref/human/cpdb/', features = auc, counts = counts, z_scores = z_scores, clusters = clusters, df = 'regulons.csv')
+    pbmc_dom = create_domino(signaling_db = '~/work/ref/human/cpdb/', 
+        features = auc, counts = counts, z_scores = z_scores, clusters = clusters, 
+        df = 'regulons.csv')
     
 ##### Building the signaling network and plotting options
 There are four major parameters you can play with when buidling the signaling network, two for selecting TFs for each cluster and two for connecting TFs to recs. min_tf_pval is the minimum p val for a TF to be assigned to a cluster and max_tf_per_clust is the maximum number of transcription factors allowed in each cluster. The same patter is true for rec_tf_cor_threshold and max_rec_per_tf except the thresholding is on the Pearon correlation between receptor and transcription factor. Building the signaling network takes very little time so feel free to play around with these values. In general we prefer to select a pval and cor threshold such that a good portion of the TFs and recs are not being trimmed by the maximum number thresholds.
 
-    pbmc_dom = build_domino(pbmc_dom, max_tf_per_clust = 10, min_tf_pval = .001, max_rec_per_tf = 10, rec_tf_cor_threshold = .25)
+    pbmc_dom = build_domino(pbmc_dom, max_tf_per_clust = 10, 
+        min_tf_pval = .001, max_rec_per_tf = 10, rec_tf_cor_threshold = .25)
 
 Now we just need to visualize the signaling network. First, we visualize the cluster-cluster signaling with signaling_network. We are using a max threshold here (max_thresh) because the Mk cluster's expression of ITGA2B is so much higher than the other clusters/ligands it drowns other relevant signaling out. Give it a shot without the max_thresh and you'll see what I mean.
 
     signaling_network(pbmc_dom, edge_weight = .5, max_thresh = 2.5)
     
-![Intercluster signaling network](https://github.com/Chris-Cherry/domino/readme_images/intercluster_network.png)
+![Intercluster signaling network](https://github.com/Chris-Cherry/domino/blob/cc_working/readme_images/intercluster_network.png)
 By default, the nodes are scaled based on expression of ligands targetting them. They are larger if cells in the data set are expressing high amounts of ligands targetting the cluster. The edges are weighted based on the strength of signaling between two specific clusters. The color of the edge will match the color of the ligand cluster. For example, in the network above the teal line connecting CD8 T cells and DCs represents signaling *from* T cells *to* DCs. In order to determine the ligand-receptor-TF signaling patterns involved in that, we can zoom in on the gene network in the DCs. 
 
     gene_network(pbmc_dom, clust = 'DC', layout = 'fr')
     
-![DC gene network](https://github.com/Chris-Cherry/domino/readme_images/DC_network.png)
+![DC gene network](https://github.com/Chris-Cherry/domino/blob/cc_working/readme_images/DC_network.png)
 By default red nodes are ligands, blue are receptors, and green are transcription factors. Now lets look at the expression of the ligands that are targetting the DCs.
 
     incoming_signaling_heatmap(pbmc_dom, rec_clust = 'DC', max_thresh = 2.5)
 
-![DC incoming signaling heatmap](https://github.com/Chris-Cherry/domino/readme_images/DC_network.png)
+![DC incoming signaling heatmap](https://github.com/Chris-Cherry/domino/blob/cc_working/readme_images/DC_signaling_heatmap.png)
 It looks like CCL5 is a major component of the signaling from T cells to DCs. From the gene network above it looks like the CCL5 is predicted to target LILRB1 and would activate IRF4 and IRF8 in the DCs. We can investigate some expression patterns associated with these linkages. First, lets generate a heatmap of the transcription factor activation scores.
 
     feat_heatmap(pbmc_dom, norm = TRUE, bool = FALSE)
 
-![Transcription factor activation score heatmap](https://github.com/Chris-Cherry/domino/readme_images/tfas_heatmap.png)
+![Transcription factor activation score heatmap](https://github.com/Chris-Cherry/domino/blob/cc_working/readme_images/tfas_heatmap.png)
 And to look at the connections between transcription factors and receptores we can create a heatmap of correlations between the two.
 
     cor_heatmap(pbmc_dom, bool = FALSE, mark_connections = TRUE)
     
-![Rec-TF correlation heatmap](https://github.com/Chris-Cherry/domino/readme_images/cor_heatmap.png)
+![Rec-TF correlation heatmap](https://github.com/Chris-Cherry/domino/blob/cc_working/readme_images/cor_heatmap.png)
 Finally, you can visualize the entire tf-r-l network by including all clusters with gene_network. Note that the function will return the igraph object used to make the plot. This is important if you use a force directed layout and you would like to make two versions of the same plot. Here we will use default settings to allow us to see node labels and then reformat the plot with igraph options to make it less cluttered for smaller formats.
 
-    info = gene_network(pbmc_dom, clust = levels(pbmc_dom@clusters), lig_scale = FALSE, layout = 'fr')
-    plot(info$graph, layout = info$layout, vertex.size = 3, edge.color = 'grey', vertex.frame.color = 'black', vertex.label = NA)
+    info = gene_network(pbmc_dom, clust = levels(pbmc_dom@clusters), 
+        lig_scale = FALSE, layout = 'fr')
+    plot(info$graph, layout = info$layout, vertex.size = 3, edge.color = 'grey', 
+        vertex.frame.color = 'black', vertex.label = NA)
     
-![Default global network](https://github.com/Chris-Cherry/domino/readme_images/global_network_default.png)
-![Tweaked global network](https://github.com/Chris-Cherry/domino/readme_images/global_network_tweaked.png)
+![Default global network](https://github.com/Chris-Cherry/domino/blob/cc_working/readme_images/global_network_default.png)
+![Tweaked global network](https://github.com/Chris-Cherry/domino/blob/cc_working/readme_images/global_network_tweaked.png)
 
-Thanks for taking a look at our software. If you have any questions please feel to send us an email at jhe@jhu.edu or ccherry.6574@gmail.com and if you come across any bugs make sure to let us know [here]. 
+Thanks for taking a look at our software. If you have any questions please feel to send us an email at jhe@jhu.edu or ccherry.6574@gmail.com and if you come across any bugs make sure to let us know [here](https://github.com/Chris-Cherry/domino/issues). 
     
