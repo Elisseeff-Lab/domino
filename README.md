@@ -6,6 +6,7 @@ If you find Domino useful, please consider citing us.
 **Coming soon**
 
 And make sure to cite SCENIC if you use it for your transcription factor scores.
+
 Aibar, Sara, et al. "SCENIC: single-cell regulatory network inference and clustering." Nature methods 14.11 (2017): 1083-1086.
 
 ## Installation
