@@ -3,6 +3,7 @@
 export(build_domino)
 export(collate_network_items)
 export(cor_heatmap)
+export(cor_scatter)
 export(create_domino)
 export(feat_heatmap)
 export(gene_network)

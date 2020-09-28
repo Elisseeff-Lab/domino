@@ -331,6 +331,8 @@ gene_network = function(dom, clust = NULL, class_cols = c(lig = '#FF685F',
     } else {
         allowed_ligs = rownames(dom@z_scores)
     }
+
+    # Remove ligs not expressed in data set if desired
     all_ligs = c()
     for(rec in all_recs){
         ligs = dom@linkages$rec_lig[[rec]]
@@ -584,6 +586,35 @@ cor_heatmap = function(dom, bool = TRUE, bool_thresh = .15, title = TRUE,
     } else {
         NMF::aheatmap(mat, ...)
     }
+}
+
+#' Create a correlation plot between transcription factor activation score and receptor
+#' 
+#' Create a correlation plot between transcription factor activation score and receptor
+#' 
+#' @param dom A domino object with network built (build_domino)
+#' @param tf Target TF module for plotting with receptor
+#' @param rec Target receptor for plotting with TF
+#' @param remove_rec_dropout Whether to remove cells with zero expression for plot. This should match the same setting as in build_domino.
+#' @param ... Other parameters to pass to ggscatter.
+#' @export
+#' 
+cor_scatter = function(dom, tf, rec, remove_rec_dropout = TRUE, ...){
+    if(remove_rec_dropout){
+        keep_id = which(dom@counts[rec,] > 0)
+        rec_z_scores = dom@z_scores[rec, keep_id]
+        tar_tf_scores = dom@features[tf, keep_id]
+    } else {
+        rec_z_scores = dom@z_scores[rec,]
+        tar_tf_scores = dom@features[tf,]
+    }
+
+    dat = data.frame(rec = rec_z_scores, tf = tar_tf_scores)
+    ggpubr::ggscatter(dat, x = "rec", y = "tf", 
+          add = "reg.line", conf.int = FALSE, 
+          cor.coef = FALSE, cor.method = "pearson",
+          xlab = rec, ylab = tf, size = .25)
+
 }
 
 #' Normalize a matrix to its max value by row or column

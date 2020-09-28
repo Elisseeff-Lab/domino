@@ -6,6 +6,7 @@
 #' intermediates.
 #' 
 #' @slot db_info List of data sets from lr database.
+#' @slot counts Raw count gene expression data
 #' @slot z_scores Matrix of z-scored expression data with cells as columns
 #' @slot clusters Named factor with cluster identity of each cell
 #' @slot features Matrix of features to correlate receptor-ligand expression with. Cells are columns and features are rows.
@@ -26,6 +27,7 @@ domino <- setClass(
     slots = c(
         db_info = 'list',
         z_scores = 'matrix',
+        counts = 'AnyMatrix',
         clusters = 'factor',
         features = 'matrix',
         cor = 'matrix',
