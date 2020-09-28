@@ -19,7 +19,8 @@
 #' @param gene_conv Optional. Vector of length two containing some combination of 'ENSMUSG', 'ENSG', 'MGI', or 'HGNC' where the first vector is the current gene format in the database and the second is the gene format in the data set. If present, the function will use biomaRt to convert the database to the data sets gene format.
 #' @param verbose Boolean indicating whether or not to print progress during computation.
 #' @param use_complexes Boolean indicating whether you wish to use receptor/ligand complexes in the receptor ligand signaling database. This may lead to problems if genes which are preserved acrossed many functionally different signaling complexes are found highly expressed or correlated with features in your data set.
-#' @param rec_min_thresh Minimum expression level of receptors by cell. Default is 0.025 or 2.5 percent of all cells in the data set. The lower this threshold the more likely pearson correlation will lead to fasle positives.
+#' @param rec_min_thresh Minimum expression level of receptors by cell. Default is 0.025 or 2.5 percent of all cells in the data set. This is important when calculating correlation to connect receptors to transcription activation. If this threshold is too low then correlation calculations will proceed with very few cells with non-zero expression.
+#' @param remove_rec_dropout Whether to remove receptors with 0 expression counts when calculating correlations. This can reduce false positive correlation calculations when receptors have high dropout rates.
 #' @param tf_selection_method Selection of which method to target transcription factors. If 'clusters' then differential expression for clusters will be calculated. If 'variable' then the most variable transcription factors will be selected. If 'all' then all transcription factors in the feature matrix will be used. Default is 'clusters'. Note that if you wish to use clusters for intercellular signaling downstream to MUST choose clusters.
 #' @param tf_variance_quantile What proportion of variable features to take if using variance to threshold features. Default is 0.5. Higher numbers will keep more features. Ignored if tf_selection_method is not 'variable'
 #' @return A domino object.
@@ -28,8 +29,9 @@
 create_domino = function(signaling_db, features, ser = NULL, counts = NULL, 
     z_scores = NULL, clusters = NULL, use_clusters = TRUE, df = NULL, 
     gene_conv = NULL, verbose = TRUE, use_complexes = TRUE, 
-    rec_min_thresh = .025, tf_selection_method = 'clusters', 
-    tf_variance_quantile = .5){
+    rec_min_thresh = .025, remove_rec_dropout = TRUE, 
+    tf_selection_method = 'clusters', tf_variance_quantile = .5){
+
     dom = domino()
     dom@misc[['tar_lr_cols']] = c('R.orig', 'L.orig')
     dom@misc[['create']] = TRUE
@@ -247,6 +249,7 @@ create_domino = function(signaling_db, features, ser = NULL, counts = NULL,
     }
 
     # Calculate correlation matrix between features and receptors.
+    dom@counts = counts
     all_receptors = unique(names(dom@linkages$rec_lig))
     zero_sum = Matrix::rowSums(counts == 0)
     keeps = which(zero_sum < .975*ncol(counts))
@@ -274,7 +277,24 @@ create_domino = function(signaling_db, features, ser = NULL, counts = NULL,
         rhorow = rep(0, length(ser_receptors))
         names(rhorow) = ser_receptors
         for(rec in ser_receptors){
-            cor = cor.test(dom@z_scores[rec,], scores, method = 'spearman', alternative = 'greater')
+            if(remove_rec_dropout){
+                keep_id = which(dom@counts[rec,] > 0)
+                rec_z_scores = dom@z_scores[rec,keep_id]
+                tar_tf_scores = scores[keep_id]
+            } else {
+                rec_z_scores = dom@z_scores[rec,]
+                tar_tf_scores = scores
+            }
+
+            # There are some cases where all the tfas are zero for the cells
+            # left after trimming dropout for receptors. Skip those and set
+            # cor to zero manually.
+            if(sum(tar_tf_scores) == 0){
+                rhorow[rec] = 0
+                next
+            }
+            cor = cor.test(rec_z_scores, tar_tf_scores, 
+                method = 'spearman', alternative = 'greater')
             rhorow[rec] = cor$estimate
         }
         if(length(module_rec_targets > 0)){

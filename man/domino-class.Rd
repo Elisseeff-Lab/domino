@@ -16,6 +16,8 @@ intermediates.
 \describe{
 \item{\code{db_info}}{List of data sets from lr database.}
 
+\item{\code{counts}}{Raw count gene expression data}
+
 \item{\code{z_scores}}{Matrix of z-scored expression data with cells as columns}
 
 \item{\code{clusters}}{Named factor with cluster identity of each cell}

@@ -17,6 +17,7 @@ create_domino(
   verbose = TRUE,
   use_complexes = TRUE,
   rec_min_thresh = 0.025,
+  remove_rec_dropout = TRUE,
   tf_selection_method = "clusters",
   tf_variance_quantile = 0.5
 )
@@ -44,7 +45,9 @@ create_domino(
 
 \item{use_complexes}{Boolean indicating whether you wish to use receptor/ligand complexes in the receptor ligand signaling database. This may lead to problems if genes which are preserved acrossed many functionally different signaling complexes are found highly expressed or correlated with features in your data set.}
 
-\item{rec_min_thresh}{Minimum expression level of receptors by cell. Default is 0.025 or 2.5 percent of all cells in the data set. The lower this threshold the more likely pearson correlation will lead to fasle positives.}
+\item{rec_min_thresh}{Minimum expression level of receptors by cell. Default is 0.025 or 2.5 percent of all cells in the data set. This is important when calculating correlation to connect receptors to transcription activation. If this threshold is too low then correlation calculations will proceed with very few cells with non-zero expression.}
+
+\item{remove_rec_dropout}{Whether to remove receptors with 0 expression counts when calculating correlations. This can reduce false positive correlation calculations when receptors have high dropout rates.}
 
 \item{tf_selection_method}{Selection of which method to target transcription factors. If 'clusters' then differential expression for clusters will be calculated. If 'variable' then the most variable transcription factors will be selected. If 'all' then all transcription factors in the feature matrix will be used. Default is 'clusters'. Note that if you wish to use clusters for intercellular signaling downstream to MUST choose clusters.}
 
