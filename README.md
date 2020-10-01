@@ -1,9 +1,15 @@
 # Domino
 Domino is a tool for analysis of intra- and intercellular signaling in single cell RNA seq based on transcription factor activation. 
 
+##### Update notes for v0.2
+Added an option to only use cells without receptor dropout when calculating Pearson correlation. This is recommended.
+
 ##### Citation
 If you find Domino useful, please consider citing us. 
-**Coming soon**
+
+Intercellular signaling dynamics from a single cell atlas of the biomaterials response
+Christopher Cherry, David R Maestas, Jin Han, James I Andorko, Patrick Cahan, Elana J Fertig, Lana X Garmire, Jennifer H Elisseeff
+bioRxiv 2020.07.24.218537; doi: https://doi.org/10.1101/2020.07.24.218537
 
 And make sure to cite SCENIC if you use it for your transcription factor scores.
 
