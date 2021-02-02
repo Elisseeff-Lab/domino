@@ -24,7 +24,7 @@ docker run -it --rm \
     /scenicdata/mm9-tss-centered-10kb-7species.mc9nr.feather \
     /scenicdata/mm9-tss-centered-5kb-10species.mc9nr.feather \
     /scenicdata/mm9-tss-centered-5kb-7species.mc9nr.feather \
-    --annotations_fname /scenicdata/motifs-v9-mgi.tbl \
+    --annotations_fname /scenicdata/motifs-v9-nr.mgi-m0.001-o0.0.tbl \
     --expression_mtx_fname /scenicdata/counts.tsv \
     --mode "dask_multiprocessing" \
     --output /scenicdata/regulons.csv \
