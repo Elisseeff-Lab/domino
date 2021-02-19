@@ -2,7 +2,7 @@
 Domino is a tool for analysis of intra- and intercellular signaling in single cell RNA seq based on transcription factor activation. 
 
 ##### Update notes for v0.2
-Added an option to only use cells without receptor dropout when calculating Pearson correlation. This is recommended.
+Added an option to only use cells without receptor dropout when calculating Pearson correlation.
 
 ##### Citation
 If you find Domino useful, please consider citing us. 
