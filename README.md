@@ -65,14 +65,6 @@ And this is for HGNC gene labels for the hg19 genome
     curl -O https://resources.aertslab.org/cistarget/databases/homo_sapiens/hg19/refseq_r45/mc9nr/gene_based/hg19-tss-centered-5kb-7species.mc9nr.feather
     curl -O https://resources.aertslab.org/cistarget/databases/homo_sapiens/hg19/refseq_r45/mc9nr/gene_based/hg19-tss-centered-5kb-10species.mc9nr.feather
     
-## Vignettes
-A selection of vignettes are available in the [vignettes](https::/github.com/Chris-Cherry/domino/vignettes) folder. The basic analysis vignette is below.
-
-Vignettes to do:
-- [X] Basic analysis
-- [ ] Cluster free analysis
-- [ ] Condition split comparison
-
 ## A complete basic analysis using Domino
 We will run through a complete analysis with Domino picking up from phenotypic assignment of clusters. If you would like to see an example of Domino without using clusters check out the cluster free analysis vignette [here](https://github.com/Chris-Cherry/domino/vignettes). 
 
