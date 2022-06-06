@@ -148,5 +148,5 @@ Finally, you can visualize the entire tf-r-l network by including all clusters w
 ![Default global network](https://github.com/Chris-Cherry/domino/blob/cc_working/readme_images/global_network_default.png)
 ![Tweaked global network](https://github.com/Chris-Cherry/domino/blob/cc_working/readme_images/global_network_tweaked.png)
 
-Thanks for taking a look at our software. If you have any questions please feel to send us an email at jhe@jhu.edu or ccherry.6574@gmail.com and if you come across any bugs make sure to let us know [here](https://github.com/Chris-Cherry/domino/issues). 
+Thanks for taking a look at our software. If you have any questions please let us know [here](https://github.com/Chris-Cherry/domino/issues). 
     
