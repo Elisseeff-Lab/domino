@@ -4,3 +4,6 @@
 .Rbuildignore
 .Rhistory
 R/.Rhistory
+
+scratch/
+
