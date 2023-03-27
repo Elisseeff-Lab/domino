@@ -384,3 +384,38 @@ add_rl_column = function(map, map_ref, conv, new_name){
     new_map = rbind.data.frame(new_map, not_in_ref_map, stringsAsFactors = FALSE)
     new_map = data.frame(new_map, stringsAsFactors = FALSE)
 }
+
+#' Calculate mean ligand expression as a data.frame for plotting in circos plot
+#' 
+#' Creates a data frame of mean ligand expression for use in plotting a circos
+#' plot of ligand exression and saving tables of mean expression.
+#' 
+#' @param x gene by cell expression matrix
+#' @param ligands character vector of ligand genes to be quantified
+#' @param cell_ident
+#' @param cell_barcodes vector of cell barcodes (colnames of x) belonging to cell_ident to calculate mean expression across
+#' @param destination name of the receptor with which each ligand interacts
+#' @return data frame of ligand expression targeting the specified receptor
+#'
+mean_ligand_expression <- 
+  function(x, ligands, cell_ident, cell_barcodes, destination){
+    # initiate data frame to store results
+    df <- NULL
+    
+    for(feat in ligands){
+      # index of ligand row
+      lig_index <- grep(paste0("^", feat, "$"), rownames(x))
+      # column indecies of cells belonging to cell_ident
+      cell_index <- colnames(x) %in% cell_barcodes
+      
+      cell_df <- data.frame(
+        origin = paste0(cell_ident, "_", feat),
+        destination = destination,
+        mean.expression = mean(x[lig_index, cell_index])
+      )
+      
+      df <- rbind(df, cell_df)
+    }
+    return(df)
+  }
+
