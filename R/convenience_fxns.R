@@ -14,7 +14,7 @@
 #' @export 
 #' 
 rename_clusters = function(dom, clust_conv){
-    if(is.null(clusters)){
+    if(is.null(dom@clusters)){
         stop("There are no clusters in this domino object")
     }
     if(dom@misc$create){
