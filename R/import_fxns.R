@@ -17,6 +17,7 @@
 #' @param use_clusters Boolean indicating whether to use the clusters from a Seurat object. If a Seurat object is not provided then this parameter is ignored.
 #' @param df Optional. Either a path to discovered motifs from pySCENIC as a csv file or a data frame following the format of df.csv from pySCENIC
 #' @param gene_conv Optional. Vector of length two containing some combination of 'ENSMUSG', 'ENSG', 'MGI', or 'HGNC' where the first vector is the current gene format in the database and the second is the gene format in the data set. If present, the function will use biomaRt to convert the database to the data sets gene format.
+#' @param gene_conv_host Optional. Host to connect to when using gene_conv. Defaults to https://www.ensembl.org following the useMart default, but can be changed to archived hosts if useMart fails to connect.
 #' @param verbose Boolean indicating whether or not to print progress during computation.
 #' @param use_complexes Boolean indicating whether you wish to use receptor/ligand complexes in the receptor ligand signaling database. This may lead to problems if genes which are preserved acrossed many functionally different signaling complexes are found highly expressed or correlated with features in your data set.
 #' @param rec_min_thresh Minimum expression level of receptors by cell. Default is 0.025 or 2.5 percent of all cells in the data set. This is important when calculating correlation to connect receptors to transcription activation. If this threshold is too low then correlation calculations will proceed with very few cells with non-zero expression.
@@ -28,7 +29,8 @@
 #'
 create_domino = function(signaling_db, features, ser = NULL, counts = NULL, 
     z_scores = NULL, clusters = NULL, use_clusters = TRUE, df = NULL, 
-    gene_conv = NULL, verbose = TRUE, use_complexes = TRUE, 
+    gene_conv = NULL, gene_conv_host = "https://www.ensembl.org",
+    verbose = TRUE, use_complexes = TRUE, 
     rec_min_thresh = .025, remove_rec_dropout = TRUE, 
     tf_selection_method = 'clusters', tf_variance_quantile = .5){
 
@@ -146,9 +148,11 @@ create_domino = function(signaling_db, features, ser = NULL, counts = NULL,
 
     # Convert if needed
     if(!is.null(gene_conv)){
-        conv = convert_genes(rl_map$R.orig, from = gene_conv[1], to = gene_conv[2])
+        conv = convert_genes(rl_map$R.orig, from = gene_conv[1], to = gene_conv[2], 
+                             host = gene_conv_host)
         rl_map = add_rl_column(rl_map, 'R.orig', conv, 'R.conv')
-        conv = convert_genes(rl_map$L.orig, from = gene_conv[1], to = gene_conv[2])
+        conv = convert_genes(rl_map$L.orig, from = gene_conv[1], to = gene_conv[2], 
+                             host = gene_conv_host)
         rl_map = add_rl_column(rl_map, 'L.orig', conv, 'L.conv')
         dom@misc[['tar_lr_cols']] = c('R.conv', 'L.conv')
     }
@@ -314,31 +318,38 @@ create_domino = function(signaling_db, features, ser = NULL, counts = NULL,
 #' @param genes Vector of genes to convert.
 #' @param from Format of gene input (ENSMUSG, ENSG, MGI, or HGNC)
 #' @param to Format of gene output (ENSMUSG, ENSG, MGI, or HGNC)
+#' @param host Host to connect to. Defaults to https://www.ensembl.org following the useMart default, but can be changed to archived hosts if useMart fails to connect.
 #' @return A data frame with input genes as col 1 and output as col 2.
 #' 
-convert_genes = function(genes, from, to){
+convert_genes = function(genes, from, to, host = "https://www.ensembl.org"){
     if (from == 'ENSMUSG'){
-        srcMart = biomaRt::useMart("ensembl", dataset = "mmusculus_gene_ensembl")
+        srcMart = biomaRt::useMart("ensembl", dataset = "mmusculus_gene_ensembl",
+                                   host = host)
         sourceAtts =  'ensembl_gene_id'   
     }
     if (from == 'ENSG'){
-        srcMart = biomaRt::useMart("ensembl", dataset = "hsapiens_gene_ensembl")
+        srcMart = biomaRt::useMart("ensembl", dataset = "hsapiens_gene_ensembl",
+                                   host = host)
         sourceAtts = 'ensembl_gene_id'
     }
     if (from == 'MGI'){
-        srcMart = biomaRt::useMart("ensembl", dataset = "mmusculus_gene_ensembl")
+        srcMart = biomaRt::useMart("ensembl", dataset = "mmusculus_gene_ensembl",
+                                   host = host)
         sourceAtts = 'mgi_symbol'    
     }
     if (from == 'HGNC'){
-        srcMart = biomaRt::useMart("ensembl", dataset = "hsapiens_gene_ensembl")
+        srcMart = biomaRt::useMart("ensembl", dataset = "hsapiens_gene_ensembl",
+                                   host = host)
         sourceAtts = 'hgnc_symbol'
     }
     if (to == 'MGI'){
-        tarMart = biomaRt::useMart("ensembl", dataset = "mmusculus_gene_ensembl")
+        tarMart = biomaRt::useMart("ensembl", dataset = "mmusculus_gene_ensembl",
+                                   host = host)
         tarAtts = 'mgi_symbol'
     }
     if (to == 'HGNC'){
-        tarMart = biomaRt::useMart("ensembl", dataset = "hsapiens_gene_ensembl")
+        tarMart = biomaRt::useMart("ensembl", dataset = "hsapiens_gene_ensembl",
+                                   host = host)
         tarAtts = 'hgnc_symbol'
     }
     genesV2 = biomaRt::getLDS(attributes = sourceAtts, filters = sourceAtts,
