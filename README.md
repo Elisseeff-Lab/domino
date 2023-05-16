@@ -1,6 +1,9 @@
 # Domino
 Domino is a tool for analysis of intra- and intercellular signaling in single cell RNA seq based on transcription factor activation. 
 
+### Fertig Lab Development Branch
+This repository is intended for integration of updates to Domino from the Fertig Lab and Elissieeff Lab. The code may currently be unstable and is not currently recommended for use. If you would like to use Domino, please use the main repository hosted by the Elisseeff Lab at https://github.com/Elisseeff-Lab/domino.
+
 ##### Update notes for v0.2
 Added an option to only use cells without receptor dropout when calculating Pearson correlation.
 
@@ -21,7 +24,7 @@ Domino itself can be installed from the github repository.
     if(!require(devtools)){
         install.packages('devtools')
     }
-    devtools::install_github('Chris-Cherry/domino')
+    devtools::install_github('Elisseeff-Lab/domino')
 
 Domino requires a ligand-receptor database. We use [cellphonedb](https://www.cellphonedb.org/downloads). Domino will look for four files: complexes.csv genes.csv interactions.csv and proteins.csv. If you would like to download them through terminal the commands are below.
 
@@ -66,7 +69,7 @@ And this is for HGNC gene labels for the hg19 genome
     curl -O https://resources.aertslab.org/cistarget/databases/homo_sapiens/hg19/refseq_r45/mc9nr/gene_based/hg19-tss-centered-5kb-10species.mc9nr.feather
     
 ## A complete basic analysis using Domino
-We will run through a complete analysis with Domino picking up from phenotypic assignment of clusters. If you would like to see an example of Domino without using clusters check out the cluster free analysis vignette [here](https://github.com/Chris-Cherry/domino/vignettes). 
+We will run through a complete analysis with Domino picking up from phenotypic assignment of clusters. If you would like to see an example of Domino without using clusters check out the cluster free analysis vignette [here](https://github.com/Elisseeff-Lab/domino/vignettes). 
 
 First we will need to get some data. [Here](https://www.dropbox.com/s/63gnlw45jf7cje8/pbmc3k_final.rds?dl=1) is a Seurat object which contains cluster assignments from the Seurat 2,700 PBMC tutorial. You wont need to install Seurat if you don't have it already - we are just pulling data from the object. We will create a directory to put our stuff as well.
 
@@ -112,31 +115,31 @@ Now we just need to visualize the signaling network. First, we visualize the clu
 
     signaling_network(pbmc_dom, edge_weight = .5, max_thresh = 2.5)
     
-![Intercluster signaling network](https://github.com/Chris-Cherry/domino/blob/cc_working/readme_images/intercluster_network.png)
+![Intercluster signaling network](https://github.com/Elisseeff-Lab/domino/blob/cc_working/readme_images/intercluster_network.png)
 
 By default, the nodes are scaled based on expression of ligands targetting them. They are larger if cells in the data set are expressing high amounts of ligands targetting the cluster. The edges are weighted based on the strength of signaling between two specific clusters. The color of the edge will match the color of the ligand cluster. For example, in the network above the teal line connecting CD8 T cells and DCs represents signaling *from* T cells *to* DCs. In order to determine the ligand-receptor-TF signaling patterns involved in that, we can zoom in on the gene network in the DCs. 
 
     gene_network(pbmc_dom, clust = 'DC', layout = 'fr')
     
-![DC gene network](https://github.com/Chris-Cherry/domino/blob/cc_working/readme_images/DC_network.png)
+![DC gene network](https://github.com/Elisseeff-Lab/domino/blob/cc_working/readme_images/DC_network.png)
 
 By default red nodes are ligands, blue are receptors, and green are transcription factors. Now lets look at the expression of the ligands that are targetting the DCs.
 
     incoming_signaling_heatmap(pbmc_dom, rec_clust = 'DC', max_thresh = 2.5)
 
-![DC incoming signaling heatmap](https://github.com/Chris-Cherry/domino/blob/cc_working/readme_images/DC_signaling_heatmap.png)
+![DC incoming signaling heatmap](https://github.com/Elisseeff-Lab/domino/blob/cc_working/readme_images/DC_signaling_heatmap.png)
 
 It looks like CCL5 is a major component of the signaling from T cells to DCs. From the gene network above it looks like the CCL5 is predicted to target LILRB1 and would activate IRF4 and IRF8 in the DCs. We can investigate some expression patterns associated with these linkages. First, lets generate a heatmap of the transcription factor activation scores.
 
     feat_heatmap(pbmc_dom, norm = TRUE, bool = FALSE)
 
-![Transcription factor activation score heatmap](https://github.com/Chris-Cherry/domino/blob/cc_working/readme_images/tfas_heatmap.png)
+![Transcription factor activation score heatmap](https://github.com/Elisseeff-Lab/domino/blob/cc_working/readme_images/tfas_heatmap.png)
 
 And to look at the connections between transcription factors and receptores we can create a heatmap of correlations between the two.
 
     cor_heatmap(pbmc_dom, bool = FALSE, mark_connections = TRUE)
     
-![Rec-TF correlation heatmap](https://github.com/Chris-Cherry/domino/blob/cc_working/readme_images/cor_heatmap.png)
+![Rec-TF correlation heatmap](https://github.com/Elisseeff-Lab/domino/blob/cc_working/readme_images/cor_heatmap.png)
 
 Finally, you can visualize the entire tf-r-l network by including all clusters with gene_network. Note that the function will return the igraph object used to make the plot. This is important if you use a force directed layout and you would like to make two versions of the same plot. Here we will use default settings to allow us to see node labels and then reformat the plot with igraph options to make it less cluttered for smaller formats.
 
@@ -145,8 +148,8 @@ Finally, you can visualize the entire tf-r-l network by including all clusters w
     plot(info$graph, layout = info$layout, vertex.size = 3, edge.color = 'grey', 
         vertex.frame.color = 'black', vertex.label = NA)
     
-![Default global network](https://github.com/Chris-Cherry/domino/blob/cc_working/readme_images/global_network_default.png)
-![Tweaked global network](https://github.com/Chris-Cherry/domino/blob/cc_working/readme_images/global_network_tweaked.png)
+![Default global network](https://github.com/Elisseeff-Lab/domino/blob/cc_working/readme_images/global_network_default.png)
+![Tweaked global network](https://github.com/Elisseeff-Lab/domino/blob/cc_working/readme_images/global_network_tweaked.png)
 
-Thanks for taking a look at our software. If you have any questions please let us know [here](https://github.com/Chris-Cherry/domino/issues). 
+Thanks for taking a look at our software. If you have any questions please let us know [here](https://github.com/Elisseeff-Lab/domino/issues). 
     
