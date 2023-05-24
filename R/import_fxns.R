@@ -185,7 +185,7 @@ create_domino = function(signaling_db, features, ser = NULL, counts = NULL,
     }
 
     # Read in features matrix and calculate differential expression by cluster.
-    if(class(features) == 'character'){
+    if(class(features)[1] == 'character'){
         features = read.csv(features, row.names = 1, check.names = FALSE)
     }
     features = features[, colnames(dom@z_scores)]
@@ -231,7 +231,7 @@ create_domino = function(signaling_db, features, ser = NULL, counts = NULL,
     }
 
     # If present, read in and process df
-    if(class(df) == 'character'){
+    if(class(df)[1] == 'character'){
         df = read.csv(df, skip = 3, header = FALSE, stringsAsFactors = FALSE)
     }
     if(!is.null(df)){
