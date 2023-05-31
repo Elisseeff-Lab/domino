@@ -4,15 +4,16 @@ Domino is a tool for analysis of intra- and intercellular signaling in single ce
 ### Fertig Lab Development Branch
 This repository is intended for integration of updates to Domino from the Fertig Lab and Elissieeff Lab. The code may currently be unstable and is not currently recommended for use. If you would like to use Domino, please use the main repository hosted by the Elisseeff Lab at https://github.com/Elisseeff-Lab/domino.
 
+##### Branch notes:
+Code used in the version of Domino published in 2021 has been archived in the branch `domino_paper_archive`. Changes, issues and pull requests will be handled on the `master` branch for easy use and installation of the updated version.
+
 ##### Update notes for v0.2
 Added an option to only use cells without receptor dropout when calculating Pearson correlation.
 
 ##### Citation
 If you find Domino useful, please consider citing us. 
 
-Intercellular signaling dynamics from a single cell atlas of the biomaterials response
-Christopher Cherry, David R Maestas, Jin Han, James I Andorko, Patrick Cahan, Elana J Fertig, Lana X Garmire, Jennifer H Elisseeff
-bioRxiv 2020.07.24.218537; doi: https://doi.org/10.1101/2020.07.24.218537
+Cherry C, Maestas DR, Han J, Andorko JI, Cahan P, Fertig EJ, Garmire LX, Elisseeff JH. Computational reconstruction of the signalling networks surrounding implanted biomaterials from single-cell transcriptomics. Nat Biomed Eng. 2021 Oct;5(10):1228-1238. doi: 10.1038/s41551-021-00770-5. Epub 2021 Aug 2. PMID: 34341534; PMCID: PMC9894531.
 
 And make sure to cite SCENIC if you use it for your transcription factor scores.
 
