@@ -7,18 +7,21 @@
 #' @param dom Domino object from create_domino.
 #' @param max_rec_per_tf Maximum number of receptors to link to each transcription factor.
 #' @param rec_tf_cor_threshold Minimum pearson correlation used to consider a receptor linked with a transcription factor. Increasing this will decrease the number of receptors linked to each transcription factor.
+#' @param min_rec_percentage Minimum percentage of cells in cluster expressing a receptor for the receptor to be linked to trancription factors in that cluster.
 #' @return A domino object
 #' @export
 #' 
 build_domino = function(dom, max_tf_per_clust = 5, min_tf_pval = .01, 
-    max_rec_per_tf = 5, rec_tf_cor_threshold = .15){
+    max_rec_per_tf = 5, rec_tf_cor_threshold = .15,
+    min_rec_percentage = .1){
     if(dom@misc[['create']] == FALSE){
         stop('Please run domino_create to create the domino object.')
     }
     dom@misc[['build']] = TRUE
     dom@misc[['build_vars']] = c(max_tf_per_clust = max_tf_per_clust, 
         min_tf_pval = min_tf_pval, max_rec_per_tf = max_rec_per_tf, 
-        rec_tf_cor_threshold = rec_tf_cor_threshold)
+        rec_tf_cor_threshold = rec_tf_cor_threshold,
+        min_rec_percentage = min_rec_percentage)
     
     if(length(dom@clusters)){
         # Get transcription factors for each cluster
@@ -64,16 +67,38 @@ build_domino = function(dom, max_tf_per_clust = 5, min_tf_pval = .01,
             tf_rec[[tf]] = top_receptors
         }
         dom@linkages[['tf_rec']] = tf_rec
+        # If cluster methods are used, provide cluster-specific tf_rec linkages
+        
+        cl_tf_rec = list()
+        for(clust in levels(dom@clusters)){
+            percent = dom@misc$cl_rec_percent[, clust]
+            expressed = percent[percent > min_rec_percentage]
+            cl_tf_rec[[clust]] =
+                lapply(dom@linkages$tf_rec, 
+                       FUN = function(x){return(x[x %in% names(expressed)])}
+                       )
+            }
+        dom@linkages[['cl_tf_rec']] = cl_tf_rec
+        
+        # Get a list of active receptors for each cluster
+        clust_rec = list()
+        for(clust in levels(dom@clusters)){
+            vec = lc(dom@linkages$cl_tf_rec[[clust]],
+                     lc(clust_tf, clust))
+            vec = unique(vec[!is.na(vec)])
+            clust_rec[[clust]] = vec
+        }
+        dom@linkages[['cl_rec']] = clust_rec
 
-        # Get a list of ligands for each cluster
+        # Get a list of incoming ligands for each cluster
         clust_ligs = list()
         for(clust in levels(dom@clusters)){
-            vec = lc(dom@linkages$rec_lig, 
-                lc(tf_rec, 
-                    lc(clust_tf, clust)))
-            vec = unique(vec[!is.na(vec)])
-            clust_ligs[[clust]] = vec
+              vec = lc(dom@linkages$rec_lig,
+                       lc(clust_rec, clust))
+              vec = unique(vec[!is.na(vec)])
+              clust_ligs[[clust]] = vec
         }
+        dom@linkages[['cl_incoming_lig']] = clust_ligs
 
         # Build signaling matrices for each cluster
         cl_signaling_matrices = list()
