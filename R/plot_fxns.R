@@ -310,7 +310,12 @@ gene_network = function(dom, clust = NULL, class_cols = c(lig = '#FF685F',
     all_recs = c()
     all_tfs = c()
     for(tf in tfs){
-        recs = dom@linkages$tf_rec[[tf]]
+        if(!is.null(clust)){
+          recs = dom@linkages$cl_tf_rec[[clust]][[tf]]
+        } else {
+          recs = dom@linkages$tf_rec[[tf]]
+        }
+        
         all_recs = c(all_recs, recs)
         if(length(recs)){
             all_tfs = c(all_tfs, tf)
