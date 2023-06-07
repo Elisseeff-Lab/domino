@@ -78,17 +78,17 @@ build_domino = function(dom, max_tf_per_clust = 5, min_tf_pval = .01,
                        FUN = function(x){return(x[x %in% names(expressed)])}
                        )
             }
-        dom@linkages[['cl_tf_rec']] = cl_tf_rec
+        dom@linkages[['clust_tf_rec']] = cl_tf_rec
         
         # Get a list of active receptors for each cluster
         clust_rec = list()
         for(clust in levels(dom@clusters)){
-            vec = lc(dom@linkages$cl_tf_rec[[clust]],
+            vec = lc(dom@linkages$clust_tf_rec[[clust]],
                      lc(clust_tf, clust))
             vec = unique(vec[!is.na(vec)])
             clust_rec[[clust]] = vec
         }
-        dom@linkages[['cl_rec']] = clust_rec
+        dom@linkages[['clust_rec']] = clust_rec
 
         # Get a list of incoming ligands for each cluster
         clust_ligs = list()
@@ -98,7 +98,7 @@ build_domino = function(dom, max_tf_per_clust = 5, min_tf_pval = .01,
               vec = unique(vec[!is.na(vec)])
               clust_ligs[[clust]] = vec
         }
-        dom@linkages[['cl_incoming_lig']] = clust_ligs
+        dom@linkages[['clust_incoming_lig']] = clust_ligs
 
         # Build signaling matrices for each cluster
         cl_signaling_matrices = list()
