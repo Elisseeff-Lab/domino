@@ -1,3 +1,171 @@
+#' Create a receptor-ligand map from a cellphonedb signaling database
+#' 
+#' DESC
+#' 
+#' @param genes dataframe or file path to table of gene names in uniprot, hgnc_symbol, or ensembl format in cellphonedb database format
+#' @param proteins dataframe or file path to table of protein features in cellphonedb format
+#' @param interactions dataframe or file path to table of protein-protein interatctions in cellphonedb format
+#' @param complexes optional: dataframe or file path to table of protein complexes in cellphonedb format
+#' @return Data frame where each row describes a possible receptor-ligand interaction
+#' @export
+#' 
+create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = NULL,
+                                     gene_conv = NULL, gene_conv_host = "https://www.ensembl.org"){
+  if(class(genes)[1] == "character"){
+    genes = read.csv(genes, stringsAsFactors = FALSE)
+  }
+  if(class(proteins)[1] == "character"){
+    proteins = read.csv(proteins, stringsAsFactors = FALSE)
+  }
+  if(class(interactions)[1] == "character"){
+    interactions = read.csv(interactions, stringsAsFactors = FALSE)
+  }
+  if(class(complexes)[1] == "character"){
+    complexes = read.csv(complexes, stringsAsFactors = FALSE)
+  }
+  # change cases of True/False syntax from Python to TRUE/FALSE R syntax
+  for(x in colnames(genes)){
+    if(identical(unique(genes[[x]]), c("True", "False")) | identical(unique(genes[[x]]), c("False", "True"))){
+      genes[[x]] <- ifelse(genes[[x]] == "True", TRUE, FALSE)
+    }
+  }
+  for(x in colnames(proteins)){
+    if(identical(unique(proteins[[x]]), c("True", "False")) | identical(unique(proteins[[x]]), c("False", "True"))){
+      proteins[[x]] <- ifelse(proteins[[x]] == "True", TRUE, FALSE)
+    }
+  }
+  for(x in colnames(interactions)){
+    if(identical(unique(interactions[[x]]), c("True", "False")) | identical(unique(interactions[[x]]), c("False", "True"))){
+      interactions[[x]] <- ifelse(interactions[[x]] == "True", TRUE, FALSE)
+    }
+  }
+  if(!is.null(complexes)){
+    for(x in colnames(complexes)){
+      if(identical(unique(complexes[[x]]), c("True", "False")) | identical(unique(complexes[[x]]), c("False", "True"))){
+        complexes[[x]] <- ifelse(complexes[[x]] == "True", TRUE, FALSE)
+      }
+    }
+  }
+  
+  db_info = list(genes = genes, proteins = proteins, 
+                 interactions = interactions, complexes = complexes)
+  
+  # Get all possible rec/ligs
+  rec_uniprot = proteins$uniprot[which(proteins$receptor == TRUE)]
+  lig_uniprot = proteins$uniprot[which(proteins$receptor == FALSE)]
+  if(!is.null(complexes)){
+    rec_complexes = complexes$complex_name[which(complexes$receptor == TRUE)]
+    lig_complexes = complexes$complex_name[which(complexes$receptor == FALSE)]
+  }
+  
+  # Step through the interactions and build rl connections.
+  rl_map = matrix(0, ncol = 2, nrow = 0)
+  colnames(rl_map) = c('R.uniprot', 'L.uniprot')
+  for(i in 1:nrow(interactions)){
+    a_pname = interactions$protein_name_a[i]
+    b_pname = interactions$protein_name_b[i]
+    
+    # If not using complexes, make sure both members are proteins or next
+    if(is.null(complexes)){
+      if(a_pname == '' | b_pname == ''){
+        next
+      }
+    }
+    aid = interactions$partner_a[i]
+    bid = interactions$partner_b[i]
+    
+    # Figure out recs and ligs
+    # Partner A
+    # See if it's receptor/ligand complex/protein and add to rec/ligs
+    if(length(which(rec_uniprot == aid)) != 0){
+      recs = rec_uniprot[which(rec_uniprot == aid)]
+    } else if(length(which(lig_uniprot == aid)) != 0){
+      ligs = lig_uniprot[which(lig_uniprot == aid)]
+    } else if(length(which(rec_complexes == aid)) != 0){
+      comp = rec_complexes[which(rec_complexes == aid)]
+      recs = complexes[which(complexes[,c("complex_name")] == comp), c("uniprot_1", "uniprot_2", "uniprot_3", "uniprot_4")]
+      recs = recs[-which(recs == '')]
+    } else if(length(which(lig_complexes == aid)) != 0){
+      comp = lig_complexes[which(lig_complexes == aid)]
+      ligs = complexes[which(complexes[,c("complex_name")] == comp), c("uniprot_1", "uniprot_2", "uniprot_3", "uniprot_4")]
+      ligs = ligs[-which(ligs == '')]
+    } else {
+      stop(paste('Partner A has no complex or protein match in row', i))
+    }
+    
+    # Partner B
+    if(length(which(rec_uniprot == bid)) != 0){
+      recs = rec_uniprot[which(rec_uniprot == bid)]
+    } else if(length(which(lig_uniprot == bid)) != 0){
+      ligs = lig_uniprot[which(lig_uniprot == bid)]
+    } else if(length(which(rec_complexes == bid)) != 0){
+      comp = rec_complexes[which(rec_complexes == bid)]
+      recs = complexes[which(complexes[,c("complex_name")] == comp), c("uniprot_1", "uniprot_2", "uniprot_3", "uniprot_4")]
+      recs = recs[-which(recs == '')]
+    } else if(length(which(lig_complexes == bid)) != 0){
+      comp = lig_complexes[which(lig_complexes == bid)]
+      ligs = complexes[which(complexes[,c("complex_name")] == comp), c("uniprot_1", "uniprot_2", "uniprot_3", "uniprot_4")]
+      ligs = ligs[-which(ligs == '')]
+    } else {
+      stop(paste('Partner B has no complex or protein match in row', i))
+    }
+    
+    # Add them all to the map
+    for(l in ligs){
+      for(r in recs){
+        rl_map = rbind(rl_map, c(r, l))
+      }
+    }
+  }
+  
+  # Get genes for receptors
+  rec_prots = as.character(unique(rl_map[,1]))
+  rec_orig = genes[match(rec_prots, genes[,2]),3]
+  rl_map = data.frame(rl_map)
+  rl_map = add_rl_column(rl_map, 'R.uniprot', cbind(rec_prots, rec_orig), 
+                         'R.orig')
+  
+  # Get genes for ligands
+  lig_prots = as.character(unique(rl_map[,2]))
+  lig_orig = genes[match(lig_prots, genes[,2]),3]
+  rl_map = add_rl_column(rl_map, 'L.uniprot', cbind(lig_prots, lig_orig), 
+                         'L.orig')
+  
+  # Convert if needed
+  if(!is.null(gene_conv)){
+    conv = convert_genes(rl_map$R.orig, from = gene_conv[1], to = gene_conv[2], 
+                         host = gene_conv_host)
+    rl_map = add_rl_column(rl_map, 'R.orig', conv, 'R.conv')
+    conv = convert_genes(rl_map$L.orig, from = gene_conv[1], to = gene_conv[2], 
+                         host = gene_conv_host)
+    rl_map = add_rl_column(rl_map, 'L.orig', conv, 'L.conv')
+    tar_lr_cols = c('R.conv', 'L.conv')
+  }
+  
+  # Remove duplicate rows then build rl linkage
+  rl_map = unique.data.frame(rl_map)
+  rl_list = list()
+  tar_map = rl_map[, dom@misc$tar_lr_cols]
+  for(rec in unique(tar_map[,1])){
+    if(is.na(rec)){next}
+    ligs = unique(tar_map[which(tar_map[,1] == rec),2])
+    for(lig in ligs){
+      if(!is.na(lig)){
+        rl_list[[rec]] = c(rl_list[[rec]], lig)
+      }
+    }
+  }
+  result <- list(
+    "rl_map" = rl_map,
+    "db_info" = db_info
+  )
+  if(!is.null(gene_conv)){
+    result[["tar_lr_cols"]] <- tar_lr_cols
+  }
+  return(result)
+}
+
+
 #' Create a domino object and prepare it for network construction
 #' 
 #' This function reads in a receptor ligand signaling database, cell level 
