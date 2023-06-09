@@ -70,7 +70,7 @@ create_domino = function(signaling_db, features, ser = NULL, counts = NULL,
         rec_complexes = complexes$complex_name[
             which(complexes$receptor == TRUE)]
         lig_complexes = complexes$complex_name[
-            which(complexes$receptor != TRUE)]
+            which(complexes$receptor == FALSE)]
     }
     
     # Step through the interactions and build rl connections.
@@ -97,11 +97,11 @@ create_domino = function(signaling_db, features, ser = NULL, counts = NULL,
             ligs = lig_uniprot[which(lig_uniprot == aid)]
         } else if(length(which(rec_complexes == aid)) != 0){
             comp = rec_complexes[which(rec_complexes == aid)]
-            recs = complexes[which(complexes[,1] == comp), 2:5]
+            recs = complexes[which(complexes[,1] == comp), c("uniprot_1", "uniprot_2", "uniprot_3", "uniprot_4")]
             recs = recs[-which(recs == '')]
         } else if(length(which(lig_complexes == aid)) != 0){
             comp = lig_complexes[which(lig_complexes == aid)]
-            ligs = complexes[which(complexes[,1] == comp), 2:5]
+            ligs = complexes[which(complexes[,1] == comp), c("uniprot_1", "uniprot_2", "uniprot_3", "uniprot_4")]
             ligs = ligs[-which(ligs == '')]
         } else {
             stop(paste('Partner A has no comp or prot match in row', i))
@@ -114,11 +114,11 @@ create_domino = function(signaling_db, features, ser = NULL, counts = NULL,
             ligs = lig_uniprot[which(lig_uniprot == bid)]
         } else if(length(which(rec_complexes == bid)) != 0){
             comp = rec_complexes[which(rec_complexes == bid)]
-            recs = complexes[which(complexes[,1] == comp), 2:5]
+            recs = complexes[which(complexes[,1] == comp), c("uniprot_1", "uniprot_2", "uniprot_3", "uniprot_4")]
             recs = recs[-which(recs == '')]
         } else if(length(which(lig_complexes == bid)) != 0){
             comp = lig_complexes[which(lig_complexes == bid)]
-            ligs = complexes[which(complexes[,1] == comp), 2:5]
+            ligs = complexes[which(complexes[,1] == comp), c("uniprot_1", "uniprot_2", "uniprot_3", "uniprot_4")]
             ligs = ligs[-which(ligs == '')]
         } else {
             stop(paste('Partner B has no comp or prot match in row', i))
