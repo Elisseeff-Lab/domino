@@ -73,8 +73,9 @@ build_domino = function(dom, max_tf_per_clust = 5, min_tf_pval = .01,
         for(clust in levels(dom@clusters)){
             percent = dom@misc$cl_rec_percent[, clust]
             expressed = percent[percent > min_rec_percentage]
+            active_tf = dom@linkages$clust_tf[[clust]]
             cl_tf_rec[[clust]] =
-                lapply(dom@linkages$tf_rec, 
+                lapply(dom@linkages$tf_rec[active_tf], 
                        FUN = function(x){return(x[x %in% names(expressed)])}
                        )
             }
