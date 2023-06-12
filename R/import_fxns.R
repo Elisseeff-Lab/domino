@@ -4,12 +4,13 @@
 #' 
 #' @param genes dataframe or file path to table of gene names in uniprot, hgnc_symbol, or ensembl format in cellphonedb database format
 #' @param proteins dataframe or file path to table of protein features in cellphonedb format
-#' @param interactions dataframe or file path to table of protein-protein interatctions in cellphonedb format
+#' @param interactions dataframe or file path to table of protein-protein interactions in cellphonedb format
 #' @param complexes optional: dataframe or file path to table of protein complexes in cellphonedb format
 #' @return Data frame where each row describes a possible receptor-ligand interaction
 #' @export
 #' 
 create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = NULL,
+                                     database_name = "CellPhoneDB",
                                      gene_conv = NULL, gene_conv_host = "https://www.ensembl.org"){
   if(class(genes)[1] == "character"){
     genes = read.csv(genes, stringsAsFactors = FALSE)
@@ -23,6 +24,13 @@ create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = 
   if(class(complexes)[1] == "character"){
     complexes = read.csv(complexes, stringsAsFactors = FALSE)
   }
+  tar_lr_cols = c('receptor_name', 'ligand_name')
+  
+  # replace empty cells in columns annotating gene properties with "False"
+  # There are some unannotated genes in database v2.0 that seem to have been fixed in v4.0
+  gene_features = c("transmembrane", "peripheral", "secreted", "secreted_highlight", "receptor", "integrin", "other")
+  proteins[proteins$receptor == "", colnames(proteins) %in% gene_features] = "False"
+  
   # change cases of True/False syntax from Python to TRUE/FALSE R syntax
   for(x in colnames(genes)){
     if(identical(unique(genes[[x]]), c("True", "False")) | identical(unique(genes[[x]]), c("False", "True"))){
@@ -47,9 +55,6 @@ create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = 
     }
   }
   
-  db_info = list(genes = genes, proteins = proteins, 
-                 interactions = interactions, complexes = complexes)
-  
   # Get all possible rec/ligs
   rec_uniprot = proteins$uniprot[which(proteins$receptor == TRUE)]
   lig_uniprot = proteins$uniprot[which(proteins$receptor == FALSE)]
@@ -60,7 +65,7 @@ create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = 
   
   # Step through the interactions and build rl connections.
   rl_map = matrix(0, ncol = 2, nrow = 0)
-  colnames(rl_map) = c('R.uniprot', 'L.uniprot')
+  colnames(rl_map) = c('receptor_uniprot', 'ligand_uniprot')
   for(i in 1:nrow(interactions)){
     a_pname = interactions$protein_name_a[i]
     b_pname = interactions$protein_name_b[i]
@@ -119,50 +124,41 @@ create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = 
   }
   
   # Get genes for receptors
-  rec_prots = as.character(unique(rl_map[,1]))
-  rec_orig = genes[match(rec_prots, genes[,2]),3]
+  rec_prots = as.character(unique(rl_map[,c("receptor_uniprot")]))
+  rec_orig = genes[match(rec_prots, genes[,c("uniprot")]),c("hgnc_symbol")]
   rl_map = data.frame(rl_map)
-  rl_map = add_rl_column(rl_map, 'R.uniprot', cbind(rec_prots, rec_orig), 
-                         'R.orig')
+  rl_map = add_rl_column(rl_map, 'receptor_uniprot', cbind(rec_prots, rec_orig), 
+                         'receptor_name')
   
   # Get genes for ligands
-  lig_prots = as.character(unique(rl_map[,2]))
-  lig_orig = genes[match(lig_prots, genes[,2]),3]
-  rl_map = add_rl_column(rl_map, 'L.uniprot', cbind(lig_prots, lig_orig), 
-                         'L.orig')
+  lig_prots = as.character(unique(rl_map[,c("ligand_uniprot")]))
+  lig_orig = genes[match(lig_prots, genes[,c("uniprot")]),c("hgnc_symbol")]
+  rl_map = add_rl_column(rl_map, 'ligand_uniprot', cbind(lig_prots, lig_orig), 
+                         'ligand_name')
   
   # Convert if needed
   if(!is.null(gene_conv)){
     conv = convert_genes(rl_map$R.orig, from = gene_conv[1], to = gene_conv[2], 
                          host = gene_conv_host)
-    rl_map = add_rl_column(rl_map, 'R.orig', conv, 'R.conv')
+    rl_map = add_rl_column(rl_map, 'receptor_name', conv, 'receptor_conversion')
     conv = convert_genes(rl_map$L.orig, from = gene_conv[1], to = gene_conv[2], 
                          host = gene_conv_host)
-    rl_map = add_rl_column(rl_map, 'L.orig', conv, 'L.conv')
-    tar_lr_cols = c('R.conv', 'L.conv')
+    rl_map = add_rl_column(rl_map, 'ligand_name', conv, 'ligand_conversion')
+    tar_lr_cols = c('receptor_conversion', 'ligand_conversion')
   }
   
   # Remove duplicate rows then build rl linkage
   rl_map = unique.data.frame(rl_map)
-  rl_list = list()
-  tar_map = rl_map[, dom@misc$tar_lr_cols]
-  for(rec in unique(tar_map[,1])){
-    if(is.na(rec)){next}
-    ligs = unique(tar_map[which(tar_map[,1] == rec),2])
-    for(lig in ligs){
-      if(!is.na(lig)){
-        rl_list[[rec]] = c(rl_list[[rec]], lig)
-      }
-    }
-  }
-  result <- list(
-    "rl_map" = rl_map,
-    "db_info" = db_info
-  )
-  if(!is.null(gene_conv)){
-    result[["tar_lr_cols"]] <- tar_lr_cols
-  }
-  return(result)
+  # order columns of the rl_map to begin with required name columns
+  rl_map = rl_map[, c("receptor_name", "ligand_name", "receptor_uniprot", "ligand_uniprot")]
+  # meta annotations of receptors and ligands
+  
+  # annotate protein complexes
+  
+  # include source database
+  rl_map[["source_database"]] = database_name
+  
+  return(rl_map)
 }
 
 
