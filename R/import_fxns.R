@@ -55,109 +55,100 @@ create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = 
     }
   }
   
-  # Get all possible rec/ligs
-  rec_uniprot = proteins$uniprot[which(proteins$receptor == TRUE)]
-  lig_uniprot = proteins$uniprot[which(proteins$receptor == FALSE)]
-  if(!is.null(complexes)){
-    rec_complexes = complexes$complex_name[which(complexes$receptor == TRUE)]
-    lig_complexes = complexes$complex_name[which(complexes$receptor == FALSE)]
+  # gene conversions
+  if(!is.null(gene_conv)){
+    # obtain conversion dictionary
+    conv_dict = convert_genes(
+      genes$gene_name, from = gene_conv[1], to = gene_conv[2], host = gene_conv_host)
   }
   
   # Step through the interactions and build rl connections.
-  rl_map = matrix(0, ncol = 2, nrow = 0)
-  colnames(rl_map) = c('receptor_uniprot', 'ligand_uniprot')
+  rl_map <- NULL
+  
   for(i in 1:nrow(interactions)){
-    a_pname = interactions$protein_name_a[i]
-    b_pname = interactions$protein_name_b[i]
+    inter = interactions[i,]
+    partner_a = inter[["partner_a"]]
+    partner_b = inter[["partner_b"]]
     
-    # If not using complexes, make sure both members are proteins or next
-    if(is.null(complexes)){
-      if(a_pname == '' | b_pname == ''){
-        next
-      }
-    }
-    aid = interactions$partner_a[i]
-    bid = interactions$partner_b[i]
-    
-    # Figure out recs and ligs
-    # Partner A
-    # See if it's receptor/ligand complex/protein and add to rec/ligs
-    if(length(which(rec_uniprot == aid)) != 0){
-      recs = rec_uniprot[which(rec_uniprot == aid)]
-    } else if(length(which(lig_uniprot == aid)) != 0){
-      ligs = lig_uniprot[which(lig_uniprot == aid)]
-    } else if(length(which(rec_complexes == aid)) != 0){
-      comp = rec_complexes[which(rec_complexes == aid)]
-      recs = complexes[which(complexes[,c("complex_name")] == comp), c("uniprot_1", "uniprot_2", "uniprot_3", "uniprot_4")]
-      recs = recs[-which(recs == '')]
-    } else if(length(which(lig_complexes == aid)) != 0){
-      comp = lig_complexes[which(lig_complexes == aid)]
-      ligs = complexes[which(complexes[,c("complex_name")] == comp), c("uniprot_1", "uniprot_2", "uniprot_3", "uniprot_4")]
-      ligs = ligs[-which(ligs == '')]
+    # features of partner_a
+    a_features <- list()
+    if(partner_a %in% complexes[["complex_name"]]){
+      complex_a = complexes[complexes[["complex_name"]] == partner_a,]
+      component_a = as.character(
+        complex_a[, c("uniprot_1", "uniprot_2", "uniprot_3", "uniprot_4")]
+      )
+      component_a = component_a[component_a != ""]
+      a_features[["uniprot_A"]] = paste(component_a, collapse = ",")
+      gene_a = sapply(component_a, function(x){
+        g = unique(genes[genes[["uniprot"]] == x, c("gene_name")])
+        if(!is.null(gene_conv)){g = conv_dict[conv_dict[,1] %in% g, 2]}
+        return(g)
+        }
+      )
+      a_features[["gene_A"]] = paste(gene_a, collapse = ",")
+      # annotation as a receptor or ligand is based on the annotation of the complex
+      a_features[["type_A"]] = ifelse(complex_a[["receptor"]], "R", "L")
+      a_features[["name_A"]] = partner_a
+    } else if(partner_a %in% proteins[["uniprot"]]) {
+      protein_a = proteins[proteins[["uniprot"]] == partner_a,]
+      component_a = protein_a[["uniprot"]]
+      a_features[["uniprot_A"]] = component_a
+      gene_a = unique(genes[genes[["uniprot"]] == component_a, c("gene_name")])
+      if(!is.null(gene_conv)){gene_a = conv_dict[conv_dict[,1] %in% gene_a, 2]}
+      a_features[["gene_A"]] = gene_a
+      a_features[["type_A"]] = ifelse(protein_a[["receptor"]], "R", "L")
+      a_features[["name_A"]] = gene_a
     } else {
-      stop(paste('Partner A has no complex or protein match in row', i))
+      next
     }
+    a_df <- as.data.frame(a_features)
     
-    # Partner B
-    if(length(which(rec_uniprot == bid)) != 0){
-      recs = rec_uniprot[which(rec_uniprot == bid)]
-    } else if(length(which(lig_uniprot == bid)) != 0){
-      ligs = lig_uniprot[which(lig_uniprot == bid)]
-    } else if(length(which(rec_complexes == bid)) != 0){
-      comp = rec_complexes[which(rec_complexes == bid)]
-      recs = complexes[which(complexes[,c("complex_name")] == comp), c("uniprot_1", "uniprot_2", "uniprot_3", "uniprot_4")]
-      recs = recs[-which(recs == '')]
-    } else if(length(which(lig_complexes == bid)) != 0){
-      comp = lig_complexes[which(lig_complexes == bid)]
-      ligs = complexes[which(complexes[,c("complex_name")] == comp), c("uniprot_1", "uniprot_2", "uniprot_3", "uniprot_4")]
-      ligs = ligs[-which(ligs == '')]
-    } else {
-      stop(paste('Partner B has no complex or protein match in row', i))
-    }
-    
-    # Add them all to the map
-    for(l in ligs){
-      for(r in recs){
-        rl_map = rbind(rl_map, c(r, l))
+    # features of partner_b
+    b_features <- list()
+    if(partner_b %in% complexes[["complex_name"]]){
+      complex_b = complexes[complexes[["complex_name"]] == partner_b,]
+      component_b = as.character(
+        complex_b[, c("uniprot_1", "uniprot_2", "uniprot_3", "uniprot_4")]
+      )
+      component_b = component_b[component_b != ""]
+      b_features[["uniprot_B"]] = paste(component_b, collapse = ",")
+      gene_b = sapply(component_b, function(x){
+        g = unique(genes[genes[["uniprot"]] == x, c("gene_name")])
+        if(!is.null(gene_conv)){g = conv_dict[conv_dict[,1] %in% g, 2]}
+        return(g)
       }
+      )
+      b_features[["gene_B"]] = paste(gene_b, collapse = ",")
+      # annotation as a receptor or ligand is based on the annotation of the complex
+      b_features[["type_B"]] = ifelse(complex_b[["receptor"]], "R", "L")
+      b_features[["name_B"]] = partner_b
+    } else if(partner_b %in% proteins[["uniprot"]]) {
+      protein_b = proteins[proteins[["uniprot"]] == partner_b,]
+      component_b = protein_b[["uniprot"]]
+      b_features[["uniprot_B"]] = component_b
+      gene_b = unique(genes[genes[["uniprot"]] == component_b, c("gene_name")])
+      if(!is.null(gene_conv)){gene_b = conv_dict[conv_dict[,1] %in% gene_b, 2]}
+      b_features[["gene_B"]] = gene_b
+      b_features[["type_B"]] = ifelse(protein_b[["receptor"]], "R", "L")
+      b_features[["name_B"]] = gene_b
+    } else {
+      next
     }
+    b_df = as.data.frame(b_features)
+    i_features = cbind(a_df, b_df)
+    
+    i_features[["int_pair"]] = 
+      paste(i_features[["name_A"]], i_features[["name_B"]], sep = " & ")
+    rl_map <- rbind(i_features, rl_map)
   }
+  # exclude rows without receptor-ligand interactions
+  rl_map <- rl_map[!(rl_map$type_A == "R" & rl_map$type_B == "R") &
+                     !(rl_map$type_A == "L" & rl_map$type_B == "L"),]
   
-  # Get genes for receptors
-  rec_prots = as.character(unique(rl_map[,c("receptor_uniprot")]))
-  rec_orig = genes[match(rec_prots, genes[,c("uniprot")]),c("hgnc_symbol")]
-  rl_map = data.frame(rl_map)
-  rl_map = add_rl_column(rl_map, 'receptor_uniprot', cbind(rec_prots, rec_orig), 
-                         'receptor_name')
-  
-  # Get genes for ligands
-  lig_prots = as.character(unique(rl_map[,c("ligand_uniprot")]))
-  lig_orig = genes[match(lig_prots, genes[,c("uniprot")]),c("hgnc_symbol")]
-  rl_map = add_rl_column(rl_map, 'ligand_uniprot', cbind(lig_prots, lig_orig), 
-                         'ligand_name')
-  
-  # Convert if needed
-  if(!is.null(gene_conv)){
-    conv = convert_genes(rl_map$R.orig, from = gene_conv[1], to = gene_conv[2], 
-                         host = gene_conv_host)
-    rl_map = add_rl_column(rl_map, 'receptor_name', conv, 'receptor_conversion')
-    conv = convert_genes(rl_map$L.orig, from = gene_conv[1], to = gene_conv[2], 
-                         host = gene_conv_host)
-    rl_map = add_rl_column(rl_map, 'ligand_name', conv, 'ligand_conversion')
-    tar_lr_cols = c('receptor_conversion', 'ligand_conversion')
-  }
-  
-  # Remove duplicate rows then build rl linkage
-  rl_map = unique.data.frame(rl_map)
-  # order columns of the rl_map to begin with required name columns
-  rl_map = rl_map[, c("receptor_name", "ligand_name", "receptor_uniprot", "ligand_uniprot")]
-  # meta annotations of receptors and ligands
-  
-  # annotate protein complexes
-  
-  # include source database
-  rl_map[["source_database"]] = database_name
-  
+  # specify column order
+  rl_map <- rl_map[, c("int_pair", 
+                       "name_A", "uniprot_A", "gene_A", "type_A",
+                       "name_B", "uniprot_B", "gene_B", "type_B")]
   return(rl_map)
 }
 
