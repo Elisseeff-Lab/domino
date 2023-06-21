@@ -139,6 +139,8 @@ create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = 
     
     i_features[["int_pair"]] = 
       paste(i_features[["name_A"]], i_features[["name_B"]], sep = " & ")
+    i_features[["annotation_strategy"]] = inter[["annotation_strategy"]]
+    i_features[["source"]] = inter[["source"]]
     rl_map <- rbind(i_features, rl_map)
   }
   # exclude rows without receptor-ligand interactions
@@ -148,7 +150,8 @@ create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = 
   # specify column order
   rl_map <- rl_map[, c("int_pair", 
                        "name_A", "uniprot_A", "gene_A", "type_A",
-                       "name_B", "uniprot_B", "gene_B", "type_B")]
+                       "name_B", "uniprot_B", "gene_B", "type_B",
+                       "annotation_strategy", "source")]
   return(rl_map)
 }
 
