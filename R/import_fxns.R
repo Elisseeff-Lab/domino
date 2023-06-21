@@ -24,7 +24,6 @@ create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = 
   if(class(complexes)[1] == "character"){
     complexes = read.csv(complexes, stringsAsFactors = FALSE)
   }
-  tar_lr_cols = c('receptor_name', 'ligand_name')
   
   # replace empty cells in columns annotating gene properties with "False"
   # There are some unannotated genes in database v2.0 that seem to have been fixed in v4.0
@@ -60,6 +59,8 @@ create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = 
     # obtain conversion dictionary
     conv_dict = convert_genes(
       genes$gene_name, from = gene_conv[1], to = gene_conv[2], host = gene_conv_host)
+    # column 1 is the source gene names used by the reference data base
+    # column 2 is the orthologous gene names for the organism to which the reference is being converted
   }
   
   # Step through the interactions and build rl connections.
@@ -69,6 +70,7 @@ create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = 
     inter = interactions[i,]
     partner_a = inter[["partner_a"]]
     partner_b = inter[["partner_b"]]
+    conversion_flag = list()
     
     # features of partner_a
     a_features <- list()
@@ -81,7 +83,14 @@ create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = 
       a_features[["uniprot_A"]] = paste(component_a, collapse = ",")
       gene_a = sapply(component_a, function(x){
         g = unique(genes[genes[["uniprot"]] == x, c("gene_name")])
-        if(!is.null(gene_conv)){g = conv_dict[conv_dict[,1] %in% g, 2]}
+        if(!is.null(gene_conv)){
+          # if the original gene trying to be converted is not in the gene dictionary
+          # the interaction is not included in the final rl_map
+          if(sum(g %in% conv_dict[,1]) < length(g)){
+            for(gn in g) {conversion_flag[[gn]] = TRUE}
+          }
+          else{g = paste(conv_dict[conv_dict[,1] %in% g, 2], collapse = ";")}
+        }
         return(g)
         }
       )
@@ -94,11 +103,24 @@ create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = 
       component_a = protein_a[["uniprot"]]
       a_features[["uniprot_A"]] = component_a
       gene_a = unique(genes[genes[["uniprot"]] == component_a, c("gene_name")])
-      if(!is.null(gene_conv)){gene_a = conv_dict[conv_dict[,1] %in% gene_a, 2]}
+      if(!is.null(gene_conv)){
+        # if the original gene trying to be converted is not in the gene dictionary
+        # the interaction is not included in the final rl_map
+        if(sum(gene_a %in% conv_dict[,1]) < length(gene_a)){
+          for(gn in gene_a) {conversion_flag[[gn]] = TRUE}
+        }
+        else{gene_a = conv_dict[conv_dict[,1] %in% gene_a, 2]}
+      }
+      gene_a = paste(gene_a, collapse = ";")
       a_features[["gene_A"]] = gene_a
       a_features[["type_A"]] = ifelse(protein_a[["receptor"]], "R", "L")
       a_features[["name_A"]] = gene_a
     } else {
+      next
+    }
+    if(length(conversion_flag)){
+      print(paste("No gene orthologs found for:", names(conversion_flag), collapse = " "))
+      print(paste("Skipping interaction:", partner_a, partner_b, collapse = " "))
       next
     }
     a_df <- as.data.frame(a_features)
@@ -114,7 +136,14 @@ create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = 
       b_features[["uniprot_B"]] = paste(component_b, collapse = ",")
       gene_b = sapply(component_b, function(x){
         g = unique(genes[genes[["uniprot"]] == x, c("gene_name")])
-        if(!is.null(gene_conv)){g = conv_dict[conv_dict[,1] %in% g, 2]}
+        if(!is.null(gene_conv)){
+          # if the original gene trying to be converted is not in the gene dictionary
+          # the interaction is not included in the final rl_map
+          if(sum(g %in% conv_dict[,1]) < length(g)){
+            for(gn in g) {conversion_flag[[gn]] = TRUE}
+          }
+          else{g = paste(conv_dict[conv_dict[,1] %in% g, 2], collapse = ";")}
+        }
         return(g)
       }
       )
@@ -127,11 +156,24 @@ create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = 
       component_b = protein_b[["uniprot"]]
       b_features[["uniprot_B"]] = component_b
       gene_b = unique(genes[genes[["uniprot"]] == component_b, c("gene_name")])
-      if(!is.null(gene_conv)){gene_b = conv_dict[conv_dict[,1] %in% gene_b, 2]}
+      if(!is.null(gene_conv)){
+        # if the original gene trying to be converted is not in the gene dictionary
+        # the interaction is not included in the final rl_map
+        if(sum(gene_b %in% conv_dict[,1]) < length(gene_b)){
+          for(gn in gene_b) {conversion_flag[[gn]] = TRUE}
+        }
+        else{gene_b = conv_dict[conv_dict[,1] %in% gene_b, 2]}
+      }
+      gene_a = paste(gene_b, collapse = ";")
       b_features[["gene_B"]] = gene_b
       b_features[["type_B"]] = ifelse(protein_b[["receptor"]], "R", "L")
       b_features[["name_B"]] = gene_b
     } else {
+      next
+    }
+    if(length(conversion_flag)){
+      print(paste("No gene orthologs found for:", names(conversion_flag), collapse = " "))
+      print(paste("Skipping interaction:", partner_a, partner_b, collapse = " "))
       next
     }
     b_df = as.data.frame(b_features)
@@ -141,6 +183,7 @@ create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = 
       paste(i_features[["name_A"]], i_features[["name_B"]], sep = " & ")
     i_features[["annotation_strategy"]] = inter[["annotation_strategy"]]
     i_features[["source"]] = inter[["source"]]
+    i_features[["database_name"]] = database_name
     rl_map <- rbind(i_features, rl_map)
   }
   # exclude rows without receptor-ligand interactions
@@ -151,7 +194,7 @@ create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = 
   rl_map <- rl_map[, c("int_pair", 
                        "name_A", "uniprot_A", "gene_A", "type_A",
                        "name_B", "uniprot_B", "gene_B", "type_B",
-                       "annotation_strategy", "source")]
+                       "annotation_strategy", "source", "database_name")]
   return(rl_map)
 }
 
