@@ -82,12 +82,12 @@ build_domino = function(dom, max_tf_per_clust = 5, min_tf_pval = .01,
               expressed = c(expressed, rec)
             }
           } 
-        active_tf = dom@linkages$clust_tf[[clust]]
-        cl_tf_rec[[clust]] =
-            lapply(dom@linkages$tf_rec[active_tf], 
-                   FUN = function(x){return(x[x %in% names(expressed)])}
-                   )
-        }
+          active_tf = dom@linkages$clust_tf[[clust]]
+          cl_tf_rec[[clust]] =
+              lapply(dom@linkages$tf_rec[active_tf], 
+                     FUN = function(x){return(x[x %in% expressed])}
+                     )
+          }
         dom@linkages[['clust_tf_rec']] = cl_tf_rec
         
         # Get a list of active receptors for each cluster
