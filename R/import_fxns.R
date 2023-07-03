@@ -97,7 +97,8 @@ create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = 
       a_features[["gene_A"]] = paste(gene_a, collapse = ",")
       # annotation as a receptor or ligand is based on the annotation of the complex
       a_features[["type_A"]] = ifelse(complex_a[["receptor"]], "R", "L")
-      a_features[["name_A"]] = partner_a
+      # replace any spaces in the partner name with an underscore
+      a_features[["name_A"]] = gsub(" ", "_", partner_a)
     } else if(partner_a %in% proteins[["uniprot"]]) {
       protein_a = proteins[proteins[["uniprot"]] == partner_a,]
       component_a = protein_a[["uniprot"]]
@@ -150,7 +151,8 @@ create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = 
       b_features[["gene_B"]] = paste(gene_b, collapse = ",")
       # annotation as a receptor or ligand is based on the annotation of the complex
       b_features[["type_B"]] = ifelse(complex_b[["receptor"]], "R", "L")
-      b_features[["name_B"]] = partner_b
+      # replace any spaces in the partner name with an underscore
+      b_features[["name_B"]] = gsub(" ", "_", partner_b)
     } else if(partner_b %in% proteins[["uniprot"]]) {
       protein_b = proteins[proteins[["uniprot"]] == partner_b,]
       component_b = protein_b[["uniprot"]]
