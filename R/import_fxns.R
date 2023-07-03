@@ -482,6 +482,7 @@ create_domino = function(rl_map, features, ser = NULL, counts = NULL,
     dom@cor = c_cor
     
     # If cluster methods are used, calculate percentage of non-zero expression of receptor genes in clusters
+
     if(tf_selection_method == 'clusters'){
       cl_rec_percent = NULL
       for(rec in ser_receptors){
