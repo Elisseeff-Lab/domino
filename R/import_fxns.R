@@ -480,6 +480,23 @@ create_domino = function(rl_map, features, ser = NULL, counts = NULL,
     }
     c_cor = t(as.data.frame(cor_list))
     dom@cor = c_cor
+    
+    # If cluster methods are used, calculate percentage of non-zero expression of receptor genes in clusters
+    if(tf_selection_method == 'clusters'){
+      cl_rec_percent = NULL
+      for(rec in ser_receptors){
+        rec_percent <- sapply(
+          X = levels(dom@clusters),
+          FUN = function(x){
+            # percentage of cells in cluster with non-zero expression of receptor gene
+            sum(dom@counts[rec,dom@clusters == x] > 0) / length(dom@counts[rec,dom@clusters == x])
+          }
+        )
+        cl_rec_percent <- rbind(cl_rec_percent, rec_percent)
+      }
+      rownames(cl_rec_percent) = ser_receptors
+      dom@misc$cl_rec_percent = cl_rec_percent
+    }
     return(dom)
 }
 
