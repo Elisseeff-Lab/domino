@@ -220,7 +220,7 @@ create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = 
 #' @param gene_conv Optional. Vector of length two containing some combination of 'ENSMUSG', 'ENSG', 'MGI', or 'HGNC' where the first vector is the current gene format in the database and the second is the gene format in the data set. If present, the function will use biomaRt to convert the database to the data sets gene format.
 #' @param gene_conv_host Optional. Host to connect to when using gene_conv. Defaults to https://www.ensembl.org following the useMart default, but can be changed to archived hosts if useMart fails to connect.
 #' @param verbose Boolean indicating whether or not to print progress during computation.
-#' @param use_complexes Boolean indicating whether you wish to use receptor/ligand complexes in the receptor ligand signaling database. This may lead to problems if genes which are preserved acrossed many functionally different signaling complexes are found highly expressed or correlated with features in your data set.
+#' @param use_complexes Boolean indicating whether you wish to use receptor/ligand complexes in the receptor ligand signaling database. If FALSE, receptor/ligand pairs where either functions as a protein complex will not be considered when constructing the signaling network.
 #' @param rec_min_thresh Minimum expression level of receptors by cell. Default is 0.025 or 2.5 percent of all cells in the data set. This is important when calculating correlation to connect receptors to transcription activation. If this threshold is too low then correlation calculations will proceed with very few cells with non-zero expression.
 #' @param remove_rec_dropout Whether to remove receptors with 0 expression counts when calculating correlations. This can reduce false positive correlation calculations when receptors have high dropout rates.
 #' @param tf_selection_method Selection of which method to target transcription factors. If 'clusters' then differential expression for clusters will be calculated. If 'variable' then the most variable transcription factors will be selected. If 'all' then all transcription factors in the feature matrix will be used. Default is 'clusters'. Note that if you wish to use clusters for intercellular signaling downstream to MUST choose clusters.
@@ -262,10 +262,14 @@ create_domino = function(rl_map, features, ser = NULL, counts = NULL,
     }
     
     # check for receptors that match receptor complex syntax of comma seperated genes
-    rl_map_complex_index <- which(
-      (grepl("\\,", rl_map[["gene_A"]]) & rl_map[["type_A"]] == "R") |
-        (grepl("\\,", rl_map[["gene_B"]]) & rl_map[["type_B"]] == "R")
+    non_complex_index <- which(
+      !grepl("\\,", rl_map[["gene_A"]]) & !grepl("\\,", rl_map[["gene_B"]])
     )
+    
+    # discard interactions including complexes if requested
+    if(use_complexes == FALSE){
+      rl_map <- rl_map[non_complex_index,]
+    }
     
     # Get genes for receptors
     rl_reading <- NULL
@@ -274,56 +278,15 @@ create_domino = function(rl_map, features, ser = NULL, counts = NULL,
       inter = rl_map[i,]
       p = ifelse(inter[["type_A"]] == "R", "A", "B")
       q = ifelse(p == "A", "B", "A")
-      
-      if(i %in% rl_map_complex_index & use_complexes == FALSE){
-        R.gene = unlist(
-          strsplit(
-            inter[[paste0("gene_", p)]], split = "\\,"
-          )
-        )
-        L.gene = inter[[paste0("gene_", q)]]
-        RL.genes = NULL
-        for(r in R.gene){
-          rl_align = cbind(r, L.gene)
-          RL.genes = rbind(RL.genes, rl_align)
-        }
-        rl[["R.gene"]] = RL.genes[,1]
-        rl[["L.gene"]] = RL.genes[,2]
-        if(paste0("uniprot_",p) %in% names(inter)){
-          R.uniprot = unlist(
-            strsplit(
-              inter[[paste0("uniprot_", p)]], split = "\\,"
-            )
-          )
-        }
-        if(paste0("uniprot_",q) %in% names(inter)){L.uniprot = inter[[paste0("uniprot_",q)]]}
-        if("uniprot_A" %in% names(inter) & "uniprot_B" %in% names(inter)){
-          RL.uniprots = NULL
-          for(r in R.uniprot){
-            rl_align = cbind(r, L.uniprot)
-            RL.uniprots = rbind(RL.uniprots, rl_align)
-          }
-          rl[["R.uniprot"]] = RL.uniprots[,1]
-          rl[["L.uniprot"]] = RL.uniprots[,2]
-        }
-        for(r in R.gene){
-          rl_align = cbind(r, L.gene)
-          RL.genes = rbind(rl_align)
-        }
-        if(paste0("name_",p) %in% names(inter)){rl[["R.name"]] = inter[[paste0("name_",p)]]}
-        if(paste0("name_",q) %in% names(inter)){rl[["L.name"]] = inter[[paste0("name_",q)]]}
-        rl = as.data.frame(rl)
-      } else {
-        R.gene = inter[[paste0("gene_", p)]]
-        L.gene = inter[[paste0("gene_", q)]]
-        rl[["R.gene"]] = R.gene
-        rl[["L.gene"]] = L.gene
-        if(paste0("uniprot_",p) %in% names(inter)){rl[["R.uniprot"]] = inter[[paste0("uniprot_",p)]]}
-        if(paste0("uniprot_",q) %in% names(inter)){rl[["L.uniprot"]] = inter[[paste0("uniprot_",q)]]}
-        if(paste0("name_",p) %in% names(inter)){rl[["R.name"]] = inter[[paste0("name_",p)]]}
-        if(paste0("name_",q) %in% names(inter)){rl[["L.name"]] = inter[[paste0("name_",q)]]}
-        rl = as.data.frame(rl)
-      }
+      R.gene = inter[[paste0("gene_", p)]]
+      L.gene = inter[[paste0("gene_", q)]]
+      rl[["R.gene"]] = R.gene
+      rl[["L.gene"]] = L.gene
+      if(paste0("uniprot_",p) %in% names(inter)){rl[["R.uniprot"]] = inter[[paste0("uniprot_",p)]]}
+      if(paste0("uniprot_",q) %in% names(inter)){rl[["L.uniprot"]] = inter[[paste0("uniprot_",q)]]}
+      if(paste0("name_",p) %in% names(inter)){rl[["R.name"]] = inter[[paste0("name_",p)]]}
+      if(paste0("name_",q) %in% names(inter)){rl[["L.name"]] = inter[[paste0("name_",q)]]}
+      rl = as.data.frame(rl)
       rl_reading = rbind(rl_reading, rl)
     }
     # save a list of complexes and their components
@@ -338,25 +301,11 @@ create_domino = function(rl_map, features, ser = NULL, counts = NULL,
       dom@linkages$complexes = complex_list
     }
     
-    # compile receptor gene list for correlation tests
-    noncomplex_index = which(
-      (!grepl("\\,", rl_reading[["R.gene"]])) & (!grepl("\\,", rl_reading[["L.gene"]]))
-    )
+    rec_genes = unique(unlist(strsplit(rl_reading[["R.gene"]], split = "\\,")))
+    rec_names = rl_reading[["R.name"]]
+    lig_genes = unique(unlist(strsplit(rl_reading[["L.gene"]], split = "\\,")))
+    lig_names = rl_reading[["L.name"]]
     
-    if(use_complexes == TRUE){
-      rec_genes = unique(unlist(strsplit(rl_reading[["R.gene"]], split = "\\,")))
-      rec_names = rl_reading[["R.name"]]
-      lig_genes = unique(unlist(strsplit(rl_reading[["L.gene"]], split = "\\,")))
-      lig_names = rl_reading[["L.name"]]
-    }
-    if(use_complexes == FALSE){
-      # exclude interactions including complexes
-      rl_reading = rl_reading[noncomplex_index,]
-      rec_genes = rl_reading[["R.gene"]]
-      rec_names = rl_reading[["R.name"]]
-      lig_genes = rl_reading[["L.gene"]]
-      lig_names = rl_reading[["L.name"]]
-    }
     # building RL linkages
     rec_lig_linkage = list()
     for(rec in rec_names){
@@ -501,27 +450,34 @@ create_domino = function(rl_map, features, ser = NULL, counts = NULL,
         rho[,module] = rhorow
     }
     colnames(rho) = rownames(dom@features)
-    dom@cor = rho
-    # assess geometric mean of correlations among genes in the same receptor complex
-    if(use_complexes == TRUE){
-      complex_cor_list = list()
-      for(comp in names(dom@linkages$complexes)){
-        # skip complexes not annotated as receptors
-        if(!comp %in% rl_reading[["R.name"]]){next}
-        comp_genes = dom@linkages$complexes[[comp]]
-        if(sum(rownames(dom@cor) %in% comp_genes) != length(comp_genes)){
-          print(paste0(comp, " has component genes that did not pass testing parameters"))
-          complex_cor_list[[comp]] = rep(0, ncol(dom@cor))
-        } else {
-          comp_gene_cor = dom@cor[rownames(dom@cor) %in% comp_genes,]
-          # cor_geo = apply(comp_gene_cor, 2, function(x){exp(mean(log(x)))})
-          cor_med = apply(comp_gene_cor, 2, function(x){median(x)})
-          complex_cor_list[[comp]] = cor_med
-        }
+    dom@misc$rec_cor = rho
+    
+    # assess correlation among genes in the same receptor complex
+    cor_list = list()
+    for(i in 1:length(names(dom@linkages$rec_lig))){
+      r <- names(dom@linkages$rec_lig)[i]
+      if(r %in% names(dom@linkages$complexes)){
+        r_genes = dom@linkages$complexes[[r]]
+      } else {
+        r_genes = r
       }
-    complex_cor = t(as.data.frame(complex_cor_list))
-    dom@misc$complex_cor = complex_cor
+      
+      if(sum(rownames(rho) %in% r_genes) != length(r_genes)){
+        print(paste0(r, " has component genes that did not pass testing parameters"))
+        cor_list[[r]] = rep(0, ncol(rho))
+        next
+      } 
+      
+      if(length(r_genes) > 1){
+        gene_cor = rho[rownames(rho) %in% r_genes,]
+        cor_med = apply(gene_cor, 2, function(x){median(x)})
+        cor_list[[r]] = cor_med
+      } else {
+        cor_list[[r]] = rho[rownames(rho) == r_genes,]
+      }
     }
+    c_cor = t(as.data.frame(cor_list))
+    dom@cor = c_cor
     return(dom)
 }
 
