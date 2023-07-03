@@ -1,3 +1,206 @@
+#' Create a receptor-ligand map from a cellphonedb signaling database
+#' 
+#' DESC
+#' 
+#' @param genes dataframe or file path to table of gene names in uniprot, hgnc_symbol, or ensembl format in cellphonedb database format
+#' @param proteins dataframe or file path to table of protein features in cellphonedb format
+#' @param interactions dataframe or file path to table of protein-protein interactions in cellphonedb format
+#' @param complexes optional: dataframe or file path to table of protein complexes in cellphonedb format
+#' @return Data frame where each row describes a possible receptor-ligand interaction
+#' @export
+#' 
+create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = NULL,
+                                     database_name = "CellPhoneDB",
+                                     gene_conv = NULL, gene_conv_host = "https://www.ensembl.org"){
+  if(class(genes)[1] == "character"){
+    genes = read.csv(genes, stringsAsFactors = FALSE)
+  }
+  if(class(proteins)[1] == "character"){
+    proteins = read.csv(proteins, stringsAsFactors = FALSE)
+  }
+  if(class(interactions)[1] == "character"){
+    interactions = read.csv(interactions, stringsAsFactors = FALSE)
+  }
+  if(class(complexes)[1] == "character"){
+    complexes = read.csv(complexes, stringsAsFactors = FALSE)
+  }
+  
+  # replace empty cells in columns annotating gene properties with "False"
+  # There are some unannotated genes in database v2.0 that seem to have been fixed in v4.0
+  gene_features = c("transmembrane", "peripheral", "secreted", "secreted_highlight", "receptor", "integrin", "other")
+  proteins[proteins$receptor == "", colnames(proteins) %in% gene_features] = "False"
+  
+  # change cases of True/False syntax from Python to TRUE/FALSE R syntax
+  for(x in colnames(genes)){
+    if(identical(unique(genes[[x]]), c("True", "False")) | identical(unique(genes[[x]]), c("False", "True"))){
+      genes[[x]] <- ifelse(genes[[x]] == "True", TRUE, FALSE)
+    }
+  }
+  for(x in colnames(proteins)){
+    if(identical(unique(proteins[[x]]), c("True", "False")) | identical(unique(proteins[[x]]), c("False", "True"))){
+      proteins[[x]] <- ifelse(proteins[[x]] == "True", TRUE, FALSE)
+    }
+  }
+  for(x in colnames(interactions)){
+    if(identical(unique(interactions[[x]]), c("True", "False")) | identical(unique(interactions[[x]]), c("False", "True"))){
+      interactions[[x]] <- ifelse(interactions[[x]] == "True", TRUE, FALSE)
+    }
+  }
+  if(!is.null(complexes)){
+    for(x in colnames(complexes)){
+      if(identical(unique(complexes[[x]]), c("True", "False")) | identical(unique(complexes[[x]]), c("False", "True"))){
+        complexes[[x]] <- ifelse(complexes[[x]] == "True", TRUE, FALSE)
+      }
+    }
+  }
+  
+  # gene conversions
+  if(!is.null(gene_conv)){
+    # obtain conversion dictionary
+    conv_dict = convert_genes(
+      genes$gene_name, from = gene_conv[1], to = gene_conv[2], host = gene_conv_host)
+    # column 1 is the source gene names used by the reference data base
+    # column 2 is the orthologous gene names for the organism to which the reference is being converted
+  }
+  
+  # Step through the interactions and build rl connections.
+  rl_map <- NULL
+  
+  for(i in 1:nrow(interactions)){
+    inter = interactions[i,]
+    partner_a = inter[["partner_a"]]
+    partner_b = inter[["partner_b"]]
+    conversion_flag = list()
+    
+    # features of partner_a
+    a_features <- list()
+    if(partner_a %in% complexes[["complex_name"]]){
+      complex_a = complexes[complexes[["complex_name"]] == partner_a,]
+      component_a = as.character(
+        complex_a[, c("uniprot_1", "uniprot_2", "uniprot_3", "uniprot_4")]
+      )
+      component_a = component_a[component_a != ""]
+      a_features[["uniprot_A"]] = paste(component_a, collapse = ",")
+      gene_a = sapply(component_a, function(x){
+        g = unique(genes[genes[["uniprot"]] == x, c("gene_name")])
+        if(!is.null(gene_conv)){
+          # if the original gene trying to be converted is not in the gene dictionary
+          # the interaction is not included in the final rl_map
+          if(sum(g %in% conv_dict[,1]) < length(g)){
+            for(gn in g) {conversion_flag[[gn]] = TRUE}
+          }
+          else{g = paste(unique(conv_dict[conv_dict[,1] %in% g, 2]), collapse = ";")}
+        }
+        return(g)
+        }
+      )
+      a_features[["gene_A"]] = paste(gene_a, collapse = ",")
+      # annotation as a receptor or ligand is based on the annotation of the complex
+      a_features[["type_A"]] = ifelse(complex_a[["receptor"]], "R", "L")
+      # replace any spaces in the partner name with an underscore
+      a_features[["name_A"]] = gsub(" ", "_", partner_a)
+    } else if(partner_a %in% proteins[["uniprot"]]) {
+      protein_a = proteins[proteins[["uniprot"]] == partner_a,]
+      component_a = protein_a[["uniprot"]]
+      a_features[["uniprot_A"]] = component_a
+      gene_a = unique(genes[genes[["uniprot"]] == component_a, c("gene_name")])
+      if(!is.null(gene_conv)){
+        # if the original gene trying to be converted is not in the gene dictionary
+        # the interaction is not included in the final rl_map
+        if(sum(gene_a %in% conv_dict[,1]) < length(gene_a)){
+          for(gn in gene_a) {conversion_flag[[gn]] = TRUE}
+        }
+        else{gene_a = unique(conv_dict[conv_dict[,1] %in% gene_a, 2])}
+      }
+      gene_a = paste(gene_a, collapse = ";")
+      a_features[["gene_A"]] = gene_a
+      a_features[["type_A"]] = ifelse(protein_a[["receptor"]], "R", "L")
+      a_features[["name_A"]] = gene_a
+    } else {
+      next
+    }
+    if(length(conversion_flag)){
+      print(paste("No gene orthologs found for:", names(conversion_flag), collapse = " "))
+      print(paste("Skipping interaction:", partner_a, partner_b, collapse = " "))
+      next
+    }
+    a_df <- as.data.frame(a_features)
+    
+    # features of partner_b
+    b_features <- list()
+    if(partner_b %in% complexes[["complex_name"]]){
+      complex_b = complexes[complexes[["complex_name"]] == partner_b,]
+      component_b = as.character(
+        complex_b[, c("uniprot_1", "uniprot_2", "uniprot_3", "uniprot_4")]
+      )
+      component_b = component_b[component_b != ""]
+      b_features[["uniprot_B"]] = paste(component_b, collapse = ",")
+      gene_b = sapply(component_b, function(x){
+        g = unique(genes[genes[["uniprot"]] == x, c("gene_name")])
+        if(!is.null(gene_conv)){
+          # if the original gene trying to be converted is not in the gene dictionary
+          # the interaction is not included in the final rl_map
+          if(sum(g %in% conv_dict[,1]) < length(g)){
+            for(gn in g) {conversion_flag[[gn]] = TRUE}
+          }
+          else{g = paste(unique(conv_dict[conv_dict[,1] %in% g, 2]), collapse = ";")}
+        }
+        return(g)
+      }
+      )
+      b_features[["gene_B"]] = paste(gene_b, collapse = ",")
+      # annotation as a receptor or ligand is based on the annotation of the complex
+      b_features[["type_B"]] = ifelse(complex_b[["receptor"]], "R", "L")
+      # replace any spaces in the partner name with an underscore
+      b_features[["name_B"]] = gsub(" ", "_", partner_b)
+    } else if(partner_b %in% proteins[["uniprot"]]) {
+      protein_b = proteins[proteins[["uniprot"]] == partner_b,]
+      component_b = protein_b[["uniprot"]]
+      b_features[["uniprot_B"]] = component_b
+      gene_b = unique(genes[genes[["uniprot"]] == component_b, c("gene_name")])
+      if(!is.null(gene_conv)){
+        # if the original gene trying to be converted is not in the gene dictionary
+        # the interaction is not included in the final rl_map
+        if(sum(gene_b %in% conv_dict[,1]) < length(gene_b)){
+          for(gn in gene_b) {conversion_flag[[gn]] = TRUE}
+        }
+        else{gene_b = unique(conv_dict[conv_dict[,1] %in% gene_b, 2])}
+      }
+      gene_a = paste(gene_b, collapse = ";")
+      b_features[["gene_B"]] = gene_b
+      b_features[["type_B"]] = ifelse(protein_b[["receptor"]], "R", "L")
+      b_features[["name_B"]] = gene_b
+    } else {
+      next
+    }
+    if(length(conversion_flag)){
+      print(paste("No gene orthologs found for:", names(conversion_flag), collapse = " "))
+      print(paste("Skipping interaction:", partner_a, partner_b, collapse = " "))
+      next
+    }
+    b_df = as.data.frame(b_features)
+    i_features = cbind(a_df, b_df)
+    
+    i_features[["int_pair"]] = 
+      paste(i_features[["name_A"]], i_features[["name_B"]], sep = " & ")
+    i_features[["annotation_strategy"]] = inter[["annotation_strategy"]]
+    i_features[["source"]] = inter[["source"]]
+    i_features[["database_name"]] = database_name
+    rl_map <- rbind(i_features, rl_map)
+  }
+  # exclude rows without receptor-ligand interactions
+  rl_map <- rl_map[!(rl_map$type_A == "R" & rl_map$type_B == "R") &
+                     !(rl_map$type_A == "L" & rl_map$type_B == "L"),]
+  
+  # specify column order
+  rl_map <- rl_map[, c("int_pair", 
+                       "name_A", "uniprot_A", "gene_A", "type_A",
+                       "name_B", "uniprot_B", "gene_B", "type_B",
+                       "annotation_strategy", "source", "database_name")]
+  return(rl_map)
+}
+
+
 #' Create a domino object and prepare it for network construction
 #' 
 #' This function reads in a receptor ligand signaling database, cell level 
@@ -8,7 +211,7 @@
 #' domino object prepared for build_domino, which will calculate a signaling 
 #' network.
 #' 
-#' @param signaling_db Path to directory of signaling database directory. The directory must include genes.csv, proteins.csv, interactions.csv, and complexes.csv formated according to cellphonedb2 syntax.
+#' @param rl_map data frame where each row describes a receptor-ligand interaction with required columns gene_A & gene_B including the gene names for the receptor and ligand and type_A & type_B annotating if genes A and B are a ligand (L) or receptor (R)
 #' @param features Either a path to a csv containing cell level features of interest (ie. the auc matrix from pySCENIC) or named matrix with cells as columns and features as rows.
 #' @param ser A Seurat object containing scaled RNA expression data in the RNA assay slot and cluster identity. Either a ser object OR z_scores and clusters must be provided. If ser is present z_scores and clusters will be ignored.
 #' @param counts The counts matrix for the data. If a Seurat object is provided this will be ignored. This is only used to threshold receptors on dropout.
@@ -19,7 +222,7 @@
 #' @param gene_conv Optional. Vector of length two containing some combination of 'ENSMUSG', 'ENSG', 'MGI', or 'HGNC' where the first vector is the current gene format in the database and the second is the gene format in the data set. If present, the function will use biomaRt to convert the database to the data sets gene format.
 #' @param gene_conv_host Optional. Host to connect to when using gene_conv. Defaults to https://www.ensembl.org following the useMart default, but can be changed to archived hosts if useMart fails to connect.
 #' @param verbose Boolean indicating whether or not to print progress during computation.
-#' @param use_complexes Boolean indicating whether you wish to use receptor/ligand complexes in the receptor ligand signaling database. This may lead to problems if genes which are preserved acrossed many functionally different signaling complexes are found highly expressed or correlated with features in your data set.
+#' @param use_complexes Boolean indicating whether you wish to use receptor/ligand complexes in the receptor ligand signaling database. If FALSE, receptor/ligand pairs where either functions as a protein complex will not be considered when constructing the signaling network.
 #' @param rec_min_thresh Minimum expression level of receptors by cell. Default is 0.025 or 2.5 percent of all cells in the data set. This is important when calculating correlation to connect receptors to transcription activation. If this threshold is too low then correlation calculations will proceed with very few cells with non-zero expression.
 #' @param remove_rec_dropout Whether to remove receptors with 0 expression counts when calculating correlations. This can reduce false positive correlation calculations when receptors have high dropout rates.
 #' @param tf_selection_method Selection of which method to target transcription factors. If 'clusters' then differential expression for clusters will be calculated. If 'variable' then the most variable transcription factors will be selected. If 'all' then all transcription factors in the feature matrix will be used. Default is 'clusters'. Note that if you wish to use clusters for intercellular signaling downstream to MUST choose clusters.
@@ -27,7 +230,7 @@
 #' @return A domino object.
 #' @export
 #'
-create_domino = function(signaling_db, features, ser = NULL, counts = NULL, 
+create_domino = function(rl_map, features, ser = NULL, counts = NULL, 
     z_scores = NULL, clusters = NULL, use_clusters = TRUE, df = NULL, 
     gene_conv = NULL, gene_conv_host = "https://www.ensembl.org",
     verbose = TRUE, use_complexes = TRUE, 
@@ -35,7 +238,6 @@ create_domino = function(signaling_db, features, ser = NULL, counts = NULL,
     tf_selection_method = 'clusters', tf_variance_quantile = .5){
 
     dom = domino()
-    dom@misc[['tar_lr_cols']] = c('R.orig', 'L.orig')
     dom@misc[['create']] = TRUE
     dom@misc[['build']] = FALSE
     dom@misc[['build_vars']] = NULL
@@ -50,128 +252,71 @@ create_domino = function(signaling_db, features, ser = NULL, counts = NULL,
     }
 
     # Read in lr db info
-    if(verbose){print('Reading in and processing signaling database')}
-    genes = read.csv(paste0(signaling_db, '/genes.csv'),
-        stringsAsFactors = FALSE)
-    proteins = read.csv(paste0(signaling_db, '/proteins.csv'),
-        stringsAsFactors = FALSE)
-    interactions = read.csv(paste0(signaling_db, '/interactions.csv'),
-        stringsAsFactors = FALSE)
-    complexes = read.csv(paste0(signaling_db, '/complexes.csv'),
-        stringsAsFactors = FALSE)
-    
-    dom@db_info = list(genes = genes, proteins = proteins, 
-        interactions = interactions, complexes = complexes)
-
-    # Get all possible rec/ligs
-    rec_uniprot = proteins$uniprot[which(proteins$receptor == 'True')]
-    lig_uniprot = proteins$uniprot[which(proteins$receptor != 'True')]
-    if(use_complexes){
-        rec_complexes = complexes$complex_name[
-            which(complexes$receptor == TRUE)]
-        lig_complexes = complexes$complex_name[
-            which(complexes$receptor != TRUE)]
+    if(verbose){
+      print('Reading in and processing signaling database')
     }
     
-    # Step through the interactions and build rl connections.
-    rl_map = matrix(0, ncol = 2, nrow = 0)
-    colnames(rl_map) = c('R.uniprot', 'L.uniprot')
-    for(i in 1:nrow(interactions)){
-        a_pname = interactions$protein_name_a[i]
-        b_pname = interactions$protein_name_b[i]
-
-        # If not using complexes, make sure both members are proteins or next
-        if(!use_complexes){
-            if(a_pname == '' | b_pname == ''){
-                next
-            }
-        }
-        aid = interactions$partner_a[i]
-        bid = interactions$partner_b[i]
-        # Figure out recs and ligs
-        # Partner A
-        # See if it's receptor/ligand complex/protein and add to rec/ligs
-        if(length(which(rec_uniprot == aid)) != 0){
-            recs = rec_uniprot[which(rec_uniprot == aid)]
-        } else if(length(which(lig_uniprot == aid)) != 0){
-            ligs = lig_uniprot[which(lig_uniprot == aid)]
-        } else if(length(which(rec_complexes == aid)) != 0){
-            comp = rec_complexes[which(rec_complexes == aid)]
-            recs = complexes[which(complexes[,1] == comp), 2:5]
-            recs = recs[-which(recs == '')]
-        } else if(length(which(lig_complexes == aid)) != 0){
-            comp = lig_complexes[which(lig_complexes == aid)]
-            ligs = complexes[which(complexes[,1] == comp), 2:5]
-            ligs = ligs[-which(ligs == '')]
-        } else {
-            stop(paste('Partner A has no comp or prot match in row', i))
-        }
-
-        # Partner B
-        if(length(which(rec_uniprot == bid)) != 0){
-            recs = rec_uniprot[which(rec_uniprot == bid)]
-        } else if(length(which(lig_uniprot == bid)) != 0){
-            ligs = lig_uniprot[which(lig_uniprot == bid)]
-        } else if(length(which(rec_complexes == bid)) != 0){
-            comp = rec_complexes[which(rec_complexes == bid)]
-            recs = complexes[which(complexes[,1] == comp), 2:5]
-            recs = recs[-which(recs == '')]
-        } else if(length(which(lig_complexes == bid)) != 0){
-            comp = lig_complexes[which(lig_complexes == bid)]
-            ligs = complexes[which(complexes[,1] == comp), 2:5]
-            ligs = ligs[-which(ligs == '')]
-        } else {
-            stop(paste('Partner B has no comp or prot match in row', i))
-        }
-
-        # Add them all to the map
-        for(l in ligs){
-            for(r in recs){
-                rl_map = rbind(rl_map, c(r, l))
-            }
-        }
+    if("database_name" %in% colnames(rl_map)){
+      dom@db_info = rl_map
+      if(verbose){print(paste0('Database provided from source: ', unique(rl_map[['database_name']])))}
+    } else {
+      dom@db_info = rl_map
     }
-
-
+    
+    # check for receptors that match receptor complex syntax of comma seperated genes
+    non_complex_index <- which(
+      !grepl("\\,", rl_map[["gene_A"]]) & !grepl("\\,", rl_map[["gene_B"]])
+    )
+    
+    # discard interactions including complexes if requested
+    if(use_complexes == FALSE){
+      rl_map <- rl_map[non_complex_index,]
+    }
+    
     # Get genes for receptors
-    rec_prots = as.character(unique(rl_map[,1]))
-    rec_orig = genes[match(rec_prots, genes[,2]),3]
-    rl_map = data.frame(rl_map)
-    rl_map = add_rl_column(rl_map, 'R.uniprot', cbind(rec_prots, rec_orig), 
-        'R.orig')
-
-    # Get genes for ligands
-    lig_prots = as.character(unique(rl_map[,2]))
-    lig_orig = genes[match(lig_prots, genes[,2]),3]
-    rl_map = add_rl_column(rl_map, 'L.uniprot', cbind(lig_prots, lig_orig), 
-        'L.orig')
-
-    # Convert if needed
-    if(!is.null(gene_conv)){
-        conv = convert_genes(rl_map$R.orig, from = gene_conv[1], to = gene_conv[2], 
-                             host = gene_conv_host)
-        rl_map = add_rl_column(rl_map, 'R.orig', conv, 'R.conv')
-        conv = convert_genes(rl_map$L.orig, from = gene_conv[1], to = gene_conv[2], 
-                             host = gene_conv_host)
-        rl_map = add_rl_column(rl_map, 'L.orig', conv, 'L.conv')
-        dom@misc[['tar_lr_cols']] = c('R.conv', 'L.conv')
+    rl_reading <- NULL
+    for(i in 1:nrow(rl_map)){
+      rl = list()
+      inter = rl_map[i,]
+      p = ifelse(inter[["type_A"]] == "R", "A", "B")
+      q = ifelse(p == "A", "B", "A")
+      R.gene = inter[[paste0("gene_", p)]]
+      L.gene = inter[[paste0("gene_", q)]]
+      rl[["R.gene"]] = R.gene
+      rl[["L.gene"]] = L.gene
+      if(paste0("uniprot_",p) %in% names(inter)){rl[["R.uniprot"]] = inter[[paste0("uniprot_",p)]]}
+      if(paste0("uniprot_",q) %in% names(inter)){rl[["L.uniprot"]] = inter[[paste0("uniprot_",q)]]}
+      if(paste0("name_",p) %in% names(inter)){rl[["R.name"]] = inter[[paste0("name_",p)]]}
+      if(paste0("name_",q) %in% names(inter)){rl[["L.name"]] = inter[[paste0("name_",q)]]}
+      rl = as.data.frame(rl)
+      rl_reading = rbind(rl_reading, rl)
     }
-
-    # Remove duplicate rows then build rl linkage
-    rl_map = unique.data.frame(rl_map)
-    rl_list = list()
-    tar_map = rl_map[, dom@misc$tar_lr_cols]
-    for(rec in unique(tar_map[,1])){
-        if(is.na(rec)){next}
-        ligs = unique(tar_map[which(tar_map[,1] == rec),2])
-        for(lig in ligs){
-            if(!is.na(lig)){
-                rl_list[[rec]] = c(rl_list[[rec]], lig)
-            }
-        }
+    # save a list of complexes and their components
+    dom@linkages$complexes = NULL
+    if(use_complexes){
+      complex_list = list()
+      for(i in 1:nrow(rl_reading)){
+        inter = rl_reading[i,]
+        if(grepl("\\,", inter[["L.gene"]])){complex_list[[inter[["L.name"]]]] = unlist(strsplit(inter[["L.gene"]], split = "\\,"))}
+        if(grepl("\\,", inter[["R.gene"]])){complex_list[[inter[["R.name"]]]] = unlist(strsplit(inter[["R.gene"]], split = "\\,"))}
+      }
+      dom@linkages$complexes = complex_list
     }
-    dom@linkages[['rec_lig']] = rl_list
-    dom@misc[['rl_map']] = rl_map
+    
+    rec_genes = unique(unlist(strsplit(rl_reading[["R.gene"]], split = "\\,")))
+    rec_names = rl_reading[["R.name"]]
+    lig_genes = unique(unlist(strsplit(rl_reading[["L.gene"]], split = "\\,")))
+    lig_names = rl_reading[["L.name"]]
+    
+    # building RL linkages
+    rec_lig_linkage = list()
+    for(rec in rec_names){
+       inter = rl_reading[rl_reading[["R.name"]] == rec,]
+       ligs = inter[["L.name"]]
+       rec_lig_linkage[[rec]] = ligs
+    }
+    dom@linkages[['rec_lig']] = rec_lig_linkage
+    dom@misc[['rl_map']] = rl_reading
 
     # Get z-score and cluster info
     if(verbose){print('Getting z_scores, clusters, and counts')}
@@ -254,10 +399,10 @@ create_domino = function(signaling_db, features, ser = NULL, counts = NULL,
 
     # Calculate correlation matrix between features and receptors.
     dom@counts = counts
-    all_receptors = unique(names(dom@linkages$rec_lig))
+    # all_receptors = unique(names(dom@linkages$rec_lig))
     zero_sum = Matrix::rowSums(counts == 0)
-    keeps = which(zero_sum < .975*ncol(counts))
-    ser_receptors = intersect(names(keeps), all_receptors)
+    keeps = which(zero_sum < (1 - rec_min_thresh)*ncol(counts))
+    ser_receptors = intersect(names(keeps), rec_genes)
     rho = matrix(0, nrow = length(ser_receptors), ncol = nrow(dom@features))
     rownames(rho) = ser_receptors
     colnames(rho) = rownames(dom@features)
@@ -290,7 +435,7 @@ create_domino = function(signaling_db, features, ser = NULL, counts = NULL,
                 tar_tf_scores = scores
             }
 
-            # There are some cases where all the tfas are zero for the cells
+            # There are some cases where all the tfs are zero for the cells
             # left after trimming dropout for receptors. Skip those and set
             # cor to zero manually.
             if(sum(tar_tf_scores) == 0){
@@ -307,16 +452,44 @@ create_domino = function(signaling_db, features, ser = NULL, counts = NULL,
         rho[,module] = rhorow
     }
     colnames(rho) = rownames(dom@features)
-    dom@cor = rho
+    dom@misc$rec_cor = rho
     
-    # If cluster methods are used, calculate percentage of non-zero expression of receptors in clusters
+    # assess correlation among genes in the same receptor complex
+    cor_list = list()
+    for(i in 1:length(names(dom@linkages$rec_lig))){
+      r <- names(dom@linkages$rec_lig)[i]
+      if(r %in% names(dom@linkages$complexes)){
+        r_genes = dom@linkages$complexes[[r]]
+      } else {
+        r_genes = r
+      }
+      
+      if(sum(rownames(rho) %in% r_genes) != length(r_genes)){
+        print(paste0(r, " has component genes that did not pass testing parameters"))
+        cor_list[[r]] = rep(0, ncol(rho))
+        next
+      } 
+      
+      if(length(r_genes) > 1){
+        gene_cor = rho[rownames(rho) %in% r_genes,]
+        cor_med = apply(gene_cor, 2, function(x){median(x)})
+        cor_list[[r]] = cor_med
+      } else {
+        cor_list[[r]] = rho[rownames(rho) == r_genes,]
+      }
+    }
+    c_cor = t(as.data.frame(cor_list))
+    dom@cor = c_cor
+    
+    # If cluster methods are used, calculate percentage of non-zero expression of receptor genes in clusters
+
     if(tf_selection_method == 'clusters'){
       cl_rec_percent = NULL
       for(rec in ser_receptors){
         rec_percent <- sapply(
           X = levels(dom@clusters),
           FUN = function(x){
-            # percentage of cells in cluster with non-zero expression of receptor
+            # percentage of cells in cluster with non-zero expression of receptor gene
             sum(dom@counts[rec,dom@clusters == x] > 0) / length(dom@counts[rec,dom@clusters == x])
           }
         )
