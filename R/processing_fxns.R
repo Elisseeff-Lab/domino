@@ -74,7 +74,7 @@ build_domino = function(dom, max_tf_per_clust = 5, min_tf_pval = .01,
           pass_genes = names(percent[percent > min_rec_percentage])
           expressed = c()
           for(rec in names(dom@linkages$rec_lig)){
-            if(rec %in% dom@linkages$complexes){
+            if(rec %in% names(dom@linkages$complexes)){
               rec_gene = dom@linkages$complexes[[rec]]
             } else {rec_gene = rec}
             
