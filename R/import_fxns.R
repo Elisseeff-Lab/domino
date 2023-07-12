@@ -511,13 +511,11 @@ create_domino = function(rl_map, features, ser = NULL, counts = NULL,
 #' @export
 #'
 get_regulon_info <- function(regulon_df){
-  TFS <- unique(regulon_df$TF)
+  TFS <- unique(regulon_df[,1])
   TF_targets <- lapply(TFS,function(tf){
-    print(tf)
-    regulon_df_small <- regulon_df %>% dplyr::filter(TF == tf)
-    TARGET_GENES <- unlist(lapply(seq(length(regulon_df_small$TargetGenes)),function(val){
-      motif_id <- regulon_df_small$MotifID[val]
-      targ <- regulon_df_small$TargetGenes[val]
+    regulon_df_small <- regulon_df %>% dplyr::filter(regulon_df[,1] == tf)
+    TARGET_GENES <- unlist(lapply(seq(length(regulon_df_small[,9])),function(val){
+      targ <- regulon_df_small[val,9]
       split_targs<-unlist(str_split(targ,""))
       split_targs<-split_targs[seq(2,length(split_targs))]
       split_targs<-split_targs[seq(1,length(split_targs)-1)]
@@ -525,7 +523,7 @@ get_regulon_info <- function(regulon_df){
       split_targs<-unlist(str_split(split_targs,"['), (']"))
       split_targs_pre <- split_targs[split_targs!=""]
       split_targs_post <- split_targs_pre[seq(1,length(split_targs_pre),2)]
-      return(unique(aaa))
+      return(unique(split_targs_post))
     }))
   })
   names(TF_targets) <- TFS
