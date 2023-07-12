@@ -393,6 +393,8 @@ create_domino = function(rl_map, features, ser = NULL, counts = NULL,
             tf_targets[[tf]] = unique(c(tf_targets[[tf]], tf_genes))
         }
         dom@linkages[['tf_targets']] = tf_targets
+        TF_targets <- get_regulon_info(df)
+        dom@linkages$tf_targets<-TF_targets
     } else {
         dom@linkages[['tf_targets']] = NULL
     }
@@ -499,6 +501,35 @@ create_domino = function(rl_map, features, ser = NULL, counts = NULL,
       dom@misc$cl_rec_percent = cl_rec_percent
     }
     return(dom)
+}
+
+#' Parse regulon information for the domino object
+#' 
+#' 
+#' @param regulon_df Optional. Either a path to discovered motifs from pySCENIC as a csv file or a data frame following the format of df.csv from pySCENIC
+#' @return transcription factor target list object.
+#' @export
+#'
+get_regulon_info <- function(regulon_df){
+  TFS <- unique(regulon_df$TF)
+  TF_targets <- lapply(TFS,function(tf){
+    print(tf)
+    regulon_df_small <- regulon_df %>% dplyr::filter(TF == tf)
+    TARGET_GENES <- unlist(lapply(seq(length(regulon_df_small$TargetGenes)),function(val){
+      motif_id <- regulon_df_small$MotifID[val]
+      targ <- regulon_df_small$TargetGenes[val]
+      split_targs<-unlist(str_split(targ,""))
+      split_targs<-split_targs[seq(2,length(split_targs))]
+      split_targs<-split_targs[seq(1,length(split_targs)-1)]
+      split_targs<-paste(split_targs,collapse="")
+      split_targs<-unlist(str_split(split_targs,"['), (']"))
+      split_targs_pre <- split_targs[split_targs!=""]
+      split_targs_post <- split_targs_pre[seq(1,length(split_targs_pre),2)]
+      return(unique(aaa))
+    }))
+  })
+  names(TF_targets) <- TFS
+  return(TF_targets)
 }
 
 #' Use biomaRt to convert genes
