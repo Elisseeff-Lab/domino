@@ -381,20 +381,14 @@ create_domino = function(rl_map, features, ser = NULL, counts = NULL,
 
     # If present, read in and process df
     if(class(df)[1] == 'character'){
-        df = read.csv(df, skip = 3, header = FALSE, stringsAsFactors = FALSE)
+      print("Reading regulon df based on SCENIC formatting")
+      df = read.csv(df, skip = 2)
+      regulon_colnames = c("TF", "MotifID", "AUC", "NES", "MotifSimilarityQvalue", "OrthologousIdentity", "Annotation", "Context", "TargetGenes", "RankAtMax")
+      colnames(df) = regulon_colnames
     }
     if(!is.null(df)){
-        tf_targets = list()
-        for(row in 1:nrow(df)){
-            tf = df[row,1]
-            tf_genes = df[row,10]
-            tf_genes = gsub("[\\(']", "", 
-                regmatches(tf_genes, gregexpr("\\('.*?'", tf_genes))[[1]])
-            tf_targets[[tf]] = unique(c(tf_targets[[tf]], tf_genes))
-        }
+        tf_targets = get_regulon_info(df)
         dom@linkages[['tf_targets']] = tf_targets
-        TF_targets <- get_regulon_info(df)
-        dom@linkages$tf_targets<-TF_targets
     } else {
         dom@linkages[['tf_targets']] = NULL
     }
@@ -511,20 +505,21 @@ create_domino = function(rl_map, features, ser = NULL, counts = NULL,
 #' @export
 #'
 get_regulon_info <- function(regulon_df){
-  TFS <- unique(regulon_df[,1])
+  TFS <- unique(regulon_df[["TF"]])
   TF_targets <- lapply(TFS,function(tf){
-    regulon_df_small <- regulon_df %>% dplyr::filter(regulon_df[,1] == tf)
-    TARGET_GENES <- unlist(lapply(seq(length(regulon_df_small[,9])),function(val){
-      targ <- regulon_df_small[val,9]
-      split_targs<-unlist(str_split(targ,""))
+    regulon_df_small <- regulon_df[regulon_df[["TF"]] == tf,]
+    targets <- regulon_df_small[["TargetGenes"]]
+    target_genes <- lapply(targets, function(x){
+      split_targs<-unlist(strsplit(x,""))
       split_targs<-split_targs[seq(2,length(split_targs))]
       split_targs<-split_targs[seq(1,length(split_targs)-1)]
       split_targs<-paste(split_targs,collapse="")
-      split_targs<-unlist(str_split(split_targs,"['), (']"))
+      split_targs<-unlist(strsplit(split_targs,"['), (']"))
       split_targs_pre <- split_targs[split_targs!=""]
       split_targs_post <- split_targs_pre[seq(1,length(split_targs_pre),2)]
-      return(unique(split_targs_post))
-    }))
+      return(split_targs_post)
+    })
+    return(unique(unlist(target_genes)))
   })
   names(TF_targets) <- TFS
   return(TF_targets)
