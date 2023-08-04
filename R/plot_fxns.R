@@ -709,7 +709,7 @@ circos_ligand_receptor <-
                  annotationTrack = c("grid"),
                  preAllocateTracks = list(
                    track.height = mm_h(4),
-                   track.margin = c(mm_h(4), 0)),
+                   track.margin = c(mm_h(2), 0)),
                  big.gap = 2
     )
     
@@ -738,25 +738,24 @@ circos_ligand_receptor <-
       
       if(length(row_pick)){
         highlight.sector(
-          sector_names[grepl(paste0("^", cell), sector_names)], 
+          sector_names[grepl(paste0("^", cell), sector_names)],
           track.index = 1, col = cell_colors[[cell]],
           text = cell_label,
-          cex = 2.3, facing = "outside",
-          text.col = "black", niceFacing = TRUE,
-          text.vjust = 1.6
+          cex = 1, facing = "inside",
+          text.col = "black", niceFacing = FALSE,
+          text.vjust = -1.5
         )
       }
     }
-    
-    # highlight receptor sector
-    highlight.sector(
-      sector_names[grepl(paste0("^", receptor, "$"), sector_names)], 
-      track.index = 1, col = "#FFFFFF",
-      text = receptor, cex = 3.5, facing = "clockwise",
-      text.col = "black", niceFacing = TRUE,
-      pos = 4
-    )
-  }
+  # highlight receptor sector
+  highlight.sector(
+    sector_names[grepl(paste0("^", receptor, "$"), sector_names)], 
+    track.index = 1, col = "#FFFFFF",
+    text = receptor, cex = 3.5, facing = "clockwise",
+    text.col = "black", niceFacing = TRUE,
+    pos = 4
+  )
+}
 
 #' Normalize a matrix to its max value by row or column
 #' 
