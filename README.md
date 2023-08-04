@@ -1,6 +1,3 @@
-
-https://livejohnshopkins-my.sharepoint.com/:f:/g/personal/jmitch81_jh_edu/EuwZJvIR7MJPrp9qhvpJT8ABj_-GBSxAD650XDRs5jmFow?e=jp5ePd
-
 # Domino
 Domino is a tool for analysis of intra- and intercellular signaling in single cell RNA seq based on transcription factor activation. 
 
