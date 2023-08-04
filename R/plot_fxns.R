@@ -644,8 +644,7 @@ circos_ligand_receptor <-
     # cell_colors: named vector of colors for plotted cell types. Defaults to scales::hue_pal()
     # ident_names: TODO debug argument to allow passing of [cell_ident] with \n to make long names more legible on the circos plot
     
-    # TODO: Add circlize to package dependencies
-    library(circlize)
+    require(circlize)
     
     z_scores <- dom@z_scores
     ligands <- dom@linkages$rec_lig[[receptor]]
@@ -702,8 +701,6 @@ circos_ligand_receptor <-
       ) 
     names(grid_col) <- c(receptor, signaling_df$origin)
     # initiate pdf plotting device
-    pdf(file = file,
-        width = 14, height = 12)
     circos.clear()
     circos.par(start.degree = 0)
     
@@ -759,8 +756,6 @@ circos_ligand_receptor <-
       text.col = "black", niceFacing = TRUE,
       pos = 4
     )
-    
-    dev.off()
   }
 
 #' Normalize a matrix to its max value by row or column
