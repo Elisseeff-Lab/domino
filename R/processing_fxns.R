@@ -68,17 +68,26 @@ build_domino = function(dom, max_tf_per_clust = 5, min_tf_pval = .01,
         }
         dom@linkages[['tf_rec']] = tf_rec
         # If cluster methods are used, provide cluster-specific tf_rec linkages
-        
         cl_tf_rec = list()
         for(clust in levels(dom@clusters)){
-            percent = dom@misc$cl_rec_percent[, clust]
-            expressed = percent[percent > min_rec_percentage]
-            active_tf = dom@linkages$clust_tf[[clust]]
-            cl_tf_rec[[clust]] =
-                lapply(dom@linkages$tf_rec[active_tf], 
-                       FUN = function(x){return(x[x %in% names(expressed)])}
-                       )
+          percent = dom@misc$cl_rec_percent[, clust]
+          pass_genes = names(percent[percent > min_rec_percentage])
+          expressed = c()
+          for(rec in names(dom@linkages$rec_lig)){
+            if(rec %in% names(dom@linkages$complexes)){
+              rec_gene = dom@linkages$complexes[[rec]]
+            } else {rec_gene = rec}
+            
+            if(length(rec_gene) == sum(rec_gene %in% pass_genes)){
+              expressed = c(expressed, rec)
             }
+          } 
+          active_tf = dom@linkages$clust_tf[[clust]]
+          cl_tf_rec[[clust]] =
+              lapply(dom@linkages$tf_rec[active_tf], 
+                     FUN = function(x){return(x[x %in% expressed])}
+                     )
+          }
         dom@linkages[['clust_tf_rec']] = cl_tf_rec
         
         # Get a list of active receptors for each cluster
@@ -107,7 +116,7 @@ build_domino = function(dom, max_tf_per_clust = 5, min_tf_pval = .01,
             nrow = length(levels(dom@clusters)))
         rownames(signaling) = paste0('R_', levels(dom@clusters))
         colnames(signaling) = paste0('L_', levels(dom@clusters))
-
+        
         for(clust in levels(dom@clusters)){
             inc_ligs = clust_ligs[[clust]]
             rl_map = dom@misc[["rl_map"]]
@@ -131,23 +140,25 @@ build_domino = function(dom, max_tf_per_clust = 5, min_tf_pval = .01,
                 inc_ligs = unlist(inc_ligs_list)
             }
             
-            inc_ligs = intersect(inc_ligs, rownames(dom@z_scores))
-            if(length(inc_ligs) == 1){inc_ligs = numeric(0)}
+            lig_genes = intersect(inc_ligs, rownames(dom@z_scores))
+            if(length(lig_genes) == 1){lig_genes = numeric(0)}
             cl_sig_mat = matrix(0, ncol = length(levels(dom@clusters)), 
-                nrow = length(inc_ligs))
+                nrow = length(lig_genes))
             colnames(cl_sig_mat) = colnames(signaling)
-            rownames(cl_sig_mat) = inc_ligs
+            rownames(cl_sig_mat) = lig_genes
             for(c2 in levels(dom@clusters)){
                 n_cell = length(which(dom@clusters == c2))
                 if(n_cell > 1){
-                    sig = rowMeans(dom@z_scores[inc_ligs, 
-                        which(dom@clusters == c2)])
+                  expr = matrix(dom@z_scores[lig_genes, which(dom@clusters == c2)],
+                                nrow = length(lig_genes))
+                  sig = rowMeans(expr)
                 } else if(n_cell == 1){
-                    sig = dom@z_scores[inc_ligs, which(dom@clusters == c2)]
+                    sig = dom@z_scores[lig_genes, which(dom@clusters == c2)]
                 } else {
-                    sig = rep(0, length(inc_ligs))
-                    names(sig) = inc_ligs
+                    sig = rep(0, length(lig_genes))
+                    names(sig) = lig_genes
                 }
+                # mean scaled expression less than 0 is brought up to 0 as a floor
                 sig[which(sig < 0)] = 0
                 cl_sig_mat[,paste0('L_', c2)] = sig
             }
