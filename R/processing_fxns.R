@@ -119,12 +119,29 @@ build_domino = function(dom, max_tf_per_clust = 5, min_tf_pval = .01,
         
         for(clust in levels(dom@clusters)){
             inc_ligs = clust_ligs[[clust]]
-            lig_genes = unlist(sapply(inc_ligs, function(x){
-              if(x %in% names(dom@linkages$complexes)) return(dom@linkages$complexes[[x]])
-              else return(x)
-              }
-            ))
-            lig_genes = intersect(lig_genes, rownames(dom@z_scores))
+            rl_map = dom@misc[["rl_map"]]
+            inc_ligs <- sapply(inc_ligs, function(l){
+               int <- rl_map[rl_map$L.name == l, ][1,] 
+               if((int$L.name != int$L.gene) & !grepl("\\,", int$L.gene)){
+                   int$L.gene
+               } else { 
+                   int$L.name
+               }
+            })
+            if(length(dom@linkages$complexes) > 0){ #if complexes were used
+                inc_ligs_list <- lapply(inc_ligs, function(l){
+                    if(l %in% names(dom@linkages$complexes)){
+                        l_genes = dom@linkages$complexes[[l]]
+                    } else {
+                        l_genes = l
+                    }
+                })
+                names(inc_ligs_list) <- inc_ligs
+                inc_ligs = unlist(inc_ligs_list)
+            }
+            
+            lig_genes = intersect(inc_ligs, rownames(dom@z_scores))
+            if(length(lig_genes) == 1){lig_genes = numeric(0)}
             cl_sig_mat = matrix(0, ncol = length(levels(dom@clusters)), 
                 nrow = length(lig_genes))
             colnames(cl_sig_mat) = colnames(signaling)
@@ -144,6 +161,19 @@ build_domino = function(dom, max_tf_per_clust = 5, min_tf_pval = .01,
                 # mean scaled expression less than 0 is brought up to 0 as a floor
                 sig[which(sig < 0)] = 0
                 cl_sig_mat[,paste0('L_', c2)] = sig
+            }
+            if(length(dom@linkages$complexes) > 0) { #if complexes were used
+                cl_sig_list <- lapply(seq_along(inc_ligs_list), function(x) {
+                    if (all(inc_ligs_list[[x]] %in% inc_ligs)) { #Some of the ligands in the list object may not be present in the data
+                        if (length(inc_ligs_list[[x]]) > 1) {
+                            return(colMeans(cl_sig_mat[inc_ligs_list[[x]], ]))
+                        } else {
+                            return(cl_sig_mat[inc_ligs_list[[x]], ])
+                        }
+                    }
+                })
+                names(cl_sig_list) <- names(inc_ligs_list)
+                cl_sig_mat <- do.call(rbind, cl_sig_list)
             }
             cl_signaling_matrices[[clust]] = cl_sig_mat
             signaling[paste0('R_', clust),] = colSums(cl_sig_mat)
