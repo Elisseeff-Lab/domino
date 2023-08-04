@@ -131,9 +131,9 @@ build_domino = function(dom, max_tf_per_clust = 5, min_tf_pval = .01,
             if(length(dom@linkages$complexes) > 0){ #if complexes were used
                 inc_ligs_list <- lapply(inc_ligs, function(l){
                     if(l %in% names(dom@linkages$complexes)){
-                        l_genes = dom@linkages$complexes[[l]]
+                        return(dom@linkages$complexes[[l]])
                     } else {
-                        l_genes = l
+                        return(l)
                     }
                 })
                 names(inc_ligs_list) <- inc_ligs
@@ -173,7 +173,7 @@ build_domino = function(dom, max_tf_per_clust = 5, min_tf_pval = .01,
                     }
                 })
                 names(cl_sig_list) <- names(inc_ligs_list)
-                cl_sig_mat <- do.call(rbind, cl_sig_list)
+                if(length(cl_sig_list)){cl_sig_mat <- do.call(rbind, cl_sig_list)}
             }
             cl_signaling_matrices[[clust]] = cl_sig_mat
             signaling[paste0('R_', clust),] = colSums(cl_sig_mat)
