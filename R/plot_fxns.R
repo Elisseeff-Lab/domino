@@ -645,6 +645,7 @@ circos_ligand_receptor <-
     # ident_names: TODO debug argument to allow passing of [cell_ident] with \n to make long names more legible on the circos plot
     
     require(circlize)
+    require(ComplexHeatmap)
     
     z_scores <- dom@z_scores
     ligands <- dom@linkages$rec_lig[[receptor]]
@@ -755,6 +756,21 @@ circos_ligand_receptor <-
     text.col = "black", niceFacing = TRUE,
     pos = 4
   )
+  # create legends
+  lgd_cells = Legend(
+    at = as.character(cell_idents), type = "grid", 
+    legend_gp = gpar(fill = cell_colors),
+    title_position = "topleft", title = "cell identity"
+  )
+  lgd_ligands = Legend(
+    at = ligands, type = "grid", 
+    legend_gp = gpar(fill = lig_colors),
+    title_position = "topleft", title = "ligand"
+  )
+  lgd_list_vertical = packLegend(lgd_cells, lgd_ligands)
+  draw(lgd_list_vertical, 
+       x = unit(1.05, "npc"), y = unit(0.9, "npc"),
+       just = c("right", "top"))
 }
 
 #' Normalize a matrix to its max value by row or column
