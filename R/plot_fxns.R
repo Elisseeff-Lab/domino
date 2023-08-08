@@ -671,6 +671,11 @@ circos_ligand_receptor <-
     # TODO: add arguent to pick ligands to plot, use this unique() result as default
     ligands <- unique(gsub(".*_", "", signaling_df[["origin"]]))
     
+    # exit function if no ligands are expressed above ligand expression threshold
+    if(sum(signaling_df[["mean.expression"]] > ligand_expression_threshold) == 0){
+      stop(paste0("No ligands of ", receptor, " exceed ligand expression threshold."))
+    }
+    
     # initialize chord diagram with even ligand arcs
     arc_df <- signaling_df[, c("origin", "destination")]
     arc_df["ligand.arc"] <- 1
@@ -679,7 +684,7 @@ circos_ligand_receptor <-
     
     # name grouping based on [cell_ident]
     nm <- c(receptor, arc_df$origin)
-    group <- structure(gsub("_.*", "", nm), names = nm)
+    group <- structure(c(nm[1], gsub("_.*", "", nm[-1])), names = nm)
     
     # order group as a factor with the receptor coming first
     group <- factor(group,
@@ -704,7 +709,6 @@ circos_ligand_receptor <-
                  rep(lig_colors, (nrow(signaling_df)/length(ligands)))
       ) 
     names(grid_col) <- c(receptor, signaling_df$origin)
-    # initiate pdf plotting device
     circos.clear()
     circos.par(start.degree = 0)
     
@@ -742,7 +746,7 @@ circos_ligand_receptor <-
       
       if(length(row_pick)){
         highlight.sector(
-          sector_names[grepl(paste0("^", cell), sector_names)],
+          sector_names[grepl(paste0("^", cell, "_"), sector_names)],
           track.index = 1, col = cell_colors[[cell]],
           text = cell_label,
           cex = 1, facing = "inside",
