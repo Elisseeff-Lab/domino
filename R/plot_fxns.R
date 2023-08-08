@@ -651,7 +651,10 @@ circos_ligand_receptor <-
     ligands <- dom@linkages$rec_lig[[receptor]]
     signaling_df <- NULL
     
-    cell_idents <- unique(dom@clusters)
+    if(is.null(cell_idents)){
+      # default to all cluster labels in domino object in alphabetical order
+      cell_idents <- sort(unique(dom@clusters))
+    }
     
     for(cell in cell_idents){
       cell_barcodes <- colnames(z_scores[,dom@clusters == cell])
