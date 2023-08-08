@@ -776,8 +776,8 @@ circos_ligand_receptor <-
   )
   lgd_list_vertical = packLegend(lgd_cells, lgd_ligands)
   draw(lgd_list_vertical, 
-       x = unit(1, "npc"), y = unit(0.5, "npc"),
-       just = c("right", "center"))
+       x = unit(0.02, "npc"), y = unit(0.98, "npc"),
+       just = c("left", "top"))
 }
 
 #' Normalize a matrix to its max value by row or column
