@@ -735,17 +735,11 @@ circos_ligand_receptor <-
     for(cell in cell_sectors){
       row_pick <- sector_names[grepl(paste0("^", cell), sector_names)]
       
-      if(!is.null(ident_names)){
-        cell_label <- ident_names[cell]
-      } else {
-        cell_label <- cell
-      }
-      
       if(length(row_pick)){
         highlight.sector(
           sector_names[grepl(paste0("^", cell, "-"), sector_names)],
           track.index = 1, col = cell_colors[[cell]],
-          text = cell_label,
+          text = cell,
           cex = 1, facing = "inside",
           text.col = "black", niceFacing = FALSE,
           text.vjust = -1.5
