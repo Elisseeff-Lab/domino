@@ -21,9 +21,13 @@ rename_clusters = function(dom, clust_conv){
         dom@clusters = plyr::revalue(dom@clusters, clust_conv)
         colnames(dom@clust_de) = clust_conv
         names(colnames(dom@clust_de)) = c()
+        colnames(dom@misc$cl_rec_percent) = clust_conv
     }
     if(dom@misc$build){
         names(dom@linkages$clust_tf) = clust_conv
+        names(dom@linkages$clust_rec) = clust_conv
+        names(dom@linkages$clust_incoming_lig) = clust_conv
+        names(dom@linkages$clust_tf_rec) = clust_conv
         colnames(dom@signaling) = paste0('L_', clust_conv)
         rownames(dom@signaling) = paste0('R_', clust_conv)
         names(dom@cl_signaling_matrices) = clust_conv
@@ -56,36 +60,22 @@ collate_network_items = function(dom, clusters = NULL, return = NULL){
     }
     if(is.null(clusters)){clusters = levels(dom@clusters)}
 
-    # Get all TFs across specified clusters
-    de_tfs = c()
-    for(cl in clusters){
-        tfs = dom@linkages$clust_tf[[cl]]
-        de_tfs = c(de_tfs, tfs)
-    }
-
-    # Get connections between TF and recs
+    #Get all enriched TFs and correlated + expressed receptors for specified clusters
     all_recs = c()
     all_tfs = c()
-    for(tf in de_tfs){
-        recs = dom@linkages$tf_rec[[tf]]
-        all_recs = c(all_recs, recs)
-        if(length(recs)){
-            all_tfs = c(all_tfs, tf)
+    all_ligs = c()
+    for(cl in clusters){
+        all_recs = c(all_recs, unlist(dom@linkages$clust_tf_rec[[cl]]))
+        tfs = names(dom@linkages$clust_tf_rec[[cl]])
+        tf_wo_rec = which(sapply(dom@linkages$clust_tf_rec[[cl]], length) == 0)
+        if(length(tf_wo_rec > 0)){
+            tfs = tfs[-tf_wo_rec] 
         }
+        all_tfs = c(all_tfs, tfs)
+        all_ligs = c(all_ligs, rownames(dom@cl_signaling_matrices[[cl]]))
     }
     all_recs = unique(all_recs)
     all_tfs = unique(all_tfs)
-
-    # Between ligs and recs
-    all_ligs = c()
-    for(rec in all_recs){
-        ligs = dom@linkages$rec_lig[[rec]]
-        mid = match(ligs, rownames(dom@z_scores))
-        if(anyNA(mid)){
-            ligs = ligs[-which(is.na(mid))]
-        }
-        all_ligs = c(all_ligs, ligs)
-    }
     all_ligs = unique(all_ligs)
 
     # Make list and return whats asked for
