@@ -401,6 +401,7 @@ gene_network = function(dom, clust = NULL, OutgoingSignalingClust = NULL,
   v_size = rep(10, length(igraph::V(graph)))
   names(v_size) = names(igraph::V(graph))
   if(lig_scale){
+    all_sums <- all_sums[names(all_sums) %in% names(v_size)]
     v_size[names(all_sums)] = 0.5*all_sums*lig_scale
   }
   names(v_size) = c()
@@ -465,7 +466,7 @@ feat_heatmap = function(dom, feats = NULL, bool = TRUE, bool_thresh = .2,
                         title = TRUE, norm = FALSE, cols = NULL, ann_cols = TRUE, min_thresh = NULL, 
                         max_thresh = NULL, ...){
   if(!length(dom@clusters)){
-    warning("This domino object wasn't build with clusters. Cells will not be ordered.")
+    warning("This domino object wasn't built with clusters. Cells will not be ordered.")
     ann_cols = FALSE
   }
   mat = dom@features
