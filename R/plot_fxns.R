@@ -725,9 +725,10 @@ circos_ligand_receptor <-
       if(signaling_df[signaling_df$origin == send,][["mean.expression"]] > ligand_expression_threshold){
         # TODO: have chords originate from the center of the arc 
         # c(0.5 - (expr/2), 0.5 + (expr/2))
+        expr <- signaling_df[signaling_df$origin == send,][["mean.expression"]]
         
         circos.link(send, 
-                    c(0, signaling_df[signaling_df$origin == send,][["mean.expression"]]), 
+                    c(0.5 - (expr/2), 0.5 + (expr/2)), 
                     receptor, 2,
                     col = paste0(grid_col[[send]], "88"))
       }
