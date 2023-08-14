@@ -670,6 +670,10 @@ circos_ligand_receptor <-
     } else {stop(paste0("No clusters have active ", receptor, " signaling"))}
     
     signaling_df$mean.expression[is.na(signaling_df$mean.expression)] <- 0
+    # create a scaled mean expression plot for coord widths greater than 1
+    # by dividing by the max expression [range (0-1)]
+    # scaled.mean will only be used when the max expression is > 1
+    signaling_df$scaled.mean.expression <- signaling_df$mean.expression/max(signaling_df$mean.expression)
     
     # exit function if no ligands are expressed above ligand expression threshold
     if(sum(signaling_df[["mean.expression"]] > ligand_expression_threshold) == 0){
@@ -721,7 +725,11 @@ circos_ligand_receptor <-
     
     for(send in signaling_df$origin){
       if(signaling_df[signaling_df$origin == send,][["mean.expression"]] > ligand_expression_threshold){
-        expr <- signaling_df[signaling_df$origin == send,][["mean.expression"]]
+        if(max(signaling_df[["mean.expression"]]) > 1){
+          expr <- signaling_df[signaling_df$origin == send,][["scaled.mean.expression"]]
+        } else {
+          expr <- signaling_df[signaling_df$origin == send,][["mean.expression"]]
+        }
         
         circos.link(send, 
                     c(0.5 - (expr/2), 0.5 + (expr/2)), 
@@ -750,7 +758,7 @@ circos_ligand_receptor <-
   highlight.sector(
     sector_names[grepl(paste0("^", receptor, "$"), sector_names)], 
     track.index = 1, col = "#FFFFFF",
-    text = receptor, cex = 3.5, facing = "clockwise",
+    text = receptor, cex = 1.5, facing = "clockwise",
     text.col = "black", niceFacing = TRUE,
     pos = 4
   )
