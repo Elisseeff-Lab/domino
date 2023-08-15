@@ -417,7 +417,7 @@ create_domino = function(rl_map, features, ser = NULL, counts = NULL,
             tf = substring(module, first = 1, last = nchar(module) - 3)
             module_targets = tf_targets[[tf]]
             module_rec_targets = intersect(module_targets, ser_receptors)
-        }
+        } else {module_rec_targets = NULL}
         scores = dom@features[module,]
         rhorow = rep(0, length(ser_receptors))
         names(rhorow) = ser_receptors
