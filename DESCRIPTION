@@ -14,6 +14,8 @@ Imports:
     plyr,
     dplyr,
     igraph,
+    circlize,
+    ComplexHeatmap
 License: GPL-3 | file LICENSE
 Encoding: UTF-8
 LazyData: true

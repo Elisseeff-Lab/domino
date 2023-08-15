@@ -662,10 +662,8 @@ cor_scatter = function(dom, tf, rec, remove_rec_dropout = TRUE, ...){
 #' 
 circos_ligand_receptor <- 
   function(dom, receptor,
-           file,
            ligand_expression_threshold = 0.01,
-           cell_idents = NULL, cell_colors = NULL,
-           ident_names = NULL){
+           cell_idents = NULL, cell_colors = NULL){
     # dom: A domino object with network built (build_domino)
     # [,1] "origin": formatted as [cell_ident]_[ligand]
     # [,2] "destination": name of the receptor receiving ligand signals
@@ -675,31 +673,45 @@ circos_ligand_receptor <-
     # ligand_expression_threshold: minimum mean expression value to render chord
     # cell_idents: character vector of cell types to plot. Defaults to plot all [cell_ident] from df
     # cell_colors: named vector of colors for plotted cell types. Defaults to scales::hue_pal()
-    # ident_names: TODO debug argument to allow passing of [cell_ident] with \n to make long names more legible on the circos plot
     
-    # TODO: Add circlize to package dependencies
-    library(circlize)
+    require(circlize)
+    require(ComplexHeatmap)
     
-    z_scores <- dom@z_scores
     ligands <- dom@linkages$rec_lig[[receptor]]
     signaling_df <- NULL
     
-    cell_idents <- unique(dom@clusters)
-    
-    for(cell in cell_idents){
-      cell_barcodes <- colnames(z_scores[,dom@clusters == cell])
-      df <- mean_ligand_expression(z_scores,
-                                   ligands = ligands,
-                                   cell_ident = cell, 
-                                   cell_barcodes = cell_barcodes, 
-                                   destination = receptor)
-      signaling_df <- rbind(signaling_df, df)
+    if(is.null(cell_idents)){
+      # default to all cluster labels in domino object in alphabetical order
+      cell_idents <- sort(unique(dom@clusters))
     }
-    # TODO: replace temporary fix to remove NANs from mean expression
-    signaling_df$mean.expression[is.na(signaling_df$mean.expression)] <- 0
     
-    # TODO: add arguent to pick ligands to plot, use this unique() result as default
-    ligands <- unique(gsub(".*_", "", signaling_df[["origin"]]))
+    # obtain expression values from cl_signaling matrices
+    active_chk <- sapply(dom@linkages$clust_rec, function(x){receptor %in% x})
+    if(sum(active_chk)){
+      # obtain a signaling matrix where receptor is active
+      active_cell <- names(active_chk[active_chk == TRUE])
+      sig <- dom@cl_signaling_matrices[active_cell][[1]]
+      cell_names <- gsub("^L_", "", colnames(sig))
+      for(l in ligands){
+        df <- data.frame(
+          "origin" = paste0(cell_names, "-", l),
+          "destination" = receptor,
+          "mean.expression" = unname(sig[rownames(sig) == l,])
+        )
+        signaling_df <- rbind(signaling_df, df)
+      }
+    } else {stop(paste0("No clusters have active ", receptor, " signaling"))}
+    
+    signaling_df$mean.expression[is.na(signaling_df$mean.expression)] <- 0
+    # create a scaled mean expression plot for coord widths greater than 1
+    # by dividing by the max expression [range (0-1)]
+    # scaled.mean will only be used when the max expression is > 1
+    signaling_df$scaled.mean.expression <- signaling_df$mean.expression/max(signaling_df$mean.expression)
+    
+    # exit function if no ligands are expressed above ligand expression threshold
+    if(sum(signaling_df[["mean.expression"]] > ligand_expression_threshold) == 0){
+      stop(paste0("No ligands of ", receptor, " exceed ligand expression threshold."))
+    }
     
     # initialize chord diagram with even ligand arcs
     arc_df <- signaling_df[, c("origin", "destination")]
@@ -709,13 +721,13 @@ circos_ligand_receptor <-
     
     # name grouping based on [cell_ident]
     nm <- c(receptor, arc_df$origin)
-    group <- structure(gsub("_.*", "", nm), names = nm)
+    group <- structure(c(nm[1], gsub("-.*", "", nm[-1])), names = nm)
     
     # order group as a factor with the receptor coming first
     group <- factor(group,
-                    levels = c(receptor,
-                               sort(unique(gsub("_.*", "", nm))[-1]) # alphabetical order of the other cell idents
-                    ))
+                   levels = c(receptor,
+                              sort(unique(gsub("-.*", "", nm))[-1]) # alphabetical order of the other cell idents
+                   ))
     
     # colors for ligand chords
     lig_colors <- ggplot_col_gen(length(ligands))
@@ -727,16 +739,11 @@ circos_ligand_receptor <-
       names(cell_colors) <- cell_idents
     }
     
-    grid_col <- 
-      # hide the arc corresponding to the ligand by coloring white
-      c("#FFFFFF",
-        # repeat colors for ligand arcs for each cell type plotted
-        rep(lig_colors, (nrow(signaling_df)/length(ligands)))
-      ) 
+    grid_col <-  c("#FFFFFF") # hide the arc corresponding to the receptor by coloring white 
+    for(i in 1:length(ligands)){
+      grid_col <- c(grid_col, rep(lig_colors[i], length(cell_idents)))
+    }
     names(grid_col) <- c(receptor, signaling_df$origin)
-    # initiate pdf plotting device
-    pdf(file = file,
-        width = 14, height = 12)
     circos.clear()
     circos.par(start.degree = 0)
     
@@ -745,56 +752,65 @@ circos_ligand_receptor <-
                  annotationTrack = c("grid"),
                  preAllocateTracks = list(
                    track.height = mm_h(4),
-                   track.margin = c(mm_h(4), 0)),
+                   track.margin = c(mm_h(2), 0)),
                  big.gap = 2
     )
     
     for(send in signaling_df$origin){
       if(signaling_df[signaling_df$origin == send,][["mean.expression"]] > ligand_expression_threshold){
-        # TODO: have chords originate from the center of the arc 
-        # c(0.5 - (expr/2), 0.5 + (expr/2))
+        if(max(signaling_df[["mean.expression"]]) > 1){
+          expr <- signaling_df[signaling_df$origin == send,][["scaled.mean.expression"]]
+        } else {
+          expr <- signaling_df[signaling_df$origin == send,][["mean.expression"]]
+        }
         
         circos.link(send, 
-                    c(0, signaling_df[signaling_df$origin == send,][["mean.expression"]]), 
+                    c(0.5 - (expr/2), 0.5 + (expr/2)), 
                     receptor, 2,
                     col = paste0(grid_col[[send]], "88"))
       }
     }
     sector_names <- get.all.sector.index()
-    cell_sectors <- cell_idents[cell_idents %in% gsub("_.*", "", sector_names)]
+    cell_sectors <- cell_idents[cell_idents %in% gsub("-.*", "", sector_names)]
     
     for(cell in cell_sectors){
       row_pick <- sector_names[grepl(paste0("^", cell), sector_names)]
       
-      if(!is.null(ident_names)){
-        cell_label <- ident_names[cell]
-      } else {
-        cell_label <- cell
-      }
-      
       if(length(row_pick)){
         highlight.sector(
-          sector_names[grepl(paste0("^", cell), sector_names)], 
+          sector_names[grepl(paste0("^", cell, "-"), sector_names)],
           track.index = 1, col = cell_colors[[cell]],
-          text = cell_label,
-          cex = 2.3, facing = "outside",
-          text.col = "black", niceFacing = TRUE,
-          text.vjust = 1.6
+          text = cell,
+          cex = 1, facing = "inside",
+          text.col = "black", niceFacing = FALSE,
+          text.vjust = -1.5
         )
       }
     }
-    
-    # highlight receptor sector
-    highlight.sector(
-      sector_names[grepl(paste0("^", receptor, "$"), sector_names)], 
-      track.index = 1, col = "#FFFFFF",
-      text = receptor, cex = 3.5, facing = "clockwise",
-      text.col = "black", niceFacing = TRUE,
-      pos = 4
-    )
-    
-    dev.off()
-  }
+  # highlight receptor sector
+  highlight.sector(
+    sector_names[grepl(paste0("^", receptor, "$"), sector_names)], 
+    track.index = 1, col = "#FFFFFF",
+    text = receptor, cex = 1.5, facing = "clockwise",
+    text.col = "black", niceFacing = TRUE,
+    pos = 4
+  )
+  # create legends
+  lgd_cells = Legend(
+    at = as.character(cell_idents), type = "grid", 
+    legend_gp = gpar(fill = cell_colors),
+    title_position = "topleft", title = "cell identity"
+  )
+  lgd_ligands = Legend(
+    at = ligands, type = "grid", 
+    legend_gp = gpar(fill = lig_colors),
+    title_position = "topleft", title = "ligand"
+  )
+  lgd_list_vertical = packLegend(lgd_cells, lgd_ligands)
+  draw(lgd_list_vertical, 
+       x = unit(0.02, "npc"), y = unit(0.98, "npc"),
+       just = c("left", "top"))
+}
 
 
 
