@@ -164,7 +164,7 @@ build_domino = function(dom, max_tf_per_clust = 5, min_tf_pval = .01,
             }
             if(length(dom@linkages$complexes) > 0) { #if complexes were used
                 cl_sig_list <- lapply(seq_along(inc_ligs_list), function(x) {
-                    if (all(inc_ligs_list[[x]] %in% inc_ligs)) { #Some of the ligands in the list object may not be present in the data
+                    if (all(inc_ligs_list[[x]] %in% lig_genes)) { #Some of the ligands in the list object may not be present in the data
                         if (length(inc_ligs_list[[x]]) > 1) {
                             return(colMeans(cl_sig_mat[inc_ligs_list[[x]], ]))
                         } else {
