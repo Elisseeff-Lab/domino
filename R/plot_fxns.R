@@ -725,9 +725,9 @@ circos_ligand_receptor <-
     
     # order group as a factor with the receptor coming first
     group <- factor(group,
-                   levels = c(receptor,
-                              sort(unique(gsub("-.*", "", nm))[-1]) # alphabetical order of the other cell idents
-                   ))
+                    levels = c(receptor,
+                               sort(unique(gsub("-.*", "", nm))[-1]) # alphabetical order of the other cell idents
+                               ))
     
     # colors for ligand chords
     lig_colors <- ggplot_col_gen(length(ligands))
@@ -760,8 +760,10 @@ circos_ligand_receptor <-
       if(signaling_df[signaling_df$origin == send,][["mean.expression"]] > ligand_expression_threshold){
         if(max(signaling_df[["mean.expression"]]) > 1){
           expr <- signaling_df[signaling_df$origin == send,][["scaled.mean.expression"]]
+          max_width <- signif(max(signaling_df[["mean.expression"]]), 2)
         } else {
           expr <- signaling_df[signaling_df$origin == send,][["mean.expression"]]
+          max_width <- 1
         }
         
         circos.link(send, 
@@ -787,30 +789,37 @@ circos_ligand_receptor <-
         )
       }
     }
-  # highlight receptor sector
-  highlight.sector(
-    sector_names[grepl(paste0("^", receptor, "$"), sector_names)], 
-    track.index = 1, col = "#FFFFFF",
-    text = receptor, cex = 1.5, facing = "clockwise",
-    text.col = "black", niceFacing = TRUE,
-    pos = 4
-  )
-  # create legends
-  lgd_cells = Legend(
-    at = as.character(cell_idents), type = "grid", 
-    legend_gp = gpar(fill = cell_colors),
-    title_position = "topleft", title = "cell identity"
-  )
-  lgd_ligands = Legend(
-    at = ligands, type = "grid", 
-    legend_gp = gpar(fill = lig_colors),
-    title_position = "topleft", title = "ligand"
-  )
-  lgd_list_vertical = packLegend(lgd_cells, lgd_ligands)
-  draw(lgd_list_vertical, 
-       x = unit(0.02, "npc"), y = unit(0.98, "npc"),
-       just = c("left", "top"))
-}
+    # highlight receptor sector
+    highlight.sector(
+      sector_names[grepl(paste0("^", receptor, "$"), sector_names)], 
+      track.index = 1, col = "#FFFFFF",
+      text = receptor, cex = 1.5, facing = "clockwise",
+      text.col = "black", niceFacing = TRUE,
+      pos = 4
+    )
+    # create legends
+    lgd_cells = Legend(
+      at = as.character(cell_idents), type = "grid", 
+      legend_gp = gpar(fill = cell_colors),
+      title_position = "topleft", title = "cell identity"
+    )
+    lgd_ligands = Legend(
+      at = ligands, type = "grid", 
+      legend_gp = gpar(fill = lig_colors),
+      title_position = "topleft", title = "ligand"
+    )
+    chord_width <- 10/(4 + length(cell_idents)*length(ligands))
+    lgd_chord = Legend(
+      at = c(ligand_expression_threshold, max_width), 
+      col_fun = colorRamp2(c(ligand_expression_threshold, max_width), c("#DDDDDD", "#DDDDDD")),
+      legend_height = unit(chord_width, "in"),
+      title_position = "topleft", title = "ligand expression"
+    )
+    lgd_list_vertical = packLegend(lgd_cells, lgd_ligands, lgd_chord)
+    draw(lgd_list_vertical, 
+         x = unit(0.02, "npc"), y = unit(0.98, "npc"),
+         just = c("left", "top"))
+  }
 
 
 
