@@ -9,6 +9,8 @@ signaling_network(
   cols = NULL,
   edge_weight = 0.3,
   clusts = NULL,
+  showOutgoingSignalingClusts = NULL,
+  showIncomingSignalingClusts = NULL,
   min_thresh = -Inf,
   max_thresh = Inf,
   normalize = "none",
@@ -16,6 +18,7 @@ signaling_network(
   layout = "circle",
   scale_by = "rec_sig",
   vert_scale = 3,
+  plot_title = NULL,
   ...
 )
 }
@@ -27,6 +30,10 @@ signaling_network(
 \item{edge_weight}{Weight for determining thickness of edges on plot. Signaling values are multiplied by this value.}
 
 \item{clusts}{A vector of clusters to be included in the network plot.}
+
+\item{showOutgoingSignalingClusts}{A vector of clusters to plot the outgoing signaling from}
+
+\item{showIncomingSignalingClusts}{A vector of clusters to plot the incoming signaling on}
 
 \item{min_thresh}{Minimum signaling threshold. Values lower than the threshold will be set to the threshold. Defaults to -Inf for no threshold.}
 

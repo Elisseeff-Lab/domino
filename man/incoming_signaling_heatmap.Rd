@@ -7,6 +7,7 @@
 incoming_signaling_heatmap(
   dom,
   rec_clust,
+  clusts = NULL,
   min_thresh = -Inf,
   max_thresh = Inf,
   scale = "none",
@@ -19,6 +20,8 @@ incoming_signaling_heatmap(
 \item{dom}{A domino object with network built (build_domino)}
 
 \item{rec_clust}{Which cluster to select as the receptor. Must match naming of clusters in the domino object.}
+
+\item{clusts}{A vector of clusters to be included. If NULL then all clusters are used.}
 
 \item{min_thresh}{Minimum signaling threshold for plotting. Defaults to -Inf for no threshold.}
 

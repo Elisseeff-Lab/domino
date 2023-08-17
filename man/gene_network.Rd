@@ -7,6 +7,7 @@
 gene_network(
   dom,
   clust = NULL,
+  OutgoingSignalingClust = NULL,
   class_cols = c(lig = "#FF685F", rec = "#47a7ff", feat = "#39C740"),
   cols = NULL,
   lig_scale = 1,
@@ -18,6 +19,8 @@ gene_network(
 \item{dom}{A domino object with network built (build_domino)}
 
 \item{clust}{The receptor cluster to create the gene association network for. A vector of clusters may be provided.}
+
+\item{OutgoingSignalingClust}{A vector of clusters to plot the outgoing signaling from}
 
 \item{class_cols}{A named vector of colors used to color classes of vertices. Values must be colors and names must be classes ('rec', 'lig', and 'feat' for receptors, ligands, and features.).}
 
