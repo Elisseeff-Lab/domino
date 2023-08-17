@@ -27,7 +27,7 @@ domino <- setClass(
     slots = c(
         db_info = 'list',
         z_scores = 'matrix',
-        counts = 'AnyMatrix',
+        counts = 'dgCMatrix',
         clusters = 'factor',
         features = 'matrix',
         cor = 'matrix',

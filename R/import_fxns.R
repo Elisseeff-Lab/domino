@@ -617,7 +617,7 @@ add_rl_column = function(map, map_ref, conv, new_name){
 #' 
 #' @param x gene by cell expression matrix
 #' @param ligands character vector of ligand genes to be quantified
-#' @param cell_ident
+#' @param cell_ident vector of cell type (identity) names for which to calculate mean ligand gene expression
 #' @param cell_barcodes vector of cell barcodes (colnames of x) belonging to cell_ident to calculate mean expression across
 #' @param destination name of the receptor with which each ligand interacts
 #' @return data frame of ligand expression targeting the specified receptor

@@ -5,7 +5,7 @@
 \title{Create a domino object and prepare it for network construction}
 \usage{
 create_domino(
-  signaling_db,
+  rl_map,
   features,
   ser = NULL,
   counts = NULL,
@@ -14,6 +14,7 @@ create_domino(
   use_clusters = TRUE,
   df = NULL,
   gene_conv = NULL,
+  gene_conv_host = "https://www.ensembl.org",
   verbose = TRUE,
   use_complexes = TRUE,
   rec_min_thresh = 0.025,
@@ -23,7 +24,7 @@ create_domino(
 )
 }
 \arguments{
-\item{signaling_db}{Path to directory of signaling database directory. The directory must include genes.csv, proteins.csv, interactions.csv, and complexes.csv formated according to cellphonedb2 syntax.}
+\item{rl_map}{data frame where each row describes a receptor-ligand interaction with required columns gene_A & gene_B including the gene names for the receptor and ligand and type_A & type_B annotating if genes A and B are a ligand (L) or receptor (R)}
 
 \item{features}{Either a path to a csv containing cell level features of interest (ie. the auc matrix from pySCENIC) or named matrix with cells as columns and features as rows.}
 
@@ -41,9 +42,11 @@ create_domino(
 
 \item{gene_conv}{Optional. Vector of length two containing some combination of 'ENSMUSG', 'ENSG', 'MGI', or 'HGNC' where the first vector is the current gene format in the database and the second is the gene format in the data set. If present, the function will use biomaRt to convert the database to the data sets gene format.}
 
+\item{gene_conv_host}{Optional. Host to connect to when using gene_conv. Defaults to https://www.ensembl.org following the useMart default, but can be changed to archived hosts if useMart fails to connect.}
+
 \item{verbose}{Boolean indicating whether or not to print progress during computation.}
 
-\item{use_complexes}{Boolean indicating whether you wish to use receptor/ligand complexes in the receptor ligand signaling database. This may lead to problems if genes which are preserved acrossed many functionally different signaling complexes are found highly expressed or correlated with features in your data set.}
+\item{use_complexes}{Boolean indicating whether you wish to use receptor/ligand complexes in the receptor ligand signaling database. If FALSE, receptor/ligand pairs where either functions as a protein complex will not be considered when constructing the signaling network.}
 
 \item{rec_min_thresh}{Minimum expression level of receptors by cell. Default is 0.025 or 2.5 percent of all cells in the data set. This is important when calculating correlation to connect receptors to transcription activation. If this threshold is too low then correlation calculations will proceed with very few cells with non-zero expression.}
 
