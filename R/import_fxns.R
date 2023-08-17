@@ -1,6 +1,6 @@
 #' Create a receptor-ligand map from a cellphonedb signaling database
 #' 
-#' DESC
+#' Generates a data frame of ligand-receptor interactions from a CellPhoneDB database annotating the genes encoding the interacting ligands and receptors to be queried in transcriptomic data.
 #' 
 #' @param genes dataframe or file path to table of gene names in uniprot, hgnc_symbol, or ensembl format in cellphonedb database format
 #' @param proteins dataframe or file path to table of protein features in cellphonedb format

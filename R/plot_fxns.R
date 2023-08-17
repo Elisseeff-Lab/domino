@@ -655,25 +655,19 @@ cor_scatter = function(dom, tf, rec, remove_rec_dropout = TRUE, ...){
   
 }
 
-#' Create a circos plot to a given receptor
+#' Plot expression of a receptor's ligands by other cell types as a circos plot
 #' 
 #' Creates a circos plot of expression of ligands that can activate a specified
-#' receptor where chord widths correpond to mean ligand expression by the cluster
+#' receptor where chord widths correspond to mean ligand expression by the cluster.
 #' 
-circos_ligand_receptor <- 
-  function(dom, receptor,
-           ligand_expression_threshold = 0.01,
-           cell_idents = NULL, cell_colors = NULL){
-    # dom: A domino object with network built (build_domino)
-    # [,1] "origin": formatted as [cell_ident]_[ligand]
-    # [,2] "destination": name of the receptor receiving ligand signals
-    # [,3] "mean.expression": mean normalized expression of [ligand] in [cell_ident]
-    # receptor: name of the gene encoding the receptor
-    # file: path to save resulting pdf plot
-    # ligand_expression_threshold: minimum mean expression value to render chord
-    # cell_idents: character vector of cell types to plot. Defaults to plot all [cell_ident] from df
-    # cell_colors: named vector of colors for plotted cell types. Defaults to scales::hue_pal()
-    
+#' @param dom A domino object that has undergone network building with build_domino()
+#' @param receptor Name of a receptor active in at least one cell type in the domino object
+#' @param ligand_expression_threshold minimum mean expression value of a ligand by a cell type for a chord to be rendered between the cell type and the receptor
+#' @param cell_idents vector of cell types from cluster assignments in the domino object to be included in the circos plot.
+#' @param cell_colors a named vector of color names or hex codes where names correspond to the plotted cell types and the color values
+#' @export
+#' 
+circos_ligand_receptor = function(dom, receptor, ligand_expression_threshold = 0.01, cell_idents = NULL, cell_colors = NULL){
     require(circlize)
     require(ComplexHeatmap)
     
@@ -725,9 +719,9 @@ circos_ligand_receptor <-
     
     # order group as a factor with the receptor coming first
     group <- factor(group,
-                   levels = c(receptor,
-                              sort(unique(gsub("-.*", "", nm))[-1]) # alphabetical order of the other cell idents
-                   ))
+                    levels = c(receptor,
+                               sort(unique(gsub("-.*", "", nm))[-1]) # alphabetical order of the other cell idents
+                               ))
     
     # colors for ligand chords
     lig_colors <- ggplot_col_gen(length(ligands))
@@ -760,8 +754,10 @@ circos_ligand_receptor <-
       if(signaling_df[signaling_df$origin == send,][["mean.expression"]] > ligand_expression_threshold){
         if(max(signaling_df[["mean.expression"]]) > 1){
           expr <- signaling_df[signaling_df$origin == send,][["scaled.mean.expression"]]
+          max_width <- signif(max(signaling_df[["mean.expression"]]), 2)
         } else {
           expr <- signaling_df[signaling_df$origin == send,][["mean.expression"]]
+          max_width <- 1
         }
         
         circos.link(send, 
@@ -787,32 +783,37 @@ circos_ligand_receptor <-
         )
       }
     }
-  # highlight receptor sector
-  highlight.sector(
-    sector_names[grepl(paste0("^", receptor, "$"), sector_names)], 
-    track.index = 1, col = "#FFFFFF",
-    text = receptor, cex = 1.5, facing = "clockwise",
-    text.col = "black", niceFacing = TRUE,
-    pos = 4
-  )
-  # create legends
-  lgd_cells = Legend(
-    at = as.character(cell_idents), type = "grid", 
-    legend_gp = gpar(fill = cell_colors),
-    title_position = "topleft", title = "cell identity"
-  )
-  lgd_ligands = Legend(
-    at = ligands, type = "grid", 
-    legend_gp = gpar(fill = lig_colors),
-    title_position = "topleft", title = "ligand"
-  )
-  lgd_list_vertical = packLegend(lgd_cells, lgd_ligands)
-  draw(lgd_list_vertical, 
-       x = unit(0.02, "npc"), y = unit(0.98, "npc"),
-       just = c("left", "top"))
-}
-
-
+    # highlight receptor sector
+    highlight.sector(
+      sector_names[grepl(paste0("^", receptor, "$"), sector_names)], 
+      track.index = 1, col = "#FFFFFF",
+      text = receptor, cex = 1.5, facing = "clockwise",
+      text.col = "black", niceFacing = TRUE,
+      pos = 4
+    )
+    # create legends
+    lgd_cells = Legend(
+      at = as.character(cell_idents), type = "grid", 
+      legend_gp = gpar(fill = cell_colors),
+      title_position = "topleft", title = "cell identity"
+    )
+    lgd_ligands = Legend(
+      at = ligands, type = "grid", 
+      legend_gp = gpar(fill = lig_colors),
+      title_position = "topleft", title = "ligand"
+    )
+    chord_width <- 10/(4 + length(cell_idents)*length(ligands))
+    lgd_chord = Legend(
+      at = c(ligand_expression_threshold, max_width), 
+      col_fun = colorRamp2(c(ligand_expression_threshold, max_width), c("#DDDDDD", "#DDDDDD")),
+      legend_height = unit(chord_width, "in"),
+      title_position = "topleft", title = "ligand expression"
+    )
+    lgd_list_vertical = packLegend(lgd_cells, lgd_ligands, lgd_chord)
+    draw(lgd_list_vertical, 
+         x = unit(0.02, "npc"), y = unit(0.98, "npc"),
+         just = c("left", "top"))
+  }
 
 #' Normalize a matrix to its max value by row or column
 #' 
@@ -821,6 +822,7 @@ circos_ligand_receptor <-
 #' @param mat The matrix to be normalized
 #' @param dir The direction to normalize the matrix c('row', 'col') 
 #' @return Normalized matrix in the direction specified.
+#' 
 do_norm = function(mat, dir){
   if(dir == 'row'){
     mat = t(apply(mat, 1, function(x){x/max(x)}))
