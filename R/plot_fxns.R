@@ -665,13 +665,9 @@ cor_scatter = function(dom, tf, rec, remove_rec_dropout = TRUE, ...){
 #' @param ligand_expression_threshold minimum mean expression value of a ligand by a cell type for a chord to be rendered between the cell type and the receptor
 #' @param cell_idents vector of cell types from cluster assignments in the domino object to be included in the circos plot.
 #' @param cell_colors a named vector of color names or hex codes where names correspond to the plotted cell types and the color values
-#' @return Renders a chord diagram to the active graphics device.
+#' @export
 #' 
-circos_ligand_receptor <- 
-  function(dom, receptor,
-           ligand_expression_threshold = 0.01,
-           cell_idents = NULL, cell_colors = NULL){
-    
+circos_ligand_receptor = function(dom, receptor, ligand_expression_threshold = 0.01, cell_idents = NULL, cell_colors = NULL){
     require(circlize)
     require(ComplexHeatmap)
     
@@ -819,8 +815,6 @@ circos_ligand_receptor <-
          just = c("left", "top"))
   }
 
-
-
 #' Normalize a matrix to its max value by row or column
 #' 
 #' Normalizes a matrix to its max value by row or column
@@ -828,6 +822,7 @@ circos_ligand_receptor <-
 #' @param mat The matrix to be normalized
 #' @param dir The direction to normalize the matrix c('row', 'col') 
 #' @return Normalized matrix in the direction specified.
+#' 
 do_norm = function(mat, dir){
   if(dir == 'row'){
     mat = t(apply(mat, 1, function(x){x/max(x)}))
