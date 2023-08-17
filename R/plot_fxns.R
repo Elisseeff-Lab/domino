@@ -655,24 +655,22 @@ cor_scatter = function(dom, tf, rec, remove_rec_dropout = TRUE, ...){
   
 }
 
-#' Create a circos plot to a given receptor
+#' Plot expression of a receptor's ligands by other cell types as a circos plot
 #' 
 #' Creates a circos plot of expression of ligands that can activate a specified
-#' receptor where chord widths correpond to mean ligand expression by the cluster
+#' receptor where chord widths correspond to mean ligand expression by the cluster.
+#' 
+#' @param dom A domino object that has undergone network building with build_domino()
+#' @param receptor Name of a receptor active in at least one cell type in the domino object
+#' @param ligand_expression_threshold minimum mean expression value of a ligand by a cell type for a chord to be rendered between the cell type and the receptor
+#' @param cell_idents vector of cell types from cluster assignments in the domino object to be included in the circos plot.
+#' @param cell_colors a named vector of color names or hex codes where names correspond to the plotted cell types and the color values
+#' @return Renders a chord diagram to the active graphics device.
 #' 
 circos_ligand_receptor <- 
   function(dom, receptor,
            ligand_expression_threshold = 0.01,
            cell_idents = NULL, cell_colors = NULL){
-    # dom: A domino object with network built (build_domino)
-    # [,1] "origin": formatted as [cell_ident]_[ligand]
-    # [,2] "destination": name of the receptor receiving ligand signals
-    # [,3] "mean.expression": mean normalized expression of [ligand] in [cell_ident]
-    # receptor: name of the gene encoding the receptor
-    # file: path to save resulting pdf plot
-    # ligand_expression_threshold: minimum mean expression value to render chord
-    # cell_idents: character vector of cell types to plot. Defaults to plot all [cell_ident] from df
-    # cell_colors: named vector of colors for plotted cell types. Defaults to scales::hue_pal()
     
     require(circlize)
     require(ComplexHeatmap)
