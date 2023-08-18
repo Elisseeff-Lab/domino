@@ -438,7 +438,7 @@ create_domino = function(rl_map, features, ser = NULL, counts = NULL,
             print(paste0(cur, ' of ', n_tf))
         }
         if(!is.null(dom@linkages$tf_targets)){
-            tf = substring(module, first = 1, last = nchar(module) - 3)
+            tf = gsub(pattern = "\\.\\.\\.", replacement = "", module) # correction for AUC values from pySCENIC that append an elipses to TF names due to (+) characters in the orignial python output
             module_targets = tf_targets[[tf]]
             module_rec_targets = intersect(module_targets, ser_receptors)
         } else {module_rec_targets = NULL}
