@@ -12,9 +12,7 @@ create_domino(
   z_scores = NULL,
   clusters = NULL,
   use_clusters = TRUE,
-  df = NULL,
-  gene_conv = NULL,
-  gene_conv_host = "https://www.ensembl.org",
+  tf_targets = NULL,
   verbose = TRUE,
   use_complexes = TRUE,
   rec_min_thresh = 0.025,
@@ -38,11 +36,7 @@ create_domino(
 
 \item{use_clusters}{Boolean indicating whether to use the clusters from a Seurat object. If a Seurat object is not provided then this parameter is ignored.}
 
-\item{df}{Optional. Either a path to discovered motifs from pySCENIC as a csv file or a data frame following the format of df.csv from pySCENIC}
-
-\item{gene_conv}{Optional. Vector of length two containing some combination of 'ENSMUSG', 'ENSG', 'MGI', or 'HGNC' where the first vector is the current gene format in the database and the second is the gene format in the data set. If present, the function will use biomaRt to convert the database to the data sets gene format.}
-
-\item{gene_conv_host}{Optional. Host to connect to when using gene_conv. Defaults to https://www.ensembl.org following the useMart default, but can be changed to archived hosts if useMart fails to connect.}
+\item{tf_targets}{Optional. A list where names are transcription factors and the stored values are character vectors of genes in the transcription factor's regulon.}
 
 \item{verbose}{Boolean indicating whether or not to print progress during computation.}
 
