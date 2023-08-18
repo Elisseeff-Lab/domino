@@ -200,6 +200,38 @@ create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = 
   return(rl_map)
 }
 
+#' Create a list of genes in regulons inferred by SCENIC
+#' 
+#' Generates a list of transcription factors and the genes targeted by the transcription factor as part of their regulon inferred by pySCENIC
+#' 
+#' @param regulons dataframe or file path to the table of the output of the grn (gene regulatory network) function from pySCENIC
+#' @return List where names are transcription factors and the stored values are character vectors of genes in the inferred regulons
+#' @export
+#' 
+
+create_regulon_list_scenic <- function(regulons){
+  if(class(regulons)[1] == "character"){
+    regulons <- read.csv(regulons)
+  }
+  TFS <- unique(regulons[["TF"]])
+  TF_targets <- lapply(TFS,function(tf){
+    regulons_small <- regulons[regulons[["TF"]] == tf,]
+    targets <- regulons_small[["TargetGenes"]]
+    target_genes <- lapply(targets, function(x){
+      split_targs<-unlist(strsplit(x,""))
+      split_targs<-split_targs[seq(2,length(split_targs))]
+      split_targs<-split_targs[seq(1,length(split_targs)-1)]
+      split_targs<-paste(split_targs,collapse="")
+      split_targs<-unlist(strsplit(split_targs,"['), (']"))
+      split_targs_pre <- split_targs[split_targs!=""]
+      split_targs_post <- split_targs_pre[seq(1,length(split_targs_pre),2)]
+      return(split_targs_post)
+    })
+    return(unique(unlist(target_genes)))
+  })
+  names(TF_targets) <- TFS
+  return(TF_targets)
+}
 
 #' Create a domino object and prepare it for network construction
 #' 
@@ -218,9 +250,7 @@ create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = 
 #' @param z_scores A matrix containing z-scored expression data for all cells with cells as columns and features as rows. Either z_scores and clusters must be provided OR a ser object. If ser is present z_scores and clusters will be ignored.
 #' @param clusters A named factor containing cell cluster with names as cells. Either clusters and z_scores OR ser must be provided. If ser is present z_scores and clusters will be ignored.
 #' @param use_clusters Boolean indicating whether to use the clusters from a Seurat object. If a Seurat object is not provided then this parameter is ignored.
-#' @param df Optional. Either a path to discovered motifs from pySCENIC as a csv file or a data frame following the format of df.csv from pySCENIC
-#' @param gene_conv Optional. Vector of length two containing some combination of 'ENSMUSG', 'ENSG', 'MGI', or 'HGNC' where the first vector is the current gene format in the database and the second is the gene format in the data set. If present, the function will use biomaRt to convert the database to the data sets gene format.
-#' @param gene_conv_host Optional. Host to connect to when using gene_conv. Defaults to https://www.ensembl.org following the useMart default, but can be changed to archived hosts if useMart fails to connect.
+#' @param tf_targets Optional. A list where names are transcription factors and the stored values are character vectors of genes in the transcription factor's regulon.
 #' @param verbose Boolean indicating whether or not to print progress during computation.
 #' @param use_complexes Boolean indicating whether you wish to use receptor/ligand complexes in the receptor ligand signaling database. If FALSE, receptor/ligand pairs where either functions as a protein complex will not be considered when constructing the signaling network.
 #' @param rec_min_thresh Minimum expression level of receptors by cell. Default is 0.025 or 2.5 percent of all cells in the data set. This is important when calculating correlation to connect receptors to transcription activation. If this threshold is too low then correlation calculations will proceed with very few cells with non-zero expression.
@@ -231,8 +261,7 @@ create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = 
 #' @export
 #'
 create_domino = function(rl_map, features, ser = NULL, counts = NULL, 
-    z_scores = NULL, clusters = NULL, use_clusters = TRUE, df = NULL, 
-    gene_conv = NULL, gene_conv_host = "https://www.ensembl.org",
+    z_scores = NULL, clusters = NULL, use_clusters = TRUE, tf_targets = NULL, 
     verbose = TRUE, use_complexes = TRUE, 
     rec_min_thresh = .025, remove_rec_dropout = TRUE, 
     tf_selection_method = 'clusters', tf_variance_quantile = .5){
@@ -379,23 +408,18 @@ create_domino = function(rl_map, features, ser = NULL, counts = NULL,
         dom@features = dom@features[names(keep_id),]
     }
 
-    # If present, read in and process df
-    if(class(df)[1] == 'character'){
-      print("Reading regulon df based on SCENIC formatting")
-      df = read.csv(df, skip = 2)
-      regulon_colnames = c("TF", "MotifID", "AUC", "NES", "MotifSimilarityQvalue", "OrthologousIdentity", "Annotation", "Context", "TargetGenes", "RankAtMax")
-      colnames(df) = regulon_colnames
-    }
-    if(!is.null(df)){
-        tf_targets = get_regulon_info(df)
-        dom@linkages[['tf_targets']] = tf_targets
+    # store tf_targets in linkages if they are provided as a list
+    if(!is.null(tf_targets) & class(tf_targets) != "list"){
+      dom@linkages[['tf_targets']] = NULL
+      warning("tf_targets is not a list. No regulons stored")
+    } else if(class(tf_targets) == "list") {
+      dom@linkages[['tf_targets']] = tf_targets
     } else {
-        dom@linkages[['tf_targets']] = NULL
+      dom@linkages[['tf_targets']] = NULL
     }
 
     # Calculate correlation matrix between features and receptors.
     dom@counts = counts
-    # all_receptors = unique(names(dom@linkages$rec_lig))
     zero_sum = Matrix::rowSums(counts == 0)
     keeps = which(zero_sum < (1 - rec_min_thresh)*ncol(counts))
     ser_receptors = intersect(names(keeps), rec_genes)
@@ -495,34 +519,6 @@ create_domino = function(rl_map, features, ser = NULL, counts = NULL,
       dom@misc$cl_rec_percent = cl_rec_percent
     }
     return(dom)
-}
-
-#' Parse regulon information for the domino object
-#' 
-#' 
-#' @param regulon_df Optional. Either a path to discovered motifs from pySCENIC as a csv file or a data frame following the format of df.csv from pySCENIC
-#' @return transcription factor target list object.
-#' @export
-#'
-get_regulon_info <- function(regulon_df){
-  TFS <- unique(regulon_df[["TF"]])
-  TF_targets <- lapply(TFS,function(tf){
-    regulon_df_small <- regulon_df[regulon_df[["TF"]] == tf,]
-    targets <- regulon_df_small[["TargetGenes"]]
-    target_genes <- lapply(targets, function(x){
-      split_targs<-unlist(strsplit(x,""))
-      split_targs<-split_targs[seq(2,length(split_targs))]
-      split_targs<-split_targs[seq(1,length(split_targs)-1)]
-      split_targs<-paste(split_targs,collapse="")
-      split_targs<-unlist(strsplit(split_targs,"['), (']"))
-      split_targs_pre <- split_targs[split_targs!=""]
-      split_targs_post <- split_targs_pre[seq(1,length(split_targs_pre),2)]
-      return(split_targs_post)
-    })
-    return(unique(unlist(target_genes)))
-  })
-  names(TF_targets) <- TFS
-  return(TF_targets)
 }
 
 #' Use biomaRt to convert genes
