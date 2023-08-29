@@ -65,6 +65,6 @@ linkage_summary <- setClass(
   slots = c(
     subjects = "factor", 
     subject_meta = "data.frame", 
-    subject_features = "list"
+    subject_linkages = "list"
   )
 )
