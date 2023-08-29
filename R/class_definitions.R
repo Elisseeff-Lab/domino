@@ -42,3 +42,29 @@ domino <- setClass(
 print.domino = function(dom){
     cat('A Domino object of', length(dom@clusters), 'cells.\n')
 }
+
+#' The Domino linkage summary class
+#' 
+#' The linkage summary class contains linkages established in multiple domino
+#' objects through gene regulatory network inference and reference to receptor-
+#' ligand data bases. A data frame summarizing meta features that describe the
+#' domino objects compared in the linkage summary facilitates comparisons of
+#' established linkages and differential signaling interactions across categorical
+#' sample covariates.
+#' 
+#' @slot subjects unique names for each domino result included in the summary
+#' @slot subject_meta data.frame with each row describing one subject and columns describing features of the subjects by which to draw comparisons of signaling networks
+#' @slot subject_linkages nested list of linkages inferred for each subject. Lists are stored in a heirarchical structure of subject-cluster-linkage where linkages include transcription factors (tfs), linkages between transcription factors and receptors (tfs_rec), active receptors (rec), possible receptor-ligand interactions (rec_lig), and incoming ligands (incoming_lig)
+#' 
+#' @name linkage-summary-class
+#' @rdname linkage-summary-class
+#' @exportClass linkage summary
+#' 
+linkage_summary <- setClass(
+  Class = "linkage summary",
+  slots = c(
+    subjects = "factor", 
+    subject_meta = "data.frame", 
+    subject_features = "list"
+  )
+)
