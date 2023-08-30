@@ -16,6 +16,12 @@ summarize_linkages = function(domino_results, subject_meta, subject_names = NULL
   if(sum(subject_names %in% names(domino_results)) == 0){
     stop("No provided subject names match names from the domino results list")
   }
+  if(sum(!subject_names %in% names(domino_results))){
+    extra_names = subject_names[!subject_names %in% names(domino_results)]
+    warning(paste0("Provided subject names included names not present in domino_results: ",
+                   paste(extra_names, collapse = ", ")))
+    subject_names = subject_names[subject_names %in% names(domino_results)]
+  }
   
   subject_linkages = list()
   for(id in subject_names){
