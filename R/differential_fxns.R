@@ -94,9 +94,59 @@ summarize_linkages = function(domino_results, subject_meta, subject_names = NULL
   }
   return(
     linkage_summary(
-      subjects = factor(subject_names),
+      subject_names = factor(subject_names),
       subject_meta = subject_meta,
       subject_linkages = subject_linkages
     )
   )
 }
+
+#' Count occurrences of linkages across multiple domino results from a linkage summary
+#' 
+#' @param linkage_summary a linkage_summary object
+#' @param cluster the name of the cell cluster being compared across multiple domino results
+#' @param linkage a stored linkage from the domino object. Can compare ("tfs", "rec", "incoming_lig", "tfs_rec", "rec_lig")
+#' @param subject_names a vector of subject_names from the linkage_summary to be compared. If NULL, all subject_names in the linkage summary are included in counting.
+#' @param group.by the name of the column in linkage_summary\@subject_meta by which to group subjects for counting. Values 
+#' @return a data frame with columns for the unique linkage features and the counts of how many times the linkage occured across the compared domino results. If group.by is used, counts of the linkages are also provided as columns named by the unique values of the group.by variable.
+#' @export
+#' 
+count_linkage <- function(linkage_summary, cluster, 
+                          linkage = "rec_lig", subject_names = NULL, group.by = NULL){
+  if(is.null(subject_names)){
+    subject_names = linkage_summary@subject_names
+  }
+  all_int <- sapply(
+    linkage_summary@subject_linkages, 
+    FUN = function(x){return(x[[cluster]][[linkage]])}
+  )
+  feature <- table(unlist(all_int))
+  df <- data.frame(
+    feature = names(feature),
+    total_count = as.numeric(feature)
+  )
+  
+  if(!is.null(group.by)){
+    if(!group.by %in% colnames(linkage_summary@subject_meta)){
+      stop("group.by variable not present in subject_meta")
+    }
+    groups <- levels(factor(linkage_summary@subject_meta[[group.by]]))
+    
+    for(g in groups){
+      g_index <- linkage_summary@subject_meta[[group.by]] == g
+      g_subjects <- linkage_summary@subject_meta[g_index, 1]
+      
+      int_count <- list()
+      for(f in df[["feature"]]){
+        count<- sapply(
+          g_subjects, 
+          function(x){f %in% linkage_summary@subject_linkages[[x]][[cluster]][[linkage]]}
+        )
+        int_count[[f]] <- sum(count)
+      }
+      df[[g]] <- int_count
+    }
+  }
+  return(df)
+}
+
