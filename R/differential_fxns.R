@@ -10,7 +10,7 @@ summarize_linkages = function(domino_results, subject_meta, subject_names = NULL
   if(!is(domino_results, "list")){
     stop("domino_results must be provided as a named list where names correspond to subject names")
   }
-  if(is.null(results_names)){
+  if(is.null(subject_names)){
     subject_names = subject_meta[1,]
   }
   if(sum(subject_names %in% names(domino_results) == 0)){
@@ -82,7 +82,7 @@ summarize_linkages = function(domino_results, subject_meta, subject_names = NULL
     subject_linkages[[id]] <- c_features
   }
   return(
-    DominoInteractions(
+    linkage_summary(
       subjects = factor(subject_names),
       subject_meta = subject_meta,
       subject_linkages = subject_linkages
