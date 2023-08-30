@@ -3,7 +3,7 @@
 #' @param domino_results list of domino result with one domino object per subject. Names from the list must match subject_names.
 #' @param subject_meta dataframe that includes the subject features by which the objects could be grouped. The first column should be subject ids
 #' @param subject_names vector of subject names in domino_results. If NULL, defaults to first column of subject_meta.
-#' @return 
+#' @return A linkage summary class object consisting of nested lists of the active transcription factors, active receptors, and incoming ligands for each cluster across multiple domino results.
 #' @export
 #' 
 summarize_linkages = function(domino_results, subject_meta, subject_names = NULL){
