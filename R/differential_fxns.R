@@ -11,9 +11,9 @@ summarize_linkages = function(domino_results, subject_meta, subject_names = NULL
     stop("domino_results must be provided as a named list where names correspond to subject names")
   }
   if(is.null(subject_names)){
-    subject_names = subject_meta[1,]
+    subject_names = subject_meta[,1]
   }
-  if(sum(subject_names %in% names(domino_results) == 0)){
+  if(sum(subject_names %in% names(domino_results)) == 0){
     stop("No provided subject names match names from the domino results list")
   }
   
