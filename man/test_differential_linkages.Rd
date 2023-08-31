@@ -39,7 +39,9 @@ a data frame of results from the test of the differential linkages. Rows corresp
  \item{"feature"} : individual linkages compared
  \item{"test statistics"} : test statistics provided are based on test method. "fishers.exact" provides a odds ratio, p-value, and fdr-adjusted p-value.
  \item{"total_count"} : total number of subjects where the linkage is active
- \item{"*_count"} : number of subjects in each category of group.by where the linkage is active
+ \item{"*_count"} : number of subjects in each category of group.by (\*) where the linkage is active
+ \item{"total_n"} : number of total subjects compared
+ \item{"*_n"} : total number of subjects in each category of group.by (\*)
 }
 }
 \description{
