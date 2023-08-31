@@ -58,10 +58,10 @@ print.domino = function(dom){
 #' 
 #' @name linkage-summary-class
 #' @rdname linkage-summary-class
-#' @exportClass linkage summary
+#' @exportClass linkage_summary
 #' 
 linkage_summary <- setClass(
-  Class = "linkage summary",
+  Class = "linkage_summary",
   slots = c(
     subject_names = "factor", 
     subject_meta = "data.frame", 
