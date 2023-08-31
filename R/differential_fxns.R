@@ -150,3 +150,80 @@ count_linkage <- function(linkage_summary, cluster,
   return(df)
 }
 
+#' 
+#' 
+#' 
+#' 
+#' 
+test_differential_linkages <- function(linkage_summary, cluster, group.by, 
+                                        linkage = "rec_lig", subject_names = NULL,
+                                       test_name = "fishers.exact"){
+  valid_tests <- c("fishers.exact")
+  if(!test_name %in% valid_tests){
+    stop("test_name invalid")
+  }
+  if(is.null(subject_names)){
+    subject_names = linkage_summary@subject_names
+  }
+  
+  # count the number of groups
+  subject_count <- as.data.frame(table(linkage_summary@subject_meta[[group.by]]))
+  colnames(subject_count) <- c(group.by, "total")
+  group_levels <- subject_count[[group.by]]
+  level_n <- nrow(subject_count)
+  count_link <- count_linkage(linkage_summary = linkage_summary,
+                              cluster = cluster, linkage = linkage,
+                              group.by = group.by, subject_names = subject_names)
+  # initiate data frame for storing results
+  n <- nrow(count_link)
+  result_df <- data.frame(
+    cluster = rep(cluster, n),
+    linkage = rep(linkage, n),
+    group.by = rep(group.by, n),
+    test_name = rep(test_name, n),
+    feature = count_link[["feature"]]
+  )
+  # empty contigency table
+  test_mat <- matrix(data = NA, nrow = nrow(subject_count), ncol = 2)
+  rownames(test_mat) <- subject_count[[group.by]]
+  colnames(test_mat) <- c("linkage_present", "linkage_absent")
+  test_template <- as.data.frame(test_mat)
+  
+  if(test_name == "fishers.exact"){
+    test_result <- 
+      as.data.frame(t(
+        sapply(
+          result_df[["feature"]],
+          FUN = function(x){
+            feat_count = count_link[count_link[["feature"]] == x, !colnames(count_link) %in% c("feature", "total_count")]
+            g_names = colnames(feat_count)
+            feat_count = sapply(feat_count, as.numeric)
+            # fill contingency table
+            test_df <- test_template
+            test_df[["linkage_present"]] = feat_count
+            test_df[["linkage_absent"]] = subject_count[["total"]] - feat_count
+            # conduct test
+            test = fisher.test(test_df)
+            odds.ratio = test$estimate
+            p.value = test$p.value
+            res = c(odds.ratio, p.value)
+            res = setNames(res, c("odds.ratio", "p.value"))
+            return(res)
+          }
+        )
+      ))
+    # include fdr-adjusted p-values
+    test_result[["p.adj"]] = p.adjust(
+      p = test_result[["p.value"]], method = "fdr"
+    )
+  }
+  # append test result columns to result
+  result_df = cbind(result_df, test_result)
+  
+  # append counts of active linkages for each group
+  count_append = count_link[,!colnames(count_link) == "feature"]
+  colnames(count_append) <- sapply(colnames(count_append), function(x){if(!grepl("_count$", x)){return(paste0(x, "_count"))}else{return(x)}})
+  result_df = cbind(result_df, count_append)
+  
+  return(result_df)
+}
