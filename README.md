@@ -1,8 +1,8 @@
 # Domino
 Domino is a tool for analysis of intra- and intercellular signaling in single cell RNA seq based on transcription factor activation. 
 
-##### Branch notes:
-Code used in the version of Domino published in 2021 has been archived in the branch `domino_paper_archive`. Changes, issues and pull requests will be handled on the `master` branch for easy use and installation of the updated version.
+### A note on versions:
+Code used in the version of Domino published in 2021 has been uploaded to [Zenodo](https://zenodo.org/record/8277233) and is also released on the [Elisseeff Lab Github](https://github.com/Elisseeff-Lab) as [v1.0.0](https://github.com/Elisseeff-Lab/domino/tree/v1.0.0). _**This repository is no longer being actively maintained.**_ Please see the [Domino2 development repository](https://github.com/FertigLab/domino_development/tree/v0.2.1) for bug fixes and new features.
 
 ##### Update notes for v0.2
 Added an option to only use cells without receptor dropout when calculating Pearson correlation.
