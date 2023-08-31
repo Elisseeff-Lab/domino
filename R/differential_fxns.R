@@ -170,7 +170,9 @@ count_linkage <- function(linkage_summary, cluster, group.by = NULL,
 #'  \item{"feature"} : individual linkages compared
 #'  \item{"test statistics"} : test statistics provided are based on test method. "fishers.exact" provides a odds ratio, p-value, and fdr-adjusted p-value.
 #'  \item{"total_count"} : total number of subjects where the linkage is active
-#'  \item{"*_count"} : number of subjects in each category of group.by where the linkage is active
+#'  \item{"*_count"} : number of subjects in each category of group.by (\*) where the linkage is active
+#'  \item{"total_n"} : number of total subjects compared
+#'  \item{"*_n"} : total number of subjects in each category of group.by (\*)
 #' }
 #' @export
 #' 
@@ -189,7 +191,7 @@ test_differential_linkages <- function(linkage_summary, cluster, group.by,
   subject_count <- as.data.frame(table(linkage_summary@subject_meta[[group.by]]))
   colnames(subject_count) <- c(group.by, "total")
   group_levels <- subject_count[[group.by]]
-  level_n <- nrow(subject_count)
+  
   count_link <- count_linkage(linkage_summary = linkage_summary,
                               cluster = cluster, linkage = linkage,
                               group.by = group.by, subject_names = subject_names)
@@ -244,5 +246,12 @@ test_differential_linkages <- function(linkage_summary, cluster, group.by,
   colnames(count_append) <- sapply(colnames(count_append), function(x){if(!grepl("_count$", x)){return(paste0(x, "_count"))}else{return(x)}})
   result_df = cbind(result_df, count_append)
   
+  # append total counts of subjects in each group and the total number of subjects
+  total_n <- sum(subject_count[["total"]])
+  result_df[["total_n"]] <- total_n
+  for(g in group_levels){
+    g_n <- as.numeric(subject_count[subject_count[[group.by]] == g, "total"])
+    result_df[[paste0(g, "_n")]] <- g_n
+  }
   return(result_df)
 }
