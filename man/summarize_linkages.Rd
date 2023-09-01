@@ -17,5 +17,5 @@ summarize_linkages(domino_results, subject_meta, subject_names = NULL)
 A linkage summary class object consisting of nested lists of the active transcription factors, active receptors, and incoming ligands for each cluster across multiple domino results.
 }
 \description{
-Summarize linkages from multiple domino objects
+Creates a linkage_summary object storing the linkages learned in different domino objects as nested lists to facilitate comparisons of networks learned by domino across subject covariates.
 }

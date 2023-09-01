@@ -817,13 +817,14 @@ circos_ligand_receptor = function(dom, receptor, ligand_expression_threshold = 0
 
 #' Plot differential linkages among domino results ranked by a comparative statistic
 #' 
-#' foobar
+#' Plot differential linkages among domino results ranked by a comparative statistic
 #' 
 #' @param differential_linkages a data.frame output from the test_differential_linkages function
 #' @param test_statistic column name of differential_linkages where the test statistic used for ranking linkages is stored (ex. "p.value")
 #' @param stat_range a two value vector of the minimum and maximum values of test_statistic for plotting linkage features
+#' @param stat_ranking "ascending" (lowest value of test statisic is colored red and plotted at the top) or "descending" (highest value of test statistic is colored red and plotted at the top). 
 #' @param group_palette a named vector of colors to use for each group being compared
-#' @return pretty plot
+#' @return a Heatmap-class object of features ranked by test_statistic annotated with the proportion of subjects that showed active linkage of the features.
 #' @export
 #' 
 plot_differential_linkages = function(differential_linkages, test_statistic, 
@@ -854,9 +855,12 @@ plot_differential_linkages = function(differential_linkages, test_statistic,
   # order df by plot statistic
   if(stat_ranking == "ascending"){
     df = df[order(df[[test_statistic]], df[["total_count"]], decreasing = FALSE),]
+    stat_gradient = c("#FF0000", "#FFFFFF")
+    
   }
   if(stat_ranking == "descending"){
     df = df[order(df[[test_statistic]], df[["total_count"]], decreasing = TRUE),]
+    stat_gradient = c("#FFFFFF", "#FF0000")
   }
   
   # values from test result for plotting
@@ -889,7 +893,7 @@ plot_differential_linkages = function(differential_linkages, test_statistic,
     # annotate by test name
     column_title = paste0(cluster, ": ", test_statistic),
     name = test_statistic,
-    col = colorRamp2(breaks = stat_range, colors = c("red", "#FFFFFF")),
+    col = colorRamp2(breaks = stat_range, colors = stat_gradient),
     height = nrow(mat)*unit(0.25, "in"),
     width = unit(1, "in")
   ) + 
@@ -940,6 +944,7 @@ do_norm = function(mat, dir){
 #' 
 #' @param n Number of colors to generate
 #' @return A vector of colors according to ggplot color generation.
+#' @export
 #' 
 ggplot_col_gen = function(n){
   hues = seq(15, 375, length = n + 1)

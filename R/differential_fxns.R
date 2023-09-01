@@ -1,5 +1,7 @@
 #' Summarize linkages from multiple domino objects
 #' 
+#' Creates a linkage_summary object storing the linkages learned in different domino objects as nested lists to facilitate comparisons of networks learned by domino across subject covariates.
+#' 
 #' @param domino_results list of domino result with one domino object per subject. Names from the list must match subject_names.
 #' @param subject_meta dataframe that includes the subject features by which the objects could be grouped. The first column should must be subject names
 #' @param subject_names vector of subject names in domino_results. If NULL, defaults to first column of subject_meta.
@@ -103,6 +105,8 @@ summarize_linkages = function(domino_results, subject_meta, subject_names = NULL
 
 #' Count occurrences of linkages across multiple domino results from a linkage summary
 #' 
+#' Count occurrences of linkages across multiple domino results from a linkage summary
+#' 
 #' @param linkage_summary a linkage_summary object
 #' @param cluster the name of the cell cluster being compared across multiple domino results
 #' @param group.by the name of the column in linkage_summary\@subject_meta by which to group subjects for counting. If NULL, only total counts of linkages for linkages in the cluster across all subjects is given.
@@ -149,6 +153,8 @@ count_linkage = function(linkage_summary, cluster, group.by = NULL,
   return(df)
 }
 
+#' Statistical test for differential linkages across multiple domino results
+#' 
 #' Statistical test for differential linkages across multiple domino results
 #' 
 #' @param linkage_summary a linkage_summary object
