@@ -135,7 +135,6 @@ count_linkage <- function(linkage_summary, cluster, group.by = NULL,
     for(g in groups){
       g_index <- linkage_summary@subject_meta[[group.by]] == g
       g_subjects <- linkage_summary@subject_meta[g_index, 1]
-      
       int_count <- list()
       for(f in df[["feature"]]){
         count<- sapply(
@@ -144,7 +143,7 @@ count_linkage <- function(linkage_summary, cluster, group.by = NULL,
         )
         int_count[[f]] <- sum(count)
       }
-      df[[g]] <- int_count
+      df[[g]] <- unlist(int_count)
     }
   }
   return(df)
@@ -191,7 +190,6 @@ test_differential_linkages <- function(linkage_summary, cluster, group.by,
   subject_count <- as.data.frame(table(linkage_summary@subject_meta[[group.by]]))
   colnames(subject_count) <- c(group.by, "total")
   group_levels <- subject_count[[group.by]]
-  
   count_link <- count_linkage(linkage_summary = linkage_summary,
                               cluster = cluster, linkage = linkage,
                               group.by = group.by, subject_names = subject_names)

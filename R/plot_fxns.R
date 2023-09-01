@@ -815,6 +815,107 @@ circos_ligand_receptor = function(dom, receptor, ligand_expression_threshold = 0
          just = c("left", "top"))
   }
 
+#' Plot differential linkages among domino results ranked by a comparative statistic
+#' 
+#' foobar
+#' 
+#' @param differential_linkages a data.frame output from the test_differential_linkages function
+#' @param test_statistic column name of differential_linkages where the test statistic used for ranking linkages is stored (ex. "p.value")
+#' @param stat_range a two value vector of the minimum and maximum values of test_statistic for plotting linkage features
+#' @param group_palette a named vector of colors to use for each group being compared
+#' @return pretty plot
+#' @export
+#' 
+plot_differential_linkages = function(differential_linkages, test_statistic, 
+                                      stat_range = c(0,1), 
+                                      stat_ranking = c("ascending", "descending"),
+                                      group_palette = NULL){
+  require(circlize)
+  require(ComplexHeatmap)
+  if(!test_statistic %in% colnames(differential_linkages)){
+    stop(paste0("test statistic '", test_statistic, "' not present in colnames(differential_linkages)"))
+  }
+  if(identical(stat_ranking, c("ascending", "descending"))){
+    warning("stat_ranking order not specified. Defaulting to ascending order")
+    stat_ranking = "ascending"
+  }
+  if(!stat_ranking %in% c("ascending", "descending")){
+    stop("stat_ranking must be 'ascending' or 'descending'")
+  }
+  
+  # limit to features within stat range
+  df = differential_linkages[
+    differential_linkages[[test_statistic]] >= stat_range[1] & 
+      differential_linkages[[test_statistic]] <= stat_range[2],
+  ]
+  if(nrow(df) == 0){
+    stop(paste0("No features with '", test_statistic, "' within stat_range"))
+  }
+  # order df by plot statistic
+  if(stat_ranking == "ascending"){
+    df = df[order(df[[test_statistic]], df[["total_count"]], decreasing = FALSE),]
+  }
+  if(stat_ranking == "descending"){
+    df = df[order(df[[test_statistic]], df[["total_count"]], decreasing = TRUE),]
+  }
+  
+  # values from test result for plotting
+  cluster = unique(df[["cluster"]])
+  g_names_full = colnames(df)[grepl("_n$", colnames(df)) & !grepl("^total_", colnames(df))]
+  g_names = gsub("_n", "", g_names_full)
+  
+  # proportion bar for linkage feature in all subjects
+  ha_subject <- HeatmapAnnotation(
+    subjects = anno_barplot(
+      matrix(ncol = 2, c(df[["total_count"]], df[["total_n"]] - df[["total_count"]])),
+      gp = gpar(fill = c("black", "white"))),
+    which = "row",
+    annotation_name_gp= gpar(fontsize = 8)
+  )
+  ha_subject@anno_list$subjects@label = "All\nSubjects"
+  
+  # row annotation of linkage feature names
+  ha_name = rowAnnotation(feat = anno_text(df[["feature"]], location = 0, rot = 0))
+  
+  # plotted statistic for ordering results
+  mat = matrix(df[[test_statistic]], ncol = 1)
+  rownames(mat) = df[["feature"]]
+  
+  plot = Heatmap(
+    matrix = mat, cluster_rows = FALSE, left_annotation = ha_name,
+    cell_fun = function(j, i, x, y, width, height, fill) {
+      # overlay value for ordering statistic
+      grid.text(sprintf("%.3f", mat[i, j]), x, y, gp = gpar(fontsize = 6))},
+    # annotate by test name
+    column_title = paste0(cluster, ": ", test_statistic),
+    name = test_statistic,
+    col = colorRamp2(breaks = stat_range, colors = c("red", "#FFFFFF")),
+    height = nrow(mat)*unit(0.25, "in"),
+    width = unit(1, "in")
+  ) + 
+    ha_subject
+  # generate an heatmap annotation for each category
+  if(is.null(group_palette)){
+    group_palette = ggplot_col_gen(length(g_names))
+    names(group_palette) = g_names
+  }
+  for(i in 1:length(g_names)){
+    g = g_names[i]
+    g_count = paste0(g, "_count")
+    g_n = paste0(g, "_n")
+    ha = HeatmapAnnotation(
+      group = anno_barplot(
+        matrix(ncol = 2, c(df[[g_count]], df[[g_n]] - df[[g_count]])),
+        gp = gpar(fill = c(group_palette[g], "#FFFFFF"))),
+      name = g,
+      which = "row",
+      annotation_name_gp = gpar(fontsize = 8))
+    ha@anno_list$group@label = g
+    plot <- plot + ha
+  }
+  return(plot)
+}
+
 #' Normalize a matrix to its max value by row or column
 #' 
 #' Normalizes a matrix to its max value by row or column
