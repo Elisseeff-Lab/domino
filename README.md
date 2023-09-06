@@ -5,7 +5,7 @@ Domino2 is a tool for analysis of intra- and intercellular signaling in single c
 This repository is intended for integration of updates to Domino2 from the Fertig Lab and Elisseeff Lab. The code may currently be unstable and is not currently recommended for use. If you would like to use Domino, please use the main repository hosted by the Elisseeff Lab at https://github.com/Elisseeff-Lab/domino.
 
 ##### Branch notes:
-Code used in the version of Domino published in 2021 has been archived in the branch `domino_paper_archive`. Changes, issues and pull requests will be handled on the `master` branch for easy use and installation of the updated version.
+Code used in the version of Domino published in 2021 has been uploaded to [Zenodo](https://zenodo.org/record/8277233) and is also released on the [Elisseeff Lab Github](https://github.com/Elisseeff-Lab) as [v1.0.0](https://github.com/Elisseeff-Lab/domino/tree/v1.0.0).
 
 ##### Update notes for v0.2
 Updates to domino object construction
