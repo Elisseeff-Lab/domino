@@ -18,6 +18,22 @@ create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = 
                                       database_name = "CellPhoneDB",
                                       gene_conv = NULL, gene_conv_host = "https://www.ensembl.org",
                                       alternate_convert = FALSE, alternate_convert_table = NULL){
+
+  # Check input structures:
+  stopifnot("genes argument must be file path or dataframe" = (is(genes, "data.frame") | is(genes, "character")))
+  stopifnot("proteins argument must be file path or dataframe" = (is(proteins, "data.frame") | is(proteins, "character")))
+  stopifnot("interactions argument must be file path or dataframe" = (is(interactions, "data.frame") | is(interactions, "character")))
+  stopifnot("complexes argument must be NULL, file path or dataframe" =
+    (is.null(complexes) | is(complexes, "data.frame") | is(complexes, "character")))
+  stopifnot("Database name must be a string" = is(database_name, "character") & length(database_name) == 1)
+  stopifnot("Gene conversion must be NULL or a character vector with 2 items" = 
+    (is.null(gene_conv) | (is(gene_conv, "character") & length(gene_conv) == 2)))
+  stopifnot("Gene conversion host must be a string" = is(gene_conv_host, "character") & length(gene_conv_host) == 1)
+  stopifnot("Alternate conversion argument (not recommended) must be TRUE or FALSE" = is(alternate_convert, "logical"))
+  stopifnot("If using alternate conversion table (not recommended), table must be provided as data.frame" =
+    (alternate_convert & is(alternate_convert_table, "data.frame")))
+
+  # Read in files if needed:
   if(is(genes, "character")){
     genes = read.csv(genes, stringsAsFactors = FALSE)
   }
@@ -277,6 +293,16 @@ create_domino = function(rl_map, features, ser = NULL, counts = NULL,
     rec_min_thresh = .025, remove_rec_dropout = TRUE, 
     tf_selection_method = 'clusters', tf_variance_quantile = .5){
 
+  # Check inputs:
+  stopifnot("rl_map must be a data.frame with column names gene_A, gene_B, type_A, and type_B" =
+    (is(rl_map, "data.frame") & c("gene_A", "gene_B", "type_A", "type_B") %in% colnames(rl_map)))
+  stopifnot("features must be either a file path or a named matrix with cells as columns and features as rows" = 
+    ((is(features, "character") & length(features) == 1) | (is(features, "matrix") & !is.null(rownames(features)) & !is.null(colnames(features)))))
+  stopifnot("Either a Seurat object OR z scores and clusters must be provided" = (is(ser, "Seurat") |
+    (is(features, "matrix") & !is.null(rownames(features)) & !is.null(colnames(features)) & is(clusters, "factor") & !is.null(names(clusters)))))
+  stopifnot("rec_min_thresh must be a number between 0 and 1" = (is(rec_min_thresh, "numeric") & rec_min_thresh <= 1 & rec_min_thresh >= 0))
+
+  # Create object
     dom = domino()
     dom@misc[['create']] = TRUE
     dom@misc[['build']] = FALSE
@@ -538,11 +564,17 @@ create_domino = function(rl_map, features, ser = NULL, counts = NULL,
 #' 
 #' @param genes Vector of genes to convert.
 #' @param from Format of gene input (ENSMUSG, ENSG, MGI, or HGNC)
-#' @param to Format of gene output (ENSMUSG, ENSG, MGI, or HGNC)
+#' @param to Format of gene output (MGI, or HGNC)
 #' @param host Host to connect to. Defaults to https://www.ensembl.org following the useMart default, but can be changed to archived hosts if useMart fails to connect.
 #' @return A data frame with input genes as col 1 and output as col 2.
 #' 
-convert_genes = function(genes, from, to, host = "https://www.ensembl.org"){
+convert_genes = function(genes, from = c("ENSMUSG", "ENSG", "MGI", "HGNC"), to = c("MGI", "HGNC"), host = "https://www.ensembl.org"){
+  # Check inputs:
+  stopifnot("Genes must be a vector of characters" = (is(test, "character") & is(test, "vector")))
+  stopifnot("From must be one of ENSMUSG, ENSG, MGI, or HGNC" = from %in% c("ENSMUSG", "ENSG", "MGI", "HGNC"))
+  stopifnot("To must be one of MGI or HGNC" = to %in% c("MGI", "HGNC"))
+  stopifnot("Host must be  web host to connect to" = (is(host, "character") & length(host) == 1))
+
     if (from == 'ENSMUSG'){
         srcMart = biomaRt::useMart("ensembl", dataset = "mmusculus_gene_ensembl",
                                     host = host)
