@@ -4,6 +4,8 @@
 .Rbuildignore
 .Rhistory
 R/.Rhistory
+*.rds
+*.loom
 
 scratch/
 
