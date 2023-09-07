@@ -1,0 +1,23 @@
+---
+title: "domino_object_vignette"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{domino_object_vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE # Just for now since build fails
+)
+```
+
+```{r setup}
+library(domino2)
+```
+
+More of Jacob's stuff that I'm cutting:
+Active transcription factors in each cluster are determined by conducting wilcoxon rank sum tests for each transcription factor where the trascription factor activity scores amongst all cells in the cluster are tested against the activity scores of all cells outside of the cluster. The p-value for the one-sided test for greater activity within the cluster compared to outside is stored in pbmc_dom\@clust_de. Linkage between receptors and transcription factors is assessed by Spearman correlation between transcription factor activity scores and scaled expression of receptor-encoding genes across all cells in the data set. Spearman coefficients are stored in pbmc_dom\@cor.

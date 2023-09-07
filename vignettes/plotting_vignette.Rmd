@@ -1,0 +1,40 @@
+---
+title: "plotting_vignette"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{plotting_vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE # Just for now since build fails
+)
+```
+
+```{r setup}
+library(domino2)
+```
+
+Jacob's stuff I'm cutting from his original vignette:
+```{r}
+# bug in plotting parameters 
+## Error in plot.window(...) : need finite 'xlim' values
+# signaling_network(pbmc_dom, edge_weight = .5, max_thresh = 2.5,
+#                   showIncomingSignalingClusts = "dendritic_cell")
+signaling_network(pbmc_dom, edge_weight = .5, max_thresh = 2.5,
+                  showOutgoingSignalingClusts = "CD14_monocyte")
+```
+
+The circos plot also includes functionality to change colors used for each cell type to correspond with other figures from the primary analysis of the scRNA-seq data set.
+
+```{r}
+cell_types <- unique(pbmc_dom@clusters)
+cell_palette <- dittoSeq::dittoColors()[1:length(cell_types)]
+names(cell_palette) <- cell_types
+
+circos_ligand_receptor(pbmc_dom, receptor = "CD74", cell_colors = cell_palette)
+```
