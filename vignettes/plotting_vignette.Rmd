@@ -1,8 +1,8 @@
 ---
-title: "plotting_vignette"
+title: "Plotting Functions and Options"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{plotting_vignette}
+  %\VignetteIndexEntry{Plotting Functions and Options}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -15,9 +15,24 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r setup, include = FALSE}
 library(domino2)
 ```
+
+# Visualizing Domino2 data
+In addition to the numerous plotting options available in the original [Domino](https://github.com/Elisseeff-Lab/domino), Domino2 has added more functionality and new methods to improve visualization and interpretation of analysis results. Here, we will go over the different plotting functions available, as well as different options that can be utilized, and options for customization. We will be using the domino object from our example analysis on [Getting Started](vignette("domino2")).
+
+## Updates to Original Plotting Functions:
+
+Functions:
+- circos_ligand_receptor
+- cor_heatmap
+- cor_scatter
+- feat_heatmap
+- gene_network
+- incoming_signaling_heatmap
+- signaling_heatmap
+- signaling_network
 
 Jacob's stuff I'm cutting from his original vignette:
 ```{r}

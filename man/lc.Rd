@@ -17,3 +17,4 @@ A vector contaning all items in the list by list_names.
 \description{
 Helper function to convert from a nested series of lists to a single vector.
 }
+\keyword{internal}

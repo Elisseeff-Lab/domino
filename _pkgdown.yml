@@ -2,3 +2,40 @@ url: ~
 template:
   bootstrap: 5
   bootswatch: lumen
+
+reference:
+- title: "Analysis Functions"
+  desc: >
+    Functions for performing cell-cell communication analysis
+    with the Domino2 package
+  contents: 
+  - create_rl_map_cellphonedb
+  - create_regulon_list_scenic
+  - create_domino
+  - build_domino
+  - domino-class
+- title: "Plotting Functions"
+  desc: "Functions for visualizing Domino2 analysis results"
+  contents:
+  - circos_ligand_receptor
+  - cor_heatmap
+  - cor_scatter
+  - feat_heatmap
+  - gene_network
+  - incoming_signaling_heatmap
+  - signaling_heatmap
+  - signaling_network
+- title: "Helper Functions"
+  desc: "Convenience functions for working with Domino2 objects"
+  contents:
+  - add_rl_column
+  - collate_network_items
+  - convert_genes
+  - mean_ligand_expression
+  - rename_clusters
+
+navbar:
+structure:
+  left:  [intro, articles, reference, news]
+  right: [search, github]
+  bg: light

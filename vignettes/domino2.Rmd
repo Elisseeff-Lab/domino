@@ -1,11 +1,10 @@
 ---
-title: "Cell Cell Communication with Domino2: v0.2.1 Vignette"
+title: "Get Started"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Cell Cell Communication with Domino2: v0.2.1 Vignette}
+  %\VignetteIndexEntry{Get Started}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-author: "Jacob Mitchell"
 ---
 
 
@@ -14,7 +13,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   echo = TRUE,
-  eval = FALSE # Just for now since build fails
+  eval = FALSE #just until it builds
 )
 ```
 
@@ -30,12 +29,13 @@ library(knitr)
 set.seed(123)
 ```
 
-## Introduction to using Domino2 for cell-cell communication inference
+# Using Domino2 v0.2.1 for cell-cell communication inference
 
-### Preprocessing scRNAseq data
-Domino2 is a tool for analysis of intra- and intercellular signaling in single cell RNA sequencing data based on transcription factor activation. This vignette is intended to demonstrate the basic pipeline for generating communication networks as a domino object using single cell RNA sequencing(scRNAseq) data.
+Domino2 is a tool for analysis of intra- and intercellular signaling in single cell RNA sequencing data based on transcription factor activation. Here, we show a basic example pipeline for generating communication networks as a domino object using single cell RNA sequencing(scRNAseq) data. This vignette will demonstrate how to use Domino2 on the 10X Genomics Peripheral Blood Mononuclear Cells (PBMC) data set of 2,700 cells. The data can be downloaded [here](https://cf.10xgenomics.com/samples/cell/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz).
 
-Analysis of cell-cell communication (CCC) with Domino2 often follows initial pre-processing and annotation of scRNAseq data. This vignette will demonstrate how to use Domino2 on the 10X Genomics Peripheral Blood Mononuclear Cells (PBMC) data set of 2,700 cells and processed following the [Satija Lab's Seurat tutorial](https://satijalab.org/seurat/articles/pbmc3k_tutorial). The data can be downloaded [here](https://cf.10xgenomics.com/samples/cell/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz).
+## Preprocessing scRNAseq data
+
+Analysis of cell-cell communication with Domino2 often follows initial processing and annotation of scRNAseq data.  We are following the [Satija Lab's Guided Clustering Tutorial](https://satijalab.org/seurat/articles/pbmc3k_tutorial) to prepare the data set for analysis with Domino2.
 
 ```{r, eval=FALSE}
 # Preprocessing of PBMC 3K tutorial data set
@@ -62,7 +62,7 @@ pbmc$cell_type <-
   )
 ```
 
-#### Saving Preprocessed Data:
+### Saving Preprocessed Data:
 Domino2 was designed to be compatible with `{Seurat}` objects in addition to accepting matrices and vectors of the data set as function inputs. Therefore, it's a good idea to save the processed `{Seurat}` object for further analysis. However, [pySCENIC](https://pyscenic.readthedocs.io/en/latest/) is used for transcription factor activation inference, and it requires as input a cell by gene matrix. This is the opposite orientation of `{Seurat}` objects but is the default for Python based tools such as [scanpy](https://scanpy.readthedocs.io/en/stable/). Saving our data as a loom file using `{loomR}` will be helpful for that step and is therefore recommended as well.
 
 ```{r, eval = FALSE}
@@ -84,11 +84,9 @@ write.table(t(as.matrix(pbmc_counts)), "../data/pbmc3k_counts.tsv",
 
 If you would like to skip ahead to the rest of the analysis, the processed objects from these steps are available in the data directory of this package.
 
-### Installation
+## Installation
 
-Domino2 is undergoing active development where aspects of how data is used, analyzed, and interpreted is subject to change as new features and fixes are implemented. v0.2.1 of Domino2 serves as the first stable development version during these active updates for reproducible usage of implemented fixes to handling of receptors and ligands that function in heteromeric complexes, consideration of receptor expression on a per-cluster basis for linkage to transcription factors, and reformatting of receptor-ligand database and transcription factor regulon inputs enabling Domino2 to use alternative data bases and transcription factor activity inference methods.
-
-This version is currently hosted on the [FertigLab GitHub](https://github.com/FertigLab) as [branch v0.2.1](https://github.com/FertigLab/domino_development/tree/v0.2.1) of the [domino_development repository](https://github.com/FertigLab/domino_development) forked from the primary repository hosted on the [Elisseeff-Lab GitHub](https://github.com/Elisseeff-Lab/domino), and can be installed using the remotes package.
+Installation of `{domino2}` from github can be achieved using the `{remotes}` package. The current stable version is v0.2.1, so we will install that branch.
 
 ```{r, eval = FALSE}
 if(!require(remotes)){
@@ -97,39 +95,48 @@ if(!require(remotes)){
 remotes::install_github('FertigLab/domino_development@v0.2.1')
 ```
 
-#### Additional Downloads
+### Additional Downloads
 For this tutorial, [pySCENIC](https://pyscenic.readthedocs.io/en/latest/) is used as the method for transcription factor activity inference and the assessment of ligand-receptor interactions is based on curated interactions from [CellPhoneDB v4.0.0](https://github.com/ventolab/cellphonedb-data/releases/tag/v4.0.0). Each of these requires downloading some files prior to use in our analysis pipeline.
 
-##### Downloads for SCENIC:
+#### Downloads for SCENIC:
 
 A singularity image of SCENIC v0.12.1 can be installed from the DockerHub image as a source (example scripts for use with Docker are provided in the scenic\_bash directory as well). SCENIC requires a list of transcription factors, motif annotations, and cisTarget motifs which are all available from the authors of SCENIC for human (HGNC), mouse (MGI), and fly. The following will download everything necessary for an analysis of a data set with HGNC gene labels for the hg38 genome.
 
 ```{bash, eval=FALSE}
-SCENIC_DIR="scenic"
+SCENIC_DIR="../scenic"
 mkdir ${SCENIC_DIR}
 
 # Build singularity image
 singularity build "${SCENIC_DIR}/aertslab-pyscenic-0.12.1.sif" docker://aertslab/pyscenic:0.12.1
 
 # Matrix containing motifs as rows and genes as columns and ranking position for each gene and motif (based on CRM scores) as values
-curl "https://resources.aertslab.org/cistarget/databases/old/homo_sapiens/hg38/refseq_r80/mc9nr/gene_based/hg38__refseq-r80__10kb_up_and_down_tss.mc9nr.feather" \
-  -o "${SCENIC_DIR}/hg38__refseq-r80__10kb_up_and_down_tss.mc9nr.feather"
-curl "https://resources.aertslab.org/cistarget/databases/old/homo_sapiens/hg38/refseq_r80/mc9nr/gene_based/hg38__refseq-r80__500bp_up_and_100bp_down_tss.mc9nr.feather" \
-  -o "${SCENIC_DIR}/hg38__refseq-r80__500bp_up_and_100bp_down_tss.mc9nr.feather"
+# below is a feather v1 format link; feather v2 required for this version of pySCENIC
+# "https://resources.aertslab.org/cistarget/databases/old/homo_sapiens/hg38/refseq_r80/mc9nr/gene_based/hg38__refseq-r80__10kb_up_and_down_tss.mc9nr.feather"
+# Feather v2 link:
+curl "https://resources.aertslab.org/cistarget/databases/homo_sapiens/hg38/refseq_r80/mc_v10_clust/gene_based/hg38_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather" \
+  -o "${SCENIC_DIR}/hg38_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather"
+
+# below is a feather v1 format link; feather v2 required for this version of pySCENIC
+# "https://resources.aertslab.org/cistarget/databases/old/homo_sapiens/hg38/refseq_r80/mc9nr/gene_based/hg38__refseq-r80__500bp_up_and_100bp_down_tss.mc9nr.feather"
+# Feather v2 link:
+curl "https://resources.aertslab.org/cistarget/databases/homo_sapiens/hg38/refseq_r80/mc_v10_clust/gene_based/hg38_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather" \
+  -o "${SCENIC_DIR}/hg38_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather"
+
 # List of genes encoding transcription factors in the HG38 reference genome
 curl "https://resources.aertslab.org/cistarget/tf_lists/allTFs_hg38.txt" \
   -o "${SCENIC_DIR}/allTFs_hg38.txt"
+
 # Motif annotations based on the 2017 cisTarget motif collection. Use these files if you are using the mc9nr databases.
 curl "https://resources.aertslab.org/cistarget/motif2tf/motifs-v9-nr.hgnc-m0.001-o0.0.tbl" \
   -o "${SCENIC_DIR}/motifs-v9-nr.hgnc-m0.001-o0.0.tbl"
 ```
 
-##### Downloads for CellPhoneDB:
+#### Downloads for CellPhoneDB:
 
 Database files from [CellPhoneDB v4.0.0](https://github.com/ventolab/cellphonedb-data/releases/tag/v4.0.0) for human scRNA-seq data can be installed from a public github repository from the Tiechmann Group that developed CellPhoneDB.
 
 ```{bash, eval=FALSE}
-CELLPHONE_DIR="cellphonedb"
+CELLPHONE_DIR="../cellphonedb"
 mkdir ${CELLPHONE_DIR}
 
 # Annotation of protein complexes
@@ -146,7 +153,7 @@ curl "https://raw.githubusercontent.com/Teichlab/cellphonedb-data/master/data/pr
   -o "${CELLPHONE_DIR}/protein_input.csv"
 ```
 
-### SCENIC Analysis
+## SCENIC Analysis
 
 SCENIC is our lab's preferred software for transcription factor activity scoring. We recommend using the Python implementation (pySCENIC) as it is faster than the original R implementation. Be aware, the use of SCENIC is often the slowest and most memory intensive step of this analysis pipeline. SCENIC should be run on computing resources with access to multi-core processing and large amounts of memory.
 
@@ -154,56 +161,78 @@ As described in the section on saving preprocessed data, SCENIC requires RNA cou
 
 pySCENIC is initiated using bash scripting in the terminal. The analysis consists of 3 steps to score genes for transcription factor motif enrichment, construct transcription factor regulons consisting of genes targeted by the transcription factors, and arrive at AUC scores for enrichment of regulon gene transcription within each cell.
 
-#### grn: construct TF-modules
+### grn: construct TF-modules
 
 Co-expression modules are used to quantify gene-transciption factor adjacencies.
 
 ```{bash GRN, eval=FALSE}
 singularity exec "${SCENIC_DIR}/aertslab-pyscenic-0.12.1.sif" pyscenic grn \
-    "../data/pbmc3k_counts.loom" \         # path to the loom file
-    "${SCENIC_DIR}/allTFs_hg38.txt" \                        # list of transcription factors 
-    -o "${SCENIC_DIR}/pbmc_adj.tsv" \                        # output directory for the adjacency matrix
-    --num_workers 6 \                                 # number of CPUs to use if multi-core processing is available
-    --set_seed 123                                    # specify a random seed for reproducibility
+    "../data/pbmc3k_counts.loom" \
+    "${SCENIC_DIR}/allTFs_hg38.txt" \
+    -o "${SCENIC_DIR}/pbmc_adj.tsv" \
+    --num_workers 6 \
+    --seed 123
+
+# Arguments:
+    # path to the loom file
+    # list of transcription factors
+    # output directory for the adjacency matrix
+    # number of CPUs to use if multi-core processing is available
+    # specify a random seed for reproducibility
 ```
 
-#### ctx: construct TF regulons with pruning based on TF motiff enrichment
+### ctx: construct TF regulons with pruning based on TF motiff enrichment
 
 The rankings of genes based on enrichment of transcription factor motiffs to the transcription start site (TSS) are considered in the construction of regulons, where target genes in the TF-modules are removed if they lack motifs proximal to the TSS where the transcription factor may bind.
 
 ```{bash CTX, eval=FALSE}
 singularity exec "${SCENIC_DIR}/aertslab-pyscenic-0.12.1.sif" pyscenic ctx \
-    "${SCENIC_DIR}/pbmc_adj.tsv" \                                                   # adjacency matrix output from grn
-    "${SCENIC_DIR}/hg38__refseq-r80__10kb_up_and_down_tss.mc9nr.feather" \           # target rankings of motif enrichment within 10 kb of TSS
-    "${SCENIC_DIR}/hg38__refseq-r80__500bp_up_and_100bp_down_tss.mc9nr.feather" \    # target rankings of motif enrichment within 500 bp upstream and 100 bp downstream of TSS
-    --annotations_fname "${SCENIC_DIR}/motifs-v9-nr.hgnc-m0.001-o0.0.tbl" \          # TF motif features
-    --expression_mtx_fname "../data/pbmc3k_counts.loom" \          # counts matrix loom file
-    --mode "dask_multiprocessing" \                                           # enable multi-core processing
-    --output "${SCENIC_DIR}/pbmc_regulons.csv" \                                     # output file of learned TF regulons
-    --num_workers 6                                                           # number of CPU cores
+    "${SCENIC_DIR}/pbmc_adj.tsv" \
+    "${SCENIC_DIR}/hg38_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather" \
+    "${SCENIC_DIR}/hg38_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather" \
+    --annotations_fname "${SCENIC_DIR}/motifs-v9-nr.hgnc-m0.001-o0.0.tbl" \
+    --expression_mtx_fname "data/pbmc3k_counts.loom" \
+    --mode "dask_multiprocessing" \
+    --output "${SCENIC_DIR}/pbmc_regulons.csv" \
+    --num_workers 1                                                          
+
+# Arguments:
+    # adjacency matrix output from grn
+    # target rankings of motif enrichment within 10 kb of TSS
+    # target rankings of motif enrichment within 500 bp upstream and 100 bp downstream of TSS
+    # TF motif features
+    # counts matrix loom file
+    # enable multi-core processing
+    # output file of learned TF regulons
+    # number of CPU cores
 ```
 
-#### aucell: calculate TF activity scores
+### aucell: calculate TF activity scores
 
 Enrichment of a regulon is measured as the Area Under the recovery Curve (AUC) of the genes that define this regulon.
 
 ```{bash AUCELL, eval=FALSE}
 singularity exec "${SCENIC_DIR}/aertslab-pyscenic-0.12.1.sif" pyscenic aucell \
-  	"../data/pbmc3k_counts.loom" \   # counts matrix loom file
-  	"${SCENIC_DIR}/pbmc_regulons.csv" \                # regulon table output from ctx
-  	-o "${SCENIC_DIR}/pbmc_auc.csv"                    # cell x TF matrix of TF enrichment AUC values
+  	"../data/pbmc3k_counts.loom" \
+  	"${SCENIC_DIR}/pbmc_regulons.csv" \
+  	-o "${SCENIC_DIR}/pbmc_auc.csv"
+    
+# Arguments:
+    # counts matrix loom file
+    # regulon table output from ctx
+    # cell x TF matrix of TF enrichment AUC values
 ```
 
-### Building a Signaling Network with Domino2
+## Building a Signaling Network with Domino2
 
-#### Loading SCENIC Results
+### Loading SCENIC Results
 
 The transcription factor activities are a required input for Domino2, and the regulons learned by SCENIC are an important but optional input needed to annotate transcription factor-target interactions and to prune transcription factor-receptor linkages where the receptor is a target of the transcription factor. This prevents the distinction of receptor expression driving transcription factor activity or the transcription factor inducing the receptor's expression.
 
 ```{r Load SCENIC Results}
-scenic_dir = "scenic/"
+scenic_dir = "../scenic/"
 regulons <- read.csv(paste0(scenic_dir, "/pbmc_regulons.csv"))
-auc <- read.table(paste0(scenic_dir, "scenic/pbmc_auc.csv"),
+auc <- read.table(paste0(scenic_dir, "/pbmc_auc.csv"),
                   header = TRUE, row.names = 1,
                   stringsAsFactors = FALSE, sep = ",")
 ```
@@ -216,14 +245,15 @@ colnames(regulons) <- c("TF", "MotifID", "AUC", "NES", "MotifSimilarityQvalue", 
 regulon_list <- create_regulon_list_scenic(regulons = regulons)
 ```
 
-Users should be aware that the AUC matrix from SCENIC is loaded in a cell x transcription factor orientation and should be transposed to transcription factor x cell orientation. pySCENIC also appends "(+)" to transcription factor names that are converted to "..." upon loading into R. These characters can be included without affecting the results of Domino2 analysis, but can be confusing when querying transcription factor features in the data. We recommend comprehensive removal of the "..." characters using the gsub() function.
+Users should be aware that the AUC matrix from SCENIC is loaded in a cell x transcription factor orientation and should be transposed to transcription factor x cell orientation. pySCENIC also appends "(+)" to transcription factor names that are converted to "..." upon loading into R. These characters can be included without affecting the results of Domino2 analysis, but can be confusing when querying transcription factor features in the data. We recommend comprehensive removal of the "..." characters using the `gsub()` function.
 
 ```{r Orient AUC Matrix}
 auc_in <- as.data.frame(t(auc))
-rownames(auc_in) <- gsub("\\.\\.\\.$", "", rownames(auc_in)) # remove pattern "..." from the end of all rownames
+# Remove pattern "..." from the end of all rownames:
+rownames(auc_in) <- gsub("\\.\\.\\.$", "", rownames(auc_in))
 ```
 
-#### Load CellPhoneDB Database
+### Load CellPhoneDB Database
 
 Domino2 has been updated to read ligand-receptor data bases in a uniform data.frame format referred to as a receptor-ligand map (rl\_map) to enable the use of alternative or updated reference databases as oppossed to a particular version of CellPhoneDB's database in older versions of Domino. Each row corresponds to a ligand-receptor interaction. Genes participating in an interaction are referred to as "partner A" and "partner B" without a requirement for fixed ordering of whether A or B is the ligand and vice versa. The minimum required columns of this data frame are:
 
@@ -235,10 +265,10 @@ Domino2 has been updated to read ligand-receptor data bases in a uniform data.fr
 
 Additional annotation columns can be provided such as name\_A and name\_B for ligands or receptors whose name in the interaction database does not match the names of their encoding genes. This formatting also allows for the consideration of ligand and receptor complexes comprised of a heteromeric combination of multiple proteins that must be coexpressed to function. In these cases, the "name\_\*" column shows the name of the protein complex, and the "gene\_\*" column shows the names of the genes encoding the components of the complex separated by commas ",". When plotting results from the build domino object, the names of the interacting ligands and receptors will be used based on combinatorial expression of the complex components.
 
-To facilitate the use of this formatting with the CellPhoneDB database, we include a helper function that automatically parses files from the cellPhoneDB database to arrive at the rl\_map format.
+To facilitate the use of this formatting with the CellPhoneDB database, we include a helper function, `create_rl_map_cellphonedb()`, that automatically parses files from the cellPhoneDB database to arrive at the rl\_map format.
 
 ```{r Load CellPhoneDB Database}
-cellphonedb_2_path <- "cellphonedb"
+cellphonedb_2_path <- "../cellphonedb"
 complexes <- read.csv(paste0(cellphonedb_2_path, "/complex_input.csv"), stringsAsFactors = FALSE)
 genes <- read.csv(paste0(cellphonedb_2_path, "/gene_input.csv"), stringsAsFactors = FALSE)
 interactions <- read.csv(paste0(cellphonedb_2_path, "/interaction_input.csv"), stringsAsFactors = FALSE)
@@ -249,14 +279,14 @@ rl_map <- create_rl_map_cellphonedb(
   proteins = proteins, 
   interactions = interactions,
   complexes = complexes,
-  database_name = "CellPhoneDB_v4.0" # includes database version used
+  database_name = "CellPhoneDB_v4.0" # database version used
 )
 
 knitr::kable(head(rl_map))
 ```
 
-##### Optional: Adding interactions manually
-The change to use rl\_map formatting also enables users to manually append interactions of interest that are not included in the interaction database if need be. This can be attained by formatting the desired interactions as a data.frame with the same column headers as the rl\_map and using the rbind() function.
+#### Optional: Adding interactions manually
+The change to use rl\_map formatting also enables users to manually append interactions of interest that are not included in the interaction database if need be. This can be attained by formatting the desired interactions as a data.frame with the same column headers as the rl\_map and using the `rbind()` function.
 
 ```{r Appending interactions}
 # Integrin complexes are not annotated as receptors in CellPhoneDB_v4.0
@@ -272,20 +302,20 @@ rl_map_append <- rbind(col_int_df, rl_map)
 knitr::kable(head(rl_map_append))
 ```
 
-### Creating the Domino Object
+## Creating the Domino Object
 
 Domino2 analysis takes place in two steps. 
-1. create_domino() 
+1. `create_domino()`
   a. initializes the domino result object
   b. assesses differential transcription factor activity across cell clusters by wilcoxon rank-sum test
   c. establishes transcription factor-receptor linkages based on Spearman correlation of transcription factor activities with receptor expression across the queried data set. 
-2. build_domino()
+2. `build_domino()`
   a. sets the parameters for which transcription factors and receptors are called as active within a cell cluster
   b. aggregates the scaled expression of ligands capable of interacting with the active receptors for assessment of ligand type and cellular source triggering activation of a receptor.
 
-#### Required inputs from data set
+### Required inputs from data set
 
-Domino2 infers active receipt of signals via receptors based on the correlation of the receptor's expression with transcription factor activity across the data set and differential activity of the transcription factor within a cell cluster. Correlations are conducted using scaled expression values rather than raw counts or normalized counts. For assessment of receptor activity on a per cell type basis, a named vector of cell cluster assignments, where the names are cell barcodes matching the expression matrix, are provided. Assessing signaling based on other categorical groupings of cells can be acheived by passing these groupings as "clusters" to build_domino() in place of cell types. Domino2 accepts either a `{Seurat}` object with counts, scaled counts, and clusters included, or it requires a matrix of counts, a matrix of scaled counts, and a named vector of cell cluster labels as factors. Shown below is how to extract these elements from a `{Seurat}` object.
+Domino2 infers active receipt of signals via receptors based on the correlation of the receptor's expression with transcription factor activity across the data set and differential activity of the transcription factor within a cell cluster. Correlations are conducted using scaled expression values rather than raw counts or normalized counts. For assessment of receptor activity on a per cell type basis, a named vector of cell cluster assignments, where the names are cell barcodes matching the expression matrix, are provided. Assessing signaling based on other categorical groupings of cells can be acheived by passing these groupings as "clusters" to `build_domino()` in place of cell types. Domino2 accepts either a `{Seurat}` object with counts, scaled counts, and clusters included, or it requires a matrix of counts, a matrix of scaled counts, and a named vector of cell cluster labels as factors. Shown below is how to extract these elements from a `{Seurat}` object.
 
 ```{r load cell features}
 counts <- pbmc@assays$RNA@counts
@@ -295,11 +325,11 @@ clusters <- as.factor(pbmc$cell_type)
 
 Note: Ligand and receptor expression can only be assessed for genes included in the z\_scores matrix. Many scRNA-seq analysis pipelines recommend storing only genes with high variance in scaled expression slots for these data objects, thereby missing many genes encoding ligands and receptors. **Ensure that all your genes of interest are included in the rows of your z\_scores matrix.** Scaled expression was calculated for all genes in this PBMC data set after removal of genes expressed in less than 3 cells. 
 
-#### Create Domino object
+### Create Domino object
 
-At this point, the create_domino() function can be used to make the object. Parameters of note include "use\_clusters" which is required to assess signaling between cell types rather than linkage of transcription factors and receptors broadly across the data set. "use\_complexes" decides if receptors that function in heteromeric complexes will be considered in testing linkages between transcription factors and receptors. If TRUE, a receptor complex is only linked to a transcription factor if a majority of the component genes meet the Spearman correlation threshold. "remove\_rec\_dropout" decides whether receptor values of 0 will be considered in correlation calculations; this measure is intended to reduce the effect of dropout on receptors wiht low expression.
+At this point, the `create_domino()` function can be used to make the object. Parameters of note include "use\_clusters" which is required to assess signaling between cell types rather than linkage of transcription factors and receptors broadly across the data set. "use\_complexes" decides if receptors that function in heteromeric complexes will be considered in testing linkages between transcription factors and receptors. If TRUE, a receptor complex is only linked to a transcription factor if a majority of the component genes meet the Spearman correlation threshold. "remove\_rec\_dropout" decides whether receptor values of 0 will be considered in correlation calculations; this measure is intended to reduce the effect of dropout on receptors wiht low expression.
 
-To run create_domino() with matrix and vector inputs:
+To run `create_domino()` with matrix and vector inputs:
 ```{r Create Domino, results='hide', warning=FALSE}
 pbmc_dom <- create_domino(
   rl_map = rl_map,             # receptor-ligand map data frame
@@ -314,7 +344,7 @@ pbmc_dom <- create_domino(
 )
 ```
 
-The above results will be equivalent to using the `{Seurat}` object directly. Note that inclusion of both the matrix inputs and the `{Seurat}` object will prioritize the `{Seurat}` objects.
+The above results will be equivalent to using the `{Seurat}` object directly. Note that inclusion of both the matrix inputs and the `{Seurat}` object will prioritize the `{Seurat}` object.
 ```{r Create Domino Seurat, results='hide', warning=FALSE}
 pbmc_dom <- create_domino(
   rl_map = rl_map,             # receptor-ligand map data frame
@@ -327,13 +357,13 @@ pbmc_dom <- create_domino(
 )
 ```
 
-For information on what is stored in a domino object and how to access it, please see our vignette on the structure of domino objects.
+For information on what is stored in a domino object and how to access it, please see our [vignette on the structure of domino objects](vignette("domino_object_vignette")).
 
-#### Build Domino
+### Build Domino
 
-build_domino() finalizes the construction of the domino object by setting parameters for identifying transcription factors with differential activation between clusters, receptor linkage with transcription factors based on magnitude of positive correlation, and the minimum percentage of cells within a cluster that have expression of a receptor for the receptor to be called as active.
+`build_domino()` finalizes the construction of the domino object by setting parameters for identifying transcription factors with differential activation between clusters, receptor linkage with transcription factors based on magnitude of positive correlation, and the minimum percentage of cells within a cluster that have expression of a receptor for the receptor to be called as active.
 
-There are also options for thresholds of the number of transcription factors that may be called active in a cluster and the number of receptors that may be linked to any one transcription factor. For thresholds of n transcription factors and m receptors, the bottom n transcription factors by lowest p-values from the wilcoxon rank sum test and the top m receptors by Spearman correlation coefficient are chosen.
+There are also options for thresholds of the number of transcription factors that may be called active in a cluster and the number of receptors that may be linked to any one transcription factor. For thresholds of _n_ transcription factors and _m_ receptors, the bottom _n_ transcription factors by lowest p-values from the wilcoxon rank sum test and the top _m_ receptors by Spearman correlation coefficient are chosen.
 
 ```{r Build Domino}
 pbmc_dom <- build_domino(
@@ -359,44 +389,44 @@ dom_b <- build_domino(
 )
 ```
 
-### Visualization of Domino Results
+## Visualization of Domino Results
 
 Multiple functions are available to visualize the intracellular networks between receptors and transcription factors and the ligand-receptor mediated intercellular networks between cell types.
 
-#### Summarize Transcription Factor Activity and Linkage
+### Summarize Transcription Factor Activity and Linkage
 
-Enrichment of transcription factor activities by cell types can be visualized by feat\_heatmap() which plots data set-wide transcription factor activity scores as a pheatmap. The mark\_connections argument determines whether an X is used to mark linked transcription factors and receptors.
+Enrichment of transcription factor activities by cell types can be visualized by `feat_heatmap()` which plots data set-wide transcription factor activity scores as a pheatmap. The mark\_connections argument determines whether an X is used to mark linked transcription factors and receptors.
 
 ```{r}
 feat_heatmap(pbmc_dom, norm = TRUE, bool = FALSE, mark_connections = TRUE)
 ```
 
-#### Cumulative signaling between cell types
+### Cumulative signaling between cell types
 
-The cummulative degree of signaling between clusters is assessed as the sum of the scaled expressin of ligands targeting active receptors on another cluster. This can be visualized in graph format using the signaling_network() function. Nodes represent each cell cluster and edges scale with the magnitude of signaling between the clusters. The color of the edge corresponds to the sender cluster for that signal.
+The cummulative degree of signaling between clusters is assessed as the sum of the scaled expressin of ligands targeting active receptors on another cluster. This can be visualized in graph format using the `signaling_network()` function. Nodes represent each cell cluster and edges scale with the magnitude of signaling between the clusters. The color of the edge corresponds to the sender cluster for that signal.
 
 ```{r}
 signaling_network(pbmc_dom, edge_weight = .5, max_thresh = 2.5)
 ```
 
-Signaling networks can also be drawn with the edges only render the signals directed towards a given cell type or signals from one cell type directed to others can also be created. To see those options in use, as well as other plotting options, please see our plotting vignette.
+Signaling networks can also be drawn with the edges only rendering the signals directed towards a given cell type or signals from one cell type directed to others. To see those options in use, as well as other plotting options, please see our [plotting vignette](vignette("plotting_vignette")).
 
-#### Specific Signaling Interactions between Clusters
+### Specific Signaling Interactions between Clusters
 
-Beyond the aggregated degree of signaling between cell types, the degrees of signaling through specific ligand-receptor interactions can be assessed. gene_network() provides a graph of linkages between active transcription factors in a cluster, the linked receptors in that cluster, and the possible ligands of these active recptors
+Beyond the aggregated degree of signaling between cell types, the degrees of signaling through specific ligand-receptor interactions can be assessed. `gene_network()` provides a graph of linkages between active transcription factors in a cluster, the linked receptors in that cluster, and the possible ligands of these active recptors
 
 ```{r}
 gene_network(pbmc_dom, clust = 'dendritic_cell', layout = 'grid')
 ```
 
-New to Domino2, gene_network() can be used between two clusters to determine if any of the possible ligands for a given receptor are expressed by a putative outgoing signaling cluster.
+New to Domino2, `gene_network()` can be used between two clusters to determine if any of the possible ligands for a given receptor are expressed by a putative outgoing signaling cluster.
 
 ```{r}
 gene_network(pbmc_dom, clust = 'dendritic_cell', OutgoingSignalingClust = "CD14_monocyte",
               layout = 'grid')
 ```
 
-A comprehensive assessment of ligand expression targeting active receptors on a given cluster can be assessed by incoming_signaling_heatmap().
+A comprehensive assessment of ligand expression targeting active receptors on a given cluster can be assessed with `incoming_signaling_heatmap()`.
 
 ```{r}
 incoming_signaling_heatmap(pbmc_dom, rec_clust = 'dendritic_cell', max_thresh = 2.5)
@@ -408,13 +438,7 @@ Another form of comprehensive ligand expression assessment is available for indi
 circos_ligand_receptor(pbmc_dom, receptor = "CD74")
 ```
 
-### Continued Development
+## Continued Development
 
-Since Domino2 is a package still in development, there are new functions and features in development. The github repository contains branches with other changes that are being implemented. Additionally, if you find any bugs, have further questions, or there are features you would like to request, please let us know [here](https://github.com/FertigLab/domino_development/issues).
+Since Domino2 is a package still being developed, there are new functions and features that will be implemented in future versions. In the meantime, we have put together further information on [plotting](vignette("plotting_vignette")) and the [domino object structure](vignette("domino_object_vignette")) if you would like to explore more of the package's functionality. Additionally, if you find any bugs, have further questions, or want to share an idea, please let us know [here](https://github.com/FertigLab/domino_development/issues).
 
-### 
-###### Vignette build info:
-```{r class.source = 'fold-hide'}
-sys.date()
-sessionInfo()
-```

@@ -1,8 +1,8 @@
 ---
-title: "domino_object_vignette"
+title: "Interacting with Domino2 Objects"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{domino_object_vignette}
+  %\VignetteIndexEntry{Interacting with Domino2 Objects}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -18,6 +18,10 @@ knitr::opts_chunk$set(
 ```{r setup}
 library(domino2)
 ```
+
+# Accessing information in the new domino object structure
+
+In order to better implement some of the changes that have been made in Domino2, the structure of the domino object has been modified. Here, we describe the data that is stored in the domino object, as well as how best to access it for any other use you may have in mind.
 
 More of Jacob's stuff that I'm cutting:
 Active transcription factors in each cluster are determined by conducting wilcoxon rank sum tests for each transcription factor where the trascription factor activity scores amongst all cells in the cluster are tested against the activity scores of all cells outside of the cluster. The p-value for the one-sided test for greater activity within the cluster compared to outside is stored in pbmc_dom\@clust_de. Linkage between receptors and transcription factors is assessed by Spearman correlation between transcription factor activity scores and scaled expression of receptor-encoding genes across all cells in the data set. Spearman coefficients are stored in pbmc_dom\@cor.

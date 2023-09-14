@@ -17,3 +17,4 @@ Normalized matrix in the direction specified.
 \description{
 Normalizes a matrix to its max value by row or column
 }
+\keyword{internal}

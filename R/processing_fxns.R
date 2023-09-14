@@ -9,7 +9,7 @@
 #' @param rec_tf_cor_threshold Minimum pearson correlation used to consider a receptor linked with a transcription factor. Increasing this will decrease the number of receptors linked to each transcription factor.
 #' @param min_rec_percentage Minimum percentage of cells in cluster expressing a receptor for the receptor to be linked to trancription factors in that cluster.
 #' @return A domino object
-#' @export
+#' @export "build_domino"
 #' 
 build_domino = function(dom, max_tf_per_clust = 5, min_tf_pval = .01, 
                         max_rec_per_tf = 5, rec_tf_cor_threshold = .15,
@@ -213,6 +213,7 @@ build_domino = function(dom, max_tf_per_clust = 5, min_tf_pval = .01,
 #' @param list List to pull items from
 #' @param list_names Names of items in list to pool
 #' @return A vector contaning all items in the list by list_names.
+#' @keywords internal
 #' 
 lc = function(list, list_names){
     vec = c()
