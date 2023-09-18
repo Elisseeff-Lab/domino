@@ -6,7 +6,8 @@
 R/.Rhistory
 *.rds
 *.loom
+*.rda
+.vscode
+*.vscode
 
 scratch/
-
-inst/doc

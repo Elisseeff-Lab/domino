@@ -1,14 +1,25 @@
 url: ~
+
 template:
   bootstrap: 5
-  bootswatch: lumen
+  # bootswatch: pulse
+  theme: a11y-light
+  bslib:
+    primary: "#2EB2A3"
+    secondary: "#5B507A"
+    navbar-bg: "#7DDED2"
+    navbar-light-color: "#37304B"
+    headings-color: "#218277"
+    component-active-bg: "#37304B"
+    code-font-size: 95%
+    code-bg: "#fefefe"
 
 reference:
 - title: "Analysis Functions"
   desc: >
     Functions for performing cell-cell communication analysis
     with the Domino2 package
-  contents: 
+  contents:
   - create_rl_map_cellphonedb
   - create_regulon_list_scenic
   - create_domino
@@ -35,7 +46,39 @@ reference:
   - rename_clusters
 
 navbar:
-structure:
-  left:  [intro, articles, reference, news]
-  right: [search, github]
-  bg: light
+  type: light
+  bg: "#7DDED2"
+  border-color-bottom: "#218277"
+  structure:
+    left:  [intro, articles, reference, news]
+    right: [search, github]
+
+home:
+  strip_header: false
+  title: Cell Communication from Single Cell RNA Sequencing Data
+  description: >
+    Domino2 uses transcription factor activation and ligand - receptor linkages to infer intra- and inter- cellular signaling from single cell RNA sequencing data.
+  sidebar:
+    structure: [toc, authors, labs, citation, license]
+    components:
+      labs:
+        title: Lab Links
+        text: >
+              For more work from these labs, click below. \n
+              <a href=https://elisseefflab.jhu.edu/> Elisseeff Lab </a> \n
+              <a href=https://fertiglab.com/> Fertig Lab </a>
+
+footer:
+  structure:
+    left: [package, developed_by]
+    right: built_with
+
+news:
+  one_page: false
+
+authors:
+  footer:
+    roles: aut
+    text: "Developed by"
+  sidebar:
+    roles: [aut, ctb]

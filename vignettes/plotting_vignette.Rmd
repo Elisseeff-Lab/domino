@@ -25,16 +25,17 @@ In addition to the numerous plotting options available in the original [Domino](
 ## Updates to Original Plotting Functions:
 
 Functions:
-- circos_ligand_receptor
-- cor_heatmap
-- cor_scatter
-- feat_heatmap
-- gene_network
-- incoming_signaling_heatmap
-- signaling_heatmap
-- signaling_network
+* `circos_ligand_receptor()`
+* `cor_heatmap()`
+* `cor_scatter()`
+* `feat_heatmap()`
+* `gene_network()`
+* `incoming_signaling_heatmap()`
+* `signaling_heatmap()`
+* `signaling_network()`
 
-Jacob's stuff I'm cutting from his original vignette:
+``` {r include = FALSE}
+<!-- Jacob's stuff I'm cutting from his original vignette:
 ```{r}
 # bug in plotting parameters 
 ## Error in plot.window(...) : need finite 'xlim' values
@@ -51,5 +52,5 @@ cell_types <- unique(pbmc_dom@clusters)
 cell_palette <- dittoSeq::dittoColors()[1:length(cell_types)]
 names(cell_palette) <- cell_types
 
-circos_ligand_receptor(pbmc_dom, receptor = "CD74", cell_colors = cell_palette)
+circos_ligand_receptor(pbmc_dom, receptor = "CD74", cell_colors = cell_palette) -->
 ```
