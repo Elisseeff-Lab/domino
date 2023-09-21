@@ -17,5 +17,5 @@
 - Added host option for gene ortholog conversions using biomart for access to maintained mirrors
 - Transcription factor-target linkages are now properly stored so that receptors in a transcription factor's regulon are excluded from linkage
 - Ligand nodes sizes in gene networks correspond to quantity of ligand expression
-- create_domino can be run without providing a regulon list
+- `create_domino()` can be run without providing a regulon list
 - References to the host GitHub repository have been updated to "Elisseeff-Lab"

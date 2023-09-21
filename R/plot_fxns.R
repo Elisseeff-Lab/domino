@@ -9,7 +9,7 @@
 #' @param max_thresh Maximum signaling threshold for plotting. Defaults to Inf for no threshold.
 #' @param scale How to scale the values (after thresholding). Options are 'none', 'sqrt' for square root, or 'log' for log10.
 #' @param normalize Options to normalize the matrix. Normalization is done after thresholding and scaling. Accepted inputs are 'none' for no normalization, 'rec_norm' to normalize to the maximum value with each receptor cluster, or 'lig_norm' to normalize to the maximum value within each ligand cluster 
-#' @param ... Other parameters to pass to NMF::aheatmap
+#' @param ... Other parameters to pass to  [NMF::aheatmap()] 
 #' @export "signaling_heatmap"
 #' 
 signaling_heatmap = function(dom, clusts = NULL, min_thresh = -Inf, max_thresh = Inf, 
@@ -64,8 +64,8 @@ signaling_heatmap = function(dom, clusts = NULL, min_thresh = -Inf, max_thresh =
 #' @param max_thresh Maximum signaling threshold for plotting. Defaults to Inf for no threshold.
 #' @param scale How to scale the values (after thresholding). Options are 'none', 'sqrt' for square root, or 'log' for log10.
 #' @param normalize Options to normalize the matrix. Accepted inputs are 'none' for no normalization, 'rec_norm' to normalize to the maximum value with each receptor cluster, or 'lig_norm' to normalize to the maximum value within each ligand cluster 
-#' @param title Either a string to use as the title or a boolean describing whether to include a title. In order to pass the 'main' parameter to NMF::aheatmap you must set title to FALSE.
-#' @param ... Other parameters to pass to NMF::aheatmap. Note that to use the 'main' parameter of NMF::aheatmap you must set title = FALSE
+#' @param title Either a string to use as the title or a boolean describing whether to include a title. In order to pass the 'main' parameter to  [NMF::aheatmap()]  you must set title to FALSE.
+#' @param ... Other parameters to pass to  [NMF::aheatmap()] . Note that to use the 'main' parameter of  [NMF::aheatmap()]  you must set title = FALSE
 #' @export "incoming_signaling_heatmap"
 #' 
 incoming_signaling_heatmap = function(dom,  rec_clust, clusts = NULL, min_thresh = -Inf, 
@@ -136,7 +136,7 @@ incoming_signaling_heatmap = function(dom,  rec_clust, clusts = NULL, min_thresh
 #' @param layout Type of layout to use. Options are 'random', 'sphere', 'circle', 'fr' for Fruchterman-Reingold force directed layout, and 'kk' for Kamada Kawai for directed layout.  
 #' @param scale_by How to size vertices. Options are 'lig_sig' for summed outgoing signaling, 'rec_sig' for summed incoming signaling, and 'none'. In the former two cases the values are scaled with asinh after summing all incoming or outgoing signaling.
 #' @param vert_scale Integer used to scale size of vertices with our without variable scaling from size_verts_by.
-#' @param ... Other parameters to be passed to plot when used with an igraph object.
+#' @param ... Other parameters to be passed to plot when used with an [igraph] object.
 #' @export "signaling_network"
 #' 
 signaling_network = function(dom,  cols = NULL, edge_weight = .3, clusts = NULL, showOutgoingSignalingClusts = NULL,
@@ -273,9 +273,9 @@ signaling_network = function(dom,  cols = NULL, edge_weight = .3, clusts = NULL,
   plot(graph, layout = l, main = plot_title, ...)
 }
 
-#' Creates a gene association network
+#' Create a gene association network
 #' 
-#' Creates a gene association network for genes from a given cluster. The 
+#' Create a gene association network for genes from a given cluster. The 
 #' selected cluster acts as the receptor for the gene association network, so
 #' only ligands, receptors, and features associated with the receptor cluster
 #' will be included in the plot.
@@ -287,7 +287,7 @@ signaling_network = function(dom,  cols = NULL, edge_weight = .3, clusts = NULL,
 #' @param cols A named vector of colors for individual genes. Genes not included in this vector will be colored according to class_cols.
 #' @param lig_scale FALSE or a numeric value to scale the size of ligand vertices based on z-scored expression in the data set.
 #' @param layout Type of layout to use. Options are 'grid', 'random', 'sphere', 'circle', 'fr' for Fruchterman-Reingold force directed layout, and 'kk' for Kamada Kawai for directed layout.
-#' @param ... Other parameters to pass to plot() with an igraph object. See igraph manual for options.
+#' @param ... Other parameters to pass to plot() with an [igraph] object. See [igraph] manual for options.
 #' @export "gene_network"
 #' 
 gene_network = function(dom, clust = NULL, OutgoingSignalingClust = NULL, 
@@ -452,14 +452,14 @@ gene_network = function(dom, clust = NULL, OutgoingSignalingClust = NULL,
 #' @param dom A domino object with network built (build_domino)
 #' @param bool A boolean indicating whether the heatmap should be continuous or boolean. If boolean then bool_thresh will be used to determine how to define activity as positive or negative.
 #' @param bool_thresh A numeric indicating the threshold separating 'on' or 'off' for feature activity if making a boolean heatmap.
-#' @param title Either a string to use as the title or a boolean describing whether to include a title. In order to pass the 'main' parameter to NMF::aheatmap you must set title to FALSE.
+#' @param title Either a string to use as the title or a boolean describing whether to include a title. In order to pass the 'main' parameter to  [NMF::aheatmap()]  you must set title to FALSE.
 #' @param norm Boolean indicating whether or not to normalize the transcrption factors to their max value.
 #' @param feats Either a vector of features to include in the heatmap or 'all' for all features. If left NULL then the features selected for the signaling network will be shown.
 #' @param ann_cols Boolean indicating whether to include cell cluster as a column annotation. Colors can be defined with cols. If FALSE then custom annotations can be passed to NMF.
 #' @param cols A named vector of colors to annotate cells by cluster color. Values are taken as colors and names as cluster. If left as NULL then default ggplot colors will be generated.
 #' @param min_thresh Minimum threshold for color scaling if not a boolean heatmap
 #' @param max_thresh Maximum threshold for color scaling if not a boolean heatmap
-#' @param ... Other parameters to pass to NMF::aheatmap. Note that to use the 'main' parameter of NMF::aheatmap you must set title = FALSE and to use 'annCol' or 'annColors' ann_cols must be FALSE.
+#' @param ... Other parameters to pass to  [NMF::aheatmap()] . Note that to use the 'main' parameter of  [NMF::aheatmap()]  you must set title = FALSE and to use 'annCol' or 'annColors' ann_cols must be FALSE.
 #' @export "feat_heatmap"
 #' 
 feat_heatmap = function(dom, feats = NULL, bool = TRUE, bool_thresh = .2, 
@@ -551,11 +551,11 @@ feat_heatmap = function(dom, feats = NULL, bool = TRUE, bool_thresh = .2,
 #' @param dom A domino object with network built (build_domino)
 #' @param bool A boolean indicating whether the heatmap should be continuous or boolean. If boolean then bool_thresh will be used to determine how to define activity as positive or negative.
 #' @param bool_thresh A numeric indicating the threshold separating 'on' or 'off' for feature activity if making a boolean heatmap.
-#' @param title Either a string to use as the title or a boolean describing whether to include a title. In order to pass the 'main' parameter to NMF::aheatmap you must set title to FALSE.
+#' @param title Either a string to use as the title or a boolean describing whether to include a title. In order to pass the 'main' parameter to  [NMF::aheatmap()]  you must set title to FALSE.
 #' @param feats Either a vector of features to include in the heatmap or 'all' for all features. If left NULL then the features selected for the signaling network will be shown.
 #' @param recs Either a vector of receptors to include in the heatmap or 'all' for all receptors. If left NULL then the receptors selected in the signaling network connected to the features plotted will be shown.
 #' @param mark_connections A boolean indicating whether to add an 'x' in cells where there is a connected receptor or TF. Default FALSE.
-#' @param ... Other parameters to pass to NMF::aheatmap. Note that to use the 'main' parameter of NMF::aheatmap you must set title = FALSE and to use 'annCol' or 'annColors' ann_cols must be FALSE.
+#' @param ... Other parameters to pass to  [NMF::aheatmap()] . Note that to use the 'main' parameter of  [NMF::aheatmap()]  you must set title = FALSE and to use 'annCol' or 'annColors' ann_cols must be FALSE.
 #' @export cor_heatmap
 #' 
 cor_heatmap = function(dom, bool = TRUE, bool_thresh = .15, title = TRUE, 

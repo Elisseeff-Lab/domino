@@ -15,6 +15,12 @@ template:
     code-bg: "#fefefe"
 
 reference:
+- title: "Domino Class"
+  desc: >
+    "An object class designed to store information used 
+    and produced in Domino2 analysis"
+  contents:
+  - domino-class
 - title: "Analysis Functions"
   desc: >
     Functions for performing cell-cell communication analysis
@@ -24,18 +30,22 @@ reference:
   - create_regulon_list_scenic
   - create_domino
   - build_domino
-  - domino-class
 - title: "Plotting Functions"
   desc: "Functions for visualizing Domino2 analysis results"
-  contents:
-  - circos_ligand_receptor
-  - cor_heatmap
-  - cor_scatter
-  - feat_heatmap
-  - gene_network
-  - incoming_signaling_heatmap
-  - signaling_heatmap
-  - signaling_network
+  - subtitle: "Heatmaps"
+    contents:
+    - cor_heatmap
+    - feat_heatmap
+    - incoming_signaling_heatmap
+    - signaling_heatmap
+  - subtitle: "Network Plots"
+    contents:
+    - gene_network
+    - signaling_network
+  - subtitle: "Other Plots"
+    contents:
+    - circos_ligand_receptor
+    - cor_scatter 
 - title: "Helper Functions"
   desc: "Convenience functions for working with Domino2 objects"
   contents:
@@ -75,6 +85,9 @@ footer:
 
 news:
   one_page: false
+  releases:
+  - text: "Version 0.2"
+    href: 
 
 authors:
   footer:

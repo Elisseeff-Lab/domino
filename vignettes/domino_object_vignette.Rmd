@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 library(domino2)
 ```
 
-# Accessing information in the new domino object structure
+# The new domino object structure
 
 In order to better implement some of the changes that have been made in Domino2, the structure of the domino object has been modified. Here, we describe the data that is stored in the domino object, as well as how best to access it for any other use you may have in mind.
 

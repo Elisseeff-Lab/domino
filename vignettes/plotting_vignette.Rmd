@@ -11,8 +11,12 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  eval = FALSE # Just for now since build fails
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE
 )
+
+dom <- readRDS("../data/pbmc3k_domino.rds")
 ```
 
 ```{r setup, include = FALSE}
@@ -22,35 +26,52 @@ library(domino2)
 # Visualizing Domino2 data
 In addition to the numerous plotting options available in the original [Domino](https://github.com/Elisseeff-Lab/domino), Domino2 has added more functionality and new methods to improve visualization and interpretation of analysis results. Here, we will go over the different plotting functions available, as well as different options that can be utilized, and options for customization. We will be using the domino object from our example analysis on [Getting Started](vignette("domino2")).
 
-## Updates to Original Plotting Functions:
+## Heatmaps
 
-Functions:
-* `circos_ligand_receptor()`
 * `cor_heatmap()`
-* `cor_scatter()`
+  * Heatmap can show actual score or be boolean (pick a threshold)
+  * All features vs just a subset
+  * All receptors, or just some
+  * mark_connections displays x when there is a connection
+  * Can pass other parameters to `NMF::aheatmap()`
+
 * `feat_heatmap()`
-* `gene_network()`
+  * normalization
+  * min/max thresholding
+
 * `incoming_signaling_heatmap()`
+  * Signaling coming into cluster
+  * Select clusters
+  * min/max Threshold
+  * Normalizing
+
 * `signaling_heatmap()`
+  * Select clusters if desired
+  * Scaling if desired
+  * Normalization if desired
+
+## Network Plots
+
+* `gene_network()`
+  * Outgoing signaling argument (new!)
+  * Can select genes for colors as well
+  * Ligand scaling
+  * Layout option
+
 * `signaling_network()`
+  * Pick outgoing signal
+  * Pick incoming signal
+  * scaling
+  * layout
 
-``` {r include = FALSE}
-<!-- Jacob's stuff I'm cutting from his original vignette:
-```{r}
-# bug in plotting parameters 
-## Error in plot.window(...) : need finite 'xlim' values
-# signaling_network(pbmc_dom, edge_weight = .5, max_thresh = 2.5,
-#                   showIncomingSignalingClusts = "dendritic_cell")
-signaling_network(pbmc_dom, edge_weight = .5, max_thresh = 2.5,
-                  showOutgoingSignalingClusts = "CD14_monocyte")
-```
+## Other Types of Plot
 
-The circos plot also includes functionality to change colors used for each cell type to correspond with other figures from the primary analysis of the scRNA-seq data set.
+* `circos_ligand_receptor()`
+  * Circos plots are a new addition!
+  * Use cell\_colors argument to change cell colors to match other plots
+  * Ligand\_expression\_threshold helps select what signaling to show
+  * Can show all clusters or subset to just a few
 
-```{r}
-cell_types <- unique(pbmc_dom@clusters)
-cell_palette <- dittoSeq::dittoColors()[1:length(cell_types)]
-names(cell_palette) <- cell_types
-
-circos_ligand_receptor(pbmc_dom, receptor = "CD74", cell_colors = cell_palette) -->
-```
+* `cor_scatter()`
+  * Scatter plot for TF vs receptor
+  * Match receptor dropout parameter
