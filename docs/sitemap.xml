@@ -37,6 +37,9 @@
     <loc>/old.README.html</loc>
   </url>
   <url>
+    <loc>/plotting_vignette.html</loc>
+  </url>
+  <url>
     <loc>/reference/add_rl_column.html</loc>
   </url>
   <url>
@@ -94,7 +97,13 @@
     <loc>/reference/mean_ligand_expression.html</loc>
   </url>
   <url>
+    <loc>/reference/print-domino-method.html</loc>
+  </url>
+  <url>
     <loc>/reference/rename_clusters.html</loc>
+  </url>
+  <url>
+    <loc>/reference/show-domino-method.html</loc>
   </url>
   <url>
     <loc>/reference/signaling_heatmap.html</loc>

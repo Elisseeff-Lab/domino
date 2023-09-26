@@ -5,11 +5,11 @@
 #' and cluster id for single cell data, calculates a correlation matrix between 
 #' receptors and other features (this is transcription factor module scores if 
 #' using pySCENIC), and finds features enriched by cluster. It will return a 
-#' domino object prepared for build_domino, which will calculate a signaling 
+#' domino object prepared for [build_domino()], which will calculate a signaling 
 #' network.
 #' 
-#' @param dom A domino object to rename clusters in
-#' @param clust_conv A named vector of conversions from old to new clusters. Values are taken as new clusters IDs and names as old cluster IDs.
+#' @param dom Domino object to rename clusters in
+#' @param clust_conv Named vector of conversions from old to new clusters. Values are taken as new clusters IDs and names as old cluster IDs.
 #' @return A domino object with clusters renamed in all applicable slots.
 #' @export 
 #' 
@@ -43,11 +43,11 @@ rename_clusters = function(dom, clust_conv){
 #' This function collates all of the features, receptors, or ligands found in a
 #' signaling network anywhere in a list of clusters. This can be useful for
 #' comparing signaling networks across two separate conditions. In order to run
-#' this build_domino must be run on the object previously.
+#' this [build_domino()] must be run on the object previously.
 #' 
-#' @param dom A domino object containing a signaling network (i.e. build_domino run)
-#' @param return A string indicating where to collate 'features', 'receptors', or 'ligands'. If 'all' then a list of all three will be returned.
-#' @param clusters A vector indicating clusters to collate network items from. If left as NULL then all clusters will be included.
+#' @param dom Domino object containing a signaling network (i.e. [build_domino()] run)
+#' @param return String indicating where to collate 'features', 'receptors', or 'ligands'. If 'all' then a list of all three will be returned.
+#' @param clusters Vector indicating clusters to collate network items from. If left as NULL then all clusters will be included.
 #' @return A vector containing all features, receptors, or ligands in the data set or a list containing all three.
 #' @export 
 #' 

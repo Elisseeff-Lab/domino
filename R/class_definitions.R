@@ -44,20 +44,30 @@ domino <- setClass(
 #' Prints a summary of a domino object
 #' 
 #' @param x Domino object
-#' @S4method Print domino object
-print.domino = function(x, ...){
-    cat('A domino object of', length(x@clusters), 'cells
-    Contains signaling between', length(levels(x@clusters)), 'clusters
-    Built with a maximum of', as.integer(x@misc$build_vars["max_tf_per_clust"]), 'TFs per cluster
-    and a maximum of', as.integer(x@misc$build_vars["max_rec_per_tf"]), 'receptors per TF\n')
-}
+#' @keywords internal
+
+setMethod("print", "domino",
+    function(x, ...){
+        if (object@misc$build) {
+            cat('A domino object of', length(x@clusters), 'cells
+                Contains signaling between', length(levels(x@clusters)), 'clusters
+                Built with a maximum of', as.integer(x@misc$build_vars["max_tf_per_clust"]), 'TFs per cluster
+                and a maximum of', as.integer(x@misc$build_vars["max_rec_per_tf"]), 'receptors per TF\n')
+        } else {
+            cat(c('A domino object of', length(x@clusters), 'cells\n',
+            'A signaling network has not been built\n'), sep = '')
+        }
+    
+    }
+)
 
 #' Show domino object information
 #' 
 #' Shows content overview of domino object
 #' 
 #' @param object Domino object
-#' @S4method Show domino information
+#' @keywords internal
+
 setMethod("show", "domino",
     function(object){
         if (object@misc$build) {

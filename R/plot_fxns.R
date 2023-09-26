@@ -3,13 +3,13 @@
 #' Creates a heatmap of the signaling network. Alternatively, the network 
 #' matrix can be accessed directly in the signaling slot of a domino object.
 #' 
-#' @param dom A domino object with network built (build_domino)
-#' @param clusts A vector of clusters to be included. If NULL then all clusters are used.
+#' @param dom Domino object with network built ([build_domino()])
+#' @param clusts Vector of clusters to be included. If NULL then all clusters are used.
 #' @param min_thresh Minimum signaling threshold for plotting. Defaults to -Inf for no threshold.
 #' @param max_thresh Maximum signaling threshold for plotting. Defaults to Inf for no threshold.
 #' @param scale How to scale the values (after thresholding). Options are 'none', 'sqrt' for square root, or 'log' for log10.
 #' @param normalize Options to normalize the matrix. Normalization is done after thresholding and scaling. Accepted inputs are 'none' for no normalization, 'rec_norm' to normalize to the maximum value with each receptor cluster, or 'lig_norm' to normalize to the maximum value within each ligand cluster 
-#' @param ... Other parameters to pass to  [NMF::aheatmap()] 
+#' @param ... Other parameters to pass to  [NMF::aheatmap()]
 #' @export "signaling_heatmap"
 #' 
 signaling_heatmap = function(dom, clusts = NULL, min_thresh = -Inf, max_thresh = Inf, 
@@ -57,15 +57,15 @@ signaling_heatmap = function(dom, clusts = NULL, min_thresh = -Inf, max_thresh =
 #' the cl_signaling_matrices slot of a domino option as an alternative to this
 #' plotting function.
 #' 
-#' @param dom A domino object with network built (build_domino)
+#' @param dom Domino object with network built ([build_domino()])
 #' @param rec_clust Which cluster to select as the receptor. Must match naming of clusters in the domino object.
-#' @param clusts A vector of clusters to be included. If NULL then all clusters are used.
+#' @param clusts Vector of clusters to be included. If NULL then all clusters are used.
 #' @param min_thresh Minimum signaling threshold for plotting. Defaults to -Inf for no threshold.
 #' @param max_thresh Maximum signaling threshold for plotting. Defaults to Inf for no threshold.
 #' @param scale How to scale the values (after thresholding). Options are 'none', 'sqrt' for square root, or 'log' for log10.
 #' @param normalize Options to normalize the matrix. Accepted inputs are 'none' for no normalization, 'rec_norm' to normalize to the maximum value with each receptor cluster, or 'lig_norm' to normalize to the maximum value within each ligand cluster 
 #' @param title Either a string to use as the title or a boolean describing whether to include a title. In order to pass the 'main' parameter to  [NMF::aheatmap()]  you must set title to FALSE.
-#' @param ... Other parameters to pass to  [NMF::aheatmap()] . Note that to use the 'main' parameter of  [NMF::aheatmap()]  you must set title = FALSE
+#' @param ... Other parameters to pass to  [NMF::aheatmap()]. Note that to use the 'main' parameter of  [NMF::aheatmap()]  you must set title = FALSE
 #' @export "incoming_signaling_heatmap"
 #' 
 incoming_signaling_heatmap = function(dom,  rec_clust, clusts = NULL, min_thresh = -Inf, 
@@ -123,12 +123,12 @@ incoming_signaling_heatmap = function(dom,  rec_clust, clusts = NULL, min_thresh
 #' and directed edges indicate signaling from one cluster to another. Edges are
 #' colored based on the color scheme of the ligand expressing cluster.
 #' 
-#' @param dom A domino object with network built (build_domino)
-#' @param cols A named vector indicating the colors for clusters. Values are colors and names must match clusters in the domino object. If left as NULL then ggplot colors are generated for the clusters.
+#' @param dom Domino object with network built ([build_domino()])
+#' @param cols Named vector indicating the colors for clusters. Values are colors and names must match clusters in the domino object. If left as NULL then ggplot colors are generated for the clusters.
 #' @param edge_weight Weight for determining thickness of edges on plot. Signaling values are multiplied by this value.
-#' @param clusts A vector of clusters to be included in the network plot.
-#' @param showOutgoingSignalingClusts A vector of clusters to plot the outgoing signaling from
-#' @param showIncomingSignalingClusts A vector of clusters to plot the incoming signaling on
+#' @param clusts Vector of clusters to be included in the network plot.
+#' @param showOutgoingSignalingClusts Vector of clusters to plot the outgoing signaling from
+#' @param showIncomingSignalingClusts Vector of clusters to plot the incoming signaling on
 #' @param min_thresh Minimum signaling threshold. Values lower than the threshold will be set to the threshold. Defaults to -Inf for no threshold.
 #' @param max_thresh Maximum signaling threshold for plotting. Values higher than the threshold will be set to the threshold. Defaults to Inf for no threshold.
 #' @param normalize Options to normalize the signaling matrix. Accepted inputs are 'none' for no normalization, 'rec_norm' to normalize to the maximum value with each receptor cluster, or 'lig_norm' to normalize to the maximum value within each ligand cluster 
@@ -136,7 +136,7 @@ incoming_signaling_heatmap = function(dom,  rec_clust, clusts = NULL, min_thresh
 #' @param layout Type of layout to use. Options are 'random', 'sphere', 'circle', 'fr' for Fruchterman-Reingold force directed layout, and 'kk' for Kamada Kawai for directed layout.  
 #' @param scale_by How to size vertices. Options are 'lig_sig' for summed outgoing signaling, 'rec_sig' for summed incoming signaling, and 'none'. In the former two cases the values are scaled with asinh after summing all incoming or outgoing signaling.
 #' @param vert_scale Integer used to scale size of vertices with our without variable scaling from size_verts_by.
-#' @param ... Other parameters to be passed to plot when used with an [igraph] object.
+#' @param ... Other parameters to be passed to plot when used with an `{igraph}` object.
 #' @export "signaling_network"
 #' 
 signaling_network = function(dom,  cols = NULL, edge_weight = .3, clusts = NULL, showOutgoingSignalingClusts = NULL,
@@ -280,11 +280,11 @@ signaling_network = function(dom,  cols = NULL, edge_weight = .3, clusts = NULL,
 #' only ligands, receptors, and features associated with the receptor cluster
 #' will be included in the plot.
 #' 
-#' @param dom A domino object with network built (build_domino)
-#' @param clust The receptor cluster to create the gene association network for. A vector of clusters may be provided.
-#' @param OutgoingSignalingClust A vector of clusters to plot the outgoing signaling from
-#' @param class_cols A named vector of colors used to color classes of vertices. Values must be colors and names must be classes ('rec', 'lig', and 'feat' for receptors, ligands, and features.). 
-#' @param cols A named vector of colors for individual genes. Genes not included in this vector will be colored according to class_cols.
+#' @param dom Domino object with network built ([build_domino()])
+#' @param clust Receptor cluster to create the gene association network for. A vector of clusters may be provided.
+#' @param OutgoingSignalingClust Vector of clusters to plot the outgoing signaling from
+#' @param class_cols Named vector of colors used to color classes of vertices. Values must be colors and names must be classes ('rec', 'lig', and 'feat' for receptors, ligands, and features.). 
+#' @param cols Named vector of colors for individual genes. Genes not included in this vector will be colored according to class_cols.
 #' @param lig_scale FALSE or a numeric value to scale the size of ligand vertices based on z-scored expression in the data set.
 #' @param layout Type of layout to use. Options are 'grid', 'random', 'sphere', 'circle', 'fr' for Fruchterman-Reingold force directed layout, and 'kk' for Kamada Kawai for directed layout.
 #' @param ... Other parameters to pass to plot() with an [igraph] object. See [igraph] manual for options.
@@ -449,20 +449,20 @@ gene_network = function(dom, clust = NULL, OutgoingSignalingClust = NULL,
 #' Creates a heatmap of feature expression (typically transcription factor
 #' activation scores) by cells organized by cluster.
 #' 
-#' @param dom A domino object with network built (build_domino)
-#' @param bool A boolean indicating whether the heatmap should be continuous or boolean. If boolean then bool_thresh will be used to determine how to define activity as positive or negative.
-#' @param bool_thresh A numeric indicating the threshold separating 'on' or 'off' for feature activity if making a boolean heatmap.
+#' @param dom Domino object with network built ([build_domino()])
+#' @param bool Boolean indicating whether the heatmap should be continuous or boolean. If boolean then bool_thresh will be used to determine how to define activity as positive or negative.
+#' @param bool_thresh Numeric indicating the threshold separating 'on' or 'off' for feature activity if making a boolean heatmap.
 #' @param title Either a string to use as the title or a boolean describing whether to include a title. In order to pass the 'main' parameter to  [NMF::aheatmap()]  you must set title to FALSE.
 #' @param norm Boolean indicating whether or not to normalize the transcrption factors to their max value.
 #' @param feats Either a vector of features to include in the heatmap or 'all' for all features. If left NULL then the features selected for the signaling network will be shown.
 #' @param ann_cols Boolean indicating whether to include cell cluster as a column annotation. Colors can be defined with cols. If FALSE then custom annotations can be passed to NMF.
-#' @param cols A named vector of colors to annotate cells by cluster color. Values are taken as colors and names as cluster. If left as NULL then default ggplot colors will be generated.
+#' @param cols Named vector of colors to annotate cells by cluster color. Values are taken as colors and names as cluster. If left as NULL then default ggplot colors will be generated.
 #' @param min_thresh Minimum threshold for color scaling if not a boolean heatmap
 #' @param max_thresh Maximum threshold for color scaling if not a boolean heatmap
 #' @param ... Other parameters to pass to  [NMF::aheatmap()] . Note that to use the 'main' parameter of  [NMF::aheatmap()]  you must set title = FALSE and to use 'annCol' or 'annColors' ann_cols must be FALSE.
 #' @export "feat_heatmap"
 #' 
-feat_heatmap = function(dom, feats = NULL, bool = TRUE, bool_thresh = .2, 
+feat_heatmap = function(dom, feats = NULL, bool = FALSE, bool_thresh = .2, 
                         title = TRUE, norm = FALSE, cols = NULL, ann_cols = TRUE, min_thresh = NULL, 
                         max_thresh = NULL, ...){
   if(!length(dom@clusters)){
@@ -546,19 +546,19 @@ feat_heatmap = function(dom, feats = NULL, bool = TRUE, bool_thresh = .2,
 #' Create a heatmap of correlation between receptors and transcription factors
 #' 
 #' Creates a heatmap of correlation values between receptors and transcription 
-#' factors.
+#' factors either with boolean threshold or with continuous values displayed
 #' 
-#' @param dom A domino object with network built (build_domino)
-#' @param bool A boolean indicating whether the heatmap should be continuous or boolean. If boolean then bool_thresh will be used to determine how to define activity as positive or negative.
-#' @param bool_thresh A numeric indicating the threshold separating 'on' or 'off' for feature activity if making a boolean heatmap.
+#' @param dom Domino object with network built ([build_domino()])
+#' @param bool Boolean indicating whether the heatmap should be continuous or boolean. If boolean then bool_thresh will be used to determine how to define activity as positive or negative.
+#' @param bool_thresh Numeric indicating the threshold separating 'on' or 'off' for feature activity if making a boolean heatmap.
 #' @param title Either a string to use as the title or a boolean describing whether to include a title. In order to pass the 'main' parameter to  [NMF::aheatmap()]  you must set title to FALSE.
 #' @param feats Either a vector of features to include in the heatmap or 'all' for all features. If left NULL then the features selected for the signaling network will be shown.
 #' @param recs Either a vector of receptors to include in the heatmap or 'all' for all receptors. If left NULL then the receptors selected in the signaling network connected to the features plotted will be shown.
-#' @param mark_connections A boolean indicating whether to add an 'x' in cells where there is a connected receptor or TF. Default FALSE.
+#' @param mark_connections Boolean indicating whether to add an 'x' in cells where there is a connected receptor or TF. Default FALSE.
 #' @param ... Other parameters to pass to  [NMF::aheatmap()] . Note that to use the 'main' parameter of  [NMF::aheatmap()]  you must set title = FALSE and to use 'annCol' or 'annColors' ann_cols must be FALSE.
 #' @export cor_heatmap
 #' 
-cor_heatmap = function(dom, bool = TRUE, bool_thresh = .15, title = TRUE, 
+cor_heatmap = function(dom, bool = FALSE, bool_thresh = .15, title = TRUE, 
                        feats = NULL, recs = NULL, mark_connections = FALSE, ...){
   mat = dom@cor
   
@@ -588,7 +588,7 @@ cor_heatmap = function(dom, bool = TRUE, bool_thresh = .15, title = TRUE,
       print(paste('Unable to find', na_feats))
       feats = feats[-na]
     } 
-  } else if(feats == 'all'){
+  } else if(identical(feats, "all")){
     feats = rownames(mat)
   }
   
@@ -602,7 +602,7 @@ cor_heatmap = function(dom, bool = TRUE, bool_thresh = .15, title = TRUE,
       }
     }
     recs = unique(recs)
-  } else if(recs == 'all'){
+  } else if(identical(recs, "all")){
     recs = rownames(mat)
   }
   
@@ -630,7 +630,7 @@ cor_heatmap = function(dom, bool = TRUE, bool_thresh = .15, title = TRUE,
 #' 
 #' Create a correlation plot between transcription factor activation score and receptor
 #' 
-#' @param dom A domino object with network built (build_domino)
+#' @param dom Domino object with network built ([build_domino()])
 #' @param tf Target TF module for plotting with receptor
 #' @param rec Target receptor for plotting with TF
 #' @param remove_rec_dropout Whether to remove cells with zero expression for plot. This should match the same setting as in build_domino.
@@ -655,16 +655,16 @@ cor_scatter = function(dom, tf, rec, remove_rec_dropout = TRUE, ...){
   
 }
 
-#' Plot expression of a receptor's ligands by other cell types as a circos plot
+#' Plot expression of a receptor's ligands by other cell types as a chord plot
 #' 
-#' Creates a circos plot of expression of ligands that can activate a specified
+#' Creates a chord plot of expression of ligands that can activate a specified
 #' receptor where chord widths correspond to mean ligand expression by the cluster.
 #' 
-#' @param dom A domino object that has undergone network building with build_domino()
+#' @param dom Domino object that has undergone network building with [build_domino()]
 #' @param receptor Name of a receptor active in at least one cell type in the domino object
-#' @param ligand_expression_threshold minimum mean expression value of a ligand by a cell type for a chord to be rendered between the cell type and the receptor
-#' @param cell_idents vector of cell types from cluster assignments in the domino object to be included in the circos plot.
-#' @param cell_colors a named vector of color names or hex codes where names correspond to the plotted cell types and the color values
+#' @param ligand_expression_threshold Minimum mean expression value of a ligand by a cell type for a chord to be rendered between the cell type and the receptor
+#' @param cell_idents Vector of cell types from cluster assignments in the domino object to be included in the plot.
+#' @param cell_colors Named vector of color names or hex codes where names correspond to the plotted cell types and the color values
 #' @export "circos_ligand_receptor"
 #' 
 circos_ligand_receptor = function(dom, receptor, ligand_expression_threshold = 0.01, cell_idents = NULL, cell_colors = NULL){
@@ -775,7 +775,7 @@ circos_ligand_receptor = function(dom, receptor, ligand_expression_threshold = 0
       if(length(row_pick)){
         highlight.sector(
           sector_names[grepl(paste0("^", cell, "-"), sector_names)],
-          track.index = 1, col = cell_colors[[cell]],
+          track.index = 1, col = cell_colors[cell],
           text = cell,
           cex = 1, facing = "inside",
           text.col = "black", niceFacing = FALSE,
@@ -819,9 +819,9 @@ circos_ligand_receptor = function(dom, receptor, ligand_expression_threshold = 0
 #' 
 #' Normalizes a matrix to its max value by row or column
 #' 
-#' @param mat The matrix to be normalized
-#' @param dir The direction to normalize the matrix c('row', 'col') 
-#' @return Normalized matrix in the direction specified.
+#' @param mat Matrix to be normalized
+#' @param dir Direction to normalize the matrix c('row', 'col') 
+#' @return A normalized matrix in the direction specified.
 #' @keywords internal
 #' 
 do_norm = function(mat, dir){

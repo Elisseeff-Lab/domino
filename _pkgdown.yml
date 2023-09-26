@@ -5,20 +5,26 @@ template:
   # bootswatch: pulse
   theme: a11y-light
   bslib:
-    primary: "#2EB2A3"
-    secondary: "#5B507A"
+    primary: "#457E78"
+    secondary: "#1D132B"
     navbar-bg: "#7DDED2"
-    navbar-light-color: "#37304B"
-    headings-color: "#218277"
-    component-active-bg: "#37304B"
+    navbar-light-color: "#1D132B"
+    nav-link-color: "#1D132B"
+    nav-tabs-link-active-bg: "#DFD4EC"
+    headings-color: "#457E78"
+    component-active-bg: "#ece5f4"
     code-font-size: 95%
     code-bg: "#fefefe"
+    link-color: "#8963BA"
+    border-color: "#DFD4EC"
+    dropdown-bg: "#F4F1F9"
+
 
 reference:
 - title: "Domino Class"
   desc: >
-    "An object class designed to store information used 
-    and produced in Domino2 analysis"
+    An object class designed to store information used 
+    and produced in Domino2 analysis
   contents:
   - domino-class
 - title: "Analysis Functions"
@@ -32,20 +38,20 @@ reference:
   - build_domino
 - title: "Plotting Functions"
   desc: "Functions for visualizing Domino2 analysis results"
-  - subtitle: "Heatmaps"
-    contents:
-    - cor_heatmap
-    - feat_heatmap
-    - incoming_signaling_heatmap
-    - signaling_heatmap
-  - subtitle: "Network Plots"
-    contents:
-    - gene_network
-    - signaling_network
-  - subtitle: "Other Plots"
-    contents:
-    - circos_ligand_receptor
-    - cor_scatter 
+- subtitle: "Heatmaps"
+  contents:
+  - cor_heatmap
+  - feat_heatmap
+  - incoming_signaling_heatmap
+  - signaling_heatmap
+- subtitle: "Network Plots"
+  contents:
+  - gene_network
+  - signaling_network
+- subtitle: "Other Plots"
+  contents:
+  - circos_ligand_receptor
+  - cor_scatter 
 - title: "Helper Functions"
   desc: "Convenience functions for working with Domino2 objects"
   contents:
@@ -58,13 +64,11 @@ reference:
 navbar:
   type: light
   bg: "#7DDED2"
-  border-color-bottom: "#218277"
   structure:
     left:  [intro, articles, reference, news]
     right: [search, github]
 
 home:
-  strip_header: false
   title: Cell Communication from Single Cell RNA Sequencing Data
   description: >
     Domino2 uses transcription factor activation and ligand - receptor linkages to infer intra- and inter- cellular signaling from single cell RNA sequencing data.
@@ -73,9 +77,9 @@ home:
     components:
       labs:
         title: Lab Links
-        text: >
-              For more work from these labs, click below. \n
-              <a href=https://elisseefflab.jhu.edu/> Elisseeff Lab </a> \n
+        text: |
+              For more work from these labs, click below.
+              <a href=https://elisseefflab.jhu.edu/> Elisseeff Lab </a>
               <a href=https://fertiglab.com/> Fertig Lab </a>
 
 footer:
