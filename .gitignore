@@ -4,6 +4,11 @@
 .Rbuildignore
 .Rhistory
 R/.Rhistory
+*.rds
+*.loom
+*.rda
+.vscode
+*.vscode
+scenic/*
 
 scratch/
-

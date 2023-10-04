@@ -23,10 +23,10 @@ build_domino(
 \item{min_rec_percentage}{Minimum percentage of cells in cluster expressing a receptor for the receptor to be linked to trancription factors in that cluster.}
 }
 \value{
-A domino object
+A domino object with a signaling network built
 }
 \description{
 This function calculates a signaling network. It requires a domino object
-preprocessed from create_domino and returns a domino object prepared for 
+preprocessed from create_domino and returns a domino object prepared for
 plotting with the various plotting functions in this package.
 }

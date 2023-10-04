@@ -16,8 +16,8 @@ convert_genes(genes, from, to, host = "https://www.ensembl.org")
 \item{host}{Host to connect to. Defaults to https://www.ensembl.org following the useMart default, but can be changed to archived hosts if useMart fails to connect.}
 }
 \value{
-A data frame with input genes as col 1 and output as col 2.
+A data frame with input genes as col 1 and output as col 2
 }
 \description{
-This function reads in a vector of genes and converts the genes to
+This function reads in a vector of genes and converts the genes to specified symbol type
 }

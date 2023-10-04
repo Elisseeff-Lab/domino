@@ -2,11 +2,11 @@
 #' 
 #' Generates a data frame of ligand-receptor interactions from a CellPhoneDB database annotating the genes encoding the interacting ligands and receptors to be queried in transcriptomic data.
 #' 
-#' @param genes dataframe or file path to table of gene names in uniprot, hgnc_symbol, or ensembl format in cellphonedb database format
-#' @param proteins dataframe or file path to table of protein features in cellphonedb format
-#' @param interactions dataframe or file path to table of protein-protein interactions in cellphonedb format
-#' @param complexes optional: dataframe or file path to table of protein complexes in cellphonedb format
-#' @return Data frame where each row describes a possible receptor-ligand interaction
+#' @param genes Dataframe or file path to table of gene names in uniprot, hgnc_symbol, or ensembl format in cellphonedb database format
+#' @param proteins Dataframe or file path to table of protein features in cellphonedb format
+#' @param interactions Dataframe or file path to table of protein-protein interactions in cellphonedb format
+#' @param complexes Optional: dataframe or file path to table of protein complexes in cellphonedb format
+#' @return A data frame where each row describes a possible receptor-ligand interaction
 #' @export
 #' 
 create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = NULL,
@@ -204,8 +204,8 @@ create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = 
 #' 
 #' Generates a list of transcription factors and the genes targeted by the transcription factor as part of their regulon inferred by pySCENIC
 #' 
-#' @param regulons dataframe or file path to the table of the output of the grn (gene regulatory network) function from pySCENIC
-#' @return List where names are transcription factors and the stored values are character vectors of genes in the inferred regulons
+#' @param regulons Dataframe or file path to the table of the output of the grn (gene regulatory network) function from pySCENIC
+#' @return A list where names are transcription factors and the stored values are character vectors of genes in the inferred regulons
 #' @export
 #' 
 
@@ -240,15 +240,15 @@ create_regulon_list_scenic <- function(regulons){
 #' and cluster id for single cell data, calculates a correlation matrix between 
 #' receptors and other features (this is transcription factor module scores if 
 #' using pySCENIC), and finds features enriched by cluster. It will return a 
-#' domino object prepared for build_domino, which will calculate a signaling 
+#' domino object prepared for [build_domino()], which will calculate a signaling 
 #' network.
 #' 
-#' @param rl_map data frame where each row describes a receptor-ligand interaction with required columns gene_A & gene_B including the gene names for the receptor and ligand and type_A & type_B annotating if genes A and B are a ligand (L) or receptor (R)
+#' @param rl_map Data frame where each row describes a receptor-ligand interaction with required columns gene_A & gene_B including the gene names for the receptor and ligand and type_A & type_B annotating if genes A and B are a ligand (L) or receptor (R)
 #' @param features Either a path to a csv containing cell level features of interest (ie. the auc matrix from pySCENIC) or named matrix with cells as columns and features as rows.
-#' @param ser A Seurat object containing scaled RNA expression data in the RNA assay slot and cluster identity. Either a ser object OR z_scores and clusters must be provided. If ser is present z_scores and clusters will be ignored.
-#' @param counts The counts matrix for the data. If a Seurat object is provided this will be ignored. This is only used to threshold receptors on dropout.
-#' @param z_scores A matrix containing z-scored expression data for all cells with cells as columns and features as rows. Either z_scores and clusters must be provided OR a ser object. If ser is present z_scores and clusters will be ignored.
-#' @param clusters A named factor containing cell cluster with names as cells. Either clusters and z_scores OR ser must be provided. If ser is present z_scores and clusters will be ignored.
+#' @param ser Seurat object containing scaled RNA expression data in the RNA assay slot and cluster identity. Either a ser object OR z_scores and clusters must be provided. If ser is present z_scores and clusters will be ignored.
+#' @param counts Counts matrix for the data. If a Seurat object is provided this will be ignored. This is only used to threshold receptors on dropout.
+#' @param z_scores Matrix containing z-scored expression data for all cells with cells as columns and features as rows. Either z_scores and clusters must be provided OR a ser object. If ser is present z_scores and clusters will be ignored.
+#' @param clusters Named factor containing cell cluster with names as cells. Either clusters and z_scores OR ser must be provided. If ser is present z_scores and clusters will be ignored.
 #' @param use_clusters Boolean indicating whether to use the clusters from a Seurat object. If a Seurat object is not provided then this parameter is ignored.
 #' @param tf_targets Optional. A list where names are transcription factors and the stored values are character vectors of genes in the transcription factor's regulon.
 #' @param verbose Boolean indicating whether or not to print progress during computation.
@@ -257,7 +257,7 @@ create_regulon_list_scenic <- function(regulons){
 #' @param remove_rec_dropout Whether to remove receptors with 0 expression counts when calculating correlations. This can reduce false positive correlation calculations when receptors have high dropout rates.
 #' @param tf_selection_method Selection of which method to target transcription factors. If 'clusters' then differential expression for clusters will be calculated. If 'variable' then the most variable transcription factors will be selected. If 'all' then all transcription factors in the feature matrix will be used. Default is 'clusters'. Note that if you wish to use clusters for intercellular signaling downstream to MUST choose clusters.
 #' @param tf_variance_quantile What proportion of variable features to take if using variance to threshold features. Default is 0.5. Higher numbers will keep more features. Ignored if tf_selection_method is not 'variable'
-#' @return A domino object.
+#' @return A domino object
 #' @export
 #'
 create_domino = function(rl_map, features, ser = NULL, counts = NULL, 
@@ -523,13 +523,13 @@ create_domino = function(rl_map, features, ser = NULL, counts = NULL,
 
 #' Use biomaRt to convert genes
 #' 
-#' This function reads in a vector of genes and converts the genes to 
+#' This function reads in a vector of genes and converts the genes to specified symbol type
 #' 
 #' @param genes Vector of genes to convert.
 #' @param from Format of gene input (ENSMUSG, ENSG, MGI, or HGNC)
 #' @param to Format of gene output (ENSMUSG, ENSG, MGI, or HGNC)
 #' @param host Host to connect to. Defaults to https://www.ensembl.org following the useMart default, but can be changed to archived hosts if useMart fails to connect.
-#' @return A data frame with input genes as col 1 and output as col 2.
+#' @return A data frame with input genes as col 1 and output as col 2
 #' 
 convert_genes = function(genes, from, to, host = "https://www.ensembl.org"){
     if (from == 'ENSMUSG'){
@@ -578,7 +578,7 @@ convert_genes = function(genes, from, to, host = "https://www.ensembl.org"){
 #' @param map_ref Name of column to match new data to
 #' @param conv Data frame matching current data in map to new data.
 #' @param new_name Name of new column to be created in RL map
-#' @return RL signaling data frame.
+#' @return An updated RL signaling data frame
 #'
 add_rl_column = function(map, map_ref, conv, new_name){
     map_in_ref = match(map[[map_ref]], conv[,1])
@@ -609,14 +609,14 @@ add_rl_column = function(map, map_ref, conv, new_name){
 #' Calculate mean ligand expression as a data.frame for plotting in circos plot
 #' 
 #' Creates a data frame of mean ligand expression for use in plotting a circos
-#' plot of ligand exression and saving tables of mean expression.
+#' plot of ligand expression and saving tables of mean expression.
 #' 
-#' @param x gene by cell expression matrix
-#' @param ligands character vector of ligand genes to be quantified
-#' @param cell_ident vector of cell type (identity) names for which to calculate mean ligand gene expression
-#' @param cell_barcodes vector of cell barcodes (colnames of x) belonging to cell_ident to calculate mean expression across
-#' @param destination name of the receptor with which each ligand interacts
-#' @return data frame of ligand expression targeting the specified receptor
+#' @param x Gene by cell expression matrix
+#' @param ligands Character vector of ligand genes to be quantified
+#' @param cell_ident Vector of cell type (identity) names for which to calculate mean ligand gene expression
+#' @param cell_barcodes Vector of cell barcodes (colnames of x) belonging to cell_ident to calculate mean expression across
+#' @param destination Name of the receptor with which each ligand interacts
+#' @return A data frame of ligand expression targeting the specified receptor
 #'
 mean_ligand_expression <- 
   function(x, ligands, cell_ident, cell_barcodes, destination){
