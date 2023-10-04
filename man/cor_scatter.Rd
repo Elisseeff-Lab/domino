@@ -7,7 +7,7 @@
 cor_scatter(dom, tf, rec, remove_rec_dropout = TRUE, ...)
 }
 \arguments{
-\item{dom}{A domino object with network built (build_domino)}
+\item{dom}{Domino object with network built (\code{\link[=build_domino]{build_domino()}})}
 
 \item{tf}{Target TF module for plotting with receptor}
 

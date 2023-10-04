@@ -16,9 +16,9 @@ add_rl_column(map, map_ref, conv, new_name)
 \item{new_name}{Name of new column to be created in RL map}
 }
 \value{
-RL signaling data frame.
+An updated RL signaling data frame
 }
 \description{
-This function adds a column to the internal rl 'map' used to map all 
+This function adds a column to the internal rl 'map' used to map all
 receptor and receptor complexes to all ligand and ligand complexes.
 }

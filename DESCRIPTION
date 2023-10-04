@@ -1,15 +1,16 @@
 Package: domino2
-Title: Receptor Ligand Analysis for Single Cell RNA Seq
+Title: Cell Communication Analysis for Single Cell RNA Sequencing
 Version: 0.2.1
 Authors@R: c(
-    person("Christopher", "Cherry", role = c("aut", "cre"), email = "ccherry.6574@gmail.com", comment = c(ORCID = "0000-0002-5481-0055")),
+    person("Christopher", "Cherry", role = c("aut"), email = "ccherry.6574@gmail.com", comment = c(ORCID = "0000-0002-5481-0055")),
     person("Jacob", "Mitchell", "T", role = c("aut"), email = "jmitch81@jhmi.edu", comment = c(ORCID = "0000-0002-5370-9692")),
     person("Sushma", "Nagaraj", role = c("aut"), email = "snagara5@jhmi.edu", comment = c(ORCID = "0000-0001-5166-1309")),
+    person("Kavita", "Krishnan", role = c("aut"), email = "kkrishnan@jhmi.edu", comment = c(ORCID = "0000-0003-1345-0249")),
     person("Elana", "Fertig", role = "ctb", email = "ejfertig@jhmi.edu", comment = c(ORCID = "0000-0003-3204-342X")),
-    person("Jennifer", "Elisseeff", role = "ctb", email = "jhe@jhu.edu", comment = c(ORCID = "YOUR-ORCID-ID"))
+    person("Jennifer", "Elisseeff", role = "ctb", email = "jhe@jhu.edu", comment = c(ORCID = "0000-0002-5066-1996"))
     )
-Description: domino2 is a package developed to analyze receptor ligand signaling MORE HERE 
-BugReports: https://github.com/Elisseeff-Lab/domino/issues
+Description: Domino2 is a package developed to analyze cell signaling through ligand - receptor - transcription factor networks in scRNAseq data
+BugReports: https://github.com/FertigLab/domino_development/issues
 Depends:
     R(>= 3.6.2),
 Imports:
@@ -22,4 +23,11 @@ Imports:
 License: GPL-3 | file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.3
+Suggests:
+    spelling, 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+Language: en-US
+Roxygen: list(markdown = TRUE)
