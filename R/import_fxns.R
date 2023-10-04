@@ -7,7 +7,7 @@
 #' @param interactions Dataframe or file path to table of protein-protein interactions in cellphonedb format
 #' @param complexes Optional: dataframe or file path to table of protein complexes in cellphonedb format
 #' @return A data frame where each row describes a possible receptor-ligand interaction
-#' @export
+#' @export create_rl_map_cellphonedb
 #' 
 create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = NULL,
                                      database_name = "CellPhoneDB",
@@ -206,7 +206,7 @@ create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = 
 #' 
 #' @param regulons Dataframe or file path to the table of the output of the grn (gene regulatory network) function from pySCENIC
 #' @return A list where names are transcription factors and the stored values are character vectors of genes in the inferred regulons
-#' @export
+#' @export create_regulon_list_scenic
 #' 
 
 create_regulon_list_scenic <- function(regulons){
@@ -258,7 +258,7 @@ create_regulon_list_scenic <- function(regulons){
 #' @param tf_selection_method Selection of which method to target transcription factors. If 'clusters' then differential expression for clusters will be calculated. If 'variable' then the most variable transcription factors will be selected. If 'all' then all transcription factors in the feature matrix will be used. Default is 'clusters'. Note that if you wish to use clusters for intercellular signaling downstream to MUST choose clusters.
 #' @param tf_variance_quantile What proportion of variable features to take if using variance to threshold features. Default is 0.5. Higher numbers will keep more features. Ignored if tf_selection_method is not 'variable'
 #' @return A domino object
-#' @export
+#' @export create_domino
 #'
 create_domino = function(rl_map, features, ser = NULL, counts = NULL, 
     z_scores = NULL, clusters = NULL, use_clusters = TRUE, tf_targets = NULL, 
