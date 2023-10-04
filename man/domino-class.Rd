@@ -8,7 +8,7 @@
 \description{
 The domino class contains all information necessary to calculate receptor
 ligand signaling. It contains z scored expression, cluster, feature values,
-and formatted receptor ligand databases as well as all calculated 
+and formatted receptor ligand databases as well as all calculated
 intermediates.
 }
 \section{Slots}{

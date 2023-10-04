@@ -15,16 +15,16 @@ create_rl_map_cellphonedb(
 )
 }
 \arguments{
-\item{genes}{dataframe or file path to table of gene names in uniprot, hgnc_symbol, or ensembl format in cellphonedb database format}
+\item{genes}{Dataframe or file path to table of gene names in uniprot, hgnc_symbol, or ensembl format in cellphonedb database format}
 
-\item{proteins}{dataframe or file path to table of protein features in cellphonedb format}
+\item{proteins}{Dataframe or file path to table of protein features in cellphonedb format}
 
-\item{interactions}{dataframe or file path to table of protein-protein interactions in cellphonedb format}
+\item{interactions}{Dataframe or file path to table of protein-protein interactions in cellphonedb format}
 
-\item{complexes}{optional: dataframe or file path to table of protein complexes in cellphonedb format}
+\item{complexes}{Optional: dataframe or file path to table of protein complexes in cellphonedb format}
 }
 \value{
-Data frame where each row describes a possible receptor-ligand interaction
+A data frame where each row describes a possible receptor-ligand interaction
 }
 \description{
 Generates a data frame of ligand-receptor interactions from a CellPhoneDB database annotating the genes encoding the interacting ligands and receptors to be queried in transcriptomic data.

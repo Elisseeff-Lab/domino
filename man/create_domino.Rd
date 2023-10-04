@@ -24,17 +24,17 @@ create_domino(
 )
 }
 \arguments{
-\item{rl_map}{data frame where each row describes a receptor-ligand interaction with required columns gene_A & gene_B including the gene names for the receptor and ligand and type_A & type_B annotating if genes A and B are a ligand (L) or receptor (R)}
+\item{rl_map}{Data frame where each row describes a receptor-ligand interaction with required columns gene_A & gene_B including the gene names for the receptor and ligand and type_A & type_B annotating if genes A and B are a ligand (L) or receptor (R)}
 
 \item{features}{Either a path to a csv containing cell level features of interest (ie. the auc matrix from pySCENIC) or named matrix with cells as columns and features as rows.}
 
-\item{ser}{A Seurat object containing scaled RNA expression data in the RNA assay slot and cluster identity. Either a ser object OR z_scores and clusters must be provided. If ser is present z_scores and clusters will be ignored.}
+\item{ser}{Seurat object containing scaled RNA expression data in the RNA assay slot and cluster identity. Either a ser object OR z_scores and clusters must be provided. If ser is present z_scores and clusters will be ignored.}
 
-\item{counts}{The counts matrix for the data. If a Seurat object is provided this will be ignored. This is only used to threshold receptors on dropout.}
+\item{counts}{Counts matrix for the data. If a Seurat object is provided this will be ignored. This is only used to threshold receptors on dropout.}
 
-\item{z_scores}{A matrix containing z-scored expression data for all cells with cells as columns and features as rows. Either z_scores and clusters must be provided OR a ser object. If ser is present z_scores and clusters will be ignored.}
+\item{z_scores}{Matrix containing z-scored expression data for all cells with cells as columns and features as rows. Either z_scores and clusters must be provided OR a ser object. If ser is present z_scores and clusters will be ignored.}
 
-\item{clusters}{A named factor containing cell cluster with names as cells. Either clusters and z_scores OR ser must be provided. If ser is present z_scores and clusters will be ignored.}
+\item{clusters}{Named factor containing cell cluster with names as cells. Either clusters and z_scores OR ser must be provided. If ser is present z_scores and clusters will be ignored.}
 
 \item{use_clusters}{Boolean indicating whether to use the clusters from a Seurat object. If a Seurat object is not provided then this parameter is ignored.}
 
@@ -58,14 +58,14 @@ create_domino(
 \item{gene_conv_host}{Deprecated; please perform any gene conversion in create_rl_map function}
 }
 \value{
-A domino object.
+A domino object
 }
 \description{
-This function reads in a receptor ligand signaling database, cell level 
-features of some kind (ie. output from pySCENIC), z-scored single cell data, 
-and cluster id for single cell data, calculates a correlation matrix between 
-receptors and other features (this is transcription factor module scores if 
-using pySCENIC), and finds features enriched by cluster. It will return a 
-domino object prepared for build_domino, which will calculate a signaling 
+This function reads in a receptor ligand signaling database, cell level
+features of some kind (ie. output from pySCENIC), z-scored single cell data,
+and cluster id for single cell data, calculates a correlation matrix between
+receptors and other features (this is transcription factor module scores if
+using pySCENIC), and finds features enriched by cluster. It will return a
+domino object prepared for \code{\link[=build_domino]{build_domino()}}, which will calculate a signaling
 network.
 }
