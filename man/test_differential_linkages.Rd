@@ -26,22 +26,22 @@ test_differential_linkages(
 
 \item{test_name}{the statistical test used for comparison.
 \itemize{
- \item{"fishers.exact"} : Fisher's exact test for the dependence of the proportion of subjects with an active linkage in the cluster on which group the subject belongs to in the group.by variable. Provides an odds ratio, p-value, and a Benjamini-Hochberg FDR-adjusted p-value (p.adj) for each linkage tested.
+\item{"fishers.exact"} : Fisher's exact test for the dependence of the proportion of subjects with an active linkage in the cluster on which group the subject belongs to in the group.by variable. Provides an odds ratio, p-value, and a Benjamini-Hochberg FDR-adjusted p-value (p.adj) for each linkage tested.
 }}
 }
 \value{
 a data frame of results from the test of the differential linkages. Rows correspond to each linkage tested. Columns correspond to:
 \itemize{
- \item{"cluster"} : the name of the cell cluster being compared
- \item{"linkage"} : the type of linkage being compared
- \item{"group.by"} : the grouping variable
- \item{"test_name"} : the test used for comparison
- \item{"feature"} : individual linkages compared
- \item{"test statistics"} : test statistics provided are based on test method. "fishers.exact" provides a odds ratio, p-value, and fdr-adjusted p-value.
- \item{"total_count"} : total number of subjects where the linkage is active
- \item{"*_count"} : number of subjects in each category of group.by (\*) where the linkage is active
- \item{"total_n"} : number of total subjects compared
- \item{"*_n"} : total number of subjects in each category of group.by (\*)
+\item{"cluster"} : the name of the cell cluster being compared
+\item{"linkage"} : the type of linkage being compared
+\item{"group.by"} : the grouping variable
+\item{"test_name"} : the test used for comparison
+\item{"feature"} : individual linkages compared
+\item{"test statistics"} : test statistics provided are based on test method. "fishers.exact" provides a odds ratio, p-value, and fdr-adjusted p-value.
+\item{"total_count"} : total number of subjects where the linkage is active
+\item{"\emph{_count"} : number of subjects in each category of group.by (\}) where the linkage is active
+\item{"total_n"} : number of total subjects compared
+\item{"\emph{_n"} : total number of subjects in each category of group.by (\})
 }
 }
 \description{
