@@ -2,26 +2,48 @@
 #' 
 #' Generates a data frame of ligand-receptor interactions from a CellPhoneDB database annotating the genes encoding the interacting ligands and receptors to be queried in transcriptomic data.
 #' 
-#' @param genes Dataframe or file path to table of gene names in uniprot, hgnc_symbol, or ensembl format in cellphonedb database format
-#' @param proteins Dataframe or file path to table of protein features in cellphonedb format
-#' @param interactions Dataframe or file path to table of protein-protein interactions in cellphonedb format
-#' @param complexes Optional: dataframe or file path to table of protein complexes in cellphonedb format
-#' @return A data frame where each row describes a possible receptor-ligand interaction
+#' @param genes dataframe or file path to table of gene names in uniprot, hgnc_symbol, or ensembl format in cellphonedb database format
+#' @param proteins dataframe or file path to table of protein features in cellphonedb format
+#' @param interactions dataframe or file path to table of protein-protein interactions in cellphonedb format
+#' @param complexes optional: dataframe or file path to table of protein complexes in cellphonedb format
+#' @param database_name name of the database being used, stored in output
+#' @param gene_conv a tuple of (from, to) or (source, target) if gene conversion to orthologs is desired; options are ENSMUSG, ENSG, MGI, or HGNC
+#' @param gene_conv_host host for conversion; default ensembl, could also use mirrors if desired
+#' @param alternate_convert boolean if you would like to use a non-ensembl method of conversion (must supply table; not recommended, use only if ensembl is down)
+#' @param alternate_convert_table supplied table for non-ensembl method of conversion
+#' @return Data frame where each row describes a possible receptor-ligand interaction
 #' @export create_rl_map_cellphonedb
 #' 
 create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = NULL,
-                                     database_name = "CellPhoneDB",
-                                     gene_conv = NULL, gene_conv_host = "https://www.ensembl.org"){
-  if(class(genes)[1] == "character"){
+                                      database_name = "CellPhoneDB",
+                                      gene_conv = NULL, gene_conv_host = "https://www.ensembl.org",
+                                      alternate_convert = FALSE, alternate_convert_table = NULL){
+
+  # Check input structures:
+  stopifnot("genes argument must be file path or dataframe" = (is(genes, "data.frame") | is(genes, "character")))
+  stopifnot("proteins argument must be file path or dataframe" = (is(proteins, "data.frame") | is(proteins, "character")))
+  stopifnot("interactions argument must be file path or dataframe" = (is(interactions, "data.frame") | is(interactions, "character")))
+  stopifnot("complexes argument must be NULL, file path or dataframe" =
+    (is.null(complexes) | is(complexes, "data.frame") | is(complexes, "character")))
+  stopifnot("Database name must be a string" = is(database_name, "character") & length(database_name) == 1)
+  stopifnot("Gene conversion must be NULL or a character vector with 2 items" = 
+    (is.null(gene_conv) | (is(gene_conv, "character") & length(gene_conv) == 2)))
+  stopifnot("Gene conversion host must be a string" = is(gene_conv_host, "character") & length(gene_conv_host) == 1)
+  stopifnot("Alternate conversion argument (not recommended) must be TRUE or FALSE" = is(alternate_convert, "logical"))
+  stopifnot("If using alternate conversion table (not recommended), table must be provided as data.frame" =
+    (alternate_convert & is(alternate_convert_table, "data.frame")))
+
+  # Read in files if needed:
+  if(is(genes, "character")){
     genes = read.csv(genes, stringsAsFactors = FALSE)
   }
-  if(class(proteins)[1] == "character"){
+  if(is(proteins, "character")){
     proteins = read.csv(proteins, stringsAsFactors = FALSE)
   }
-  if(class(interactions)[1] == "character"){
+  if(is(interactions, "character")){
     interactions = read.csv(interactions, stringsAsFactors = FALSE)
   }
-  if(class(complexes)[1] == "character"){
+  if(is(complexes, "character")){
     complexes = read.csv(complexes, stringsAsFactors = FALSE)
   }
   
@@ -55,10 +77,15 @@ create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = 
   }
   
   # gene conversions
-  if(!is.null(gene_conv)){
+  if(!is.null(gene_conv) & !identical(gene_conv[1], gene_conv[2])){
     # obtain conversion dictionary
-    conv_dict = convert_genes(
-      genes$gene_name, from = gene_conv[1], to = gene_conv[2], host = gene_conv_host)
+    if (alternate_convert) {
+      conv_dict = table_convert_genes(
+        genes$gene_name, from = gene_conv[1], to = gene_conv[2], alternate_convert_table)
+    } else {
+        conv_dict = convert_genes(
+          genes$gene_name, from = gene_conv[1], to = gene_conv[2], host = gene_conv_host)  
+    }
     # column 1 is the source gene names used by the reference data base
     # column 2 is the orthologous gene names for the organism to which the reference is being converted
   }
@@ -83,7 +110,7 @@ create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = 
       a_features[["uniprot_A"]] = paste(component_a, collapse = ",")
       gene_a = sapply(component_a, function(x){
         g = unique(genes[genes[["uniprot"]] == x, c("gene_name")])
-        if(!is.null(gene_conv)){
+        if(!is.null(gene_conv) & !identical(gene_conv[1], gene_conv[2])){
           # if the original gene trying to be converted is not in the gene dictionary
           # the interaction is not included in the final rl_map
           if(sum(g %in% conv_dict[,1]) < length(g)){
@@ -104,7 +131,7 @@ create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = 
       component_a = protein_a[["uniprot"]]
       a_features[["uniprot_A"]] = component_a
       gene_a = unique(genes[genes[["uniprot"]] == component_a, c("gene_name")])
-      if(!is.null(gene_conv)){
+      if(!is.null(gene_conv) & !identical(gene_conv[1], gene_conv[2])){
         # if the original gene trying to be converted is not in the gene dictionary
         # the interaction is not included in the final rl_map
         if(sum(gene_a %in% conv_dict[,1]) < length(gene_a)){
@@ -137,7 +164,7 @@ create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = 
       b_features[["uniprot_B"]] = paste(component_b, collapse = ",")
       gene_b = sapply(component_b, function(x){
         g = unique(genes[genes[["uniprot"]] == x, c("gene_name")])
-        if(!is.null(gene_conv)){
+        if(!is.null(gene_conv) & !identical(gene_conv[1], gene_conv[2])){
           # if the original gene trying to be converted is not in the gene dictionary
           # the interaction is not included in the final rl_map
           if(sum(g %in% conv_dict[,1]) < length(g)){
@@ -158,7 +185,7 @@ create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = 
       component_b = protein_b[["uniprot"]]
       b_features[["uniprot_B"]] = component_b
       gene_b = unique(genes[genes[["uniprot"]] == component_b, c("gene_name")])
-      if(!is.null(gene_conv)){
+      if(!is.null(gene_conv) & !identical(gene_conv[1], gene_conv[2])){
         # if the original gene trying to be converted is not in the gene dictionary
         # the interaction is not included in the final rl_map
         if(sum(gene_b %in% conv_dict[,1]) < length(gene_b)){
@@ -190,13 +217,13 @@ create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = 
   }
   # exclude rows without receptor-ligand interactions
   rl_map <- rl_map[!(rl_map$type_A == "R" & rl_map$type_B == "R") &
-                     !(rl_map$type_A == "L" & rl_map$type_B == "L"),]
+                      !(rl_map$type_A == "L" & rl_map$type_B == "L"),]
   
   # specify column order
   rl_map <- rl_map[, c("int_pair", 
-                       "name_A", "uniprot_A", "gene_A", "type_A",
-                       "name_B", "uniprot_B", "gene_B", "type_B",
-                       "annotation_strategy", "source", "database_name")]
+                        "name_A", "uniprot_A", "gene_A", "type_A",
+                        "name_B", "uniprot_B", "gene_B", "type_B",
+                        "annotation_strategy", "source", "database_name")]
   return(rl_map)
 }
 
@@ -266,6 +293,16 @@ create_domino = function(rl_map, features, ser = NULL, counts = NULL,
     rec_min_thresh = .025, remove_rec_dropout = TRUE, 
     tf_selection_method = 'clusters', tf_variance_quantile = .5){
 
+  # Check inputs:
+  stopifnot("rl_map must be a data.frame with column names gene_A, gene_B, type_A, and type_B" =
+    (is(rl_map, "data.frame") & c("gene_A", "gene_B", "type_A", "type_B") %in% colnames(rl_map)))
+  stopifnot("features must be either a file path or a named matrix with cells as columns and features as rows" = 
+    ((is(features, "character") & length(features) == 1) | (is(features, "matrix") & !is.null(rownames(features)) & !is.null(colnames(features)))))
+  stopifnot("Either a Seurat object OR z scores and clusters must be provided" = (is(ser, "Seurat") |
+    (is(features, "matrix") & !is.null(rownames(features)) & !is.null(colnames(features)) & is(clusters, "factor") & !is.null(names(clusters)))))
+  stopifnot("rec_min_thresh must be a number between 0 and 1" = (is(rec_min_thresh, "numeric") & rec_min_thresh <= 1 & rec_min_thresh >= 0))
+
+  # Create object
     dom = domino()
     dom@misc[['create']] = TRUE
     dom@misc[['build']] = FALSE
@@ -340,9 +377,9 @@ create_domino = function(rl_map, features, ser = NULL, counts = NULL,
     # building RL linkages
     rec_lig_linkage = list()
     for(rec in rec_names){
-       inter = rl_reading[rl_reading[["R.name"]] == rec,]
-       ligs = inter[["L.name"]]
-       rec_lig_linkage[[rec]] = ligs
+      inter = rl_reading[rl_reading[["R.name"]] == rec,]
+      ligs = inter[["L.name"]]
+      rec_lig_linkage[[rec]] = ligs
     }
     dom@linkages[['rec_lig']] = rec_lig_linkage
     dom@misc[['rl_map']] = rl_reading
@@ -363,7 +400,7 @@ create_domino = function(rl_map, features, ser = NULL, counts = NULL,
     }
 
     # Read in features matrix and calculate differential expression by cluster.
-    if(class(features)[1] == 'character'){
+    if(is(features, "character")){
         features = read.csv(features, row.names = 1, check.names = FALSE)
     }
     features = features[, colnames(dom@z_scores)]
@@ -527,45 +564,51 @@ create_domino = function(rl_map, features, ser = NULL, counts = NULL,
 #' 
 #' @param genes Vector of genes to convert.
 #' @param from Format of gene input (ENSMUSG, ENSG, MGI, or HGNC)
-#' @param to Format of gene output (ENSMUSG, ENSG, MGI, or HGNC)
+#' @param to Format of gene output (MGI, or HGNC)
 #' @param host Host to connect to. Defaults to https://www.ensembl.org following the useMart default, but can be changed to archived hosts if useMart fails to connect.
 #' @return A data frame with input genes as col 1 and output as col 2
 #' 
-convert_genes = function(genes, from, to, host = "https://www.ensembl.org"){
+convert_genes = function(genes, from = c("ENSMUSG", "ENSG", "MGI", "HGNC"), to = c("MGI", "HGNC"), host = "https://www.ensembl.org"){
+  # Check inputs:
+  stopifnot("Genes must be a vector of characters" = (is(test, "character") & is(test, "vector")))
+  stopifnot("From must be one of ENSMUSG, ENSG, MGI, or HGNC" = from %in% c("ENSMUSG", "ENSG", "MGI", "HGNC"))
+  stopifnot("To must be one of MGI or HGNC" = to %in% c("MGI", "HGNC"))
+  stopifnot("Host must be  web host to connect to" = (is(host, "character") & length(host) == 1))
+
     if (from == 'ENSMUSG'){
         srcMart = biomaRt::useMart("ensembl", dataset = "mmusculus_gene_ensembl",
-                                   host = host)
+                                    host = host)
         sourceAtts =  'ensembl_gene_id'   
     }
     if (from == 'ENSG'){
         srcMart = biomaRt::useMart("ensembl", dataset = "hsapiens_gene_ensembl",
-                                   host = host)
+                                    host = host)
         sourceAtts = 'ensembl_gene_id'
     }
     if (from == 'MGI'){
         srcMart = biomaRt::useMart("ensembl", dataset = "mmusculus_gene_ensembl",
-                                   host = host)
+                                    host = host)
         sourceAtts = 'mgi_symbol'    
     }
     if (from == 'HGNC'){
         srcMart = biomaRt::useMart("ensembl", dataset = "hsapiens_gene_ensembl",
-                                   host = host)
+                                    host = host)
         sourceAtts = 'hgnc_symbol'
     }
     if (to == 'MGI'){
         tarMart = biomaRt::useMart("ensembl", dataset = "mmusculus_gene_ensembl",
-                                   host = host)
+                                    host = host)
         tarAtts = 'mgi_symbol'
     }
     if (to == 'HGNC'){
         tarMart = biomaRt::useMart("ensembl", dataset = "hsapiens_gene_ensembl",
-                                   host = host)
+                                  host = host)
         tarAtts = 'hgnc_symbol'
     }
     genesV2 = biomaRt::getLDS(attributes = sourceAtts, filters = sourceAtts,
-                     values = genes, mart = srcMart, 
-                     attributesL = tarAtts, martL = tarMart,
-                     uniqueRows = F)
+                    values = genes, mart = srcMart, 
+                    attributesL = tarAtts, martL = tarMart,
+                    uniqueRows = F)
     return(genesV2)
 }
 
@@ -626,7 +669,7 @@ mean_ligand_expression <-
     for(feat in ligands){
       # index of ligand row
       lig_index <- grep(paste0("^", feat, "$"), rownames(x))
-      # column indecies of cells belonging to cell_ident
+      # column indices of cells belonging to cell_ident
       cell_index <- colnames(x) %in% cell_barcodes
       
       cell_df <- data.frame(

@@ -6,6 +6,7 @@
 \usage{
 create_domino(
   rl_map,
+  rl_map,
   features,
   ser = NULL,
   counts = NULL,
@@ -13,6 +14,7 @@ create_domino(
   clusters = NULL,
   use_clusters = TRUE,
   tf_targets = NULL,
+  df = NULL,
   verbose = TRUE,
   use_complexes = TRUE,
   rec_min_thresh = 0.025,
@@ -37,6 +39,7 @@ create_domino(
 \item{use_clusters}{Boolean indicating whether to use the clusters from a Seurat object. If a Seurat object is not provided then this parameter is ignored.}
 
 \item{tf_targets}{Optional. A list where names are transcription factors and the stored values are character vectors of genes in the transcription factor's regulon.}
+\item{df}{Optional. Either a path to discovered motifs from pySCENIC as a csv file or a data frame following the format of df.csv from pySCENIC}
 
 \item{verbose}{Boolean indicating whether or not to print progress during computation.}
 
@@ -49,6 +52,10 @@ create_domino(
 \item{tf_selection_method}{Selection of which method to target transcription factors. If 'clusters' then differential expression for clusters will be calculated. If 'variable' then the most variable transcription factors will be selected. If 'all' then all transcription factors in the feature matrix will be used. Default is 'clusters'. Note that if you wish to use clusters for intercellular signaling downstream to MUST choose clusters.}
 
 \item{tf_variance_quantile}{What proportion of variable features to take if using variance to threshold features. Default is 0.5. Higher numbers will keep more features. Ignored if tf_selection_method is not 'variable'}
+
+\item{gene_conv}{Deprecated; please perform any gene conversion in create_rl_map function}
+
+\item{gene_conv_host}{Deprecated; please perform any gene conversion in create_rl_map function}
 }
 \value{
 A domino object
