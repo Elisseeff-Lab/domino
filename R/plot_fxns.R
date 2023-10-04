@@ -156,11 +156,11 @@ signaling_network = function(dom,  cols = NULL, edge_weight = .3, clusts = NULL,
   }
   
   if(!is.null(showOutgoingSignalingClusts)){
-    mat <- mat[,paste0('L_', showOutgoingSignalingClusts), drop = FALSE]
+    mat = mat[,paste0('L_', showOutgoingSignalingClusts), drop = FALSE]
   }
   
   if(!is.null(showIncomingSignalingClusts)){
-    mat <- mat[paste0('R_', showIncomingSignalingClusts),,drop = FALSE]
+    mat = mat[paste0('R_', showIncomingSignalingClusts),,drop = FALSE]
   }
 
   if(sum(mat > 0) == 0){
@@ -219,7 +219,7 @@ signaling_network = function(dom,  cols = NULL, edge_weight = .3, clusts = NULL,
   igraph::V(graph)$label.dist = 1.5
   igraph::V(graph)$label.color = 'black'
   
-  v_cols <- cols[names(igraph::V(graph))]
+  v_cols = cols[names(igraph::V(graph))]
   
   if(scale_by == 'lig_sig' & all(gsub("L_","",colnames(mat)) %in% names(igraph::V(graph)))){
     vals = asinh(colSums(mat))
@@ -333,7 +333,7 @@ gene_network = function(dom, clust = NULL, OutgoingSignalingClust = NULL,
   all_tfs = c()
   for(cl in as.character(clust)){
     for(tf in tfs){
-      recs <- dom@linkages$clust_tf_rec[[cl]][[tf]]
+      recs = dom@linkages$clust_tf_rec[[cl]][[tf]]
       all_recs = c(all_recs, recs)
       if(length(recs)){
          all_tfs = c(all_tfs, tf)
@@ -352,14 +352,14 @@ gene_network = function(dom, clust = NULL, OutgoingSignalingClust = NULL,
     allowed_ligs = c()
     for(cl in cl_with_signaling){
       if(!is.null(OutgoingSignalingClust)){
-        OutgoingSignalingClust <- paste0("L_", OutgoingSignalingClust)
-        mat <- dom@cl_signaling_matrices[[cl]][ ,OutgoingSignalingClust]
+        OutgoingSignalingClust = paste0("L_", OutgoingSignalingClust)
+        mat = dom@cl_signaling_matrices[[cl]][ ,OutgoingSignalingClust]
         if(is.null(dim(mat))){
-          allowed_ligs <- names(mat[mat > 0])
-          all_sums <- mat[mat > 0]
+          allowed_ligs = names(mat[mat > 0])
+          all_sums = mat[mat > 0]
         } else {
-          allowed_ligs <- rownames(mat[rowSums(mat) > 0, ]) #I remove any ligands with zeroes for all clusters
-          all_sums <- rowSums(mat[rowSums(mat) > 0, ])
+          allowed_ligs = rownames(mat[rowSums(mat) > 0, ]) #I remove any ligands with zeroes for all clusters
+          all_sums = rowSums(mat[rowSums(mat) > 0, ])
         }
       } else {
         allowed_ligs = rownames(dom@cl_signaling_matrices[[cl]])
@@ -401,7 +401,7 @@ gene_network = function(dom, clust = NULL, OutgoingSignalingClust = NULL,
   v_size = rep(10, length(igraph::V(graph)))
   names(v_size) = names(igraph::V(graph))
   if(lig_scale){
-    all_sums <- all_sums[names(all_sums) %in% names(v_size)]
+    all_sums = all_sums[names(all_sums) %in% names(v_size)]
     v_size[names(all_sums)] = 0.5*all_sums*lig_scale
   }
   names(v_size) = c()
@@ -671,36 +671,36 @@ circos_ligand_receptor = function(dom, receptor, ligand_expression_threshold = 0
     require(circlize)
     require(ComplexHeatmap)
     
-    ligands <- dom@linkages$rec_lig[[receptor]]
-    signaling_df <- NULL
+    ligands = dom@linkages$rec_lig[[receptor]]
+    signaling_df = NULL
     
     if(is.null(cell_idents)){
       # default to all cluster labels in domino object in alphabetical order
-      cell_idents <- sort(unique(dom@clusters))
+      cell_idents = sort(unique(dom@clusters))
     }
     
     # obtain expression values from cl_signaling matrices
-    active_chk <- sapply(dom@linkages$clust_rec, function(x){receptor %in% x})
+    active_chk = sapply(dom@linkages$clust_rec, function(x){receptor %in% x})
     if(sum(active_chk)){
       # obtain a signaling matrix where receptor is active
-      active_cell <- names(active_chk[active_chk == TRUE])
-      sig <- dom@cl_signaling_matrices[active_cell][[1]]
-      cell_names <- gsub("^L_", "", colnames(sig))
+      active_cell = names(active_chk[active_chk == TRUE])
+      sig = dom@cl_signaling_matrices[active_cell][[1]]
+      cell_names = gsub("^L_", "", colnames(sig))
       for(l in ligands){
-        df <- data.frame(
+        df = data.frame(
           "origin" = paste0(cell_names, "-", l),
           "destination" = receptor,
           "mean.expression" = unname(sig[rownames(sig) == l,])
         )
-        signaling_df <- rbind(signaling_df, df)
+        signaling_df = rbind(signaling_df, df)
       }
     } else {stop(paste0("No clusters have active ", receptor, " signaling"))}
     
-    signaling_df$mean.expression[is.na(signaling_df$mean.expression)] <- 0
+    signaling_df$mean.expression[is.na(signaling_df$mean.expression)] = 0
     # create a scaled mean expression plot for coord widths greater than 1
     # by dividing by the max expression [range (0-1)]
     # scaled.mean will only be used when the max expression is > 1
-    signaling_df$scaled.mean.expression <- signaling_df$mean.expression/max(signaling_df$mean.expression)
+    signaling_df$scaled.mean.expression = signaling_df$mean.expression/max(signaling_df$mean.expression)
     
     # exit function if no ligands are expressed above ligand expression threshold
     if(sum(signaling_df[["mean.expression"]] > ligand_expression_threshold) == 0){
@@ -708,36 +708,36 @@ circos_ligand_receptor = function(dom, receptor, ligand_expression_threshold = 0
     }
     
     # initialize chord diagram with even ligand arcs
-    arc_df <- signaling_df[, c("origin", "destination")]
-    arc_df["ligand.arc"] <- 1
+    arc_df = signaling_df[, c("origin", "destination")]
+    arc_df["ligand.arc"] = 1
     # receptor arc will always sum to 4 no matter how many ligands and cell idents are plotted
-    arc_df["receptor.arc"] <- 4 / (nrow(signaling_df)) 
+    arc_df["receptor.arc"] = 4 / (nrow(signaling_df)) 
     
     # name grouping based on [cell_ident]
-    nm <- c(receptor, arc_df$origin)
-    group <- structure(c(nm[1], gsub("-.*", "", nm[-1])), names = nm)
+    nm = c(receptor, arc_df$origin)
+    group = structure(c(nm[1], gsub("-.*", "", nm[-1])), names = nm)
     
     # order group as a factor with the receptor coming first
-    group <- factor(group,
+    group = factor(group,
                     levels = c(receptor,
                                sort(unique(gsub("-.*", "", nm))[-1]) # alphabetical order of the other cell idents
                                ))
     
     # colors for ligand chords
-    lig_colors <- ggplot_col_gen(length(ligands))
-    names(lig_colors) <- ligands
+    lig_colors = ggplot_col_gen(length(ligands))
+    names(lig_colors) = ligands
     
     # colors for [cell_ident] arcs
     if(is.null(cell_colors)){
-      cell_colors <- ggplot_col_gen(length(cell_idents))
-      names(cell_colors) <- cell_idents
+      cell_colors = ggplot_col_gen(length(cell_idents))
+      names(cell_colors) = cell_idents
     }
     
-    grid_col <-  c("#FFFFFF") # hide the arc corresponding to the receptor by coloring white 
+    grid_col =  c("#FFFFFF") # hide the arc corresponding to the receptor by coloring white 
     for(i in 1:length(ligands)){
-      grid_col <- c(grid_col, rep(lig_colors[i], length(cell_idents)))
+      grid_col = c(grid_col, rep(lig_colors[i], length(cell_idents)))
     }
-    names(grid_col) <- c(receptor, signaling_df$origin)
+    names(grid_col) = c(receptor, signaling_df$origin)
     circos.clear()
     circos.par(start.degree = 0)
     
@@ -753,11 +753,11 @@ circos_ligand_receptor = function(dom, receptor, ligand_expression_threshold = 0
     for(send in signaling_df$origin){
       if(signaling_df[signaling_df$origin == send,][["mean.expression"]] > ligand_expression_threshold){
         if(max(signaling_df[["mean.expression"]]) > 1){
-          expr <- signaling_df[signaling_df$origin == send,][["scaled.mean.expression"]]
-          max_width <- signif(max(signaling_df[["mean.expression"]]), 2)
+          expr = signaling_df[signaling_df$origin == send,][["scaled.mean.expression"]]
+          max_width = signif(max(signaling_df[["mean.expression"]]), 2)
         } else {
-          expr <- signaling_df[signaling_df$origin == send,][["mean.expression"]]
-          max_width <- 1
+          expr = signaling_df[signaling_df$origin == send,][["mean.expression"]]
+          max_width = 1
         }
         
         circos.link(send, 
@@ -766,11 +766,11 @@ circos_ligand_receptor = function(dom, receptor, ligand_expression_threshold = 0
                     col = paste0(grid_col[[send]], "88"))
       }
     }
-    sector_names <- get.all.sector.index()
-    cell_sectors <- cell_idents[cell_idents %in% gsub("-.*", "", sector_names)]
+    sector_names = get.all.sector.index()
+    cell_sectors = cell_idents[cell_idents %in% gsub("-.*", "", sector_names)]
     
     for(cell in cell_sectors){
-      row_pick <- sector_names[grepl(paste0("^", cell), sector_names)]
+      row_pick = sector_names[grepl(paste0("^", cell), sector_names)]
       
       if(length(row_pick)){
         highlight.sector(
@@ -802,7 +802,7 @@ circos_ligand_receptor = function(dom, receptor, ligand_expression_threshold = 0
       legend_gp = gpar(fill = lig_colors),
       title_position = "topleft", title = "ligand"
     )
-    chord_width <- 10/(4 + length(cell_idents)*length(ligands))
+    chord_width = 10/(4 + length(cell_idents)*length(ligands))
     lgd_chord = Legend(
       at = c(ligand_expression_threshold, max_width), 
       col_fun = colorRamp2(c(ligand_expression_threshold, max_width), c("#DDDDDD", "#DDDDDD")),
@@ -814,6 +814,111 @@ circos_ligand_receptor = function(dom, receptor, ligand_expression_threshold = 0
          x = unit(0.02, "npc"), y = unit(0.98, "npc"),
          just = c("left", "top"))
   }
+
+#' Plot differential linkages among domino results ranked by a comparative statistic
+#' 
+#' Plot differential linkages among domino results ranked by a comparative statistic
+#' 
+#' @param differential_linkages a data.frame output from the test_differential_linkages function
+#' @param test_statistic column name of differential_linkages where the test statistic used for ranking linkages is stored (ex. "p.value")
+#' @param stat_range a two value vector of the minimum and maximum values of test_statistic for plotting linkage features
+#' @param stat_ranking "ascending" (lowest value of test statisic is colored red and plotted at the top) or "descending" (highest value of test statistic is colored red and plotted at the top). 
+#' @param group_palette a named vector of colors to use for each group being compared
+#' @return a Heatmap-class object of features ranked by test_statistic annotated with the proportion of subjects that showed active linkage of the features.
+#' @export
+#' 
+plot_differential_linkages = function(differential_linkages, test_statistic, 
+                                      stat_range = c(0,1), 
+                                      stat_ranking = c("ascending", "descending"),
+                                      group_palette = NULL){
+  require(circlize)
+  require(ComplexHeatmap)
+  if(!test_statistic %in% colnames(differential_linkages)){
+    stop(paste0("test statistic '", test_statistic, "' not present in colnames(differential_linkages)"))
+  }
+  if(identical(stat_ranking, c("ascending", "descending"))){
+    warning("stat_ranking order not specified. Defaulting to ascending order")
+    stat_ranking = "ascending"
+  }
+  if(!stat_ranking %in% c("ascending", "descending")){
+    stop("stat_ranking must be 'ascending' or 'descending'")
+  }
+  
+  # limit to features within stat range
+  df = differential_linkages[
+    differential_linkages[[test_statistic]] >= stat_range[1] & 
+      differential_linkages[[test_statistic]] <= stat_range[2],
+  ]
+  if(nrow(df) == 0){
+    stop(paste0("No features with '", test_statistic, "' within stat_range"))
+  }
+  # order df by plot statistic
+  if(stat_ranking == "ascending"){
+    df = df[order(df[[test_statistic]], df[["total_count"]], decreasing = FALSE),]
+    stat_gradient = c("#FF0000", "#FFFFFF")
+    
+  }
+  if(stat_ranking == "descending"){
+    df = df[order(df[[test_statistic]], df[["total_count"]], decreasing = TRUE),]
+    stat_gradient = c("#FFFFFF", "#FF0000")
+  }
+  
+  # values from test result for plotting
+  cluster = unique(df[["cluster"]])
+  g_names_full = colnames(df)[grepl("_n$", colnames(df)) & !grepl("^total_", colnames(df))]
+  g_names = gsub("_n", "", g_names_full)
+  
+  # proportion bar for linkage feature in all subjects
+  ha_subject = HeatmapAnnotation(
+    subjects = anno_barplot(
+      matrix(ncol = 2, c(df[["total_count"]], df[["total_n"]] - df[["total_count"]])),
+      gp = gpar(fill = c("black", "white"))),
+    which = "row",
+    annotation_name_gp= gpar(fontsize = 8)
+  )
+  ha_subject@anno_list$subjects@label = "All\nSubjects"
+  
+  # row annotation of linkage feature names
+  ha_name = rowAnnotation(feat = anno_text(df[["feature"]], location = 0, rot = 0))
+  
+  # plotted statistic for ordering results
+  mat = matrix(df[[test_statistic]], ncol = 1)
+  rownames(mat) = df[["feature"]]
+  
+  plot = Heatmap(
+    matrix = mat, cluster_rows = FALSE, left_annotation = ha_name,
+    cell_fun = function(j, i, x, y, width, height, fill) {
+      # overlay value for ordering statistic
+      grid.text(sprintf("%.3f", mat[i, j]), x, y, gp = gpar(fontsize = 6))},
+    # annotate by test name
+    column_title = paste0(cluster, ": ", test_statistic),
+    name = test_statistic,
+    col = colorRamp2(breaks = stat_range, colors = stat_gradient),
+    height = nrow(mat)*unit(0.25, "in"),
+    width = unit(1, "in")
+  ) + 
+    ha_subject
+  # generate an heatmap annotation for each category
+  if(is.null(group_palette)){
+    group_palette = ggplot_col_gen(length(g_names))
+    names(group_palette) = g_names
+  }
+  for(i in 1:length(g_names)){
+    g = g_names[i]
+    g_count = paste0(g, "_count")
+    g_n = paste0(g, "_n")
+    ha = HeatmapAnnotation(
+      group = anno_barplot(
+        matrix(ncol = 2, c(df[[g_count]], df[[g_n]] - df[[g_count]])),
+        gp = gpar(fill = c(group_palette[g], "#FFFFFF"))),
+      name = g,
+      which = "row",
+      annotation_name_gp = gpar(fontsize = 8))
+    ha@anno_list$group@label = g
+    plot = plot + ha
+  }
+  return(plot)
+}
 
 #' Normalize a matrix to its max value by row or column
 #' 
@@ -841,6 +946,7 @@ do_norm = function(mat, dir){
 #' @param n Number of colors to generate
 #' @return A vector of colors according to ggplot color generation.
 #' @keywords internal
+
 ggplot_col_gen = function(n){
   hues = seq(15, 375, length = n + 1)
   return(hcl(h = hues, l = 65, c = 100)[1:n])
