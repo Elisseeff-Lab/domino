@@ -10,7 +10,7 @@
 #' @param scale How to scale the values (after thresholding). Options are 'none', 'sqrt' for square root, or 'log' for log10.
 #' @param normalize Options to normalize the matrix. Normalization is done after thresholding and scaling. Accepted inputs are 'none' for no normalization, 'rec_norm' to normalize to the maximum value with each receptor cluster, or 'lig_norm' to normalize to the maximum value within each ligand cluster 
 #' @param ... Other parameters to pass to  [NMF::aheatmap()]
-#' @export "signaling_heatmap"
+#' @export
 #' 
 signaling_heatmap = function(dom, clusts = NULL, min_thresh = -Inf, max_thresh = Inf, 
                              scale = 'none', normalize = 'none', ...){
@@ -66,7 +66,7 @@ signaling_heatmap = function(dom, clusts = NULL, min_thresh = -Inf, max_thresh =
 #' @param normalize Options to normalize the matrix. Accepted inputs are 'none' for no normalization, 'rec_norm' to normalize to the maximum value with each receptor cluster, or 'lig_norm' to normalize to the maximum value within each ligand cluster 
 #' @param title Either a string to use as the title or a boolean describing whether to include a title. In order to pass the 'main' parameter to  [NMF::aheatmap()]  you must set title to FALSE.
 #' @param ... Other parameters to pass to  [NMF::aheatmap()]. Note that to use the 'main' parameter of  [NMF::aheatmap()]  you must set title = FALSE
-#' @export "incoming_signaling_heatmap"
+#' @export
 #' 
 incoming_signaling_heatmap = function(dom,  rec_clust, clusts = NULL, min_thresh = -Inf, 
                                       max_thresh = Inf, scale = 'none', normalize = 'none', title = TRUE, ...){
@@ -137,7 +137,7 @@ incoming_signaling_heatmap = function(dom,  rec_clust, clusts = NULL, min_thresh
 #' @param scale_by How to size vertices. Options are 'lig_sig' for summed outgoing signaling, 'rec_sig' for summed incoming signaling, and 'none'. In the former two cases the values are scaled with asinh after summing all incoming or outgoing signaling.
 #' @param vert_scale Integer used to scale size of vertices with our without variable scaling from size_verts_by.
 #' @param ... Other parameters to be passed to plot when used with an `{igraph}` object.
-#' @export "signaling_network"
+#' @export
 #' 
 signaling_network = function(dom,  cols = NULL, edge_weight = .3, clusts = NULL, showOutgoingSignalingClusts = NULL,
                              showIncomingSignalingClusts = NULL, min_thresh = -Inf, max_thresh = Inf, normalize = 'none',
@@ -288,7 +288,7 @@ signaling_network = function(dom,  cols = NULL, edge_weight = .3, clusts = NULL,
 #' @param lig_scale FALSE or a numeric value to scale the size of ligand vertices based on z-scored expression in the data set.
 #' @param layout Type of layout to use. Options are 'grid', 'random', 'sphere', 'circle', 'fr' for Fruchterman-Reingold force directed layout, and 'kk' for Kamada Kawai for directed layout.
 #' @param ... Other parameters to pass to plot() with an [igraph] object. See [igraph] manual for options.
-#' @export "gene_network"
+#' @export
 #' 
 gene_network = function(dom, clust = NULL, OutgoingSignalingClust = NULL, 
                         class_cols = c(lig = '#FF685F', rec = '#47a7ff', feat = '#39C740'), 
@@ -460,7 +460,7 @@ gene_network = function(dom, clust = NULL, OutgoingSignalingClust = NULL,
 #' @param min_thresh Minimum threshold for color scaling if not a boolean heatmap
 #' @param max_thresh Maximum threshold for color scaling if not a boolean heatmap
 #' @param ... Other parameters to pass to  [NMF::aheatmap()] . Note that to use the 'main' parameter of  [NMF::aheatmap()]  you must set title = FALSE and to use 'annCol' or 'annColors' ann_cols must be FALSE.
-#' @export "feat_heatmap"
+#' @export
 #' 
 feat_heatmap = function(dom, feats = NULL, bool = FALSE, bool_thresh = .2, 
                         title = TRUE, norm = FALSE, cols = NULL, ann_cols = TRUE, min_thresh = NULL, 
@@ -556,7 +556,7 @@ feat_heatmap = function(dom, feats = NULL, bool = FALSE, bool_thresh = .2,
 #' @param recs Either a vector of receptors to include in the heatmap or 'all' for all receptors. If left NULL then the receptors selected in the signaling network connected to the features plotted will be shown.
 #' @param mark_connections Boolean indicating whether to add an 'x' in cells where there is a connected receptor or TF. Default FALSE.
 #' @param ... Other parameters to pass to  [NMF::aheatmap()] . Note that to use the 'main' parameter of  [NMF::aheatmap()]  you must set title = FALSE and to use 'annCol' or 'annColors' ann_cols must be FALSE.
-#' @export cor_heatmap
+#' @export
 #' 
 cor_heatmap = function(dom, bool = FALSE, bool_thresh = .15, title = TRUE, 
                        feats = NULL, recs = NULL, mark_connections = FALSE, ...){
@@ -635,7 +635,7 @@ cor_heatmap = function(dom, bool = FALSE, bool_thresh = .15, title = TRUE,
 #' @param rec Target receptor for plotting with TF
 #' @param remove_rec_dropout Whether to remove cells with zero expression for plot. This should match the same setting as in build_domino.
 #' @param ... Other parameters to pass to ggscatter.
-#' @export "cor_scatter"
+#' @export
 #' 
 cor_scatter = function(dom, tf, rec, remove_rec_dropout = TRUE, ...){
   if(remove_rec_dropout){
@@ -665,7 +665,7 @@ cor_scatter = function(dom, tf, rec, remove_rec_dropout = TRUE, ...){
 #' @param ligand_expression_threshold Minimum mean expression value of a ligand by a cell type for a chord to be rendered between the cell type and the receptor
 #' @param cell_idents Vector of cell types from cluster assignments in the domino object to be included in the plot.
 #' @param cell_colors Named vector of color names or hex codes where names correspond to the plotted cell types and the color values
-#' @export "circos_ligand_receptor"
+#' @export
 #' 
 circos_ligand_receptor = function(dom, receptor, ligand_expression_threshold = 0.01, cell_idents = NULL, cell_colors = NULL){
     require(circlize)

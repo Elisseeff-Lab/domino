@@ -78,7 +78,7 @@ home:
       labs:
         title: Lab Links
         text: |
-              For more work from these labs, click below.
+              For more work from these labs, click below.\n
               <a href=https://elisseefflab.jhu.edu/> Elisseeff Lab </a>
               <a href=https://fertiglab.com/> Fertig Lab </a>
 

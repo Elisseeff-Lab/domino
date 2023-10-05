@@ -530,6 +530,7 @@ create_domino = function(rl_map, features, ser = NULL, counts = NULL,
 #' @param to Format of gene output (ENSMUSG, ENSG, MGI, or HGNC)
 #' @param host Host to connect to. Defaults to https://www.ensembl.org following the useMart default, but can be changed to archived hosts if useMart fails to connect.
 #' @return A data frame with input genes as col 1 and output as col 2
+#' @keywords internal
 #' 
 convert_genes = function(genes, from, to, host = "https://www.ensembl.org"){
     if (from == 'ENSMUSG'){
@@ -579,7 +580,8 @@ convert_genes = function(genes, from, to, host = "https://www.ensembl.org"){
 #' @param conv Data frame matching current data in map to new data.
 #' @param new_name Name of new column to be created in RL map
 #' @return An updated RL signaling data frame
-#'
+#' @export 
+#' 
 add_rl_column = function(map, map_ref, conv, new_name){
     map_in_ref = match(map[[map_ref]], conv[,1])
     not_in_ref = which(is.na(map_in_ref))
@@ -617,7 +619,8 @@ add_rl_column = function(map, map_ref, conv, new_name){
 #' @param cell_barcodes Vector of cell barcodes (colnames of x) belonging to cell_ident to calculate mean expression across
 #' @param destination Name of the receptor with which each ligand interacts
 #' @return A data frame of ligand expression targeting the specified receptor
-#'
+#' @export
+#' 
 mean_ligand_expression <- 
   function(x, ligands, cell_ident, cell_barcodes, destination){
     # initiate data frame to store results
