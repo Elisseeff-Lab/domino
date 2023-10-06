@@ -14,219 +14,218 @@
 #' @return Data frame where each row describes a possible receptor-ligand interaction
 #' @export create_rl_map_cellphonedb
 #' 
-create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = NULL,
-                                      database_name = "CellPhoneDB",
-                                      gene_conv = NULL, gene_conv_host = "https://www.ensembl.org",
-                                      alternate_convert = FALSE, alternate_convert_table = NULL){
-
-  # Check input structures:
-  stopifnot("genes argument must be file path or dataframe" = (is(genes, "data.frame") | is(genes, "character")))
-  stopifnot("proteins argument must be file path or dataframe" = (is(proteins, "data.frame") | is(proteins, "character")))
-  stopifnot("interactions argument must be file path or dataframe" = (is(interactions, "data.frame") | is(interactions, "character")))
-  stopifnot("complexes argument must be NULL, file path or dataframe" =
-    (is.null(complexes) | is(complexes, "data.frame") | is(complexes, "character")))
-  stopifnot("Database name must be a string" = is(database_name, "character") & length(database_name) == 1)
-  stopifnot("Gene conversion must be NULL or a character vector with 2 items" = 
-    (is.null(gene_conv) | (is(gene_conv, "character") & length(gene_conv) == 2)))
-  stopifnot("Gene conversion host must be a string" = is(gene_conv_host, "character") & length(gene_conv_host) == 1)
-  stopifnot("Alternate conversion argument (not recommended) must be TRUE or FALSE" = is(alternate_convert, "logical"))
-  stopifnot("If using alternate conversion table (not recommended), table must be provided as data.frame" =
-    (alternate_convert & is(alternate_convert_table, "data.frame")))
-
-  # Read in files if needed:
-  if(is(genes, "character")){
-    genes = read.csv(genes, stringsAsFactors = FALSE)
-  }
-  if(is(proteins, "character")){
-    proteins = read.csv(proteins, stringsAsFactors = FALSE)
-  }
-  if(is(interactions, "character")){
-    interactions = read.csv(interactions, stringsAsFactors = FALSE)
-  }
-  if(is(complexes, "character")){
-    complexes = read.csv(complexes, stringsAsFactors = FALSE)
-  }
-  
-  # replace empty cells in columns annotating gene properties with "False"
-  # There are some unannotated genes in database v2.0 that seem to have been fixed in v4.0
-  gene_features = c("transmembrane", "peripheral", "secreted", "secreted_highlight", "receptor", "integrin", "other")
-  proteins[proteins$receptor == "", colnames(proteins) %in% gene_features] = "False"
-  
-  # change cases of True/False syntax from Python to TRUE/FALSE R syntax
-  for(x in colnames(genes)){
-    if(identical(unique(genes[[x]]), c("True", "False")) | identical(unique(genes[[x]]), c("False", "True"))){
-      genes[[x]] <- ifelse(genes[[x]] == "True", TRUE, FALSE)
+create_rl_map_cellphonedb <- function(genes, proteins, interactions, complexes = NULL, database_name = "CellPhoneDB",
+    gene_conv = NULL, gene_conv_host = "https://www.ensembl.org", alternate_convert = FALSE, alternate_convert_table = NULL) {
+    # Check input structures:
+    stopifnot(`genes argument must be file path or dataframe` = (is(genes, "data.frame") | is(genes,
+        "character")))
+    stopifnot(`proteins argument must be file path or dataframe` = (is(proteins, "data.frame") | is(proteins,
+        "character")))
+    stopifnot(`interactions argument must be file path or dataframe` = (is(interactions, "data.frame") |
+        is(interactions, "character")))
+    stopifnot(`complexes argument must be NULL, file path or dataframe` = (is.null(complexes) | is(complexes,
+        "data.frame") | is(complexes, "character")))
+    stopifnot(`Database name must be a string` = is(database_name, "character") & length(database_name) ==
+        1)
+    stopifnot(`Gene conversion must be NULL or a character vector with 2 items` = (is.null(gene_conv) |
+        (is(gene_conv, "character") & length(gene_conv) == 2)))
+    stopifnot(`Gene conversion host must be a string` = is(gene_conv_host, "character") & length(gene_conv_host) ==
+        1)
+    stopifnot(`Alternate conversion argument (not recommended) must be TRUE or FALSE` = is(alternate_convert,
+        "logical"))
+    stopifnot(`If using alternate conversion table (not recommended), table must be provided as data.frame` = (alternate_convert &
+        is(alternate_convert_table, "data.frame")))
+    # Read in files if needed:
+    if (is(genes, "character")) {
+        genes <- read.csv(genes, stringsAsFactors = FALSE)
     }
-  }
-  for(x in colnames(proteins)){
-    if(identical(unique(proteins[[x]]), c("True", "False")) | identical(unique(proteins[[x]]), c("False", "True"))){
-      proteins[[x]] <- ifelse(proteins[[x]] == "True", TRUE, FALSE)
+    if (is(proteins, "character")) {
+        proteins <- read.csv(proteins, stringsAsFactors = FALSE)
     }
-  }
-  for(x in colnames(interactions)){
-    if(identical(unique(interactions[[x]]), c("True", "False")) | identical(unique(interactions[[x]]), c("False", "True"))){
-      interactions[[x]] <- ifelse(interactions[[x]] == "True", TRUE, FALSE)
+    if (is(interactions, "character")) {
+        interactions <- read.csv(interactions, stringsAsFactors = FALSE)
     }
-  }
-  if(!is.null(complexes)){
-    for(x in colnames(complexes)){
-      if(identical(unique(complexes[[x]]), c("True", "False")) | identical(unique(complexes[[x]]), c("False", "True"))){
-        complexes[[x]] <- ifelse(complexes[[x]] == "True", TRUE, FALSE)
-      }
+    if (is(complexes, "character")) {
+        complexes <- read.csv(complexes, stringsAsFactors = FALSE)
     }
-  }
-  
-  # gene conversions
-  if(!is.null(gene_conv) & !identical(gene_conv[1], gene_conv[2])){
-    # obtain conversion dictionary
-    if (alternate_convert) {
-      conv_dict = table_convert_genes(
-        genes$gene_name, from = gene_conv[1], to = gene_conv[2], alternate_convert_table)
-    } else {
-        conv_dict = convert_genes(
-          genes$gene_name, from = gene_conv[1], to = gene_conv[2], host = gene_conv_host)  
-    }
-    # column 1 is the source gene names used by the reference data base
-    # column 2 is the orthologous gene names for the organism to which the reference is being converted
-  }
-  
-  # Step through the interactions and build rl connections.
-  rl_map <- NULL
-  
-  for(i in 1:nrow(interactions)){
-    inter = interactions[i,]
-    partner_a = inter[["partner_a"]]
-    partner_b = inter[["partner_b"]]
-    conversion_flag = list()
-    
-    # features of partner_a
-    a_features <- list()
-    if(partner_a %in% complexes[["complex_name"]]){
-      complex_a = complexes[complexes[["complex_name"]] == partner_a,]
-      component_a = as.character(
-        complex_a[, c("uniprot_1", "uniprot_2", "uniprot_3", "uniprot_4")]
-      )
-      component_a = component_a[component_a != ""]
-      a_features[["uniprot_A"]] = paste(component_a, collapse = ",")
-      gene_a = sapply(component_a, function(x){
-        g = unique(genes[genes[["uniprot"]] == x, c("gene_name")])
-        if(!is.null(gene_conv) & !identical(gene_conv[1], gene_conv[2])){
-          # if the original gene trying to be converted is not in the gene dictionary
-          # the interaction is not included in the final rl_map
-          if(sum(g %in% conv_dict[,1]) < length(g)){
-            for(gn in g) {conversion_flag[[gn]] = TRUE}
-          }
-          else{g = paste(unique(conv_dict[conv_dict[,1] %in% g, 2]), collapse = ";")}
+    # replace empty cells in columns annotating gene properties with 'False' There are some
+    # unannotated genes in database v2.0 that seem to have been fixed in v4.0
+    gene_features <- c("transmembrane", "peripheral", "secreted", "secreted_highlight", "receptor",
+        "integrin", "other")
+    proteins[proteins$receptor == "", colnames(proteins) %in% gene_features] <- "False"
+    # change cases of True/False syntax from Python to TRUE/FALSE R syntax
+    for (x in colnames(genes)) {
+        if (identical(unique(genes[[x]]), c("True", "False")) | identical(unique(genes[[x]]), c("False",
+            "True"))) {
+            genes[[x]] <- ifelse(genes[[x]] == "True", TRUE, FALSE)
         }
-        return(g)
-        }
-      )
-      a_features[["gene_A"]] = paste(gene_a, collapse = ",")
-      # annotation as a receptor or ligand is based on the annotation of the complex
-      a_features[["type_A"]] = ifelse(complex_a[["receptor"]], "R", "L")
-      # replace any spaces in the partner name with an underscore
-      a_features[["name_A"]] = gsub(" ", "_", partner_a)
-    } else if(partner_a %in% proteins[["uniprot"]]) {
-      protein_a = proteins[proteins[["uniprot"]] == partner_a,]
-      component_a = protein_a[["uniprot"]]
-      a_features[["uniprot_A"]] = component_a
-      gene_a = unique(genes[genes[["uniprot"]] == component_a, c("gene_name")])
-      if(!is.null(gene_conv) & !identical(gene_conv[1], gene_conv[2])){
-        # if the original gene trying to be converted is not in the gene dictionary
-        # the interaction is not included in the final rl_map
-        if(sum(gene_a %in% conv_dict[,1]) < length(gene_a)){
-          for(gn in gene_a) {conversion_flag[[gn]] = TRUE}
-        }
-        else{gene_a = unique(conv_dict[conv_dict[,1] %in% gene_a, 2])}
-      }
-      gene_a = paste(gene_a, collapse = ";")
-      a_features[["gene_A"]] = gene_a
-      a_features[["type_A"]] = ifelse(protein_a[["receptor"]], "R", "L")
-      a_features[["name_A"]] = gene_a
-    } else {
-      next
     }
-    if(length(conversion_flag)){
-      print(paste("No gene orthologs found for:", names(conversion_flag), collapse = " "))
-      print(paste("Skipping interaction:", partner_a, partner_b, collapse = " "))
-      next
-    }
-    a_df <- as.data.frame(a_features)
-    
-    # features of partner_b
-    b_features <- list()
-    if(partner_b %in% complexes[["complex_name"]]){
-      complex_b = complexes[complexes[["complex_name"]] == partner_b,]
-      component_b = as.character(
-        complex_b[, c("uniprot_1", "uniprot_2", "uniprot_3", "uniprot_4")]
-      )
-      component_b = component_b[component_b != ""]
-      b_features[["uniprot_B"]] = paste(component_b, collapse = ",")
-      gene_b = sapply(component_b, function(x){
-        g = unique(genes[genes[["uniprot"]] == x, c("gene_name")])
-        if(!is.null(gene_conv) & !identical(gene_conv[1], gene_conv[2])){
-          # if the original gene trying to be converted is not in the gene dictionary
-          # the interaction is not included in the final rl_map
-          if(sum(g %in% conv_dict[,1]) < length(g)){
-            for(gn in g) {conversion_flag[[gn]] = TRUE}
-          }
-          else{g = paste(unique(conv_dict[conv_dict[,1] %in% g, 2]), collapse = ";")}
+    for (x in colnames(proteins)) {
+        if (identical(unique(proteins[[x]]), c("True", "False")) | identical(unique(proteins[[x]]),
+            c("False", "True"))) {
+            proteins[[x]] <- ifelse(proteins[[x]] == "True", TRUE, FALSE)
         }
-        return(g)
-      }
-      )
-      b_features[["gene_B"]] = paste(gene_b, collapse = ",")
-      # annotation as a receptor or ligand is based on the annotation of the complex
-      b_features[["type_B"]] = ifelse(complex_b[["receptor"]], "R", "L")
-      # replace any spaces in the partner name with an underscore
-      b_features[["name_B"]] = gsub(" ", "_", partner_b)
-    } else if(partner_b %in% proteins[["uniprot"]]) {
-      protein_b = proteins[proteins[["uniprot"]] == partner_b,]
-      component_b = protein_b[["uniprot"]]
-      b_features[["uniprot_B"]] = component_b
-      gene_b = unique(genes[genes[["uniprot"]] == component_b, c("gene_name")])
-      if(!is.null(gene_conv) & !identical(gene_conv[1], gene_conv[2])){
-        # if the original gene trying to be converted is not in the gene dictionary
-        # the interaction is not included in the final rl_map
-        if(sum(gene_b %in% conv_dict[,1]) < length(gene_b)){
-          for(gn in gene_b) {conversion_flag[[gn]] = TRUE}
+    }
+    for (x in colnames(interactions)) {
+        if (identical(unique(interactions[[x]]), c("True", "False")) | identical(unique(interactions[[x]]),
+            c("False", "True"))) {
+            interactions[[x]] <- ifelse(interactions[[x]] == "True", TRUE, FALSE)
         }
-        else{gene_b = unique(conv_dict[conv_dict[,1] %in% gene_b, 2])}
-      }
-      gene_a = paste(gene_b, collapse = ";")
-      b_features[["gene_B"]] = gene_b
-      b_features[["type_B"]] = ifelse(protein_b[["receptor"]], "R", "L")
-      b_features[["name_B"]] = gene_b
-    } else {
-      next
     }
-    if(length(conversion_flag)){
-      print(paste("No gene orthologs found for:", names(conversion_flag), collapse = " "))
-      print(paste("Skipping interaction:", partner_a, partner_b, collapse = " "))
-      next
+    if (!is.null(complexes)) {
+        for (x in colnames(complexes)) {
+            if (identical(unique(complexes[[x]]), c("True", "False")) | identical(unique(complexes[[x]]),
+                c("False", "True"))) {
+                complexes[[x]] <- ifelse(complexes[[x]] == "True", TRUE, FALSE)
+            }
+        }
     }
-    b_df = as.data.frame(b_features)
-    i_features = cbind(a_df, b_df)
-    
-    i_features[["int_pair"]] = 
-      paste(i_features[["name_A"]], i_features[["name_B"]], sep = " & ")
-    i_features[["annotation_strategy"]] = inter[["annotation_strategy"]]
-    i_features[["source"]] = inter[["source"]]
-    i_features[["database_name"]] = database_name
-    rl_map <- rbind(i_features, rl_map)
-  }
-  # exclude rows without receptor-ligand interactions
-  rl_map <- rl_map[!(rl_map$type_A == "R" & rl_map$type_B == "R") &
-                      !(rl_map$type_A == "L" & rl_map$type_B == "L"),]
-  
-  # specify column order
-  rl_map <- rl_map[, c("int_pair", 
-                        "name_A", "uniprot_A", "gene_A", "type_A",
-                        "name_B", "uniprot_B", "gene_B", "type_B",
-                        "annotation_strategy", "source", "database_name")]
-  return(rl_map)
+    # gene conversions
+    if (!is.null(gene_conv) & !identical(gene_conv[1], gene_conv[2])) {
+        # obtain conversion dictionary
+        if (alternate_convert) {
+            conv_dict <- table_convert_genes(genes$gene_name, from = gene_conv[1], to = gene_conv[2],
+                alternate_convert_table)
+        } else {
+            conv_dict <- convert_genes(genes$gene_name, from = gene_conv[1], to = gene_conv[2], host = gene_conv_host)
+        }
+        # column 1 is the source gene names used by the reference data base column 2 is the
+        # orthologous gene names for the organism to which the reference is being converted
+    }
+    # Step through the interactions and build rl connections.
+    rl_map <- NULL
+    for (i in 1:nrow(interactions)) {
+        inter <- interactions[i, ]
+        partner_a <- inter[["partner_a"]]
+        partner_b <- inter[["partner_b"]]
+        conversion_flag <- list()
+        # features of partner_a
+        a_features <- list()
+        if (partner_a %in% complexes[["complex_name"]]) {
+            complex_a <- complexes[complexes[["complex_name"]] == partner_a, ]
+            component_a <- as.character(complex_a[, c("uniprot_1", "uniprot_2", "uniprot_3", "uniprot_4")])
+            component_a <- component_a[component_a != ""]
+            a_features[["uniprot_A"]] <- paste(component_a, collapse = ",")
+            gene_a <- sapply(component_a, function(x) {
+                g <- unique(genes[genes[["uniprot"]] == x, c("gene_name")])
+                if (!is.null(gene_conv) & !identical(gene_conv[1], gene_conv[2])) {
+                  # if the original gene trying to be converted is not in the gene dictionary
+                  # the interaction is not included in the final rl_map
+                  if (sum(g %in% conv_dict[, 1]) < length(g)) {
+                    for (gn in g) {
+                      conversion_flag[[gn]] <- TRUE
+                    }
+                  } else {
+                    g <- paste(unique(conv_dict[conv_dict[, 1] %in% g, 2]), collapse = ";")
+                  }
+                }
+                return(g)
+            })
+            a_features[["gene_A"]] <- paste(gene_a, collapse = ",")
+            # annotation as a receptor or ligand is based on the annotation of the complex
+            a_features[["type_A"]] <- ifelse(complex_a[["receptor"]], "R", "L")
+            # replace any spaces in the partner name with an underscore
+            a_features[["name_A"]] <- gsub(" ", "_", partner_a)
+        } else if (partner_a %in% proteins[["uniprot"]]) {
+            protein_a <- proteins[proteins[["uniprot"]] == partner_a, ]
+            component_a <- protein_a[["uniprot"]]
+            a_features[["uniprot_A"]] <- component_a
+            gene_a <- unique(genes[genes[["uniprot"]] == component_a, c("gene_name")])
+            if (!is.null(gene_conv) & !identical(gene_conv[1], gene_conv[2])) {
+                # if the original gene trying to be converted is not in the gene dictionary the
+                # interaction is not included in the final rl_map
+                if (sum(gene_a %in% conv_dict[, 1]) < length(gene_a)) {
+                  for (gn in gene_a) {
+                    conversion_flag[[gn]] <- TRUE
+                  }
+                } else {
+                  gene_a <- unique(conv_dict[conv_dict[, 1] %in% gene_a, 2])
+                }
+            }
+            gene_a <- paste(gene_a, collapse = ";")
+            a_features[["gene_A"]] <- gene_a
+            a_features[["type_A"]] <- ifelse(protein_a[["receptor"]], "R", "L")
+            a_features[["name_A"]] <- gene_a
+        } else {
+            next
+        }
+        if (length(conversion_flag)) {
+            print(paste("No gene orthologs found for:", names(conversion_flag), collapse = " "))
+            print(paste("Skipping interaction:", partner_a, partner_b, collapse = " "))
+            next
+        }
+        a_df <- as.data.frame(a_features)
+        # features of partner_b
+        b_features <- list()
+        if (partner_b %in% complexes[["complex_name"]]) {
+            complex_b <- complexes[complexes[["complex_name"]] == partner_b, ]
+            component_b <- as.character(complex_b[, c("uniprot_1", "uniprot_2", "uniprot_3", "uniprot_4")])
+            component_b <- component_b[component_b != ""]
+            b_features[["uniprot_B"]] <- paste(component_b, collapse = ",")
+            gene_b <- sapply(component_b, function(x) {
+                g <- unique(genes[genes[["uniprot"]] == x, c("gene_name")])
+                if (!is.null(gene_conv) & !identical(gene_conv[1], gene_conv[2])) {
+                  # if the original gene trying to be converted is not in the gene dictionary
+                  # the interaction is not included in the final rl_map
+                  if (sum(g %in% conv_dict[, 1]) < length(g)) {
+                    for (gn in g) {
+                      conversion_flag[[gn]] <- TRUE
+                    }
+                  } else {
+                    g <- paste(unique(conv_dict[conv_dict[, 1] %in% g, 2]), collapse = ";")
+                  }
+                }
+                return(g)
+            })
+            b_features[["gene_B"]] <- paste(gene_b, collapse = ",")
+            # annotation as a receptor or ligand is based on the annotation of the complex
+            b_features[["type_B"]] <- ifelse(complex_b[["receptor"]], "R", "L")
+            # replace any spaces in the partner name with an underscore
+            b_features[["name_B"]] <- gsub(" ", "_", partner_b)
+        } else if (partner_b %in% proteins[["uniprot"]]) {
+            protein_b <- proteins[proteins[["uniprot"]] == partner_b, ]
+            component_b <- protein_b[["uniprot"]]
+            b_features[["uniprot_B"]] <- component_b
+            gene_b <- unique(genes[genes[["uniprot"]] == component_b, c("gene_name")])
+            if (!is.null(gene_conv) & !identical(gene_conv[1], gene_conv[2])) {
+                # if the original gene trying to be converted is not in the gene dictionary the
+                # interaction is not included in the final rl_map
+                if (sum(gene_b %in% conv_dict[, 1]) < length(gene_b)) {
+                  for (gn in gene_b) {
+                    conversion_flag[[gn]] <- TRUE
+                  }
+                } else {
+                  gene_b <- unique(conv_dict[conv_dict[, 1] %in% gene_b, 2])
+                }
+            }
+            gene_a <- paste(gene_b, collapse = ";")
+            b_features[["gene_B"]] <- gene_b
+            b_features[["type_B"]] <- ifelse(protein_b[["receptor"]], "R", "L")
+            b_features[["name_B"]] <- gene_b
+        } else {
+            next
+        }
+        if (length(conversion_flag)) {
+            print(paste("No gene orthologs found for:", names(conversion_flag), collapse = " "))
+            print(paste("Skipping interaction:", partner_a, partner_b, collapse = " "))
+            next
+        }
+        b_df <- as.data.frame(b_features)
+        i_features <- cbind(a_df, b_df)
+        i_features[["int_pair"]] <- paste(i_features[["name_A"]], i_features[["name_B"]], sep = " & ")
+        i_features[["annotation_strategy"]] <- inter[["annotation_strategy"]]
+        i_features[["source"]] <- inter[["source"]]
+        i_features[["database_name"]] <- database_name
+        rl_map <- rbind(i_features, rl_map)
+    }
+    # exclude rows without receptor-ligand interactions
+    rl_map <- rl_map[!(rl_map$type_A == "R" & rl_map$type_B == "R") & !(rl_map$type_A == "L" & rl_map$type_B ==
+        "L"), ]
+    # specify column order
+    rl_map <- rl_map[, c("int_pair", "name_A", "uniprot_A", "gene_A", "type_A", "name_B", "uniprot_B",
+        "gene_B", "type_B", "annotation_strategy", "source", "database_name")]
+    return(rl_map)
 }
-
 #' Create a list of genes in regulons inferred by SCENIC
 #' 
 #' Generates a list of transcription factors and the genes targeted by the transcription factor as part of their regulon inferred by pySCENIC
@@ -235,31 +234,29 @@ create_rl_map_cellphonedb = function(genes, proteins, interactions, complexes = 
 #' @return A list where names are transcription factors and the stored values are character vectors of genes in the inferred regulons
 #' @export create_regulon_list_scenic
 #' 
-
-create_regulon_list_scenic <- function(regulons){
-  if(class(regulons)[1] == "character"){
-    regulons <- read.csv(regulons)
-  }
-  TFS <- unique(regulons[["TF"]])
-  TF_targets <- lapply(TFS,function(tf){
-    regulons_small <- regulons[regulons[["TF"]] == tf,]
-    targets <- regulons_small[["TargetGenes"]]
-    target_genes <- lapply(targets, function(x){
-      split_targs<-unlist(strsplit(x,""))
-      split_targs<-split_targs[seq(2,length(split_targs))]
-      split_targs<-split_targs[seq(1,length(split_targs)-1)]
-      split_targs<-paste(split_targs,collapse="")
-      split_targs<-unlist(strsplit(split_targs,"['), (']"))
-      split_targs_pre <- split_targs[split_targs!=""]
-      split_targs_post <- split_targs_pre[seq(1,length(split_targs_pre),2)]
-      return(split_targs_post)
+create_regulon_list_scenic <- function(regulons) {
+    if (class(regulons)[1] == "character") {
+        regulons <- read.csv(regulons)
+    }
+    TFS <- unique(regulons[["TF"]])
+    TF_targets <- lapply(TFS, function(tf) {
+        regulons_small <- regulons[regulons[["TF"]] == tf, ]
+        targets <- regulons_small[["TargetGenes"]]
+        target_genes <- lapply(targets, function(x) {
+            split_targs <- unlist(strsplit(x, ""))
+            split_targs <- split_targs[seq(2, length(split_targs))]
+            split_targs <- split_targs[seq(1, length(split_targs) - 1)]
+            split_targs <- paste(split_targs, collapse = "")
+            split_targs <- unlist(strsplit(split_targs, "['), (']"))
+            split_targs_pre <- split_targs[split_targs != ""]
+            split_targs_post <- split_targs_pre[seq(1, length(split_targs_pre), 2)]
+            return(split_targs_post)
+        })
+        return(unique(unlist(target_genes)))
     })
-    return(unique(unlist(target_genes)))
-  })
-  names(TF_targets) <- TFS
-  return(TF_targets)
+    names(TF_targets) <- TFS
+    return(TF_targets)
 }
-
 #' Create a domino object and prepare it for network construction
 #' 
 #' This function reads in a receptor ligand signaling database, cell level 
@@ -287,277 +284,266 @@ create_regulon_list_scenic <- function(regulons){
 #' @return A domino object
 #' @export create_domino
 #'
-create_domino = function(rl_map, features, ser = NULL, counts = NULL, 
-    z_scores = NULL, clusters = NULL, use_clusters = TRUE, tf_targets = NULL, 
-    verbose = TRUE, use_complexes = TRUE, 
-    rec_min_thresh = .025, remove_rec_dropout = TRUE, 
-    tf_selection_method = 'clusters', tf_variance_quantile = .5){
-
-  # Check inputs:
-  stopifnot("rl_map must be a data.frame with column names gene_A, gene_B, type_A, and type_B" =
-    (is(rl_map, "data.frame") & c("gene_A", "gene_B", "type_A", "type_B") %in% colnames(rl_map)))
-  stopifnot("features must be either a file path or a named matrix with cells as columns and features as rows" = 
-    ((is(features, "character") & length(features) == 1) | (is(features, "matrix") & !is.null(rownames(features)) & !is.null(colnames(features)))))
-  stopifnot("Either a Seurat object OR z scores and clusters must be provided" = (is(ser, "Seurat") |
-    (is(features, "matrix") & !is.null(rownames(features)) & !is.null(colnames(features)) & is(clusters, "factor") & !is.null(names(clusters)))))
-  stopifnot("rec_min_thresh must be a number between 0 and 1" = (is(rec_min_thresh, "numeric") & rec_min_thresh <= 1 & rec_min_thresh >= 0))
-
-  # Create object
-    dom = domino()
-    dom@misc[['create']] = TRUE
-    dom@misc[['build']] = FALSE
-    dom@misc[['build_vars']] = NULL
-    if(!is.null(ser) & (!is.null(clusters) | !is.null(z_scores) | !is.null(counts))){
+create_domino <- function(rl_map, features, ser = NULL, counts = NULL, z_scores = NULL, clusters = NULL,
+    use_clusters = TRUE, tf_targets = NULL, verbose = TRUE, use_complexes = TRUE, rec_min_thresh = 0.025,
+    remove_rec_dropout = TRUE, tf_selection_method = "clusters", tf_variance_quantile = 0.5) {
+    # Check inputs:
+    stopifnot(`rl_map must be a data.frame with column names gene_A, gene_B, type_A, and type_B` = (is(rl_map,
+        "data.frame") & c("gene_A", "gene_B", "type_A", "type_B") %in% colnames(rl_map)))
+    stopifnot(`features must be either a file path or a named matrix with cells as columns and features as rows` = ((is(features,
+        "character") & length(features) == 1) | (is(features, "matrix") & !is.null(rownames(features)) &
+        !is.null(colnames(features)))))
+    stopifnot(`Either a Seurat object OR z scores and clusters must be provided` = (is(ser, "Seurat") |
+        (is(features, "matrix") & !is.null(rownames(features)) & !is.null(colnames(features)) & is(clusters,
+            "factor") & !is.null(names(clusters)))))
+    stopifnot(`rec_min_thresh must be a number between 0 and 1` = (is(rec_min_thresh, "numeric") &
+        rec_min_thresh <= 1 & rec_min_thresh >= 0))
+    # Create object
+    dom <- domino()
+    dom@misc[["create"]] <- TRUE
+    dom@misc[["build"]] <- FALSE
+    dom@misc[["build_vars"]] <- NULL
+    if (!is.null(ser) & (!is.null(clusters) | !is.null(z_scores) | !is.null(counts))) {
         warning("Ser and z_score, clusters, or counts provided. Defaulting to ser.")
     }
-    if(is.null(ser) & (is.null(clusters) | is.null(z_scores) | is.null(counts))){
+    if (is.null(ser) & (is.null(clusters) | is.null(z_scores) | is.null(counts))) {
         stop("Either ser or clusters and z_scores must be provided")
     }
-    if(!(tf_selection_method %in% c('all', 'clusters', 'variable'))){
+    if (!(tf_selection_method %in% c("all", "clusters", "variable"))) {
         stop("tf_selection_method must be one of all, clusters, or variable")
     }
-
     # Read in lr db info
-    if(verbose){
-      print('Reading in and processing signaling database')
+    if (verbose) {
+        print("Reading in and processing signaling database")
     }
-    
-    if("database_name" %in% colnames(rl_map)){
-      dom@db_info = rl_map
-      if(verbose){print(paste0('Database provided from source: ', unique(rl_map[['database_name']])))}
+    if ("database_name" %in% colnames(rl_map)) {
+        dom@db_info <- rl_map
+        if (verbose) {
+            print(paste0("Database provided from source: ", unique(rl_map[["database_name"]])))
+        }
     } else {
-      dom@db_info = rl_map
+        dom@db_info <- rl_map
     }
-    
     # check for receptors that match receptor complex syntax of comma seperated genes
-    non_complex_index <- which(
-      !grepl("\\,", rl_map[["gene_A"]]) & !grepl("\\,", rl_map[["gene_B"]])
-    )
-    
+    non_complex_index <- which(!grepl("\\,", rl_map[["gene_A"]]) & !grepl("\\,", rl_map[["gene_B"]]))
     # discard interactions including complexes if requested
-    if(use_complexes == FALSE){
-      rl_map <- rl_map[non_complex_index,]
+    if (use_complexes == FALSE) {
+        rl_map <- rl_map[non_complex_index, ]
     }
-    
     # Get genes for receptors
     rl_reading <- NULL
-    for(i in 1:nrow(rl_map)){
-      rl = list()
-      inter = rl_map[i,]
-      p = ifelse(inter[["type_A"]] == "R", "A", "B")
-      q = ifelse(p == "A", "B", "A")
-      R.gene = inter[[paste0("gene_", p)]]
-      L.gene = inter[[paste0("gene_", q)]]
-      rl[["R.gene"]] = R.gene
-      rl[["L.gene"]] = L.gene
-      if(paste0("uniprot_",p) %in% names(inter)){rl[["R.uniprot"]] = inter[[paste0("uniprot_",p)]]}
-      if(paste0("uniprot_",q) %in% names(inter)){rl[["L.uniprot"]] = inter[[paste0("uniprot_",q)]]}
-      if(paste0("name_",p) %in% names(inter)){rl[["R.name"]] = inter[[paste0("name_",p)]]}
-      if(paste0("name_",q) %in% names(inter)){rl[["L.name"]] = inter[[paste0("name_",q)]]}
-      rl = as.data.frame(rl)
-      rl_reading = rbind(rl_reading, rl)
+    for (i in 1:nrow(rl_map)) {
+        rl <- list()
+        inter <- rl_map[i, ]
+        p <- ifelse(inter[["type_A"]] == "R", "A", "B")
+        q <- ifelse(p == "A", "B", "A")
+        R.gene <- inter[[paste0("gene_", p)]]
+        L.gene <- inter[[paste0("gene_", q)]]
+        rl[["R.gene"]] <- R.gene
+        rl[["L.gene"]] <- L.gene
+        if (paste0("uniprot_", p) %in% names(inter)) {
+            rl[["R.uniprot"]] <- inter[[paste0("uniprot_", p)]]
+        }
+        if (paste0("uniprot_", q) %in% names(inter)) {
+            rl[["L.uniprot"]] <- inter[[paste0("uniprot_", q)]]
+        }
+        if (paste0("name_", p) %in% names(inter)) {
+            rl[["R.name"]] <- inter[[paste0("name_", p)]]
+        }
+        if (paste0("name_", q) %in% names(inter)) {
+            rl[["L.name"]] <- inter[[paste0("name_", q)]]
+        }
+        rl <- as.data.frame(rl)
+        rl_reading <- rbind(rl_reading, rl)
     }
     # save a list of complexes and their components
-    dom@linkages$complexes = NULL
-    if(use_complexes){
-      complex_list = list()
-      for(i in 1:nrow(rl_reading)){
-        inter = rl_reading[i,]
-        if(grepl("\\,", inter[["L.gene"]])){complex_list[[inter[["L.name"]]]] = unlist(strsplit(inter[["L.gene"]], split = "\\,"))}
-        if(grepl("\\,", inter[["R.gene"]])){complex_list[[inter[["R.name"]]]] = unlist(strsplit(inter[["R.gene"]], split = "\\,"))}
-      }
-      dom@linkages$complexes = complex_list
+    dom@linkages$complexes <- NULL
+    if (use_complexes) {
+        complex_list <- list()
+        for (i in 1:nrow(rl_reading)) {
+            inter <- rl_reading[i, ]
+            if (grepl("\\,", inter[["L.gene"]])) {
+                complex_list[[inter[["L.name"]]]] <- unlist(strsplit(inter[["L.gene"]], split = "\\,"))
+            }
+            if (grepl("\\,", inter[["R.gene"]])) {
+                complex_list[[inter[["R.name"]]]] <- unlist(strsplit(inter[["R.gene"]], split = "\\,"))
+            }
+        }
+        dom@linkages$complexes <- complex_list
     }
-    
-    rec_genes = unique(unlist(strsplit(rl_reading[["R.gene"]], split = "\\,")))
-    rec_names = rl_reading[["R.name"]]
-    lig_genes = unique(unlist(strsplit(rl_reading[["L.gene"]], split = "\\,")))
-    lig_names = rl_reading[["L.name"]]
-    
+    rec_genes <- unique(unlist(strsplit(rl_reading[["R.gene"]], split = "\\,")))
+    rec_names <- rl_reading[["R.name"]]
+    lig_genes <- unique(unlist(strsplit(rl_reading[["L.gene"]], split = "\\,")))
+    lig_names <- rl_reading[["L.name"]]
     # building RL linkages
-    rec_lig_linkage = list()
-    for(rec in rec_names){
-      inter = rl_reading[rl_reading[["R.name"]] == rec,]
-      ligs = inter[["L.name"]]
-      rec_lig_linkage[[rec]] = ligs
+    rec_lig_linkage <- list()
+    for (rec in rec_names) {
+        inter <- rl_reading[rl_reading[["R.name"]] == rec, ]
+        ligs <- inter[["L.name"]]
+        rec_lig_linkage[[rec]] <- ligs
     }
-    dom@linkages[['rec_lig']] = rec_lig_linkage
-    dom@misc[['rl_map']] = rl_reading
-
+    dom@linkages[["rec_lig"]] <- rec_lig_linkage
+    dom@misc[["rl_map"]] <- rl_reading
     # Get z-score and cluster info
-    if(verbose){print('Getting z_scores, clusters, and counts')}
-    if(!is.null(ser)){
-        z_scores = ser@assays$RNA@scale.data
-        if(use_clusters){
-            clusters = ser@active.ident
+    if (verbose) {
+        print("Getting z_scores, clusters, and counts")
+    }
+    if (!is.null(ser)) {
+        z_scores <- ser@assays$RNA@scale.data
+        if (use_clusters) {
+            clusters <- ser@active.ident
         }
-        counts = ser@assays$RNA@counts
+        counts <- ser@assays$RNA@counts
     }
-
-    dom@z_scores = z_scores
-    if(!is.null(clusters)){
-        dom@clusters = clusters
+    dom@z_scores <- z_scores
+    if (!is.null(clusters)) {
+        dom@clusters <- clusters
     }
-
     # Read in features matrix and calculate differential expression by cluster.
-    if(is(features, "character")){
-        features = read.csv(features, row.names = 1, check.names = FALSE)
+    if (is(features, "character")) {
+        features <- read.csv(features, row.names = 1, check.names = FALSE)
     }
-    features = features[, colnames(dom@z_scores)]
-    dom@features = as.matrix(features)
-
-    if(tf_selection_method == 'clusters'){
-        p_vals = matrix(1.0, nrow = nrow(features), 
-            ncol = length(levels(dom@clusters)))
-        rownames(p_vals) = rownames(features)
-        colnames(p_vals) = levels(dom@clusters)
-
-        if(verbose){
-            print('Calculating feature enrichment by cluster')
-            clust_n = length(levels(dom@clusters))
+    features <- features[, colnames(dom@z_scores)]
+    dom@features <- as.matrix(features)
+    if (tf_selection_method == "clusters") {
+        p_vals <- matrix(1, nrow = nrow(features), ncol = length(levels(dom@clusters)))
+        rownames(p_vals) <- rownames(features)
+        colnames(p_vals) <- levels(dom@clusters)
+        if (verbose) {
+            print("Calculating feature enrichment by cluster")
+            clust_n <- length(levels(dom@clusters))
         }
-        for(clust in levels(dom@clusters)){
-            if(verbose){
-                cur = which(levels(dom@clusters) == clust)
-                print(paste0(cur, ' of ', clust_n))
+        for (clust in levels(dom@clusters)) {
+            if (verbose) {
+                cur <- which(levels(dom@clusters) == clust)
+                print(paste0(cur, " of ", clust_n))
             }
-            cells = which(dom@clusters == clust)
-            for(feat in rownames(dom@features)){
-                p_vals[feat, clust] = wilcox.test(dom@features[feat, cells], 
-                    dom@features[feat, -cells], alternative = 'g')$p.value
+            cells <- which(dom@clusters == clust)
+            for (feat in rownames(dom@features)) {
+                p_vals[feat, clust] <- wilcox.test(dom@features[feat, cells], dom@features[feat, -cells],
+                  alternative = "g")$p.value
             }
         }
-
-        dom@clust_de = p_vals
+        dom@clust_de <- p_vals
     }
-
-    if(tf_selection_method == 'all'){
-        dom@clusters = factor()
+    if (tf_selection_method == "all") {
+        dom@clusters <- factor()
     }
-
-    if(tf_selection_method == 'variable'){
-        dom@clusters = factor()
-        variances = apply(dom@features, 1, function(x){
+    if (tf_selection_method == "variable") {
+        dom@clusters <- factor()
+        variances <- apply(dom@features, 1, function(x) {
             sd(x)/mean(x)
         })
-        keep_n = length(variances) * tf_variance_quantile
-        keep_id = which(rank(variances) > keep_n)
-        dom@features = dom@features[names(keep_id),]
+        keep_n <- length(variances) * tf_variance_quantile
+        keep_id <- which(rank(variances) > keep_n)
+        dom@features <- dom@features[names(keep_id), ]
     }
-
     # store tf_targets in linkages if they are provided as a list
-    if(!is.null(tf_targets) & class(tf_targets) != "list"){
-      dom@linkages[['tf_targets']] = NULL
-      warning("tf_targets is not a list. No regulons stored")
-    } else if(class(tf_targets) == "list") {
-      dom@linkages[['tf_targets']] = tf_targets
+    if (!is.null(tf_targets) & class(tf_targets) != "list") {
+        dom@linkages[["tf_targets"]] <- NULL
+        warning("tf_targets is not a list. No regulons stored")
+    } else if (class(tf_targets) == "list") {
+        dom@linkages[["tf_targets"]] <- tf_targets
     } else {
-      dom@linkages[['tf_targets']] = NULL
+        dom@linkages[["tf_targets"]] <- NULL
     }
-
     # Calculate correlation matrix between features and receptors.
-    dom@counts = counts
-    zero_sum = Matrix::rowSums(counts == 0)
-    keeps = which(zero_sum < (1 - rec_min_thresh)*ncol(counts))
-    ser_receptors = intersect(names(keeps), rec_genes)
-    rho = matrix(0, nrow = length(ser_receptors), ncol = nrow(dom@features))
-    rownames(rho) = ser_receptors
-    colnames(rho) = rownames(dom@features)
-    if(verbose){
-        print('Calculating correlations')
-        n_tf = nrow(dom@features)
+    dom@counts <- counts
+    zero_sum <- Matrix::rowSums(counts == 0)
+    keeps <- which(zero_sum < (1 - rec_min_thresh) * ncol(counts))
+    ser_receptors <- intersect(names(keeps), rec_genes)
+    rho <- matrix(0, nrow = length(ser_receptors), ncol = nrow(dom@features))
+    rownames(rho) <- ser_receptors
+    colnames(rho) <- rownames(dom@features)
+    if (verbose) {
+        print("Calculating correlations")
+        n_tf <- nrow(dom@features)
     }
-    for(module in rownames(dom@features)){
-        # If df is provided then check if receptors are targets of TF. If they
-        # are then set correlation equal to 0.
-        if(verbose){
-            cur = which(rownames(dom@features) == module)
-            print(paste0(cur, ' of ', n_tf))
+    for (module in rownames(dom@features)) {
+        # If df is provided then check if receptors are targets of TF. If they are then set
+        # correlation equal to 0.
+        if (verbose) {
+            cur <- which(rownames(dom@features) == module)
+            print(paste0(cur, " of ", n_tf))
         }
-        if(!is.null(dom@linkages$tf_targets)){
-            tf = gsub(pattern = "\\.\\.\\.", replacement = "", module) # correction for AUC values from pySCENIC that append an elipses to TF names due to (+) characters in the orignial python output
-            module_targets = tf_targets[[tf]]
-            module_rec_targets = intersect(module_targets, ser_receptors)
-        } else {module_rec_targets = NULL}
-        scores = dom@features[module,]
-        rhorow = rep(0, length(ser_receptors))
-        names(rhorow) = ser_receptors
-        for(rec in ser_receptors){
-            if(remove_rec_dropout){
-                keep_id = which(dom@counts[rec,] > 0)
-                rec_z_scores = dom@z_scores[rec,keep_id]
-                tar_tf_scores = scores[keep_id]
+        if (!is.null(dom@linkages$tf_targets)) {
+            tf <- gsub(pattern = "\\.\\.\\.", replacement = "", module)  # correction for AUC values from pySCENIC that append an elipses to TF names due to (+) characters in the orignial python output
+            module_targets <- tf_targets[[tf]]
+            module_rec_targets <- intersect(module_targets, ser_receptors)
+        } else {
+            module_rec_targets <- NULL
+        }
+        scores <- dom@features[module, ]
+        rhorow <- rep(0, length(ser_receptors))
+        names(rhorow) <- ser_receptors
+        for (rec in ser_receptors) {
+            if (remove_rec_dropout) {
+                keep_id <- which(dom@counts[rec, ] > 0)
+                rec_z_scores <- dom@z_scores[rec, keep_id]
+                tar_tf_scores <- scores[keep_id]
             } else {
-                rec_z_scores = dom@z_scores[rec,]
-                tar_tf_scores = scores
+                rec_z_scores <- dom@z_scores[rec, ]
+                tar_tf_scores <- scores
             }
-
-            # There are some cases where all the tfs are zero for the cells
-            # left after trimming dropout for receptors. Skip those and set
-            # cor to zero manually.
-            if(sum(tar_tf_scores) == 0){
-                rhorow[rec] = 0
+            # There are some cases where all the tfs are zero for the cells left after trimming
+            # dropout for receptors. Skip those and set cor to zero manually.
+            if (sum(tar_tf_scores) == 0) {
+                rhorow[rec] <- 0
                 next
             }
-            cor = cor.test(rec_z_scores, tar_tf_scores, 
-                method = 'spearman', alternative = 'greater')
-            rhorow[rec] = cor$estimate
+            cor <- cor.test(rec_z_scores, tar_tf_scores, method = "spearman", alternative = "greater")
+            rhorow[rec] <- cor$estimate
         }
-        if(length(module_rec_targets > 0)){
-            rhorow[module_rec_targets] = 0
+        if (length(module_rec_targets > 0)) {
+            rhorow[module_rec_targets] <- 0
         }
-        rho[,module] = rhorow
+        rho[, module] <- rhorow
     }
-    colnames(rho) = rownames(dom@features)
-    dom@misc$rec_cor = rho
-    
+    colnames(rho) <- rownames(dom@features)
+    dom@misc$rec_cor <- rho
     # assess correlation among genes in the same receptor complex
-    cor_list = list()
-    for(i in 1:length(names(dom@linkages$rec_lig))){
-      r <- names(dom@linkages$rec_lig)[i]
-      if(r %in% names(dom@linkages$complexes)){
-        r_genes = dom@linkages$complexes[[r]]
-      } else {
-        r_genes = r
-      }
-      
-      if(sum(rownames(rho) %in% r_genes) != length(r_genes)){
-        print(paste0(r, " has component genes that did not pass testing parameters"))
-        cor_list[[r]] = rep(0, ncol(rho))
-        next
-      } 
-      
-      if(length(r_genes) > 1){
-        gene_cor = rho[rownames(rho) %in% r_genes,]
-        cor_med = apply(gene_cor, 2, function(x){median(x)})
-        cor_list[[r]] = cor_med
-      } else {
-        cor_list[[r]] = rho[rownames(rho) == r_genes,]
-      }
+    cor_list <- list()
+    for (i in 1:length(names(dom@linkages$rec_lig))) {
+        r <- names(dom@linkages$rec_lig)[i]
+        if (r %in% names(dom@linkages$complexes)) {
+            r_genes <- dom@linkages$complexes[[r]]
+        } else {
+            r_genes <- r
+        }
+        if (sum(rownames(rho) %in% r_genes) != length(r_genes)) {
+            print(paste0(r, " has component genes that did not pass testing parameters"))
+            cor_list[[r]] <- rep(0, ncol(rho))
+            next
+        }
+        if (length(r_genes) > 1) {
+            gene_cor <- rho[rownames(rho) %in% r_genes, ]
+            cor_med <- apply(gene_cor, 2, function(x) {
+                median(x)
+            })
+            cor_list[[r]] <- cor_med
+        } else {
+            cor_list[[r]] <- rho[rownames(rho) == r_genes, ]
+        }
     }
-    c_cor = t(as.data.frame(cor_list))
-    dom@cor = c_cor
-    
-    # If cluster methods are used, calculate percentage of non-zero expression of receptor genes in clusters
-
-    if(tf_selection_method == 'clusters'){
-      cl_rec_percent = NULL
-      for(rec in ser_receptors){
-        rec_percent <- sapply(
-          X = levels(dom@clusters),
-          FUN = function(x){
-            # percentage of cells in cluster with non-zero expression of receptor gene
-            sum(dom@counts[rec,dom@clusters == x] > 0) / length(dom@counts[rec,dom@clusters == x])
-          }
-        )
-        cl_rec_percent <- rbind(cl_rec_percent, rec_percent)
-      }
-      rownames(cl_rec_percent) = ser_receptors
-      dom@misc$cl_rec_percent = cl_rec_percent
+    c_cor <- t(as.data.frame(cor_list))
+    dom@cor <- c_cor
+    # If cluster methods are used, calculate percentage of non-zero expression of receptor genes
+    # in clusters
+    if (tf_selection_method == "clusters") {
+        cl_rec_percent <- NULL
+        for (rec in ser_receptors) {
+            rec_percent <- sapply(X = levels(dom@clusters), FUN = function(x) {
+                # percentage of cells in cluster with non-zero expression of receptor gene
+                sum(dom@counts[rec, dom@clusters == x] > 0)/length(dom@counts[rec, dom@clusters ==
+                  x])
+            })
+            cl_rec_percent <- rbind(cl_rec_percent, rec_percent)
+        }
+        rownames(cl_rec_percent) <- ser_receptors
+        dom@misc$cl_rec_percent <- cl_rec_percent
     }
     return(dom)
 }
-
 #' Use biomaRt to convert genes
 #' 
 #' This function reads in a vector of genes and converts the genes to specified symbol type
@@ -568,50 +554,42 @@ create_domino = function(rl_map, features, ser = NULL, counts = NULL,
 #' @param host Host to connect to. Defaults to https://www.ensembl.org following the useMart default, but can be changed to archived hosts if useMart fails to connect.
 #' @return A data frame with input genes as col 1 and output as col 2
 #' 
-convert_genes = function(genes, from = c("ENSMUSG", "ENSG", "MGI", "HGNC"), to = c("MGI", "HGNC"), host = "https://www.ensembl.org"){
-  # Check inputs:
-  stopifnot("Genes must be a vector of characters" = (is(test, "character") & is(test, "vector")))
-  stopifnot("From must be one of ENSMUSG, ENSG, MGI, or HGNC" = from %in% c("ENSMUSG", "ENSG", "MGI", "HGNC"))
-  stopifnot("To must be one of MGI or HGNC" = to %in% c("MGI", "HGNC"))
-  stopifnot("Host must be  web host to connect to" = (is(host, "character") & length(host) == 1))
-
-    if (from == 'ENSMUSG'){
-        srcMart = biomaRt::useMart("ensembl", dataset = "mmusculus_gene_ensembl",
-                                    host = host)
-        sourceAtts =  'ensembl_gene_id'   
+convert_genes <- function(genes, from = c("ENSMUSG", "ENSG", "MGI", "HGNC"), to = c("MGI", "HGNC"),
+    host = "https://www.ensembl.org") {
+    # Check inputs:
+    stopifnot(`Genes must be a vector of characters` = (is(test, "character") & is(test, "vector")))
+    stopifnot(`From must be one of ENSMUSG, ENSG, MGI, or HGNC` = from %in% c("ENSMUSG", "ENSG", "MGI",
+        "HGNC"))
+    stopifnot(`To must be one of MGI or HGNC` = to %in% c("MGI", "HGNC"))
+    stopifnot(`Host must be  web host to connect to` = (is(host, "character") & length(host) == 1))
+    if (from == "ENSMUSG") {
+        srcMart <- biomaRt::useMart("ensembl", dataset = "mmusculus_gene_ensembl", host = host)
+        sourceAtts <- "ensembl_gene_id"
     }
-    if (from == 'ENSG'){
-        srcMart = biomaRt::useMart("ensembl", dataset = "hsapiens_gene_ensembl",
-                                    host = host)
-        sourceAtts = 'ensembl_gene_id'
+    if (from == "ENSG") {
+        srcMart <- biomaRt::useMart("ensembl", dataset = "hsapiens_gene_ensembl", host = host)
+        sourceAtts <- "ensembl_gene_id"
     }
-    if (from == 'MGI'){
-        srcMart = biomaRt::useMart("ensembl", dataset = "mmusculus_gene_ensembl",
-                                    host = host)
-        sourceAtts = 'mgi_symbol'    
+    if (from == "MGI") {
+        srcMart <- biomaRt::useMart("ensembl", dataset = "mmusculus_gene_ensembl", host = host)
+        sourceAtts <- "mgi_symbol"
     }
-    if (from == 'HGNC'){
-        srcMart = biomaRt::useMart("ensembl", dataset = "hsapiens_gene_ensembl",
-                                    host = host)
-        sourceAtts = 'hgnc_symbol'
+    if (from == "HGNC") {
+        srcMart <- biomaRt::useMart("ensembl", dataset = "hsapiens_gene_ensembl", host = host)
+        sourceAtts <- "hgnc_symbol"
     }
-    if (to == 'MGI'){
-        tarMart = biomaRt::useMart("ensembl", dataset = "mmusculus_gene_ensembl",
-                                    host = host)
-        tarAtts = 'mgi_symbol'
+    if (to == "MGI") {
+        tarMart <- biomaRt::useMart("ensembl", dataset = "mmusculus_gene_ensembl", host = host)
+        tarAtts <- "mgi_symbol"
     }
-    if (to == 'HGNC'){
-        tarMart = biomaRt::useMart("ensembl", dataset = "hsapiens_gene_ensembl",
-                                  host = host)
-        tarAtts = 'hgnc_symbol'
+    if (to == "HGNC") {
+        tarMart <- biomaRt::useMart("ensembl", dataset = "hsapiens_gene_ensembl", host = host)
+        tarAtts <- "hgnc_symbol"
     }
-    genesV2 = biomaRt::getLDS(attributes = sourceAtts, filters = sourceAtts,
-                    values = genes, mart = srcMart, 
-                    attributesL = tarAtts, martL = tarMart,
-                    uniqueRows = F)
+    genesV2 <- biomaRt::getLDS(attributes = sourceAtts, filters = sourceAtts, values = genes, mart = srcMart,
+        attributesL = tarAtts, martL = tarMart, uniqueRows = F)
     return(genesV2)
 }
-
 #' Adds a column to the RL signaling data frame.
 #' 
 #' This function adds a column to the internal rl 'map' used to map all 
@@ -623,32 +601,30 @@ convert_genes = function(genes, from = c("ENSMUSG", "ENSG", "MGI", "HGNC"), to =
 #' @param new_name Name of new column to be created in RL map
 #' @return An updated RL signaling data frame
 #'
-add_rl_column = function(map, map_ref, conv, new_name){
-    map_in_ref = match(map[[map_ref]], conv[,1])
-    not_in_ref = which(is.na(map_in_ref))
-    if(length(not_in_ref > 0)){
-        not_in_ref_map = cbind.data.frame(map[not_in_ref,], as.character(NA), 
-            stringsAsFactors = FALSE)
-        colnames(not_in_ref_map)[ncol(not_in_ref_map)] = new_name
-        rownames(not_in_ref_map) = c()
+add_rl_column <- function(map, map_ref, conv, new_name) {
+    map_in_ref <- match(map[[map_ref]], conv[, 1])
+    not_in_ref <- which(is.na(map_in_ref))
+    if (length(not_in_ref > 0)) {
+        not_in_ref_map <- cbind.data.frame(map[not_in_ref, ], as.character(NA), stringsAsFactors = FALSE)
+        colnames(not_in_ref_map)[ncol(not_in_ref_map)] <- new_name
+        rownames(not_in_ref_map) <- c()
     } else {
-        not_in_ref_map = c()
+        not_in_ref_map <- c()
     }
-    new_map = c()
-    for(r_id in 1:nrow(map)){
-        row = map[r_id,]
-        conv_ids = which(conv[,1] == row[[map_ref]])
-        for(id in conv_ids){
-            new_row = c(as.matrix(row), conv[id, 2])
-            new_map = rbind(new_map, new_row)
+    new_map <- c()
+    for (r_id in 1:nrow(map)) {
+        row <- map[r_id, ]
+        conv_ids <- which(conv[, 1] == row[[map_ref]])
+        for (id in conv_ids) {
+            new_row <- c(as.matrix(row), conv[id, 2])
+            new_map <- rbind(new_map, new_row)
         }
     }
-    rownames(new_map) = c()
-    colnames(new_map) = c(colnames(map), new_name)
-    new_map = rbind.data.frame(new_map, not_in_ref_map, stringsAsFactors = FALSE)
-    new_map = data.frame(new_map, stringsAsFactors = FALSE)
+    rownames(new_map) <- c()
+    colnames(new_map) <- c(colnames(map), new_name)
+    new_map <- rbind.data.frame(new_map, not_in_ref_map, stringsAsFactors = FALSE)
+    new_map <- data.frame(new_map, stringsAsFactors = FALSE)
 }
-
 #' Calculate mean ligand expression as a data.frame for plotting in circos plot
 #' 
 #' Creates a data frame of mean ligand expression for use in plotting a circos
@@ -661,25 +637,17 @@ add_rl_column = function(map, map_ref, conv, new_name){
 #' @param destination Name of the receptor with which each ligand interacts
 #' @return A data frame of ligand expression targeting the specified receptor
 #'
-mean_ligand_expression <- 
-  function(x, ligands, cell_ident, cell_barcodes, destination){
+mean_ligand_expression <- function(x, ligands, cell_ident, cell_barcodes, destination) {
     # initiate data frame to store results
     df <- NULL
-    
-    for(feat in ligands){
-      # index of ligand row
-      lig_index <- grep(paste0("^", feat, "$"), rownames(x))
-      # column indices of cells belonging to cell_ident
-      cell_index <- colnames(x) %in% cell_barcodes
-      
-      cell_df <- data.frame(
-        origin = paste0(cell_ident, "_", feat),
-        destination = destination,
-        mean.expression = mean(x[lig_index, cell_index])
-      )
-      
-      df <- rbind(df, cell_df)
+    for (feat in ligands) {
+        # index of ligand row
+        lig_index <- grep(paste0("^", feat, "$"), rownames(x))
+        # column indices of cells belonging to cell_ident
+        cell_index <- colnames(x) %in% cell_barcodes
+        cell_df <- data.frame(origin = paste0(cell_ident, "_", feat), destination = destination, mean.expression = mean(x[lig_index,
+            cell_index]))
+        df <- rbind(df, cell_df)
     }
     return(df)
-  }
-
+}
