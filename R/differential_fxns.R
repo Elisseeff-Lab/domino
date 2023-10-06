@@ -9,80 +9,80 @@
 #' @export
 #' 
 summarize_linkages <- function(domino_results, subject_meta, subject_names = NULL) {
-    if (!is(domino_results, "list")) {
-        stop("domino_results must be provided as a named list where names correspond to subject names")
-    }
-    if (is.null(subject_names)) {
-        subject_names <- subject_meta[, 1]
-    }
-    if (sum(subject_names %in% names(domino_results)) == 0) {
-        stop("No provided subject names match names from the domino results list")
-    }
-    if (sum(!subject_names %in% names(domino_results))) {
-        extra_names <- subject_names[!subject_names %in% names(domino_results)]
-        warning(paste0("Provided subject names included names not present in domino_results: ", paste(extra_names,
-            collapse = ", ")))
-        subject_names <- subject_names[subject_names %in% names(domino_results)]
-    }
-    if (length(subject_names) < length(names(domino_results))) {
-        warning(paste0("Linkage summary includes results only for provided subject names: ", paste(subject_names,
-            collapse = ", ")))
-        subject_meta <- subject_meta[subject_meta[, 1] %in% subject_names, ]
-    }
-    subject_linkages <- list()
-    for (id in subject_names) {
-        dom <- domino_results[[id]]
-        clusters <- levels(dom@clusters)
-        c_features <- list()
-        for (cluster in clusters) {
-            # list of t.factors active in cell type
-            tfs <- dom@linkages$clust_tf[[cluster]]
-            # obtain all receptors linked to active t. factors
-            rec <- dom@linkages$clust_rec[[cluster]]
-            # limit to unique entries
-            tfs <- unique(tfs)
-            rec <- unique(rec)
-            # obtain all incoming ligands that interact with the receptors limited to those
-            # present in data set
-            lig <- rownames(dom@cl_signaling_matrices[[cluster]])
-            # linkages of t.factors and receptors per cluster
-            tfs_rec <- c()
-            for (t in tfs) {
-                for (r in dom@linkages$clust_tf_rec[[cluster]][[t]]) {
-                  tfs_rec <- c(tfs_rec, t, r)
-                }
-            }
-            rec_lig <- c()
-            for (r in rec) {
-                for (l in dom@linkages$rec_lig[[r]]) {
-                  if (!l %in% lig) {
-                    next
-                  }
-                  rec_lig <- c(rec_lig, r, l)
-                }
-            }
-            # stitch linked t.factors-receptors, receptors-ligands
-            int_tfs_rec <- c()
-            int_rec_lig <- c()
-            for (i in 0:((length(tfs_rec)/2) - 1)) {
-                # count by twos and paste together with a <- denoting direction
-                s <- i * 2
-                interact <- paste(tfs_rec[1 + s], tfs_rec[2 + s], sep = " <- ")
-                int_tfs_rec <- c(int_tfs_rec, interact)
-            }
-            for (i in 0:((length(rec_lig)/2) - 1)) {
-                # count by twos and paste together with a '<-' denoting direction
-                s <- i * 2
-                interact <- paste(rec_lig[1 + s], rec_lig[2 + s], sep = " <- ")
-                int_rec_lig <- c(int_rec_lig, interact)
-            }
-            # save the features of this cluster
-            c_features[[cluster]] <- list(tfs = tfs, rec = rec, incoming_lig = lig, tfs_rec = int_tfs_rec,
-                rec_lig = int_rec_lig)
+  if (!is(domino_results, "list")) {
+    stop("domino_results must be provided as a named list where names correspond to subject names")
+  }
+  if (is.null(subject_names)) {
+    subject_names <- subject_meta[, 1]
+  }
+  if (sum(subject_names %in% names(domino_results)) == 0) {
+    stop("No provided subject names match names from the domino results list")
+  }
+  if (sum(!subject_names %in% names(domino_results))) {
+    extra_names <- subject_names[!subject_names %in% names(domino_results)]
+    warning(paste0("Provided subject names included names not present in domino_results: ", paste(extra_names,
+      collapse = ", ")))
+    subject_names <- subject_names[subject_names %in% names(domino_results)]
+  }
+  if (length(subject_names) < length(names(domino_results))) {
+    warning(paste0("Linkage summary includes results only for provided subject names: ", paste(subject_names,
+      collapse = ", ")))
+    subject_meta <- subject_meta[subject_meta[, 1] %in% subject_names, ]
+  }
+  subject_linkages <- list()
+  for (id in subject_names) {
+    dom <- domino_results[[id]]
+    clusters <- levels(dom@clusters)
+    c_features <- list()
+    for (cluster in clusters) {
+      # list of t.factors active in cell type
+      tfs <- dom@linkages$clust_tf[[cluster]]
+      # obtain all receptors linked to active t. factors
+      rec <- dom@linkages$clust_rec[[cluster]]
+      # limit to unique entries
+      tfs <- unique(tfs)
+      rec <- unique(rec)
+      # obtain all incoming ligands that interact with the receptors limited to those present in
+      # data set
+      lig <- rownames(dom@cl_signaling_matrices[[cluster]])
+      # linkages of t.factors and receptors per cluster
+      tfs_rec <- c()
+      for (t in tfs) {
+        for (r in dom@linkages$clust_tf_rec[[cluster]][[t]]) {
+          tfs_rec <- c(tfs_rec, t, r)
         }
-        subject_linkages[[id]] <- c_features
+      }
+      rec_lig <- c()
+      for (r in rec) {
+        for (l in dom@linkages$rec_lig[[r]]) {
+          if (!l %in% lig) {
+          next
+          }
+          rec_lig <- c(rec_lig, r, l)
+        }
+      }
+      # stitch linked t.factors-receptors, receptors-ligands
+      int_tfs_rec <- c()
+      int_rec_lig <- c()
+      for (i in 0:((length(tfs_rec)/2) - 1)) {
+        # count by twos and paste together with a <- denoting direction
+        s <- i * 2
+        interact <- paste(tfs_rec[1 + s], tfs_rec[2 + s], sep = " <- ")
+        int_tfs_rec <- c(int_tfs_rec, interact)
+      }
+      for (i in 0:((length(rec_lig)/2) - 1)) {
+        # count by twos and paste together with a '<-' denoting direction
+        s <- i * 2
+        interact <- paste(rec_lig[1 + s], rec_lig[2 + s], sep = " <- ")
+        int_rec_lig <- c(int_rec_lig, interact)
+      }
+      # save the features of this cluster
+      c_features[[cluster]] <- list(tfs = tfs, rec = rec, incoming_lig = lig, tfs_rec = int_tfs_rec,
+        rec_lig = int_rec_lig)
     }
-    return(linkage_summary(subject_names = factor(subject_names), subject_meta = subject_meta, subject_linkages = subject_linkages))
+    subject_linkages[[id]] <- c_features
+  }
+  return(linkage_summary(subject_names = factor(subject_names), subject_meta = subject_meta, subject_linkages = subject_linkages))
 }
 #' Count occurrences of linkages across multiple domino results from a linkage summary
 #' 
@@ -97,33 +97,33 @@ summarize_linkages <- function(domino_results, subject_meta, subject_names = NUL
 #' @export
 #' 
 count_linkage <- function(linkage_summary, cluster, group.by = NULL, linkage = "rec_lig", subject_names = NULL) {
-    if (is.null(subject_names)) {
-        subject_names <- linkage_summary@subject_names
+  if (is.null(subject_names)) {
+    subject_names <- linkage_summary@subject_names
+  }
+  all_int <- sapply(linkage_summary@subject_linkages, FUN = function(x) {
+    return(x[[cluster]][[linkage]])
+  })
+  feature <- table(unlist(all_int))
+  df <- data.frame(feature = names(feature), total_count = as.numeric(feature))
+  if (!is.null(group.by)) {
+    if (!group.by %in% colnames(linkage_summary@subject_meta)) {
+      stop("group.by variable not present in subject_meta")
     }
-    all_int <- sapply(linkage_summary@subject_linkages, FUN = function(x) {
-        return(x[[cluster]][[linkage]])
-    })
-    feature <- table(unlist(all_int))
-    df <- data.frame(feature = names(feature), total_count = as.numeric(feature))
-    if (!is.null(group.by)) {
-        if (!group.by %in% colnames(linkage_summary@subject_meta)) {
-            stop("group.by variable not present in subject_meta")
-        }
-        groups <- levels(factor(linkage_summary@subject_meta[[group.by]]))
-        for (g in groups) {
-            g_index <- linkage_summary@subject_meta[[group.by]] == g
-            g_subjects <- linkage_summary@subject_meta[g_index, 1]
-            int_count <- list()
-            for (f in df[["feature"]]) {
-                count <- sapply(g_subjects, function(x) {
-                  f %in% linkage_summary@subject_linkages[[x]][[cluster]][[linkage]]
-                })
-                int_count[[f]] <- sum(count)
-            }
-            df[[g]] <- unlist(int_count)
-        }
+    groups <- levels(factor(linkage_summary@subject_meta[[group.by]]))
+    for (g in groups) {
+      g_index <- linkage_summary@subject_meta[[group.by]] == g
+      g_subjects <- linkage_summary@subject_meta[g_index, 1]
+      int_count <- list()
+      for (f in df[["feature"]]) {
+        count <- sapply(g_subjects, function(x) {
+          f %in% linkage_summary@subject_linkages[[x]][[cluster]][[linkage]]
+        })
+        int_count[[f]] <- sum(count)
+      }
+      df[[g]] <- unlist(int_count)
     }
-    return(df)
+  }
+  return(df)
 }
 #' Statistical test for differential linkages across multiple domino results
 #' 
@@ -154,68 +154,68 @@ count_linkage <- function(linkage_summary, cluster, group.by = NULL, linkage = "
 #' @export
 #' 
 test_differential_linkages <- function(linkage_summary, cluster, group.by, linkage = "rec_lig", subject_names = NULL,
-    test_name = "fishers.exact") {
-    valid_tests <- c("fishers.exact")
-    if (!test_name %in% valid_tests) {
-        stop("test_name invalid")
+  test_name = "fishers.exact") {
+  valid_tests <- c("fishers.exact")
+  if (!test_name %in% valid_tests) {
+    stop("test_name invalid")
+  }
+  if (is.null(subject_names)) {
+    subject_names <- linkage_summary@subject_names
+  }
+  # count the number of groups
+  subject_count <- as.data.frame(table(linkage_summary@subject_meta[[group.by]]))
+  colnames(subject_count) <- c(group.by, "total")
+  group_levels <- subject_count[[group.by]]
+  count_link <- count_linkage(linkage_summary = linkage_summary, cluster = cluster, linkage = linkage,
+    group.by = group.by, subject_names = subject_names)
+  # initiate data frame for storing results
+  n <- nrow(count_link)
+  result_df <- data.frame(cluster = rep(cluster, n), linkage = rep(linkage, n), group.by = rep(group.by,
+    n), test_name = rep(test_name, n), feature = count_link[["feature"]])
+  # empty contigency table
+  test_mat <- matrix(data = NA, nrow = nrow(subject_count), ncol = 2)
+  rownames(test_mat) <- subject_count[[group.by]]
+  colnames(test_mat) <- c("linkage_present", "linkage_absent")
+  test_template <- as.data.frame(test_mat)
+  if (test_name == "fishers.exact") {
+    test_result <- as.data.frame(t(sapply(result_df[["feature"]], FUN = function(x) {
+      feat_count <- count_link[count_link[["feature"]] == x, !colnames(count_link) %in% c("feature",
+        "total_count")]
+      g_names <- colnames(feat_count)
+      feat_count <- sapply(feat_count, as.numeric)
+      # fill contingency table
+      test_df <- test_template
+      test_df[["linkage_present"]] <- feat_count
+      test_df[["linkage_absent"]] <- subject_count[["total"]] - feat_count
+      # conduct test
+      test <- fisher.test(test_df)
+      odds.ratio <- test$estimate
+      p.value <- test$p.value
+      res <- c(odds.ratio, p.value)
+      res <- setNames(res, c("odds.ratio", "p.value"))
+      return(res)
+    })))
+    # include fdr-adjusted p-values
+    test_result[["p.adj"]] <- p.adjust(p = test_result[["p.value"]], method = "fdr")
+  }
+  # append test result columns to result
+  result_df <- cbind(result_df, test_result)
+  # append counts of active linkages for each group
+  count_append <- count_link[, !colnames(count_link) == "feature"]
+  colnames(count_append) <- sapply(colnames(count_append), function(x) {
+    if (!grepl("_count$", x)) {
+      return(paste0(x, "_count"))
+    } else {
+      return(x)
     }
-    if (is.null(subject_names)) {
-        subject_names <- linkage_summary@subject_names
-    }
-    # count the number of groups
-    subject_count <- as.data.frame(table(linkage_summary@subject_meta[[group.by]]))
-    colnames(subject_count) <- c(group.by, "total")
-    group_levels <- subject_count[[group.by]]
-    count_link <- count_linkage(linkage_summary = linkage_summary, cluster = cluster, linkage = linkage,
-        group.by = group.by, subject_names = subject_names)
-    # initiate data frame for storing results
-    n <- nrow(count_link)
-    result_df <- data.frame(cluster = rep(cluster, n), linkage = rep(linkage, n), group.by = rep(group.by,
-        n), test_name = rep(test_name, n), feature = count_link[["feature"]])
-    # empty contigency table
-    test_mat <- matrix(data = NA, nrow = nrow(subject_count), ncol = 2)
-    rownames(test_mat) <- subject_count[[group.by]]
-    colnames(test_mat) <- c("linkage_present", "linkage_absent")
-    test_template <- as.data.frame(test_mat)
-    if (test_name == "fishers.exact") {
-        test_result <- as.data.frame(t(sapply(result_df[["feature"]], FUN = function(x) {
-            feat_count <- count_link[count_link[["feature"]] == x, !colnames(count_link) %in% c("feature",
-                "total_count")]
-            g_names <- colnames(feat_count)
-            feat_count <- sapply(feat_count, as.numeric)
-            # fill contingency table
-            test_df <- test_template
-            test_df[["linkage_present"]] <- feat_count
-            test_df[["linkage_absent"]] <- subject_count[["total"]] - feat_count
-            # conduct test
-            test <- fisher.test(test_df)
-            odds.ratio <- test$estimate
-            p.value <- test$p.value
-            res <- c(odds.ratio, p.value)
-            res <- setNames(res, c("odds.ratio", "p.value"))
-            return(res)
-        })))
-        # include fdr-adjusted p-values
-        test_result[["p.adj"]] <- p.adjust(p = test_result[["p.value"]], method = "fdr")
-    }
-    # append test result columns to result
-    result_df <- cbind(result_df, test_result)
-    # append counts of active linkages for each group
-    count_append <- count_link[, !colnames(count_link) == "feature"]
-    colnames(count_append) <- sapply(colnames(count_append), function(x) {
-        if (!grepl("_count$", x)) {
-            return(paste0(x, "_count"))
-        } else {
-            return(x)
-        }
-    })
-    result_df <- cbind(result_df, count_append)
-    # append total counts of subjects in each group and the total number of subjects
-    total_n <- sum(subject_count[["total"]])
-    result_df[["total_n"]] <- total_n
-    for (g in group_levels) {
-        g_n <- as.numeric(subject_count[subject_count[[group.by]] == g, "total"])
-        result_df[[paste0(g, "_n")]] <- g_n
-    }
-    return(result_df)
+  })
+  result_df <- cbind(result_df, count_append)
+  # append total counts of subjects in each group and the total number of subjects
+  total_n <- sum(subject_count[["total"]])
+  result_df[["total_n"]] <- total_n
+  for (g in group_levels) {
+    g_n <- as.numeric(subject_count[subject_count[[group.by]] == g, "total"])
+    result_df[[paste0(g, "_n")]] <- g_n
+  }
+  return(result_df)
 }
