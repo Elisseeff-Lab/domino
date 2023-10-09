@@ -22,9 +22,9 @@
 #' @rdname domino-class
 #' @exportClass domino
 #' 
-domino <- setClass(Class = "domino", slots = c(db_info = "list", z_scores = "matrix", counts = "dgCMatrix",
-  clusters = "factor", features = "matrix", cor = "matrix", linkages = "list", clust_de = "matrix",
-  misc = "list", cl_signaling_matrices = "list", signaling = "matrix"))
+domino <- setClass(Class="domino", slots=c(db_info="list", z_scores="matrix", counts="dgCMatrix",
+  clusters="factor", features="matrix", cor="matrix", linkages="list", clust_de="matrix",
+  misc="list", cl_signaling_matrices="list", signaling="matrix"))
 #' The Domino linkage summary class
 #' 
 #' The linkage summary class contains linkages established in multiple domino
@@ -42,8 +42,8 @@ domino <- setClass(Class = "domino", slots = c(db_info = "list", z_scores = "mat
 #' @rdname linkage-summary-class
 #' @exportClass linkage_summary
 #' 
-linkage_summary <- setClass(Class = "linkage_summary", slots = c(subject_names = "factor", subject_meta = "data.frame",
-  subject_linkages = "list"))
+linkage_summary <- setClass(Class="linkage_summary", slots=c(subject_names="factor", subject_meta="data.frame",
+  subject_linkages="list"))
 #' Print domino object
 #' 
 #' Prints a summary of a domino object
@@ -51,7 +51,7 @@ linkage_summary <- setClass(Class = "linkage_summary", slots = c(subject_names =
 #' @param x Domino object
 #' @keywords internal
 setMethod("print", "domino", function(x, ...) {
-  if (object@misc$build) {
+  if (x@misc$build) {
     cat("A domino object of", length(x@clusters), "cells
                 Contains signaling between",
       length(levels(x@clusters)), "clusters
@@ -61,7 +61,7 @@ setMethod("print", "domino", function(x, ...) {
       "receptors per TF\n")
   } else {
     cat(c("A domino object of", length(x@clusters), "cells\n", "A signaling network has not been built\n"),
-      sep = "")
+      sep="")
   }
 })
 #' Show domino object information
