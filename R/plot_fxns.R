@@ -637,7 +637,7 @@ cor_heatmap = function(dom, bool = FALSE, bool_thresh = .15, title = TRUE,
 #' @param ... Other parameters to pass to ggscatter.
 #' @export
 #' 
-cor_scatter = function(dom, tf, rec, remove_rec_dropout = TRUE, ...){
+cor_scatter = function(dom, tf, rec, remove_rec_dropout = FALSE, ...){
   if(remove_rec_dropout){
     keep_id = which(dom@counts[rec,] > 0)
     rec_z_scores = dom@z_scores[rec, keep_id]

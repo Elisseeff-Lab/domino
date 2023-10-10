@@ -7,15 +7,33 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  fig.cap="",
+  tidy = "styler"
+)
 
+load("../data/pbmc_dom.rda")
+dom <- pbmc_dom
+```
 
-
+```{r setup, include = FALSE}
+library(domino2)
+```
 
 # The new domino object structure
 
 In order to better implement some of the changes that have been made in domino2, the structure of the domino object has been modified. Here, we describe the data that is stored in the domino object, as well as how best to access it for any other use you may have in mind.
 
-
+```{r include = FALSE}
+# More of Jacob's stuff that I'm cutting:
+# Active transcription factors in each cluster are determined by conducting wilcoxon rank sum tests for each transcription factor where the trascription factor activity scores amongst all cells in the cluster are tested against the activity scores of all cells outside of the cluster. The p-value for the one-sided test for greater activity within the cluster compared to outside is stored in pbmc_dom\@clust_de. Linkage between receptors and transcription factors is assessed by Spearman correlation between transcription factor activity scores and scaled expression of receptor-encoding genes across all cells in the data set. Spearman coefficients are stored in pbmc_dom\@cor.
+```
 
 ## Continued Development
 
@@ -23,87 +41,8 @@ Since domino2 is a package still being developed, there are new functions and fe
 
 <details><summary>Vignette Build Information</summary>
 Date last built and session information:
-
-```r
+```{r}
 Sys.Date()
-#> [1] "2023-09-26"
 sessionInfo()
-#> R version 4.2.1 (2022-06-23)
-#> Platform: x86_64-pc-linux-gnu (64-bit)
-#> Running under: Ubuntu 22.04.2 LTS
-#> 
-#> Matrix products: default
-#> BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.10.0
-#> LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.10.0
-#> 
-#> locale:
-#>  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
-#>  [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
-#>  [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
-#>  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
-#>  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
-#> [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
-#> 
-#> attached base packages:
-#> [1] grid      stats     graphics  grDevices utils     datasets  methods  
-#> [8] base     
-#> 
-#> other attached packages:
-#>  [1] patchwork_1.1.3       RColorBrewer_1.1-3    Biobase_2.56.0       
-#>  [4] BiocGenerics_0.42.0   knitr_1.44            ComplexHeatmap_2.12.1
-#>  [7] circlize_0.4.15       plyr_1.8.8            loomR_0.2.1.9000     
-#> [10] hdf5r_1.3.8           R6_2.5.1              SeuratObject_4.1.3   
-#> [13] Seurat_4.3.0.1        domino2_0.2.1        
-#> 
-#> loaded via a namespace (and not attached):
-#>   [1] utf8_1.2.3             spatstat.explore_3.2-3 reticulate_1.32.0     
-#>   [4] R.utils_2.12.2         tidyselect_1.2.0       htmlwidgets_1.6.2     
-#>   [7] Rtsne_0.16             munsell_0.5.0          codetools_0.2-19      
-#>  [10] ica_1.0-3              future_1.33.0          miniUI_0.1.1.1        
-#>  [13] withr_2.5.1            spatstat.random_3.1-6  colorspace_2.1-0      
-#>  [16] progressr_0.14.0       rstudioapi_0.15.0      stats4_4.2.1          
-#>  [19] ROCR_1.0-11            ggsignif_0.6.4         tensor_1.5            
-#>  [22] listenv_0.9.0          NMF_0.26               labeling_0.4.3        
-#>  [25] polyclip_1.10-4        bit64_4.0.5            farver_2.1.1          
-#>  [28] rprojroot_2.0.3        parallelly_1.36.0      vctrs_0.6.3           
-#>  [31] generics_0.1.3         xfun_0.40              doParallel_1.0.17     
-#>  [34] clue_0.3-65            spatstat.utils_3.0-3   cachem_1.0.8          
-#>  [37] promises_1.2.1         scales_1.2.1           gtable_0.3.4          
-#>  [40] globals_0.16.2         processx_3.8.2         goftest_1.2-3         
-#>  [43] rlang_1.1.1            GlobalOptions_0.1.2    splines_4.2.1         
-#>  [46] rstatix_0.7.2          lazyeval_0.2.2         spatstat.geom_3.2-5   
-#>  [49] broom_1.0.5            BiocManager_1.30.22    yaml_2.3.7            
-#>  [52] reshape2_1.4.4         abind_1.4-5            backports_1.4.1       
-#>  [55] httpuv_1.6.11          tools_4.2.1            usethis_2.2.2         
-#>  [58] gridBase_0.4-7         ggplot2_3.4.3          ellipsis_0.3.2        
-#>  [61] ggridges_0.5.4         Rcpp_1.0.11            purrr_1.0.2           
-#>  [64] ps_1.7.5               ggpubr_0.6.0           deldir_1.0-9          
-#>  [67] pbapply_1.7-2          GetoptLong_1.0.5       cowplot_1.1.1         
-#>  [70] S4Vectors_0.34.0       zoo_1.8-12             ggrepel_0.9.3         
-#>  [73] cluster_2.1.4          fs_1.6.3               magrittr_2.0.3        
-#>  [76] data.table_1.14.8      scattermore_1.2        lmtest_0.9-40         
-#>  [79] RANN_2.6.1             whisker_0.4.1          fitdistrplus_1.1-11   
-#>  [82] R.cache_0.16.0         matrixStats_1.0.0      mime_0.12             
-#>  [85] evaluate_0.21          xtable_1.8-4           IRanges_2.30.1        
-#>  [88] gridExtra_2.3          shape_1.4.6            compiler_4.2.1        
-#>  [91] tibble_3.2.1           KernSmooth_2.23-22     crayon_1.5.2          
-#>  [94] R.oo_1.25.0            htmltools_0.5.6        mgcv_1.9-0            
-#>  [97] later_1.3.1            tidyr_1.3.0            MASS_7.3-60           
-#> [100] Matrix_1.6-1.1         car_3.1-2              cli_3.6.1             
-#> [103] R.methodsS3_1.8.2      parallel_4.2.1         igraph_1.5.1          
-#> [106] pkgconfig_2.0.3        pkgdown_2.0.7          registry_0.5-1        
-#> [109] sp_2.0-0               plotly_4.10.2          spatstat.sparse_3.0-2 
-#> [112] foreach_1.5.2          rngtools_1.5.2         stringr_1.5.0         
-#> [115] callr_3.7.3            digest_0.6.33          sctransform_0.4.0     
-#> [118] RcppAnnoy_0.0.21       spatstat.data_3.0-1    rmarkdown_2.25        
-#> [121] leiden_0.4.3           uwot_0.1.16            shiny_1.7.5           
-#> [124] rjson_0.2.21           lifecycle_1.0.3        nlme_3.1-163          
-#> [127] jsonlite_1.8.7         carData_3.0-5          desc_1.4.2            
-#> [130] viridisLite_0.4.2      fansi_1.0.4            pillar_1.9.0          
-#> [133] lattice_0.21-8         fastmap_1.1.1          httr_1.4.7            
-#> [136] survival_3.5-7         glue_1.6.2             png_0.1-8             
-#> [139] iterators_1.0.14       bit_4.0.5              stringi_1.7.12        
-#> [142] memoise_2.0.1          styler_1.10.2          dplyr_1.1.3           
-#> [145] irlba_2.3.5.1          future.apply_1.11.0
 ```
 </details>
