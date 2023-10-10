@@ -9,23 +9,27 @@ Authors@R: c(
     person("Elana", "Fertig", role = "ctb", email = "ejfertig@jhmi.edu", comment = c(ORCID = "0000-0003-3204-342X")),
     person("Jennifer", "Elisseeff", role = "ctb", email = "jhe@jhu.edu", comment = c(ORCID = "0000-0002-5066-1996"))
     )
-Description: Domino2 is a package developed to analyze cell signaling through ligand - receptor - transcription factor networks in scRNAseq data
+Description: Domino2 is a package developed to analyze cell signaling through ligand - receptor - transcription factor networks in scRNAseq data.
 BugReports: https://github.com/FertigLab/domino_development/issues
 Depends:
     R(>= 3.6.2),
 Imports:
     biomaRt,
-    plyr,
-    dplyr,
-    igraph,
+    ComplexHeatmap,
     circlize,
-    ComplexHeatmap
+    ggpubr,
+    grid,
+    igraph,
+    Matrix,
+    methods,
+    NMF,
+    plyr
 License: GPL-3 | file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.3
 Suggests:
-    spelling, 
+    spelling,
     knitr,
     rmarkdown
 VignetteBuilder: knitr

@@ -24,8 +24,6 @@ intermediates.
 
 \item{\code{features}}{Matrix of features to correlate receptor-ligand expression with. Cells are columns and features are rows.}
 
-\item{\code{df}}{List containing transcriptional targets by transcription factor.}
-
 \item{\code{cor}}{Correlation matrix of receptor expression to features.}
 
 \item{\code{linkages}}{List of lists containing info linking cluster->tf->rec->lig}

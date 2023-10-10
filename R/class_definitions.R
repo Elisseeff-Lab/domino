@@ -10,7 +10,6 @@
 #' @slot z_scores Matrix of z-scored expression data with cells as columns
 #' @slot clusters Named factor with cluster identity of each cell
 #' @slot features Matrix of features to correlate receptor-ligand expression with. Cells are columns and features are rows.
-#' @slot df List containing transcriptional targets by transcription factor.
 #' @slot cor Correlation matrix of receptor expression to features.
 #' @slot linkages List of lists containing info linking cluster->tf->rec->lig
 #' @slot clust_de Data frame containing differential expression results for features by cluster.
@@ -18,6 +17,7 @@
 #' @slot cl_signaling_matrices Incoming signaling matrix for each cluster
 #' @slot signaling Signaling matrix between all clusters.
 #' 
+#' @importClassesFrom Matrix dgCMatrix
 #' @name domino-class
 #' @rdname domino-class
 #' @exportClass domino
@@ -37,9 +37,8 @@ domino <- setClass(Class="domino", slots=c(db_info="list", z_scores="matrix", co
 #' @slot subject_names unique names for each domino result included in the summary
 #' @slot subject_meta data.frame with each row describing one subject and columns describing features of the subjects by which to draw comparisons of signaling networks
 #' @slot subject_linkages nested list of linkages inferred for each subject. Lists are stored in a heirarchical structure of subject-cluster-linkage where linkages include transcription factors (tfs), linkages between transcription factors and receptors (tfs_rec), active receptors (rec), possible receptor-ligand interactions (rec_lig), and incoming ligands (incoming_lig)
-#' 
-#' @name linkage-summary-class
-#' @rdname linkage-summary-class
+#' @name linkage_summary-class
+#' @rdname linkage_summary-class
 #' @exportClass linkage_summary
 #' 
 linkage_summary <- setClass(Class="linkage_summary", slots=c(subject_names="factor", subject_meta="data.frame",
