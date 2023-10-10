@@ -10,6 +10,7 @@
 #' @param scale How to scale the values (after thresholding). Options are 'none', 'sqrt' for square root, or 'log' for log10.
 #' @param normalize Options to normalize the matrix. Normalization is done after thresholding and scaling. Accepted inputs are 'none' for no normalization, 'rec_norm' to normalize to the maximum value with each receptor cluster, or 'lig_norm' to normalize to the maximum value within each ligand cluster 
 #' @param ... Other parameters to pass to  [NMF::aheatmap()]
+#' @importFrom NMF aheatmap
 #' @export signaling_heatmap
 #' 
 signaling_heatmap <- function(dom, clusts = NULL, min_thresh = -Inf, max_thresh = Inf, scale = "none",
@@ -60,6 +61,7 @@ signaling_heatmap <- function(dom, clusts = NULL, min_thresh = -Inf, max_thresh 
 #' @param normalize Options to normalize the matrix. Accepted inputs are 'none' for no normalization, 'rec_norm' to normalize to the maximum value with each receptor cluster, or 'lig_norm' to normalize to the maximum value within each ligand cluster 
 #' @param title Either a string to use as the title or a boolean describing whether to include a title. In order to pass the 'main' parameter to  [NMF::aheatmap()]  you must set title to FALSE.
 #' @param ... Other parameters to pass to  [NMF::aheatmap()]. Note that to use the 'main' parameter of  [NMF::aheatmap()]  you must set title = FALSE
+#' @importFrom NMF aheatmap
 #' @export incoming_signaling_heatmap
 #' 
 incoming_signaling_heatmap <- function(dom, rec_clust, clusts = NULL, min_thresh = -Inf, max_thresh = Inf,
@@ -125,6 +127,7 @@ incoming_signaling_heatmap <- function(dom, rec_clust, clusts = NULL, min_thresh
 #' @param layout Type of layout to use. Options are 'random', 'sphere', 'circle', 'fr' for Fruchterman-Reingold force directed layout, and 'kk' for Kamada Kawai for directed layout.  
 #' @param scale_by How to size vertices. Options are 'lig_sig' for summed outgoing signaling, 'rec_sig' for summed incoming signaling, and 'none'. In the former two cases the values are scaled with asinh after summing all incoming or outgoing signaling.
 #' @param vert_scale Integer used to scale size of vertices with our without variable scaling from size_verts_by.
+#' @param plot_title Text for the plot's title.
 #' @param ... Other parameters to be passed to plot when used with an `{igraph}` object.
 #' @export signaling_network
 #' 
@@ -411,6 +414,7 @@ gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL, class
 #' @param min_thresh Minimum threshold for color scaling if not a boolean heatmap
 #' @param max_thresh Maximum threshold for color scaling if not a boolean heatmap
 #' @param ... Other parameters to pass to  [NMF::aheatmap()] . Note that to use the 'main' parameter of  [NMF::aheatmap()]  you must set title = FALSE and to use 'annCol' or 'annColors' ann_cols must be FALSE.
+#' @importFrom NMF aheatmap
 #' @export feat_heatmap
 #' 
 feat_heatmap <- function(dom, feats = NULL, bool = FALSE, bool_thresh = 0.2, title = TRUE, norm = FALSE,
@@ -496,6 +500,7 @@ feat_heatmap <- function(dom, feats = NULL, bool = FALSE, bool_thresh = 0.2, tit
 #' @param recs Either a vector of receptors to include in the heatmap or 'all' for all receptors. If left NULL then the receptors selected in the signaling network connected to the features plotted will be shown.
 #' @param mark_connections Boolean indicating whether to add an 'x' in cells where there is a connected receptor or TF. Default FALSE.
 #' @param ... Other parameters to pass to  [NMF::aheatmap()] . Note that to use the 'main' parameter of  [NMF::aheatmap()]  you must set title = FALSE and to use 'annCol' or 'annColors' ann_cols must be FALSE.
+#' @importFrom NMF aheatmap
 #' @export cor_heatmap
 #' 
 cor_heatmap <- function(dom, bool = FALSE, bool_thresh = 0.15, title = TRUE, feats = NULL, recs = NULL,
@@ -567,6 +572,7 @@ cor_heatmap <- function(dom, bool = FALSE, bool_thresh = 0.15, title = TRUE, fea
 #' @param rec Target receptor for plotting with TF
 #' @param remove_rec_dropout Whether to remove cells with zero expression for plot. This should match the same setting as in build_domino.
 #' @param ... Other parameters to pass to ggscatter.
+#' @importFrom ggpubr ggscatter
 #' @export cor_scatter
 #' 
 cor_scatter <- function(dom, tf, rec, remove_rec_dropout = TRUE, ...) {
@@ -596,8 +602,6 @@ cor_scatter <- function(dom, tf, rec, remove_rec_dropout = TRUE, ...) {
 #' 
 circos_ligand_receptor <- function(dom, receptor, ligand_expression_threshold = 0.01, cell_idents = NULL,
   cell_colors = NULL) {
-  require(circlize)
-  require(ComplexHeatmap)
   ligands <- dom@linkages$rec_lig[[receptor]]
   signaling_df <- NULL
   if (is.null(cell_idents)) {
@@ -653,10 +657,10 @@ circos_ligand_receptor <- function(dom, receptor, ligand_expression_threshold = 
     grid_col <- c(grid_col, rep(lig_colors[i], length(cell_idents)))
   }
   names(grid_col) <- c(receptor, signaling_df$origin)
-  circos.clear()
-  circos.par(start.degree = 0)
-  chordDiagram(arc_df, group = group, grid.col = grid_col, link.visible = FALSE, annotationTrack = c("grid"),
-    preAllocateTracks = list(track.height = mm_h(4), track.margin = c(mm_h(2), 0)), big.gap = 2)
+  circlize::circos.clear()
+  circlize::circos.par(start.degree = 0)
+  circlize::chordDiagram(arc_df, group = group, grid.col = grid_col, link.visible = FALSE, annotationTrack = c("grid"),
+    preAllocateTracks = list(track.height = circlize::mm_h(4), track.margin = c(circlize::mm_h(2), 0)), big.gap = 2)
   for (send in signaling_df$origin) {
     if (signaling_df[signaling_df$origin == send, ][["mean.expression"]] > ligand_expression_threshold) {
       if (max(signaling_df[["mean.expression"]]) > 1) {
@@ -666,35 +670,35 @@ circos_ligand_receptor <- function(dom, receptor, ligand_expression_threshold = 
         expr <- signaling_df[signaling_df$origin == send, ][["mean.expression"]]
         max_width <- 1
       }
-      circos.link(send, c(0.5 - (expr/2), 0.5 + (expr/2)), receptor, 2, col = paste0(grid_col[[send]],
+      circlize::circos.link(send, c(0.5 - (expr/2), 0.5 + (expr/2)), receptor, 2, col = paste0(grid_col[[send]],
         "88"))
     }
   }
-  sector_names <- get.all.sector.index()
+  sector_names <- circlize::get.all.sector.index()
   cell_sectors <- cell_idents[cell_idents %in% gsub("-.*", "", sector_names)]
   for (cell in cell_sectors) {
     row_pick <- sector_names[grepl(paste0("^", cell), sector_names)]
     if (length(row_pick)) {
-      highlight.sector(sector_names[grepl(paste0("^", cell, "-"), sector_names)], track.index = 1,
+      circlize::highlight.sector(sector_names[grepl(paste0("^", cell, "-"), sector_names)], track.index = 1,
         col = cell_colors[cell], text = cell, cex = 1, facing = "inside", text.col = "black",
         niceFacing = FALSE, text.vjust = -1.5)
     }
   }
   # highlight receptor sector
-  highlight.sector(sector_names[grepl(paste0("^", receptor, "$"), sector_names)], track.index = 1,
+  circlize::highlight.sector(sector_names[grepl(paste0("^", receptor, "$"), sector_names)], track.index = 1,
     col = "#FFFFFF", text = receptor, cex = 1.5, facing = "clockwise", text.col = "black", niceFacing = TRUE,
     pos = 4)
   # create legends
-  lgd_cells <- Legend(at = as.character(cell_idents), type = "grid", legend_gp = gpar(fill = cell_colors),
+  lgd_cells <- ComplexHeatmap::Legend(at = as.character(cell_idents), type = "grid", legend_gp = grid::gpar(fill = cell_colors),
     title_position = "topleft", title = "cell identity")
-  lgd_ligands <- Legend(at = ligands, type = "grid", legend_gp = gpar(fill = lig_colors), title_position = "topleft",
+  lgd_ligands <- ComplexHeatmap::Legend(at = ligands, type = "grid", legend_gp = grid::gpar(fill = lig_colors), title_position = "topleft",
     title = "ligand")
   chord_width <- 10/(4 + length(cell_idents) * length(ligands))
-  lgd_chord <- Legend(at = c(ligand_expression_threshold, max_width), col_fun = colorRamp2(c(ligand_expression_threshold,
-    max_width), c("#DDDDDD", "#DDDDDD")), legend_height = unit(chord_width, "in"), title_position = "topleft",
+  lgd_chord <- ComplexHeatmap::Legend(at = c(ligand_expression_threshold, max_width), col_fun = circlize::colorRamp2(c(ligand_expression_threshold,
+    max_width), c("#DDDDDD", "#DDDDDD")), legend_height = grid::unit(chord_width, "in"), title_position = "topleft",
     title = "ligand expression")
-  lgd_list_vertical <- packLegend(lgd_cells, lgd_ligands, lgd_chord)
-  draw(lgd_list_vertical, x = unit(0.02, "npc"), y = unit(0.98, "npc"), just = c("left", "top"))
+  lgd_list_vertical <- ComplexHeatmap::packLegend(lgd_cells, lgd_ligands, lgd_chord)
+  ComplexHeatmap::draw(lgd_list_vertical, x = grid::unit(0.02, "npc"), y = grid::unit(0.98, "npc"), just = c("left", "top"))
 }
 #' Plot differential linkages among domino results ranked by a comparative statistic
 #' 
@@ -710,8 +714,6 @@ circos_ligand_receptor <- function(dom, receptor, ligand_expression_threshold = 
 #' 
 plot_differential_linkages <- function(differential_linkages, test_statistic, stat_range = c(0, 1),
   stat_ranking = c("ascending", "descending"), group_palette = NULL) {
-  require(circlize)
-  require(ComplexHeatmap)
   if (!test_statistic %in% colnames(differential_linkages)) {
     stop(paste0("test statistic '", test_statistic, "' not present in colnames(differential_linkages)"))
   }
@@ -742,20 +744,20 @@ plot_differential_linkages <- function(differential_linkages, test_statistic, st
   g_names_full <- colnames(df)[grepl("_n$", colnames(df)) & !grepl("^total_", colnames(df))]
   g_names <- gsub("_n", "", g_names_full)
   # proportion bar for linkage feature in all subjects
-  ha_subject <- HeatmapAnnotation(subjects = anno_barplot(matrix(ncol = 2, c(df[["total_count"]],
-    df[["total_n"]] - df[["total_count"]])), gp = gpar(fill = c("black", "white"))), which = "row",
-    annotation_name_gp = gpar(fontsize = 8))
+  ha_subject <- ComplexHeatmap::HeatmapAnnotation(subjects = ComplexHeatmap::anno_barplot(matrix(ncol = 2, c(df[["total_count"]],
+    df[["total_n"]] - df[["total_count"]])), gp = grid::gpar(fill = c("black", "white"))), which = "row",
+    annotation_name_gp = grid::gpar(fontsize = 8))
   ha_subject@anno_list$subjects@label <- "All\nSubjects"
   # row annotation of linkage feature names
-  ha_name <- rowAnnotation(feat = anno_text(df[["feature"]], location = 0, rot = 0))
+  ha_name <- ComplexHeatmap::rowAnnotation(feat = ComplexHeatmap::anno_text(df[["feature"]], location = 0, rot = 0))
   # plotted statistic for ordering results
   mat <- matrix(df[[test_statistic]], ncol = 1)
   rownames(mat) <- df[["feature"]]
-  plot <- Heatmap(matrix = mat, cluster_rows = FALSE, left_annotation = ha_name, cell_fun = function(j,
+  plot <- ComplexHeatmap::Heatmap(matrix = mat, cluster_rows = FALSE, left_annotation = ha_name, cell_fun = function(j,
     i, x, y, width, height, fill) {
-    grid.text(sprintf("%.3f", mat[i, j]), x, y, gp = gpar(fontsize = 6))
-  }, column_title = paste0(cluster, ": ", test_statistic), name = test_statistic, col = colorRamp2(breaks = stat_range,
-    colors = stat_gradient), height = nrow(mat) * unit(0.25, "in"), width = unit(1, "in")) + ha_subject
+    grid::grid.text(sprintf("%.3f", mat[i, j]), x, y, gp = grid::gpar(fontsize = 6))
+  }, column_title = paste0(cluster, ": ", test_statistic), name = test_statistic, col = circlize::colorRamp2(breaks = stat_range,
+    colors = stat_gradient), height = nrow(mat) * grid::unit(0.25, "in"), width = grid::unit(1, "in")) + ha_subject
   # generate an heatmap annotation for each category
   if (is.null(group_palette)) {
     group_palette <- ggplot_col_gen(length(g_names))
@@ -765,9 +767,9 @@ plot_differential_linkages <- function(differential_linkages, test_statistic, st
     g <- g_names[i]
     g_count <- paste0(g, "_count")
     g_n <- paste0(g, "_n")
-    ha <- HeatmapAnnotation(group = anno_barplot(matrix(ncol = 2, c(df[[g_count]], df[[g_n]] -
-      df[[g_count]])), gp = gpar(fill = c(group_palette[g], "#FFFFFF"))), name = g, which = "row",
-      annotation_name_gp = gpar(fontsize = 8))
+    ha <- ComplexHeatmap::HeatmapAnnotation(group = ComplexHeatmap::anno_barplot(matrix(ncol = 2, c(df[[g_count]], df[[g_n]] -
+      df[[g_count]])), gp = grid::gpar(fill = c(group_palette[g], "#FFFFFF"))), name = g, which = "row",
+      annotation_name_gp = grid::gpar(fontsize = 8))
     ha@anno_list$group@label <- g
     plot <- plot + ha
   }
@@ -804,5 +806,5 @@ do_norm <- function(mat, dir) {
 #' @keywords internal
 ggplot_col_gen <- function(n) {
   hues <- seq(15, 375, length = n + 1)
-  return(hcl(h = hues, l = 65, c = 100)[1:n])
+  return(grDevices::hcl(h = hues, l = 65, c = 100)[1:n])
 }

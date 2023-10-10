@@ -16,6 +16,10 @@ build_domino(
 \arguments{
 \item{dom}{Domino object from create_domino.}
 
+\item{max_tf_per_clust}{Maximum number of transcription factors called active in a cluster.}
+
+\item{min_tf_pval}{Minimum p-value from differential feature score test to call a transcription factor active in a cluster.}
+
 \item{max_rec_per_tf}{Maximum number of receptors to link to each transcription factor.}
 
 \item{rec_tf_cor_threshold}{Minimum pearson correlation used to consider a receptor linked with a transcription factor. Increasing this will decrease the number of receptors linked to each transcription factor.}

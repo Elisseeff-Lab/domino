@@ -235,7 +235,7 @@ create_rl_map_cellphonedb <- function(genes, proteins, interactions, complexes =
 #' @export create_regulon_list_scenic
 #' 
 create_regulon_list_scenic <- function(regulons) {
-  if (class(regulons)[1] == "character") {
+  if (is(regulons, "character")){
     regulons <- read.csv(regulons)
   }
   TFS <- unique(regulons[["TF"]])
@@ -281,6 +281,7 @@ create_regulon_list_scenic <- function(regulons) {
 #' @param remove_rec_dropout Whether to remove receptors with 0 expression counts when calculating correlations. This can reduce false positive correlation calculations when receptors have high dropout rates.
 #' @param tf_selection_method Selection of which method to target transcription factors. If 'clusters' then differential expression for clusters will be calculated. If 'variable' then the most variable transcription factors will be selected. If 'all' then all transcription factors in the feature matrix will be used. Default is 'clusters'. Note that if you wish to use clusters for intercellular signaling downstream to MUST choose clusters.
 #' @param tf_variance_quantile What proportion of variable features to take if using variance to threshold features. Default is 0.5. Higher numbers will keep more features. Ignored if tf_selection_method is not 'variable'
+#' @importFrom methods is
 #' @return A domino object
 #' @export create_domino
 #'
@@ -420,7 +421,7 @@ create_domino <- function(rl_map, features, ser = NULL, counts = NULL, z_scores 
       }
       cells <- which(dom@clusters == clust)
       for (feat in rownames(dom@features)) {
-        p_vals[feat, clust] <- wilcox.test(dom@features[feat, cells], dom@features[feat, -cells],
+        p_vals[feat, clust] <- stats::wilcox.test(dom@features[feat, cells], dom@features[feat, -cells],
           alternative = "g")$p.value
       }
     }
@@ -432,21 +433,19 @@ create_domino <- function(rl_map, features, ser = NULL, counts = NULL, z_scores 
   if (tf_selection_method == "variable") {
     dom@clusters <- factor()
     variances <- apply(dom@features, 1, function(x) {
-      sd(x)/mean(x)
+      stats::sd(x)/mean(x)
     })
     keep_n <- length(variances) * tf_variance_quantile
     keep_id <- which(rank(variances) > keep_n)
     dom@features <- dom@features[names(keep_id), ]
   }
   # store tf_targets in linkages if they are provided as a list
-  if (!is.null(tf_targets) & class(tf_targets) != "list") {
+  if (!is(tf_targets, "list")) {
     dom@linkages[["tf_targets"]] <- NULL
     warning("tf_targets is not a list. No regulons stored")
-  } else if (class(tf_targets) == "list") {
-    dom@linkages[["tf_targets"]] <- tf_targets
   } else {
-    dom@linkages[["tf_targets"]] <- NULL
-  }
+    dom@linkages[["tf_targets"]] <- tf_targets
+  } 
   # Calculate correlation matrix between features and receptors.
   dom@counts <- counts
   zero_sum <- Matrix::rowSums(counts == 0)
@@ -491,7 +490,7 @@ create_domino <- function(rl_map, features, ser = NULL, counts = NULL, z_scores 
         rhorow[rec] <- 0
         next
       }
-      cor <- cor.test(rec_z_scores, tar_tf_scores, method = "spearman", alternative = "greater")
+      cor <- stats::cor.test(rec_z_scores, tar_tf_scores, method = "spearman", alternative = "greater")
       rhorow[rec] <- cor$estimate
     }
     if (length(module_rec_targets > 0)) {
@@ -552,12 +551,13 @@ create_domino <- function(rl_map, features, ser = NULL, counts = NULL, z_scores 
 #' @param from Format of gene input (ENSMUSG, ENSG, MGI, or HGNC)
 #' @param to Format of gene output (MGI, or HGNC)
 #' @param host Host to connect to. Defaults to https://www.ensembl.org following the useMart default, but can be changed to archived hosts if useMart fails to connect.
+#' @importFrom methods is
 #' @return A data frame with input genes as col 1 and output as col 2
 #' 
 convert_genes <- function(genes, from = c("ENSMUSG", "ENSG", "MGI", "HGNC"), to = c("MGI", "HGNC"),
   host = "https://www.ensembl.org") {
   # Check inputs:
-  stopifnot(`Genes must be a vector of characters` = (is(test, "character") & is(test, "vector")))
+  stopifnot(`Genes must be a vector of characters` = (is(genes, "character") & is(genes, "vector")))
   stopifnot(`From must be one of ENSMUSG, ENSG, MGI, or HGNC` = from %in% c("ENSMUSG", "ENSG", "MGI",
     "HGNC"))
   stopifnot(`To must be one of MGI or HGNC` = to %in% c("MGI", "HGNC"))

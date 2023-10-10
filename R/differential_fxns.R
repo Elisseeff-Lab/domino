@@ -5,6 +5,7 @@
 #' @param domino_results list of domino result with one domino object per subject. Names from the list must match subject_names.
 #' @param subject_meta dataframe that includes the subject features by which the objects could be grouped. The first column should must be subject names
 #' @param subject_names vector of subject names in domino_results. If NULL, defaults to first column of subject_meta.
+#' @importFrom methods is
 #' @return A linkage summary class object consisting of nested lists of the active transcription factors, active receptors, and incoming ligands for each cluster across multiple domino results.
 #' @export
 #' 
@@ -147,9 +148,9 @@ count_linkage <- function(linkage_summary, cluster, group.by = NULL, linkage = "
 #'  \item{'feature'} : individual linkages compared
 #'  \item{'test statistics'} : test statistics provided are based on test method. 'fishers.exact' provides a odds ratio, p-value, and fdr-adjusted p-value.
 #'  \item{'total_count'} : total number of subjects where the linkage is active
-#'  \item{'*_count'} : number of subjects in each category of group.by (\*) where the linkage is active
+#'  \item{'X_count'} : number of subjects in each category of group.by (X) where the linkage is active
 #'  \item{'total_n'} : number of total subjects compared
-#'  \item{'*_n'} : total number of subjects in each category of group.by (\*)
+#'  \item{'X_n'} : total number of subjects in each category of group.by (X)
 #' }
 #' @export
 #' 
@@ -181,7 +182,6 @@ test_differential_linkages <- function(linkage_summary, cluster, group.by, linka
     test_result <- as.data.frame(t(sapply(result_df[["feature"]], FUN = function(x) {
       feat_count <- count_link[count_link[["feature"]] == x, !colnames(count_link) %in% c("feature",
         "total_count")]
-      g_names <- colnames(feat_count)
       feat_count <- sapply(feat_count, as.numeric)
       # fill contingency table
       test_df <- test_template

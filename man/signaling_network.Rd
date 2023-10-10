@@ -49,6 +49,8 @@ signaling_network(
 
 \item{vert_scale}{Integer used to scale size of vertices with our without variable scaling from size_verts_by.}
 
+\item{plot_title}{Text for the plot's title.}
+
 \item{...}{Other parameters to be passed to plot when used with an \code{{igraph}} object.}
 }
 \description{

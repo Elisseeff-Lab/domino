@@ -15,11 +15,11 @@ plot_differential_linkages(
 \arguments{
 \item{differential_linkages}{a data.frame output from the test_differential_linkages function}
 
-\item{test_statistic}{column name of differential_linkages where the test statistic used for ranking linkages is stored (ex. "p.value")}
+\item{test_statistic}{column name of differential_linkages where the test statistic used for ranking linkages is stored (ex. 'p.value')}
 
 \item{stat_range}{a two value vector of the minimum and maximum values of test_statistic for plotting linkage features}
 
-\item{stat_ranking}{"ascending" (lowest value of test statisic is colored red and plotted at the top) or "descending" (highest value of test statistic is colored red and plotted at the top).}
+\item{stat_ranking}{'ascending' (lowest value of test statisic is colored red and plotted at the top) or 'descending' (highest value of test statistic is colored red and plotted at the top).}
 
 \item{group_palette}{a named vector of colors to use for each group being compared}
 }

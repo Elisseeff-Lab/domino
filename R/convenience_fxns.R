@@ -95,10 +95,11 @@ collate_network_items <- function(dom, clusters = NULL, return = NULL) {
 #' @param conversion_table A data.frame with column names corresponding to gene symbol types (mm.ens, hs.ens, mgi, hgnc)
 #' and rows corresponding to the gene symbols themselves
 #' @return Data frame of genes with original and corresponding converted symbols
+#' @importFrom methods is
 #' @export
 table_convert_genes <- function(genes, from, to, conversion_table) {
   # Check inputs:
-  stopifnot(`Genes must be a vector of characters` = (is(test, "character") & is(test, "vector")))
+  stopifnot(`Genes must be a vector of characters` = (is(genes, "character") & is(genes, "vector")))
   stopifnot(`From must be one of ENSMUSG, ENSG, MGI, or HGNC` = from %in% c("ENSMUSG", "ENSG", "MGI",
     "HGNC"))
   stopifnot(`To must be one of MGI or HGNC` = to %in% c("MGI", "HGNC"))
