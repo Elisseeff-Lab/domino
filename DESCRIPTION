@@ -31,7 +31,8 @@ RoxygenNote: 7.2.3
 biocViews:
 Suggests:
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat
 VignetteBuilder: knitr
 Language: en-US
 Roxygen: list(markdown = TRUE)
