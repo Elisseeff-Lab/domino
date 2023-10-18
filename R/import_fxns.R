@@ -281,7 +281,11 @@ create_regulon_list_scenic <- function(regulons) {
 #' @param remove_rec_dropout Whether to remove receptors with 0 expression counts when calculating correlations. This can reduce false positive correlation calculations when receptors have high dropout rates.
 #' @param tf_selection_method Selection of which method to target transcription factors. If 'clusters' then differential expression for clusters will be calculated. If 'variable' then the most variable transcription factors will be selected. If 'all' then all transcription factors in the feature matrix will be used. Default is 'clusters'. Note that if you wish to use clusters for intercellular signaling downstream to MUST choose clusters.
 #' @param tf_variance_quantile What proportion of variable features to take if using variance to threshold features. Default is 0.5. Higher numbers will keep more features. Ignored if tf_selection_method is not 'variable'
+#' @importFrom Matrix rowSums
 #' @importFrom methods is
+#' @importFrom stats wilcox.test
+#' @importFrom stats cor.test
+#' @importFrom stats sd
 #' @return A domino object
 #' @export create_domino
 #'
@@ -421,7 +425,7 @@ create_domino <- function(rl_map, features, ser = NULL, counts = NULL, z_scores 
       }
       cells <- which(dom@clusters == clust)
       for (feat in rownames(dom@features)) {
-        p_vals[feat, clust] <- stats::wilcox.test(dom@features[feat, cells], dom@features[feat, -cells],
+        p_vals[feat, clust] <- wilcox.test(dom@features[feat, cells], dom@features[feat, -cells],
           alternative = "g")$p.value
       }
     }
@@ -433,7 +437,7 @@ create_domino <- function(rl_map, features, ser = NULL, counts = NULL, z_scores 
   if (tf_selection_method == "variable") {
     dom@clusters <- factor()
     variances <- apply(dom@features, 1, function(x) {
-      stats::sd(x)/mean(x)
+      sd(x)/mean(x)
     })
     keep_n <- length(variances) * tf_variance_quantile
     keep_id <- which(rank(variances) > keep_n)
@@ -448,7 +452,7 @@ create_domino <- function(rl_map, features, ser = NULL, counts = NULL, z_scores 
   } 
   # Calculate correlation matrix between features and receptors.
   dom@counts <- counts
-  zero_sum <- Matrix::rowSums(counts == 0)
+  zero_sum <- rowSums(counts == 0)
   keeps <- which(zero_sum < (1 - rec_min_thresh) * ncol(counts))
   ser_receptors <- intersect(names(keeps), rec_genes)
   rho <- matrix(0, nrow = length(ser_receptors), ncol = nrow(dom@features))
@@ -490,7 +494,7 @@ create_domino <- function(rl_map, features, ser = NULL, counts = NULL, z_scores 
         rhorow[rec] <- 0
         next
       }
-      cor <- stats::cor.test(rec_z_scores, tar_tf_scores, method = "spearman", alternative = "greater")
+      cor <- cor.test(rec_z_scores, tar_tf_scores, method = "spearman", alternative = "greater")
       rhorow[rec] <- cor$estimate
     }
     if (length(module_rec_targets > 0)) {
@@ -552,6 +556,8 @@ create_domino <- function(rl_map, features, ser = NULL, counts = NULL, z_scores 
 #' @param to Format of gene output (MGI, or HGNC)
 #' @param host Host to connect to. Defaults to https://www.ensembl.org following the useMart default, but can be changed to archived hosts if useMart fails to connect.
 #' @importFrom methods is
+#' @importFrom biomaRt useMart
+#' @importFrom biomaRt getLDS
 #' @return A data frame with input genes as col 1 and output as col 2
 #' 
 convert_genes <- function(genes, from = c("ENSMUSG", "ENSG", "MGI", "HGNC"), to = c("MGI", "HGNC"),
@@ -563,30 +569,30 @@ convert_genes <- function(genes, from = c("ENSMUSG", "ENSG", "MGI", "HGNC"), to 
   stopifnot(`To must be one of MGI or HGNC` = to %in% c("MGI", "HGNC"))
   stopifnot(`Host must be  web host to connect to` = (is(host, "character") & length(host) == 1))
   if (from == "ENSMUSG") {
-    srcMart <- biomaRt::useMart("ensembl", dataset = "mmusculus_gene_ensembl", host = host)
+    srcMart <- useMart("ensembl", dataset = "mmusculus_gene_ensembl", host = host)
     sourceAtts <- "ensembl_gene_id"
   }
   if (from == "ENSG") {
-    srcMart <- biomaRt::useMart("ensembl", dataset = "hsapiens_gene_ensembl", host = host)
+    srcMart <- useMart("ensembl", dataset = "hsapiens_gene_ensembl", host = host)
     sourceAtts <- "ensembl_gene_id"
   }
   if (from == "MGI") {
-    srcMart <- biomaRt::useMart("ensembl", dataset = "mmusculus_gene_ensembl", host = host)
+    srcMart <- useMart("ensembl", dataset = "mmusculus_gene_ensembl", host = host)
     sourceAtts <- "mgi_symbol"
   }
   if (from == "HGNC") {
-    srcMart <- biomaRt::useMart("ensembl", dataset = "hsapiens_gene_ensembl", host = host)
+    srcMart <- useMart("ensembl", dataset = "hsapiens_gene_ensembl", host = host)
     sourceAtts <- "hgnc_symbol"
   }
   if (to == "MGI") {
-    tarMart <- biomaRt::useMart("ensembl", dataset = "mmusculus_gene_ensembl", host = host)
+    tarMart <- useMart("ensembl", dataset = "mmusculus_gene_ensembl", host = host)
     tarAtts <- "mgi_symbol"
   }
   if (to == "HGNC") {
-    tarMart <- biomaRt::useMart("ensembl", dataset = "hsapiens_gene_ensembl", host = host)
+    tarMart <- useMart("ensembl", dataset = "hsapiens_gene_ensembl", host = host)
     tarAtts <- "hgnc_symbol"
   }
-  genesV2 <- biomaRt::getLDS(attributes = sourceAtts, filters = sourceAtts, values = genes, mart = srcMart,
+  genesV2 <- getLDS(attributes = sourceAtts, filters = sourceAtts, values = genes, mart = srcMart,
     attributesL = tarAtts, martL = tarMart, uniqueRows = F)
   return(genesV2)
 }

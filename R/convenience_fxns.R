@@ -11,6 +11,7 @@
 #' @param dom Domino object to rename clusters in
 #' @param clust_conv Named vector of conversions from old to new clusters. Values are taken as new clusters IDs and names as old cluster IDs.
 #' @return A domino object with clusters renamed in all applicable slots.
+#' @importFrom plyr revalue
 #' @export 
 #' 
 rename_clusters <- function(dom, clust_conv) {
@@ -18,7 +19,7 @@ rename_clusters <- function(dom, clust_conv) {
     stop("There are no clusters in this domino object")
   }
   if (dom@misc$create) {
-    dom@clusters <- plyr::revalue(dom@clusters, clust_conv)
+    dom@clusters <- revalue(dom@clusters, clust_conv)
     colnames(dom@clust_de) <- clust_conv
     names(colnames(dom@clust_de)) <- c()
     colnames(dom@misc$cl_rec_percent) <- clust_conv

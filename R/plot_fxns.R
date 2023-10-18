@@ -41,7 +41,7 @@ signaling_heatmap <- function(dom, clusts = NULL, min_thresh = -Inf, max_thresh 
   } else if (normalize != "none") {
     stop("Do not recognize normalize input")
   }
-  NMF::aheatmap(mat, ...)
+  aheatmap(mat, ...)
 }
 #' Create a cluster incoming signaling heatmap
 #' 
@@ -101,11 +101,11 @@ incoming_signaling_heatmap <- function(dom, rec_clust, clusts = NULL, min_thresh
     stop("Do not recognize normalize input")
   }
   if (title == TRUE) {
-    NMF::aheatmap(mat, main = paste0("Expression of ligands targeting cluster ", rec_clust), ...)
+    aheatmap(mat, main = paste0("Expression of ligands targeting cluster ", rec_clust), ...)
   } else if (title == FALSE) {
-    NMF::aheatmap(mat, ...)
+    aheatmap(mat, ...)
   } else {
-    NMF::aheatmap(mat, main = title, ...)
+    aheatmap(mat, main = title, ...)
   }
 }
 #' Create a cluster to cluster signaling network diagram
@@ -129,6 +129,14 @@ incoming_signaling_heatmap <- function(dom, rec_clust, clusts = NULL, min_thresh
 #' @param vert_scale Integer used to scale size of vertices with our without variable scaling from size_verts_by.
 #' @param plot_title Text for the plot's title.
 #' @param ... Other parameters to be passed to plot when used with an `{igraph}` object.
+#' @importFrom igraph graph
+#' @importFrom igraph V
+#' @importFrom igraph E
+#' @importFrom igraph layout_randomly
+#' @importFrom igraph layout_in_circle
+#' @importFrom igraph layout_on_sphere
+#' @importFrom igraph layout_with_fr
+#' @importFrom igraph layout_with_kk
 #' @export signaling_network
 #' 
 signaling_network <- function(dom, cols = NULL, edge_weight = 0.3, clusts = NULL, showOutgoingSignalingClusts = NULL,
@@ -196,30 +204,30 @@ signaling_network <- function(dom, cols = NULL, edge_weight = 0.3, clusts = NULL
   }
   graph <- igraph::graph(links)
   # Get vert colors and scale size if desired.
-  igraph::V(graph)$label.dist <- 1.5
-  igraph::V(graph)$label.color <- "black"
-  v_cols <- cols[names(igraph::V(graph))]
-  if (scale_by == "lig_sig" & all(gsub("L_", "", colnames(mat)) %in% names(igraph::V(graph)))) {
+  V(graph)$label.dist <- 1.5
+  V(graph)$label.color <- "black"
+  v_cols <- cols[names(V(graph))]
+  if (scale_by == "lig_sig" & all(gsub("L_", "", colnames(mat)) %in% names(V(graph)))) {
     vals <- asinh(colSums(mat))
-    vals <- vals[paste0("L_", names(igraph::V(graph)))]
-    igraph::V(graph)$size <- vals * vert_scale
-  } else if (scale_by == "rec_sig" & all(gsub("R_", "", rownames(mat)) %in% names(igraph::V(graph)))) {
+    vals <- vals[paste0("L_", names(V(graph)))]
+    V(graph)$size <- vals * vert_scale
+  } else if (scale_by == "rec_sig" & all(gsub("R_", "", rownames(mat)) %in% names(V(graph)))) {
     vals <- asinh(rowSums(mat))
-    vals <- vals[paste0("R_", names(igraph::V(graph)))]
-    igraph::V(graph)$size <- vals * vert_scale
+    vals <- vals[paste0("R_", names(V(graph)))]
+    V(graph)$size <- vals * vert_scale
   } else {
-    igraph::V(graph)$size <- vert_scale
+    V(graph)$size <- vert_scale
   }
   # Get vert angle for labeling circos plot
   if (layout == "circle") {
-    v_angles <- 1:length(igraph::V(graph))
+    v_angles <- 1:length(V(graph))
     v_angles <- -2 * pi * (v_angles - 1)/length(v_angles)
-    igraph::V(graph)$label.degree <- v_angles
+    V(graph)$label.degree <- v_angles
   }
   names(v_cols) <- c()
-  igraph::V(graph)$color <- v_cols
+  V(graph)$color <- v_cols
   # Get edge color. weights, and lines
-  weights <- weights[attr(igraph::E(graph), "vnames")]
+  weights <- weights[attr(E(graph), "vnames")]
   e_cols <- c()
   for (e in names(weights)) {
     lcl <- strsplit(e, "|", fixed = TRUE)[[1]][1]
@@ -227,21 +235,21 @@ signaling_network <- function(dom, cols = NULL, edge_weight = 0.3, clusts = NULL
   }
   names(weights) <- c()
   names(e_cols) <- c()
-  igraph::E(graph)$width <- weights * edge_weight
-  igraph::E(graph)$color <- e_cols
-  igraph::E(graph)$arrow.size <- 0
-  igraph::E(graph)$curved <- 0.5
+  E(graph)$width <- weights * edge_weight
+  E(graph)$color <- e_cols
+  E(graph)$arrow.size <- 0
+  E(graph)$curved <- 0.5
   # Get edge colors
   if (layout == "random") {
-    l <- igraph::layout_randomly(graph)
+    l <- layout_randomly(graph)
   } else if (layout == "circle") {
-    l <- igraph::layout_in_circle(graph)
+    l <- layout_in_circle(graph)
   } else if (layout == "sphere") {
-    l <- igraph::layout_on_sphere(graph)
+    l <- layout_on_sphere(graph)
   } else if (layout == "fr") {
-    l <- igraph::layout_with_fr(graph)
+    l <- layout_with_fr(graph)
   } else if (layout == "kk") {
-    l <- igraph::layout_with_kk(graph)
+    l <- layout_with_kk(graph)
   }
   plot(graph, layout = l, main = plot_title, ...)
 }
@@ -260,6 +268,15 @@ signaling_network <- function(dom, cols = NULL, edge_weight = 0.3, clusts = NULL
 #' @param lig_scale FALSE or a numeric value to scale the size of ligand vertices based on z-scored expression in the data set.
 #' @param layout Type of layout to use. Options are 'grid', 'random', 'sphere', 'circle', 'fr' for Fruchterman-Reingold force directed layout, and 'kk' for Kamada Kawai for directed layout.
 #' @param ... Other parameters to pass to plot() with an [igraph] object. See [igraph] manual for options.
+#' @importFrom igraph graph
+#' @importFrom igraph simplify
+#' @importFrom igraph V
+#' @importFrom igraph E
+#' @importFrom igraph layout_randomly
+#' @importFrom igraph layout_in_circle
+#' @importFrom igraph layout_on_sphere
+#' @importFrom igraph layout_with_fr
+#' @importFrom igraph layout_with_kk
 #' @export gene_network
 #' 
 gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL, class_cols = c(lig = "#FF685F",
@@ -348,9 +365,9 @@ gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL, class
   all_ligs <- unique(all_ligs)
   # Make the graph
   graph <- igraph::graph(links)
-  graph <- igraph::simplify(graph, remove.multiple = TRUE, remove.loops = FALSE)
-  v_cols <- rep("#BBBBBB", length(igraph::V(graph)))
-  names(v_cols) <- names(igraph::V(graph))
+  graph <- simplify(graph, remove.multiple = TRUE, remove.loops = FALSE)
+  v_cols <- rep("#BBBBBB", length(V(graph)))
+  names(v_cols) <- names(V(graph))
   v_cols[all_tfs] <- class_cols["feat"]
   v_cols[all_recs] <- class_cols["rec"]
   v_cols[all_ligs] <- class_cols["lig"]
@@ -358,25 +375,25 @@ gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL, class
     v_cols[names(cols)] <- cols
   }
   names(v_cols) <- c()
-  igraph::V(graph)$color <- v_cols
-  v_size <- rep(10, length(igraph::V(graph)))
-  names(v_size) <- names(igraph::V(graph))
+  V(graph)$color <- v_cols
+  v_size <- rep(10, length(V(graph)))
+  names(v_size) <- names(V(graph))
   if (lig_scale) {
     all_sums <- all_sums[names(all_sums) %in% names(v_size)]
     v_size[names(all_sums)] <- 0.5 * all_sums * lig_scale
   }
   names(v_size) <- c()
-  igraph::V(graph)$size <- v_size
-  igraph::V(graph)$label.degree <- pi
-  igraph::V(graph)$label.offset <- 2
-  igraph::V(graph)$label.color <- "black"
-  igraph::V(graph)$frame.color <- "black"
-  igraph::E(graph)$width <- 0.5
-  igraph::E(graph)$arrow.size <- 0
-  igraph::E(graph)$color <- "black"
+  V(graph)$size <- v_size
+  V(graph)$label.degree <- pi
+  V(graph)$label.offset <- 2
+  V(graph)$label.color <- "black"
+  V(graph)$frame.color <- "black"
+  E(graph)$width <- 0.5
+  E(graph)$arrow.size <- 0
+  E(graph)$color <- "black"
   if (layout == "grid") {
-    l <- matrix(0, ncol = 2, nrow = length(igraph::V(graph)))
-    rownames(l) <- names(igraph::V(graph))
+    l <- matrix(0, ncol = 2, nrow = length(V(graph)))
+    rownames(l) <- names(V(graph))
     l[all_ligs, 1] <- -0.75
     l[all_recs, 1] <- 0
     l[all_tfs, 1] <- 0.75
@@ -385,15 +402,15 @@ gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL, class
     l[all_tfs, 2] <- (1:length(all_tfs)/mean(1:length(all_tfs)) - 1) * 2
     rownames(l) <- c()
   } else if (layout == "random") {
-    l <- igraph::layout_randomly(graph)
+    l <- layout_randomly(graph)
   } else if (layout == "circle") {
-    l <- igraph::layout_in_circle(graph)
+    l <- layout_in_circle(graph)
   } else if (layout == "sphere") {
-    l <- igraph::layout_on_sphere(graph)
+    l <- layout_on_sphere(graph)
   } else if (layout == "fr") {
-    l <- igraph::layout_with_fr(graph)
+    l <- layout_with_fr(graph)
   } else if (layout == "kk") {
-    l <- igraph::layout_with_kk(graph)
+    l <- layout_with_kk(graph)
   }
   plot(graph, layout = l, main = paste0("Signaling ", OutgoingSignalingClust, " to ", clust), ...)
   return(invisible(list(graph = graph, layout = l)))
@@ -478,13 +495,13 @@ feat_heatmap <- function(dom, feats = NULL, bool = FALSE, bool_thresh = 0.2, tit
     cols <- list(Cluster = cols)
   }
   if (title != FALSE & ann_cols != FALSE) {
-    NMF::aheatmap(mat, Colv = NA, annCol = ac, annColors = cols, main = title, ...)
+    aheatmap(mat, Colv = NA, annCol = ac, annColors = cols, main = title, ...)
   } else if (title == FALSE & ann_cols != FALSE) {
-    NMF::aheatmap(mat, Colv = NA, annCol = ac, annColors = cols, ...)
+    aheatmap(mat, Colv = NA, annCol = ac, annColors = cols, ...)
   } else if (title != FALSE & ann_cols == FALSE) {
-    NMF::aheatmap(mat, Colv = NA, main = title, ...)
+    aheatmap(mat, Colv = NA, main = title, ...)
   } else if (title == FALSE & ann_cols == FALSE) {
-    NMF::aheatmap(mat, Colv = NA, ...)
+    aheatmap(mat, Colv = NA, ...)
   }
 }
 #' Create a heatmap of correlation between receptors and transcription factors
@@ -558,9 +575,9 @@ cor_heatmap <- function(dom, bool = FALSE, bool_thresh = 0.15, title = TRUE, fea
     }
   }
   if (title != FALSE & mark_connections) {
-    NMF::aheatmap(mat, main = title, txt = cons, ...)
+    aheatmap(mat, main = title, txt = cons, ...)
   } else {
-    NMF::aheatmap(mat, ...)
+    aheatmap(mat, ...)
   }
 }
 #' Create a correlation plot between transcription factor activation score and receptor
@@ -585,7 +602,7 @@ cor_scatter <- function(dom, tf, rec, remove_rec_dropout = TRUE, ...) {
     tar_tf_scores <- dom@features[tf, ]
   }
   dat <- data.frame(rec = rec_z_scores, tf = tar_tf_scores)
-  ggpubr::ggscatter(dat, x = "rec", y = "tf", add = "reg.line", conf.int = FALSE, cor.coef = FALSE,
+  ggscatter(dat, x = "rec", y = "tf", add = "reg.line", conf.int = FALSE, cor.coef = FALSE,
     cor.method = "pearson", xlab = rec, ylab = tf, size = 0.25)
 }
 #' Plot expression of a receptor's ligands by other cell types as a chord plot
@@ -598,6 +615,19 @@ cor_scatter <- function(dom, tf, rec, remove_rec_dropout = TRUE, ...) {
 #' @param ligand_expression_threshold Minimum mean expression value of a ligand by a cell type for a chord to be rendered between the cell type and the receptor
 #' @param cell_idents Vector of cell types from cluster assignments in the domino object to be included in the plot.
 #' @param cell_colors Named vector of color names or hex codes where names correspond to the plotted cell types and the color values
+#' @importFrom circlize circos.clear
+#' @importFrom circlize circos.par
+#' @importFrom circlize circos.link
+#' @importFrom circlize chordDiagram
+#' @importFrom circlize mm_h
+#' @importFrom circlize get.all.sector.index
+#' @importFrom circlize highlight.sector
+#' @importFrom circlize colorRamp2
+#' @importFrom ComplexHeatmap Legend
+#' @importFrom ComplexHeatmap packLegend
+#' @importFrom ComplexHeatmap draw
+#' @importFrom grid gpar
+#' @importFrom grid unit
 #' @export circos_ligand_receptor
 #' 
 circos_ligand_receptor <- function(dom, receptor, ligand_expression_threshold = 0.01, cell_idents = NULL,
@@ -710,6 +740,15 @@ circos_ligand_receptor <- function(dom, receptor, ligand_expression_threshold = 
 #' @param stat_ranking 'ascending' (lowest value of test statisic is colored red and plotted at the top) or 'descending' (highest value of test statistic is colored red and plotted at the top). 
 #' @param group_palette a named vector of colors to use for each group being compared
 #' @return a Heatmap-class object of features ranked by test_statistic annotated with the proportion of subjects that showed active linkage of the features.
+#' @importFrom circlize colorRamp2
+#' @importFrom ComplexHeatmap Heatmap
+#' @importFrom ComplexHeatmap HeatmapAnnotation
+#' @importFrom ComplexHeatmap rowAnnotation
+#' @importFrom ComplexHeatmap anno_barplot
+#' @importFrom ComplexHeatmap anno_text
+#' @importFrom grid gpar
+#' @importFrom grid unit
+#' @importFrom grid grid.text
 #' @export
 #' 
 plot_differential_linkages <- function(differential_linkages, test_statistic, stat_range = c(0, 1),
@@ -802,9 +841,10 @@ do_norm <- function(mat, dir) {
 #' Accepts a number of colors to generate and generates a ggplot color spectrum.
 #' 
 #' @param n Number of colors to generate
+#' @importFrom grDevices hcl
 #' @return A vector of colors according to ggplot color generation.
 #' @keywords internal
 ggplot_col_gen <- function(n) {
   hues <- seq(15, 375, length = n + 1)
-  return(grDevices::hcl(h = hues, l = 65, c = 100)[1:n])
+  return(hcl(h = hues, l = 65, c = 100)[1:n])
 }
