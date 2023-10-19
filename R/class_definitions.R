@@ -1,3 +1,8 @@
+#' @import methods
+#' @importClassesFrom Matrix dgCMatrix
+#'
+NULL
+
 #' The domino Class
 #' 
 #' The domino class contains all information necessary to calculate receptor
@@ -16,15 +21,29 @@
 #' @slot misc List of miscellaneous info pertaining to run parameters etc.
 #' @slot cl_signaling_matrices Incoming signaling matrix for each cluster
 #' @slot signaling Signaling matrix between all clusters.
-#' 
-#' @importClassesFrom Matrix dgCMatrix
 #' @name domino-class
 #' @rdname domino-class
 #' @exportClass domino
 #' 
-domino <- setClass(Class="domino", slots=c(db_info="list", z_scores="matrix", counts="dgCMatrix",
-  clusters="factor", features="matrix", cor="matrix", linkages="list", clust_de="matrix",
-  misc="list", cl_signaling_matrices="list", signaling="matrix"))
+domino <- methods::setClass(
+  Class = "domino",
+  slots = c(
+    db_info="list",
+    z_scores="matrix",
+    counts="dgCMatrix",
+    clusters="factor",
+    features="matrix",
+    cor="matrix",
+    linkages="list",
+    clust_de="matrix",
+    misc="list",
+    cl_signaling_matrices="list",
+    signaling="matrix"
+  )
+)
+# domino <- setClass(Class="domino", slots=c(db_info="list", z_scores="matrix", counts="dgCMatrix",
+#   clusters="factor", features="matrix", cor="matrix", linkages="list", clust_de="matrix",
+#   misc="list", cl_signaling_matrices="list", signaling="matrix"))
 #' The Domino linkage summary class
 #' 
 #' The linkage summary class contains linkages established in multiple domino

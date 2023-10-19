@@ -1,3 +1,13 @@
+#' @import grid
+#' @import circlize
+#' @import ComplexHeatmap
+#' @importFrom igraph graph V E layout_in_circle layout_on_sphere layout_randomly layout_with_fr layout_with_kk simplify
+#' @importFrom ggpubr ggscatter
+#' @import grDevices
+#' @importFrom NMF aheatmap
+#' 
+NULL
+
 #' Create a network heatmap
 #' 
 #' Creates a heatmap of the signaling network. Alternatively, the network 
@@ -10,7 +20,6 @@
 #' @param scale How to scale the values (after thresholding). Options are 'none', 'sqrt' for square root, or 'log' for log10.
 #' @param normalize Options to normalize the matrix. Normalization is done after thresholding and scaling. Accepted inputs are 'none' for no normalization, 'rec_norm' to normalize to the maximum value with each receptor cluster, or 'lig_norm' to normalize to the maximum value within each ligand cluster 
 #' @param ... Other parameters to pass to  [NMF::aheatmap()]
-#' @importFrom NMF aheatmap
 #' @export signaling_heatmap
 #' 
 signaling_heatmap <- function(dom, clusts = NULL, min_thresh = -Inf, max_thresh = Inf, scale = "none",
@@ -61,7 +70,6 @@ signaling_heatmap <- function(dom, clusts = NULL, min_thresh = -Inf, max_thresh 
 #' @param normalize Options to normalize the matrix. Accepted inputs are 'none' for no normalization, 'rec_norm' to normalize to the maximum value with each receptor cluster, or 'lig_norm' to normalize to the maximum value within each ligand cluster 
 #' @param title Either a string to use as the title or a boolean describing whether to include a title. In order to pass the 'main' parameter to  [NMF::aheatmap()]  you must set title to FALSE.
 #' @param ... Other parameters to pass to  [NMF::aheatmap()]. Note that to use the 'main' parameter of  [NMF::aheatmap()]  you must set title = FALSE
-#' @importFrom NMF aheatmap
 #' @export incoming_signaling_heatmap
 #' 
 incoming_signaling_heatmap <- function(dom, rec_clust, clusts = NULL, min_thresh = -Inf, max_thresh = Inf,
@@ -129,14 +137,6 @@ incoming_signaling_heatmap <- function(dom, rec_clust, clusts = NULL, min_thresh
 #' @param vert_scale Integer used to scale size of vertices with our without variable scaling from size_verts_by.
 #' @param plot_title Text for the plot's title.
 #' @param ... Other parameters to be passed to plot when used with an `{igraph}` object.
-#' @importFrom igraph graph
-#' @importFrom igraph V
-#' @importFrom igraph E
-#' @importFrom igraph layout_randomly
-#' @importFrom igraph layout_in_circle
-#' @importFrom igraph layout_on_sphere
-#' @importFrom igraph layout_with_fr
-#' @importFrom igraph layout_with_kk
 #' @export signaling_network
 #' 
 signaling_network <- function(dom, cols = NULL, edge_weight = 0.3, clusts = NULL, showOutgoingSignalingClusts = NULL,
@@ -204,30 +204,30 @@ signaling_network <- function(dom, cols = NULL, edge_weight = 0.3, clusts = NULL
   }
   graph <- igraph::graph(links)
   # Get vert colors and scale size if desired.
-  V(graph)$label.dist <- 1.5
-  V(graph)$label.color <- "black"
-  v_cols <- cols[names(V(graph))]
-  if (scale_by == "lig_sig" & all(gsub("L_", "", colnames(mat)) %in% names(V(graph)))) {
+  igraph::V(graph)$label.dist <- 1.5
+  igraph::V(graph)$label.color <- "black"
+  v_cols <- cols[names(igraph::V(graph))]
+  if (scale_by == "lig_sig" & all(gsub("L_", "", colnames(mat)) %in% names(igraph::V(graph)))) {
     vals <- asinh(colSums(mat))
-    vals <- vals[paste0("L_", names(V(graph)))]
-    V(graph)$size <- vals * vert_scale
-  } else if (scale_by == "rec_sig" & all(gsub("R_", "", rownames(mat)) %in% names(V(graph)))) {
+    vals <- vals[paste0("L_", names(igraph::V(graph)))]
+    igraph::V(graph)$size <- vals * vert_scale
+  } else if (scale_by == "rec_sig" & all(gsub("R_", "", rownames(mat)) %in% names(igraph::V(graph)))) {
     vals <- asinh(rowSums(mat))
-    vals <- vals[paste0("R_", names(V(graph)))]
-    V(graph)$size <- vals * vert_scale
+    vals <- vals[paste0("R_", names(igraph::V(graph)))]
+    igraph::V(graph)$size <- vals * vert_scale
   } else {
-    V(graph)$size <- vert_scale
+    igraph::V(graph)$size <- vert_scale
   }
   # Get vert angle for labeling circos plot
   if (layout == "circle") {
-    v_angles <- 1:length(V(graph))
+    v_angles <- 1:length(igraph::V(graph))
     v_angles <- -2 * pi * (v_angles - 1)/length(v_angles)
-    V(graph)$label.degree <- v_angles
+    igraph::V(graph)$label.degree <- v_angles
   }
   names(v_cols) <- c()
-  V(graph)$color <- v_cols
+  igraph::V(graph)$color <- v_cols
   # Get edge color. weights, and lines
-  weights <- weights[attr(E(graph), "vnames")]
+  weights <- weights[attr(igraph::E(graph), "vnames")]
   e_cols <- c()
   for (e in names(weights)) {
     lcl <- strsplit(e, "|", fixed = TRUE)[[1]][1]
@@ -235,21 +235,21 @@ signaling_network <- function(dom, cols = NULL, edge_weight = 0.3, clusts = NULL
   }
   names(weights) <- c()
   names(e_cols) <- c()
-  E(graph)$width <- weights * edge_weight
-  E(graph)$color <- e_cols
-  E(graph)$arrow.size <- 0
-  E(graph)$curved <- 0.5
+  igraph::E(graph)$width <- weights * edge_weight
+  igraph::E(graph)$color <- e_cols
+  igraph::E(graph)$arrow.size <- 0
+  igraph::E(graph)$curved <- 0.5
   # Get edge colors
   if (layout == "random") {
-    l <- layout_randomly(graph)
+    l <- igraph::layout_randomly(graph)
   } else if (layout == "circle") {
-    l <- layout_in_circle(graph)
+    l <- igraph::layout_in_circle(graph)
   } else if (layout == "sphere") {
-    l <- layout_on_sphere(graph)
+    l <- igraph::layout_on_sphere(graph)
   } else if (layout == "fr") {
-    l <- layout_with_fr(graph)
+    l <- igraph::layout_with_fr(graph)
   } else if (layout == "kk") {
-    l <- layout_with_kk(graph)
+    l <- igraph::layout_with_kk(graph)
   }
   plot(graph, layout = l, main = plot_title, ...)
 }
@@ -268,15 +268,6 @@ signaling_network <- function(dom, cols = NULL, edge_weight = 0.3, clusts = NULL
 #' @param lig_scale FALSE or a numeric value to scale the size of ligand vertices based on z-scored expression in the data set.
 #' @param layout Type of layout to use. Options are 'grid', 'random', 'sphere', 'circle', 'fr' for Fruchterman-Reingold force directed layout, and 'kk' for Kamada Kawai for directed layout.
 #' @param ... Other parameters to pass to plot() with an [igraph] object. See [igraph] manual for options.
-#' @importFrom igraph graph
-#' @importFrom igraph simplify
-#' @importFrom igraph V
-#' @importFrom igraph E
-#' @importFrom igraph layout_randomly
-#' @importFrom igraph layout_in_circle
-#' @importFrom igraph layout_on_sphere
-#' @importFrom igraph layout_with_fr
-#' @importFrom igraph layout_with_kk
 #' @export gene_network
 #' 
 gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL, class_cols = c(lig = "#FF685F",
@@ -365,9 +356,9 @@ gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL, class
   all_ligs <- unique(all_ligs)
   # Make the graph
   graph <- igraph::graph(links)
-  graph <- simplify(graph, remove.multiple = TRUE, remove.loops = FALSE)
-  v_cols <- rep("#BBBBBB", length(V(graph)))
-  names(v_cols) <- names(V(graph))
+  graph <- igraph::simplify(graph, remove.multiple = TRUE, remove.loops = FALSE)
+  v_cols <- rep("#BBBBBB", length(igraph::V(graph)))
+  names(v_cols) <- names(igraph::V(graph))
   v_cols[all_tfs] <- class_cols["feat"]
   v_cols[all_recs] <- class_cols["rec"]
   v_cols[all_ligs] <- class_cols["lig"]
@@ -375,25 +366,25 @@ gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL, class
     v_cols[names(cols)] <- cols
   }
   names(v_cols) <- c()
-  V(graph)$color <- v_cols
-  v_size <- rep(10, length(V(graph)))
-  names(v_size) <- names(V(graph))
+  igraph::V(graph)$color <- v_cols
+  v_size <- rep(10, length(igraph::V(graph)))
+  names(v_size) <- names(igraph::V(graph))
   if (lig_scale) {
     all_sums <- all_sums[names(all_sums) %in% names(v_size)]
     v_size[names(all_sums)] <- 0.5 * all_sums * lig_scale
   }
   names(v_size) <- c()
-  V(graph)$size <- v_size
-  V(graph)$label.degree <- pi
-  V(graph)$label.offset <- 2
-  V(graph)$label.color <- "black"
-  V(graph)$frame.color <- "black"
-  E(graph)$width <- 0.5
-  E(graph)$arrow.size <- 0
-  E(graph)$color <- "black"
+  igraph::V(graph)$size <- v_size
+  igraph::V(graph)$label.degree <- pi
+  igraph::V(graph)$label.offset <- 2
+  igraph::V(graph)$label.color <- "black"
+  igraph::V(graph)$frame.color <- "black"
+  igraph::E(graph)$width <- 0.5
+  igraph::E(graph)$arrow.size <- 0
+  igraph::E(graph)$color <- "black"
   if (layout == "grid") {
-    l <- matrix(0, ncol = 2, nrow = length(V(graph)))
-    rownames(l) <- names(V(graph))
+    l <- matrix(0, ncol = 2, nrow = length(igraph::V(graph)))
+    rownames(l) <- names(igraph::V(graph))
     l[all_ligs, 1] <- -0.75
     l[all_recs, 1] <- 0
     l[all_tfs, 1] <- 0.75
@@ -402,15 +393,15 @@ gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL, class
     l[all_tfs, 2] <- (1:length(all_tfs)/mean(1:length(all_tfs)) - 1) * 2
     rownames(l) <- c()
   } else if (layout == "random") {
-    l <- layout_randomly(graph)
+    l <- igraph::layout_randomly(graph)
   } else if (layout == "circle") {
-    l <- layout_in_circle(graph)
+    l <- igraph::layout_in_circle(graph)
   } else if (layout == "sphere") {
-    l <- layout_on_sphere(graph)
+    l <- igraph::layout_on_sphere(graph)
   } else if (layout == "fr") {
-    l <- layout_with_fr(graph)
+    l <- igraph::layout_with_fr(graph)
   } else if (layout == "kk") {
-    l <- layout_with_kk(graph)
+    l <- igraph::layout_with_kk(graph)
   }
   plot(graph, layout = l, main = paste0("Signaling ", OutgoingSignalingClust, " to ", clust), ...)
   return(invisible(list(graph = graph, layout = l)))
@@ -431,7 +422,6 @@ gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL, class
 #' @param min_thresh Minimum threshold for color scaling if not a boolean heatmap
 #' @param max_thresh Maximum threshold for color scaling if not a boolean heatmap
 #' @param ... Other parameters to pass to  [NMF::aheatmap()] . Note that to use the 'main' parameter of  [NMF::aheatmap()]  you must set title = FALSE and to use 'annCol' or 'annColors' ann_cols must be FALSE.
-#' @importFrom NMF aheatmap
 #' @export feat_heatmap
 #' 
 feat_heatmap <- function(dom, feats = NULL, bool = FALSE, bool_thresh = 0.2, title = TRUE, norm = FALSE,
@@ -517,7 +507,6 @@ feat_heatmap <- function(dom, feats = NULL, bool = FALSE, bool_thresh = 0.2, tit
 #' @param recs Either a vector of receptors to include in the heatmap or 'all' for all receptors. If left NULL then the receptors selected in the signaling network connected to the features plotted will be shown.
 #' @param mark_connections Boolean indicating whether to add an 'x' in cells where there is a connected receptor or TF. Default FALSE.
 #' @param ... Other parameters to pass to  [NMF::aheatmap()] . Note that to use the 'main' parameter of  [NMF::aheatmap()]  you must set title = FALSE and to use 'annCol' or 'annColors' ann_cols must be FALSE.
-#' @importFrom NMF aheatmap
 #' @export cor_heatmap
 #' 
 cor_heatmap <- function(dom, bool = FALSE, bool_thresh = 0.15, title = TRUE, feats = NULL, recs = NULL,
@@ -589,7 +578,6 @@ cor_heatmap <- function(dom, bool = FALSE, bool_thresh = 0.15, title = TRUE, fea
 #' @param rec Target receptor for plotting with TF
 #' @param remove_rec_dropout Whether to remove cells with zero expression for plot. This should match the same setting as in build_domino.
 #' @param ... Other parameters to pass to ggscatter.
-#' @importFrom ggpubr ggscatter
 #' @export cor_scatter
 #' 
 cor_scatter <- function(dom, tf, rec, remove_rec_dropout = TRUE, ...) {
@@ -615,19 +603,6 @@ cor_scatter <- function(dom, tf, rec, remove_rec_dropout = TRUE, ...) {
 #' @param ligand_expression_threshold Minimum mean expression value of a ligand by a cell type for a chord to be rendered between the cell type and the receptor
 #' @param cell_idents Vector of cell types from cluster assignments in the domino object to be included in the plot.
 #' @param cell_colors Named vector of color names or hex codes where names correspond to the plotted cell types and the color values
-#' @importFrom circlize circos.clear
-#' @importFrom circlize circos.par
-#' @importFrom circlize circos.link
-#' @importFrom circlize chordDiagram
-#' @importFrom circlize mm_h
-#' @importFrom circlize get.all.sector.index
-#' @importFrom circlize highlight.sector
-#' @importFrom circlize colorRamp2
-#' @importFrom ComplexHeatmap Legend
-#' @importFrom ComplexHeatmap packLegend
-#' @importFrom ComplexHeatmap draw
-#' @importFrom grid gpar
-#' @importFrom grid unit
 #' @export circos_ligand_receptor
 #' 
 circos_ligand_receptor <- function(dom, receptor, ligand_expression_threshold = 0.01, cell_idents = NULL,
@@ -740,15 +715,6 @@ circos_ligand_receptor <- function(dom, receptor, ligand_expression_threshold = 
 #' @param stat_ranking 'ascending' (lowest value of test statisic is colored red and plotted at the top) or 'descending' (highest value of test statistic is colored red and plotted at the top). 
 #' @param group_palette a named vector of colors to use for each group being compared
 #' @return a Heatmap-class object of features ranked by test_statistic annotated with the proportion of subjects that showed active linkage of the features.
-#' @importFrom circlize colorRamp2
-#' @importFrom ComplexHeatmap Heatmap
-#' @importFrom ComplexHeatmap HeatmapAnnotation
-#' @importFrom ComplexHeatmap rowAnnotation
-#' @importFrom ComplexHeatmap anno_barplot
-#' @importFrom ComplexHeatmap anno_text
-#' @importFrom grid gpar
-#' @importFrom grid unit
-#' @importFrom grid grid.text
 #' @export
 #' 
 plot_differential_linkages <- function(differential_linkages, test_statistic, stat_range = c(0, 1),
@@ -841,10 +807,9 @@ do_norm <- function(mat, dir) {
 #' Accepts a number of colors to generate and generates a ggplot color spectrum.
 #' 
 #' @param n Number of colors to generate
-#' @importFrom grDevices hcl
 #' @return A vector of colors according to ggplot color generation.
 #' @keywords internal
 ggplot_col_gen <- function(n) {
   hues <- seq(15, 375, length = n + 1)
-  return(hcl(h = hues, l = 65, c = 100)[1:n])
+  return(grDevices::hcl(h = hues, l = 65, c = 100)[1:n])
 }

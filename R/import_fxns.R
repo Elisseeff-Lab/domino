@@ -1,3 +1,11 @@
+#' @import biomaRt
+#' @import stats
+#' @importFrom utils read.csv
+#' @importFrom Matrix rowSums
+#' @import methods
+#'
+NULL
+
 #' Create a receptor-ligand map from a cellphonedb signaling database
 #' 
 #' Generates a data frame of ligand-receptor interactions from a CellPhoneDB database annotating the genes encoding the interacting ligands and receptors to be queried in transcriptomic data.
@@ -226,6 +234,7 @@ create_rl_map_cellphonedb <- function(genes, proteins, interactions, complexes =
     "gene_B", "type_B", "annotation_strategy", "source", "database_name")]
   return(rl_map)
 }
+
 #' Create a list of genes in regulons inferred by SCENIC
 #' 
 #' Generates a list of transcription factors and the genes targeted by the transcription factor as part of their regulon inferred by pySCENIC
@@ -257,6 +266,7 @@ create_regulon_list_scenic <- function(regulons) {
   names(TF_targets) <- TFS
   return(TF_targets)
 }
+
 #' Create a domino object and prepare it for network construction
 #' 
 #' This function reads in a receptor ligand signaling database, cell level 
@@ -281,11 +291,6 @@ create_regulon_list_scenic <- function(regulons) {
 #' @param remove_rec_dropout Whether to remove receptors with 0 expression counts when calculating correlations. This can reduce false positive correlation calculations when receptors have high dropout rates.
 #' @param tf_selection_method Selection of which method to target transcription factors. If 'clusters' then differential expression for clusters will be calculated. If 'variable' then the most variable transcription factors will be selected. If 'all' then all transcription factors in the feature matrix will be used. Default is 'clusters'. Note that if you wish to use clusters for intercellular signaling downstream to MUST choose clusters.
 #' @param tf_variance_quantile What proportion of variable features to take if using variance to threshold features. Default is 0.5. Higher numbers will keep more features. Ignored if tf_selection_method is not 'variable'
-#' @importFrom Matrix rowSums
-#' @importFrom methods is
-#' @importFrom stats wilcox.test
-#' @importFrom stats cor.test
-#' @importFrom stats sd
 #' @return A domino object
 #' @export create_domino
 #'
@@ -425,8 +430,9 @@ create_domino <- function(rl_map, features, ser = NULL, counts = NULL, z_scores 
       }
       cells <- which(dom@clusters == clust)
       for (feat in rownames(dom@features)) {
-        p_vals[feat, clust] <- wilcox.test(dom@features[feat, cells], dom@features[feat, -cells],
-          alternative = "g")$p.value
+        p_vals[feat, clust] <- stats::wilcox.test(
+          dom@features[feat, cells], dom@features[feat, -cells], alternative = "g"
+          )$p.value
       }
     }
     dom@clust_de <- p_vals
@@ -494,7 +500,7 @@ create_domino <- function(rl_map, features, ser = NULL, counts = NULL, z_scores 
         rhorow[rec] <- 0
         next
       }
-      cor <- cor.test(rec_z_scores, tar_tf_scores, method = "spearman", alternative = "greater")
+      cor <- stats::cor.test(rec_z_scores, tar_tf_scores, method = "spearman", alternative = "greater")
       rhorow[rec] <- cor$estimate
     }
     if (length(module_rec_targets > 0)) {
@@ -547,6 +553,7 @@ create_domino <- function(rl_map, features, ser = NULL, counts = NULL, z_scores 
   }
   return(dom)
 }
+
 #' Use biomaRt to convert genes
 #' 
 #' This function reads in a vector of genes and converts the genes to specified symbol type
@@ -555,10 +562,8 @@ create_domino <- function(rl_map, features, ser = NULL, counts = NULL, z_scores 
 #' @param from Format of gene input (ENSMUSG, ENSG, MGI, or HGNC)
 #' @param to Format of gene output (MGI, or HGNC)
 #' @param host Host to connect to. Defaults to https://www.ensembl.org following the useMart default, but can be changed to archived hosts if useMart fails to connect.
-#' @importFrom methods is
-#' @importFrom biomaRt useMart
-#' @importFrom biomaRt getLDS
 #' @return A data frame with input genes as col 1 and output as col 2
+#' @export
 #' 
 convert_genes <- function(genes, from = c("ENSMUSG", "ENSG", "MGI", "HGNC"), to = c("MGI", "HGNC"),
   host = "https://www.ensembl.org") {
@@ -631,6 +636,7 @@ add_rl_column <- function(map, map_ref, conv, new_name) {
   new_map <- rbind.data.frame(new_map, not_in_ref_map, stringsAsFactors = FALSE)
   new_map <- data.frame(new_map, stringsAsFactors = FALSE)
 }
+
 #' Calculate mean ligand expression as a data.frame for plotting in circos plot
 #' 
 #' Creates a data frame of mean ligand expression for use in plotting a circos
@@ -642,6 +648,7 @@ add_rl_column <- function(map, map_ref, conv, new_name) {
 #' @param cell_barcodes Vector of cell barcodes (colnames of x) belonging to cell_ident to calculate mean expression across
 #' @param destination Name of the receptor with which each ligand interacts
 #' @return A data frame of ligand expression targeting the specified receptor
+#' @export
 #'
 mean_ligand_expression <- function(x, ligands, cell_ident, cell_barcodes, destination) {
   # initiate data frame to store results

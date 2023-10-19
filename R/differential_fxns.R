@@ -1,3 +1,7 @@
+#' @import methods
+#'
+NULL
+
 #' Summarize linkages from multiple domino objects
 #' 
 #' Creates a linkage_summary object storing the linkages learned in different domino objects as nested lists to facilitate comparisons of networks learned by domino across subject covariates.
@@ -5,7 +9,6 @@
 #' @param domino_results list of domino result with one domino object per subject. Names from the list must match subject_names.
 #' @param subject_meta dataframe that includes the subject features by which the objects could be grouped. The first column should must be subject names
 #' @param subject_names vector of subject names in domino_results. If NULL, defaults to first column of subject_meta.
-#' @importFrom methods is
 #' @return A linkage summary class object consisting of nested lists of the active transcription factors, active receptors, and incoming ligands for each cluster across multiple domino results.
 #' @export
 #' 
