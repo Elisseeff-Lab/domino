@@ -2,13 +2,12 @@
 #' @importClassesFrom Matrix dgCMatrix
 #'
 NULL
-
-#' The domino Class
+#' The Domino Class
 #' 
-#' The domino class contains all information necessary to calculate receptor
-#' ligand signaling. It contains z scored expression, cluster, feature values,
-#' and formatted receptor ligand databases as well as all calculated 
-#' intermediates.
+#' The domino class contains all information necessary to calculate receptor-ligand
+#' signaling. It contains z-scored expression, cell cluster labels, feature values,
+#' and a referenced receptor-ligand database formatted as a receptor-ligand map.
+#' Calculated intermediate values are also stored.
 #' 
 #' @slot db_info List of data sets from lr database.
 #' @slot counts Raw count gene expression data
@@ -39,11 +38,11 @@ domino <- methods::setClass(
     misc="list",
     cl_signaling_matrices="list",
     signaling="matrix"
+  ),
+  prototype = list(
+    misc = list("build"=FALSE)
   )
 )
-# domino <- setClass(Class="domino", slots=c(db_info="list", z_scores="matrix", counts="dgCMatrix",
-#   clusters="factor", features="matrix", cor="matrix", linkages="list", clust_de="matrix",
-#   misc="list", cl_signaling_matrices="list", signaling="matrix"))
 #' The Domino linkage summary class
 #' 
 #' The linkage summary class contains linkages established in multiple domino
@@ -70,7 +69,7 @@ linkage_summary <- setClass(Class="linkage_summary", slots=c(subject_names="fact
 #' @keywords internal
 setMethod("print", "domino", function(x, ...) {
   if (x@misc$build) {
-    cat("A domino object of", length(x@clusters), "cells
+    cat("A domino object of ", length(x@clusters), " cells
                 Contains signaling between",
       length(levels(x@clusters)), "clusters
                 Built with a maximum of", as.integer(x@misc$build_vars["max_tf_per_clust"]),
@@ -78,7 +77,7 @@ setMethod("print", "domino", function(x, ...) {
                 and a maximum of", as.integer(x@misc$build_vars["max_rec_per_tf"]),
       "receptors per TF\n")
   } else {
-    cat(c("A domino object of", length(x@clusters), "cells\n", "A signaling network has not been built\n"),
+    cat(c("A domino object of ", length(x@clusters), " cells\n", "A signaling network has not been built\n"),
       sep="")
   }
 })
@@ -93,7 +92,7 @@ setMethod("show", "domino", function(object) {
     cat(c("A domino object of ", length(object@clusters), " cells\n", "Built with signaling between ",
       length(levels(object@clusters)), " clusters\n"), sep = "")
   } else {
-    cat(c("A domino object of", length(object@clusters), "cells\n", "A signaling network has not been built\n"),
+    cat(c("A domino object of ", length(object@clusters), " cells\n", "A signaling network has not been built\n"),
       sep = "")
   }
 })

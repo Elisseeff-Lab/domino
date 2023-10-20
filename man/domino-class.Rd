@@ -4,12 +4,12 @@
 \name{domino-class}
 \alias{domino-class}
 \alias{domino}
-\title{The domino Class}
+\title{The Domino Class}
 \description{
-The domino class contains all information necessary to calculate receptor
-ligand signaling. It contains z scored expression, cluster, feature values,
-and formatted receptor ligand databases as well as all calculated
-intermediates.
+The domino class contains all information necessary to calculate receptor-ligand
+signaling. It contains z-scored expression, cell cluster labels, feature values,
+and a referenced receptor-ligand database formatted as a receptor-ligand map.
+Calculated intermediate values are also stored.
 }
 \section{Slots}{
 
