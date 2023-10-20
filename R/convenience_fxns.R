@@ -1,3 +1,8 @@
+#' @import plyr
+#' @import methods
+#' 
+NULL
+
 #' Renames clusters in a domino object
 #' 
 #' This function reads in a receptor ligand signaling database, cell level 
@@ -18,7 +23,7 @@ rename_clusters <- function(dom, clust_conv) {
     stop("There are no clusters in this domino object")
   }
   if (dom@misc$create) {
-    dom@clusters <- plyr::revalue(dom@clusters, clust_conv)
+    dom@clusters <- revalue(dom@clusters, clust_conv)
     colnames(dom@clust_de) <- clust_conv
     names(colnames(dom@clust_de)) <- c()
     colnames(dom@misc$cl_rec_percent) <- clust_conv
@@ -95,7 +100,6 @@ collate_network_items <- function(dom, clusters = NULL, return = NULL) {
 #' @param conversion_table A data.frame with column names corresponding to gene symbol types (mm.ens, hs.ens, mgi, hgnc)
 #' and rows corresponding to the gene symbols themselves
 #' @return Data frame of genes with original and corresponding converted symbols
-#' @importFrom methods is
 #' @export
 table_convert_genes <- function(genes, from, to, conversion_table) {
   # Check inputs:

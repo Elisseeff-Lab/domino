@@ -18,12 +18,15 @@ Imports:
     ComplexHeatmap,
     circlize,
     ggpubr,
+    grDevices,
     grid,
     igraph,
     Matrix,
     methods,
     NMF,
-    plyr
+    plyr,
+    stats,
+    utils
 License: GPL-3 | file LICENSE
 Encoding: UTF-8
 LazyData: true

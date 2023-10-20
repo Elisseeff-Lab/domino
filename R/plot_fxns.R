@@ -1,3 +1,13 @@
+#' @import grid
+#' @import circlize
+#' @import ComplexHeatmap
+#' @importFrom igraph graph V E layout_in_circle layout_on_sphere layout_randomly layout_with_fr layout_with_kk simplify
+#' @importFrom ggpubr ggscatter
+#' @import grDevices
+#' @importFrom NMF aheatmap
+#' 
+NULL
+
 #' Create a network heatmap
 #' 
 #' Creates a heatmap of the signaling network. Alternatively, the network 
@@ -10,7 +20,6 @@
 #' @param scale How to scale the values (after thresholding). Options are 'none', 'sqrt' for square root, or 'log' for log10.
 #' @param normalize Options to normalize the matrix. Normalization is done after thresholding and scaling. Accepted inputs are 'none' for no normalization, 'rec_norm' to normalize to the maximum value with each receptor cluster, or 'lig_norm' to normalize to the maximum value within each ligand cluster 
 #' @param ... Other parameters to pass to  [NMF::aheatmap()]
-#' @importFrom NMF aheatmap
 #' @export signaling_heatmap
 #' 
 signaling_heatmap <- function(dom, clusts = NULL, min_thresh = -Inf, max_thresh = Inf, scale = "none",
@@ -41,7 +50,7 @@ signaling_heatmap <- function(dom, clusts = NULL, min_thresh = -Inf, max_thresh 
   } else if (normalize != "none") {
     stop("Do not recognize normalize input")
   }
-  NMF::aheatmap(mat, ...)
+  aheatmap(mat, ...)
 }
 #' Create a cluster incoming signaling heatmap
 #' 
@@ -61,7 +70,6 @@ signaling_heatmap <- function(dom, clusts = NULL, min_thresh = -Inf, max_thresh 
 #' @param normalize Options to normalize the matrix. Accepted inputs are 'none' for no normalization, 'rec_norm' to normalize to the maximum value with each receptor cluster, or 'lig_norm' to normalize to the maximum value within each ligand cluster 
 #' @param title Either a string to use as the title or a boolean describing whether to include a title. In order to pass the 'main' parameter to  [NMF::aheatmap()]  you must set title to FALSE.
 #' @param ... Other parameters to pass to  [NMF::aheatmap()]. Note that to use the 'main' parameter of  [NMF::aheatmap()]  you must set title = FALSE
-#' @importFrom NMF aheatmap
 #' @export incoming_signaling_heatmap
 #' 
 incoming_signaling_heatmap <- function(dom, rec_clust, clusts = NULL, min_thresh = -Inf, max_thresh = Inf,
@@ -101,11 +109,11 @@ incoming_signaling_heatmap <- function(dom, rec_clust, clusts = NULL, min_thresh
     stop("Do not recognize normalize input")
   }
   if (title == TRUE) {
-    NMF::aheatmap(mat, main = paste0("Expression of ligands targeting cluster ", rec_clust), ...)
+    aheatmap(mat, main = paste0("Expression of ligands targeting cluster ", rec_clust), ...)
   } else if (title == FALSE) {
-    NMF::aheatmap(mat, ...)
+    aheatmap(mat, ...)
   } else {
-    NMF::aheatmap(mat, main = title, ...)
+    aheatmap(mat, main = title, ...)
   }
 }
 #' Create a cluster to cluster signaling network diagram
@@ -414,7 +422,6 @@ gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL, class
 #' @param min_thresh Minimum threshold for color scaling if not a boolean heatmap
 #' @param max_thresh Maximum threshold for color scaling if not a boolean heatmap
 #' @param ... Other parameters to pass to  [NMF::aheatmap()] . Note that to use the 'main' parameter of  [NMF::aheatmap()]  you must set title = FALSE and to use 'annCol' or 'annColors' ann_cols must be FALSE.
-#' @importFrom NMF aheatmap
 #' @export feat_heatmap
 #' 
 feat_heatmap <- function(dom, feats = NULL, bool = FALSE, bool_thresh = 0.2, title = TRUE, norm = FALSE,
@@ -478,13 +485,13 @@ feat_heatmap <- function(dom, feats = NULL, bool = FALSE, bool_thresh = 0.2, tit
     cols <- list(Cluster = cols)
   }
   if (title != FALSE & ann_cols != FALSE) {
-    NMF::aheatmap(mat, Colv = NA, annCol = ac, annColors = cols, main = title, ...)
+    aheatmap(mat, Colv = NA, annCol = ac, annColors = cols, main = title, ...)
   } else if (title == FALSE & ann_cols != FALSE) {
-    NMF::aheatmap(mat, Colv = NA, annCol = ac, annColors = cols, ...)
+    aheatmap(mat, Colv = NA, annCol = ac, annColors = cols, ...)
   } else if (title != FALSE & ann_cols == FALSE) {
-    NMF::aheatmap(mat, Colv = NA, main = title, ...)
+    aheatmap(mat, Colv = NA, main = title, ...)
   } else if (title == FALSE & ann_cols == FALSE) {
-    NMF::aheatmap(mat, Colv = NA, ...)
+    aheatmap(mat, Colv = NA, ...)
   }
 }
 #' Create a heatmap of correlation between receptors and transcription factors
@@ -500,7 +507,6 @@ feat_heatmap <- function(dom, feats = NULL, bool = FALSE, bool_thresh = 0.2, tit
 #' @param recs Either a vector of receptors to include in the heatmap or 'all' for all receptors. If left NULL then the receptors selected in the signaling network connected to the features plotted will be shown.
 #' @param mark_connections Boolean indicating whether to add an 'x' in cells where there is a connected receptor or TF. Default FALSE.
 #' @param ... Other parameters to pass to  [NMF::aheatmap()] . Note that to use the 'main' parameter of  [NMF::aheatmap()]  you must set title = FALSE and to use 'annCol' or 'annColors' ann_cols must be FALSE.
-#' @importFrom NMF aheatmap
 #' @export cor_heatmap
 #' 
 cor_heatmap <- function(dom, bool = FALSE, bool_thresh = 0.15, title = TRUE, feats = NULL, recs = NULL,
@@ -558,9 +564,9 @@ cor_heatmap <- function(dom, bool = FALSE, bool_thresh = 0.15, title = TRUE, fea
     }
   }
   if (title != FALSE & mark_connections) {
-    NMF::aheatmap(mat, main = title, txt = cons, ...)
+    aheatmap(mat, main = title, txt = cons, ...)
   } else {
-    NMF::aheatmap(mat, ...)
+    aheatmap(mat, ...)
   }
 }
 #' Create a correlation plot between transcription factor activation score and receptor
@@ -572,7 +578,6 @@ cor_heatmap <- function(dom, bool = FALSE, bool_thresh = 0.15, title = TRUE, fea
 #' @param rec Target receptor for plotting with TF
 #' @param remove_rec_dropout Whether to remove cells with zero expression for plot. This should match the same setting as in build_domino.
 #' @param ... Other parameters to pass to ggscatter.
-#' @importFrom ggpubr ggscatter
 #' @export cor_scatter
 #' 
 cor_scatter <- function(dom, tf, rec, remove_rec_dropout = TRUE, ...) {
@@ -585,7 +590,7 @@ cor_scatter <- function(dom, tf, rec, remove_rec_dropout = TRUE, ...) {
     tar_tf_scores <- dom@features[tf, ]
   }
   dat <- data.frame(rec = rec_z_scores, tf = tar_tf_scores)
-  ggpubr::ggscatter(dat, x = "rec", y = "tf", add = "reg.line", conf.int = FALSE, cor.coef = FALSE,
+  ggscatter(dat, x = "rec", y = "tf", add = "reg.line", conf.int = FALSE, cor.coef = FALSE,
     cor.method = "pearson", xlab = rec, ylab = tf, size = 0.25)
 }
 #' Plot expression of a receptor's ligands by other cell types as a chord plot
