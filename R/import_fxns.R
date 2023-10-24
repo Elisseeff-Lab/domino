@@ -598,7 +598,7 @@ convert_genes <- function(genes, from = c("ENSMUSG", "ENSG", "MGI", "HGNC"), to 
     tarAtts <- "hgnc_symbol"
   }
   genesV2 <- getLDS(attributes = sourceAtts, filters = sourceAtts, values = genes, mart = srcMart,
-    attributesL = tarAtts, martL = tarMart, uniqueRows = F)
+    attributesL = tarAtts, martL = tarMart, uniqueRows = FALSE)
   return(genesV2)
 }
 #' Adds a column to the RL signaling data frame.
