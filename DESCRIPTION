@@ -32,6 +32,10 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.3
 biocViews:
+    SystemsBiology,
+    SingleCell,
+    Transcriptomics,
+    Network
 Suggests:
     knitr,
     rmarkdown,
