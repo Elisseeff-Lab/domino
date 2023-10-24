@@ -206,9 +206,9 @@ Enrichment of a regulon is measured as the Area Under the recovery Curve (AUC) o
 
 ```bash
 singularity exec "${SCENIC_DIR}/aertslab-pyscenic-0.12.1.sif" pyscenic aucell \
-  	"../data/pbmc3k_counts.loom" \
-  	"${SCENIC_DIR}/pbmc_regulons.csv" \
-  	-o "${SCENIC_DIR}/pbmc_auc.csv"
+    "../data/pbmc3k_counts.loom" \
+    "${SCENIC_DIR}/pbmc_regulons.csv" \
+    -o "${SCENIC_DIR}/pbmc_auc.csv"
     
 # Arguments:
     # counts matrix loom file
