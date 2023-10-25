@@ -23,6 +23,9 @@ circos_ligand_receptor(
 
 \item{cell_colors}{Named vector of color names or hex codes where names correspond to the plotted cell types and the color values}
 }
+\value{
+renders a circos plot to the active graphics device
+}
 \description{
 Creates a chord plot of expression of ligands that can activate a specified
 receptor where chord widths correspond to mean ligand expression by the cluster.

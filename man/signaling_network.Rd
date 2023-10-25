@@ -53,6 +53,9 @@ signaling_network(
 
 \item{...}{Other parameters to be passed to plot when used with an \code{{igraph}} object.}
 }
+\value{
+an igraph rendered to the active graphics device
+}
 \description{
 Creates a network diagram of signaling between clusters. Nodes are clusters
 and directed edges indicate signaling from one cluster to another. Edges are

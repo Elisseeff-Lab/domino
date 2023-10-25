@@ -9,6 +9,9 @@
 \arguments{
 \item{x}{Domino object}
 }
+\value{
+a printed description of the number of cell clusters in the object
+}
 \description{
 Prints a summary of a domino object
 }
