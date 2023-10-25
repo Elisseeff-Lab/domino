@@ -32,6 +32,9 @@ gene_network(
 
 \item{...}{Other parameters to pass to plot() with an \link{igraph} object. See \link{igraph} manual for options.}
 }
+\value{
+an igraph rendered to the active graphics device
+}
 \description{
 Create a gene association network for genes from a given cluster. The
 selected cluster acts as the receptor for the gene association network, so

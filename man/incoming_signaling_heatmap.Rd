@@ -35,6 +35,9 @@ incoming_signaling_heatmap(
 
 \item{...}{Other parameters to pass to  \code{\link[NMF:aheatmap]{NMF::aheatmap()}}. Note that to use the 'main' parameter of  \code{\link[NMF:aheatmap]{NMF::aheatmap()}}  you must set title = FALSE}
 }
+\value{
+an aheatmap rendered to the active graphics device
+}
 \description{
 Creates a heatmap of a cluster incoming signaling matrix. Each cluster has a
 list of ligands capable of activating its enriched transcription factors. The

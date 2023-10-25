@@ -41,6 +41,9 @@ feat_heatmap(
 
 \item{...}{Other parameters to pass to  \code{\link[NMF:aheatmap]{NMF::aheatmap()}} . Note that to use the 'main' parameter of  \code{\link[NMF:aheatmap]{NMF::aheatmap()}}  you must set title = FALSE and to use 'annCol' or 'annColors' ann_cols must be FALSE.}
 }
+\value{
+an aheatmap rendered to the active graphics device
+}
 \description{
 Creates a heatmap of feature expression (typically transcription factor
 activation scores) by cells organized by cluster.

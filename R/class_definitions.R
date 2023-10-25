@@ -66,6 +66,7 @@ linkage_summary <- setClass(Class="linkage_summary", slots=c(subject_names="fact
 #' Prints a summary of a domino object
 #' 
 #' @param x Domino object
+#' @return a printed description of the number of cell clusters in the object
 #' @keywords internal
 setMethod("print", "domino", function(x, ...) {
   if (x@misc$build) {
@@ -86,6 +87,7 @@ setMethod("print", "domino", function(x, ...) {
 #' Shows content overview of domino object
 #' 
 #' @param object Domino object
+#' @return a printed description of the number of cells in a domino object and its build status
 #' @keywords internal
 setMethod("show", "domino", function(object) {
   if (object@misc$build) {

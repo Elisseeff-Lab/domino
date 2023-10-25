@@ -17,6 +17,9 @@ cor_scatter(dom, tf, rec, remove_rec_dropout = TRUE, ...)
 
 \item{...}{Other parameters to pass to ggscatter.}
 }
+\value{
+a ggplot object
+}
 \description{
 Create a correlation plot between transcription factor activation score and receptor
 }
