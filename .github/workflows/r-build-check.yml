@@ -7,3 +7,4 @@ on:
 jobs:
     build-check:
         uses: FertigLab/actions/.github/workflows/r-build-check.yml@main
+        secrets: inherit
