@@ -1,4 +1,3 @@
-# Imports a basic worklow based on r-lib/actions from FertigLab's repository
 name: r-build-check
 on:
     push:
