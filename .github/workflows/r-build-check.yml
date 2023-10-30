@@ -1,0 +1,9 @@
+# Imports a basic worklow based on r-lib/actions from FertigLab's repository
+name: r-build-check
+on:
+    push:
+        branches: ['46-github-workflow-for-build-check-bioccheck-for-quality-control']
+
+jobs:
+    build-check:
+        uses: FertigLab/actions/.github/workflows/r-build-check.yml@main
