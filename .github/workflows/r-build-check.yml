@@ -1,10 +1,12 @@
 name: r-build-check
 on:
     push:
-        branches: ['46-github-workflow-for-build-check-bioccheck-for-quality-control']
+        branches: ['v0.2.2_development']
+    pull_request:
+        branches: ['master', 'v0.2.2']
     workflow_dispatch:
 
 jobs:
     build-check:
-        uses: FertigLab/actions/.github/workflows/r-build-check.yml@main
+        uses: FertigLab/actions/.github/workflows/r-build-check.yml@v1
         secrets: inherit
