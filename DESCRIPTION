@@ -1,6 +1,6 @@
 Package: domino2
 Title: Cell Communication Analysis for Single Cell RNA Sequencing
-Version: 0.2.1
+Version: 0.2.2
 Authors@R: c(
     person("Christopher", "Cherry", role = c("aut"), email = "ccherry.6574@gmail.com", comment = c(ORCID = "0000-0002-5481-0055")),
     person("Jacob T", "Mitchell", role = c("aut", "cre"), email = "jmitch81@jhmi.edu", comment = c(ORCID = "0000-0002-5370-9692")),
@@ -15,19 +15,31 @@ Depends:
     R(>= 3.6.2),
 Imports:
     biomaRt,
-    plyr,
-    dplyr,
-    igraph,
+    ComplexHeatmap,
     circlize,
-    ComplexHeatmap
+    ggpubr,
+    grDevices,
+    grid,
+    igraph,
+    Matrix,
+    methods,
+    NMF,
+    plyr,
+    stats,
+    utils
 License: GPL-3 | file LICENSE
 Encoding: UTF-8
-LazyData: true
+LazyData: false
 RoxygenNote: 7.2.3
+biocViews:
+    SystemsBiology,
+    SingleCell,
+    Transcriptomics,
+    Network
 Suggests:
-    spelling, 
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat
 VignetteBuilder: knitr
 Language: en-US
 Roxygen: list(markdown = TRUE)

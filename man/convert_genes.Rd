@@ -4,14 +4,19 @@
 \alias{convert_genes}
 \title{Use biomaRt to convert genes}
 \usage{
-convert_genes(genes, from, to, host = "https://www.ensembl.org")
+convert_genes(
+  genes,
+  from = c("ENSMUSG", "ENSG", "MGI", "HGNC"),
+  to = c("MGI", "HGNC"),
+  host = "https://www.ensembl.org"
+)
 }
 \arguments{
 \item{genes}{Vector of genes to convert.}
 
 \item{from}{Format of gene input (ENSMUSG, ENSG, MGI, or HGNC)}
 
-\item{to}{Format of gene output (ENSMUSG, ENSG, MGI, or HGNC)}
+\item{to}{Format of gene output (MGI, or HGNC)}
 
 \item{host}{Host to connect to. Defaults to https://www.ensembl.org following the useMart default, but can be changed to archived hosts if useMart fails to connect.}
 }

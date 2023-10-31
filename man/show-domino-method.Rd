@@ -9,6 +9,9 @@
 \arguments{
 \item{object}{Domino object}
 }
+\value{
+a printed description of the number of cells in a domino object and its build status
+}
 \description{
 Shows content overview of domino object
 }

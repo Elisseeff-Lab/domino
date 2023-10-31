@@ -29,6 +29,9 @@ signaling_heatmap(
 
 \item{...}{Other parameters to pass to  \code{\link[NMF:aheatmap]{NMF::aheatmap()}}}
 }
+\value{
+an aheatmap rendered to the active graphics device
+}
 \description{
 Creates a heatmap of the signaling network. Alternatively, the network
 matrix can be accessed directly in the signaling slot of a domino object.
