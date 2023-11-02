@@ -34,7 +34,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">domino2</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -107,7 +107,7 @@
 <p>Analysis of cell-cell communication with domino2 often follows initial processing and annotation of scRNAseq data. We are following the <a href="https://satijalab.org/seurat/articles/pbmc3k_tutorial" class="external-link">Satija Lab’s Guided Clustering Tutorial</a> to prepare the data set for analysis with domino2.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Preprocessing of PBMC 3K tutorial data set using Seurat functions</span></span>
-<span><span class="va">pbmc.data</span> <span class="op">&lt;-</span> <span class="fu">Read10X</span><span class="op">(</span>data.dir <span class="op">=</span> <span class="st">"../data/pbmc3k_filtered_gene_bc_matrices"</span><span class="op">)</span></span>
+<span><span class="va">pbmc.data</span> <span class="op">&lt;-</span> <span class="fu">Read10X</span><span class="op">(</span>data.dir <span class="op">=</span> <span class="st">"../inst/extdata/pbmc3k_filtered_gene_bc_matrices"</span><span class="op">)</span></span>
 <span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu">CreateSeuratObject</span><span class="op">(</span>counts <span class="op">=</span> <span class="va">pbmc.data</span>, project <span class="op">=</span> <span class="st">"pbmc3k"</span>, min.cells <span class="op">=</span> <span class="fl">3</span>, min.features <span class="op">=</span> <span class="fl">200</span><span class="op">)</span></span>
 <span><span class="va">pbmc</span><span class="op">[[</span><span class="st">"percent.mt"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu">PercentageFeatureSet</span><span class="op">(</span><span class="va">pbmc</span>, pattern <span class="op">=</span> <span class="st">"^MT-"</span><span class="op">)</span></span>
 <span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu">NormalizeData</span><span class="op">(</span><span class="va">pbmc</span>, normalization.method <span class="op">=</span> <span class="st">"LogNormalize"</span>, scale.factor <span class="op">=</span> <span class="fl">10000</span><span class="op">)</span></span>
@@ -116,11 +116,23 @@
 <span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu">RunPCA</span><span class="op">(</span><span class="va">pbmc</span>, features <span class="op">=</span> <span class="fu">VariableFeatures</span><span class="op">(</span>object <span class="op">=</span> <span class="va">pbmc</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu">FindNeighbors</span><span class="op">(</span><span class="va">pbmc</span>, dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span></span>
 <span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu">FindClusters</span><span class="op">(</span><span class="va">pbmc</span>, resolution <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Number of nodes: 2700</span></span>
+<span><span class="co">#&gt; Number of edges: 97892</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Running Louvain algorithm...</span></span>
+<span><span class="co">#&gt; Maximum modularity in 10 random starts: 0.8719</span></span>
+<span><span class="co">#&gt; Number of communities: 9</span></span>
+<span><span class="co">#&gt; Elapsed time: 0 seconds</span></span>
 <span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu">RunUMAP</span><span class="op">(</span><span class="va">pbmc</span>, dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span></span>
 <span><span class="co"># Annotate clusters with cell phenotypes</span></span>
 <span><span class="va">cell_dict</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  cluster <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span>,</span>
-<span>  cell_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"naive_CD4_T_cell"</span>, <span class="st">"CD14_monocyte"</span>, <span class="st">"memory_CD4_T_cell"</span>, <span class="st">"B_cell"</span>, <span class="st">"CD8_T_cell"</span>, <span class="st">"CD16_monocyte"</span>, <span class="st">"NK_cell"</span>, <span class="st">"dendritic_cell"</span>, <span class="st">"platelet"</span><span class="op">)</span></span>
+<span>  cell_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="st">"naive_CD4_T_cell"</span>, <span class="st">"CD14_monocyte"</span>, <span class="st">"memory_CD4_T_cell"</span>, <span class="st">"B_cell"</span>, <span class="st">"CD8_T_cell"</span>,</span>
+<span>    <span class="st">"CD16_monocyte"</span>, <span class="st">"NK_cell"</span>, <span class="st">"dendritic_cell"</span>, <span class="st">"platelet"</span></span>
+<span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">pbmc</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">&lt;-</span></span>
 <span>  <span class="fu">plyr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/plyr/man/mapvalues.html" class="external-link">mapvalues</a></span><span class="op">(</span></span>
@@ -152,12 +164,12 @@
 <div class="section level3">
 <h3 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h3>
-<p>Installation of domino2 from Github can be achieved using the <a href="https://remotes.r-lib.org" class="external-link">remotes</a> package. The current stable version is v0.2.1, so we will install that branch.</p>
+<p>Installation of domino2 from Github can be achieved using the <a href="https://remotes.r-lib.org" class="external-link">remotes</a> package. The current stable version is v0.2.2, so we will install that branch.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://remotes.r-lib.org" class="external-link">remotes</a></span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"FertigLab/domino_development@v0.2.1"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"FertigLab/domino2@v0.2.2"</span><span class="op">)</span></span></code></pre></div>
 <div class="section level4">
 <h4 id="additional-downloads">Additional Downloads<a class="anchor" aria-label="anchor" href="#additional-downloads"></a>
 </h4>
@@ -166,7 +178,7 @@
 <h5 id="downloads-for-scenic">Downloads for SCENIC:<a class="anchor" aria-label="anchor" href="#downloads-for-scenic"></a>
 </h5>
 <p>A singularity image of <a href="https://scenic.aertslab.org/" class="external-link">SCENIC</a> v0.12.1 can be installed from the DockerHub image as a source (example scripts for use with Docker are provided in the scenic_bash directory as well). <a href="https://scenic.aertslab.org/" class="external-link">SCENIC</a> requires a list of TFs, motif annotations, and cisTarget motifs which are all available from the authors of <a href="https://scenic.aertslab.org/" class="external-link">SCENIC</a> for human (HGNC), mouse (MGI), and fly. The following will download everything necessary for an analysis of a data set with HGNC gene labels for the hg38 genome.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1"></a><span class="va">SCENIC_DIR=</span><span class="st">"../scenic"</span></span>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1"></a><span class="va">SCENIC_DIR=</span><span class="st">"../inst/extdata/scenic"</span></span>
 <span id="cb5-2"><a href="#cb5-2"></a><span class="fu">mkdir</span> <span class="va">${SCENIC_DIR}</span></span>
 <span id="cb5-3"><a href="#cb5-3"></a></span>
 <span id="cb5-4"><a href="#cb5-4"></a><span class="co"># Build singularity image</span></span>
@@ -197,7 +209,7 @@
 <h5 id="downloads-for-cellphonedb">Downloads for CellPhoneDB:<a class="anchor" aria-label="anchor" href="#downloads-for-cellphonedb"></a>
 </h5>
 <p>Database files from <a href="https://github.com/ventolab/cellphonedb-data/releases/tag/v4.0.0" class="external-link">CellPhoneDB v4.0.0</a> for human scRNAseq data can be installed from a public Github repository from the Tiechmann Group that developed CellPhoneDB.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1"></a><span class="va">CELLPHONE_DIR=</span><span class="st">"../cellphonedb"</span></span>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1"></a><span class="va">CELLPHONE_DIR=</span><span class="st">"../inst/extdata/cellphoneDB_v4"</span></span>
 <span id="cb6-2"><a href="#cb6-2"></a><span class="fu">mkdir</span> <span class="va">${CELLPHONE_DIR}</span></span>
 <span id="cb6-3"><a href="#cb6-3"></a></span>
 <span id="cb6-4"><a href="#cb6-4"></a><span class="co"># Annotation of protein complexes</span></span>
@@ -286,16 +298,19 @@
 </h4>
 <p>The TF activities are a required input for domino2, and the regulons learned by <a href="https://scenic.aertslab.org/" class="external-link">SCENIC</a> are an important but optional input needed to annotate TF-target interactions and to prune TF-receptor linkages where the receptor is a target of the TF. This prevents the distinction of receptor expression driving TF activity or the TF inducing the receptor’s expression.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">scenic_dir</span> <span class="op">&lt;-</span> <span class="st">"../scenic/"</span></span>
-<span><span class="va">regulons</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">scenic_dir</span>, <span class="st">"/pbmc_regulons.csv"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">auc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">scenic_dir</span>, <span class="st">"/pbmc_auc.csv"</span><span class="op">)</span>,</span>
+<code class="sourceCode R"><span><span class="va">scenic_dir</span> <span class="op">&lt;-</span> <span class="st">"../inst/extdata/scenic/"</span></span>
+<span><span class="va">regulons</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">scenic_dir</span>, <span class="st">"/regulons_pbmc_3k.csv"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">auc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">scenic_dir</span>, <span class="st">"/auc_pbmc_3k.csv"</span><span class="op">)</span>,</span>
 <span>  header <span class="op">=</span> <span class="cn">TRUE</span>, row.names <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span>, sep <span class="op">=</span> <span class="st">","</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>The initial regulons data frame read into R from the ctx function has 2 rows of column names that need to be replaced with one succinct description. domino2 has changed the input format for TF regulons to be a list storing vectors of target genes in each regulon, where the names of the list are the TF genes. This facilitates the use of alternative methods for TF activity quantification methods. We provide a helper function, <code><a href="../reference/create_regulon_list_scenic.html">create_regulon_list_scenic()</a></code> for easy retrieval of TF regulons from the output of the <a href="https://pyscenic.readthedocs.io/en/latest/" class="external-link">pySCENIC</a> ctx function.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">regulons</span> <span class="op">&lt;-</span> <span class="va">regulons</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">:</span><span class="op">-</span><span class="fl">2</span>, <span class="op">]</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">regulons</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TF"</span>, <span class="st">"MotifID"</span>, <span class="st">"AUC"</span>, <span class="st">"NES"</span>, <span class="st">"MotifSimilarityQvalue"</span>, <span class="st">"OrthologousIdentity"</span>, <span class="st">"Annotation"</span>, <span class="st">"Context"</span>, <span class="st">"TargetGenes"</span>, <span class="st">"RankAtMax"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">regulons</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  <span class="st">"TF"</span>, <span class="st">"MotifID"</span>, <span class="st">"AUC"</span>, <span class="st">"NES"</span>, <span class="st">"MotifSimilarityQvalue"</span>, <span class="st">"OrthologousIdentity"</span>,</span>
+<span>  <span class="st">"Annotation"</span>, <span class="st">"Context"</span>, <span class="st">"TargetGenes"</span>, <span class="st">"RankAtMax"</span></span>
+<span><span class="op">)</span></span>
 <span><span class="va">regulon_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_regulon_list_scenic.html">create_regulon_list_scenic</a></span><span class="op">(</span>regulons <span class="op">=</span> <span class="va">regulons</span><span class="op">)</span></span></code></pre></div>
 <p>Users should be aware that the AUC matrix from <a href="https://scenic.aertslab.org/" class="external-link">SCENIC</a> is loaded in a cell x TF orientation and should be transposed to TF x cell orientation. pySCENIC also appends “(+)” to TF names that are converted to “…” upon loading into R. These characters can be included without affecting the results of domino2 analysis, but can be confusing when querying TF features in the data. We recommend comprehensive removal of the “…” characters using the <code><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub()</a></code> function.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
@@ -311,13 +326,13 @@
 <li>int_pair: the names of the interacting ligand and receptor separated by " &amp; "</li>
 <li>gene_A: the gene or genes encoding partner A</li>
 <li>gene_B: the gene or genes encoding partner B</li>
-<li>type_A: (“L”, “R”) whether partner A is a ligand (“L”) or receptor (“R”)</li>
-<li>type_B: (“L”, “R”) whether partner B is a ligand (“L”) or receptor (“R”)</li>
+<li>type_A: (“L”, “R”) - indicates whether partner A is a ligand (“L”) or receptor (“R”)</li>
+<li>type_B: (“L”, “R”) - indicates whether partner B is a ligand (“L”) or receptor (“R”)</li>
 </ul>
 <p>Additional annotation columns can be provided such as name_A and name_B for ligands or receptors whose name in the interaction database does not match the names of their encoding genes. This formatting also allows for the consideration of ligand and receptor complexes comprised of a heteromeric combination of multiple proteins that must be co-expressed to function. In these cases, the “name_*” column shows the name of the protein complex, and the “gene_*” column shows the names of the genes encoding the components of the complex separated by commas “,”. When plotting results from the build domino object, the names of the interacting ligands and receptors will be used based on combinatorial expression of the complex components.</p>
 <p>To facilitate the use of this formatting with the CellPhoneDB database, we include a helper function, <code><a href="../reference/create_rl_map_cellphonedb.html">create_rl_map_cellphonedb()</a></code>, that automatically parses files from the cellPhoneDB database to arrive at the rl_map format.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cellphonedb_2_path</span> <span class="op">&lt;-</span> <span class="st">"../cellphonedb"</span></span>
+<code class="sourceCode R"><span><span class="va">cellphonedb_2_path</span> <span class="op">&lt;-</span> <span class="st">"../inst/extdata/cellphoneDB_v4/"</span></span>
 <span><span class="va">complexes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">cellphonedb_2_path</span>, <span class="st">"/complex_input.csv"</span><span class="op">)</span>, stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">genes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">cellphonedb_2_path</span>, <span class="st">"/gene_input.csv"</span><span class="op">)</span>, stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">interactions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">cellphonedb_2_path</span>, <span class="st">"/interaction_input.csv"</span><span class="op">)</span>, stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
@@ -594,7 +609,19 @@
 <div class="section level3">
 <h3 id="creating-the-domino-object">Creating the Domino Object<a class="anchor" aria-label="anchor" href="#creating-the-domino-object"></a>
 </h3>
-<p>domino2 analysis takes place in two steps. 1. <code><a href="../reference/create_domino.html">create_domino()</a></code> a. initializes the domino result object b. assesses differential TF activity across cell clusters by wilcoxon rank-sum test c. establishes TF-receptor linkages based on Spearman correlation of TF activities with receptor expression across the queried data set. 2. <code><a href="../reference/build_domino.html">build_domino()</a></code> a. sets the parameters for which TFs and receptors are called as active within a cell cluster b. aggregates the scaled expression of ligands capable of interacting with the active receptors for assessment of ligand type and cellular source triggering activation of a receptor.</p>
+<p>domino2 analysis takes place in two steps. 1. <code><a href="../reference/create_domino.html">create_domino()</a></code></p>
+<ol style="list-style-type: lower-alpha">
+<li><p>initializes the domino result object</p></li>
+<li><p>assesses differential TF activity across cell clusters by wilcoxon rank-sum test</p></li>
+<li><p>establishes TF-receptor linkages based on Spearman correlation of TF activities with receptor expression across the queried data set.</p></li>
+</ol>
+<ol start="2" style="list-style-type: decimal">
+<li><code><a href="../reference/build_domino.html">build_domino()</a></code></li>
+</ol>
+<ol style="list-style-type: lower-alpha">
+<li><p>sets the parameters for which TFs and receptors are called as active within a cell cluster</p></li>
+<li><p>aggregates the scaled expression of ligands capable of interacting with the active receptors for assessment of ligand type and cellular source triggering activation of a receptor.</p></li>
+</ol>
 <div class="section level4">
 <h4 id="required-inputs-from-data-set">Required inputs from data set<a class="anchor" aria-label="anchor" href="#required-inputs-from-data-set"></a>
 </h4>
@@ -713,11 +740,11 @@
 <details><p><summary>Vignette Build Information</summary> Date last built and session information:</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "2023-10-05"</span></span>
+<span><span class="co">#&gt; [1] "2023-11-02"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; R version 4.2.1 (2022-06-23)</span></span>
 <span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu (64-bit)</span></span>
-<span><span class="co">#&gt; Running under: Ubuntu 22.04.2 LTS</span></span>
+<span><span class="co">#&gt; Running under: Ubuntu 22.04.3 LTS</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Matrix products: default</span></span>
 <span><span class="co">#&gt; BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.10.0</span></span>
@@ -736,59 +763,69 @@
 <span><span class="co">#&gt; [8] base     </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; other attached packages:</span></span>
-<span><span class="co">#&gt;  [1] RColorBrewer_1.1-3    Biobase_2.56.0        BiocGenerics_0.42.0  </span></span>
-<span><span class="co">#&gt;  [4] knitr_1.44            ComplexHeatmap_2.12.1 circlize_0.4.15      </span></span>
-<span><span class="co">#&gt;  [7] plyr_1.8.8            loomR_0.2.1.9000      hdf5r_1.3.8          </span></span>
-<span><span class="co">#&gt; [10] R6_2.5.1              SeuratObject_4.1.3    Seurat_4.3.0.1       </span></span>
-<span><span class="co">#&gt; [13] domino2_0.2.1        </span></span>
+<span><span class="co">#&gt;  [1] RColorBrewer_1.1-3    knitr_1.44            ComplexHeatmap_2.12.1</span></span>
+<span><span class="co">#&gt;  [4] circlize_0.4.15       plyr_1.8.8            loomR_0.2.1.9000     </span></span>
+<span><span class="co">#&gt;  [7] hdf5r_1.3.8           R6_2.5.1              SeuratObject_5.0.0   </span></span>
+<span><span class="co">#&gt; [10] Seurat_4.4.0          domino2_0.2.2         Biobase_2.56.0       </span></span>
+<span><span class="co">#&gt; [13] BiocGenerics_0.42.0  </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
-<span><span class="co">#&gt;   [1] NMF_0.26               systemfonts_1.0.4      igraph_1.5.1          </span></span>
-<span><span class="co">#&gt;   [4] lazyeval_0.2.2         sp_2.0-0               splines_4.2.1         </span></span>
-<span><span class="co">#&gt;   [7] listenv_0.9.0          scattermore_1.2        gridBase_0.4-7        </span></span>
-<span><span class="co">#&gt;  [10] ggplot2_3.4.3          digest_0.6.33          foreach_1.5.2         </span></span>
-<span><span class="co">#&gt;  [13] htmltools_0.5.6        fansi_1.0.4            magrittr_2.0.3        </span></span>
-<span><span class="co">#&gt;  [16] memoise_2.0.1          tensor_1.5             cluster_2.1.4         </span></span>
-<span><span class="co">#&gt;  [19] doParallel_1.0.17      ROCR_1.0-11            globals_0.16.2        </span></span>
-<span><span class="co">#&gt;  [22] matrixStats_1.0.0      R.utils_2.12.2         pkgdown_2.0.7         </span></span>
-<span><span class="co">#&gt;  [25] spatstat.sparse_3.0-2  colorspace_2.1-0       ggrepel_0.9.3         </span></span>
-<span><span class="co">#&gt;  [28] textshaping_0.3.6      xfun_0.40              dplyr_1.1.3           </span></span>
-<span><span class="co">#&gt;  [31] crayon_1.5.2           jsonlite_1.8.7         progressr_0.14.0      </span></span>
-<span><span class="co">#&gt;  [34] spatstat.data_3.0-1    iterators_1.0.14       survival_3.5-7        </span></span>
-<span><span class="co">#&gt;  [37] zoo_1.8-12             glue_1.6.2             polyclip_1.10-4       </span></span>
-<span><span class="co">#&gt;  [40] registry_0.5-1         gtable_0.3.4           leiden_0.4.3          </span></span>
-<span><span class="co">#&gt;  [43] GetoptLong_1.0.5       R.cache_0.16.0         future.apply_1.11.0   </span></span>
-<span><span class="co">#&gt;  [46] shape_1.4.6            abind_1.4-5            scales_1.2.1          </span></span>
-<span><span class="co">#&gt;  [49] rngtools_1.5.2         spatstat.random_3.1-6  miniUI_0.1.1.1        </span></span>
-<span><span class="co">#&gt;  [52] Rcpp_1.0.11            viridisLite_0.4.2      xtable_1.8-4          </span></span>
-<span><span class="co">#&gt;  [55] clue_0.3-65            reticulate_1.32.0      bit_4.0.5             </span></span>
-<span><span class="co">#&gt;  [58] stats4_4.2.1           htmlwidgets_1.6.2      httr_1.4.7            </span></span>
-<span><span class="co">#&gt;  [61] ellipsis_0.3.2         ica_1.0-3              pkgconfig_2.0.3       </span></span>
-<span><span class="co">#&gt;  [64] R.methodsS3_1.8.2      sass_0.4.7             uwot_0.1.16           </span></span>
-<span><span class="co">#&gt;  [67] deldir_1.0-9           utf8_1.2.3             tidyselect_1.2.0      </span></span>
-<span><span class="co">#&gt;  [70] rlang_1.1.1            reshape2_1.4.4         later_1.3.1           </span></span>
-<span><span class="co">#&gt;  [73] munsell_0.5.0          tools_4.2.1            cachem_1.0.8          </span></span>
-<span><span class="co">#&gt;  [76] cli_3.6.1              generics_0.1.3         ggridges_0.5.4        </span></span>
-<span><span class="co">#&gt;  [79] evaluate_0.21          stringr_1.5.0          fastmap_1.1.1         </span></span>
-<span><span class="co">#&gt;  [82] yaml_2.3.7             ragg_1.2.5             goftest_1.2-3         </span></span>
-<span><span class="co">#&gt;  [85] bit64_4.0.5            fs_1.6.3               fitdistrplus_1.1-11   </span></span>
-<span><span class="co">#&gt;  [88] purrr_1.0.2            RANN_2.6.1             pbapply_1.7-2         </span></span>
-<span><span class="co">#&gt;  [91] future_1.33.0          nlme_3.1-163           mime_0.12             </span></span>
-<span><span class="co">#&gt;  [94] R.oo_1.25.0            compiler_4.2.1         plotly_4.10.2         </span></span>
-<span><span class="co">#&gt;  [97] png_0.1-8              spatstat.utils_3.0-3   tibble_3.2.1          </span></span>
-<span><span class="co">#&gt; [100] bslib_0.5.1            stringi_1.7.12         desc_1.4.2            </span></span>
-<span><span class="co">#&gt; [103] lattice_0.21-8         Matrix_1.6-1.1         styler_1.10.2         </span></span>
-<span><span class="co">#&gt; [106] vctrs_0.6.3            pillar_1.9.0           lifecycle_1.0.3       </span></span>
-<span><span class="co">#&gt; [109] BiocManager_1.30.22    spatstat.geom_3.2-5    lmtest_0.9-40         </span></span>
-<span><span class="co">#&gt; [112] jquerylib_0.1.4        GlobalOptions_0.1.2    RcppAnnoy_0.0.21      </span></span>
-<span><span class="co">#&gt; [115] data.table_1.14.8      cowplot_1.1.1          irlba_2.3.5.1         </span></span>
-<span><span class="co">#&gt; [118] httpuv_1.6.11          patchwork_1.1.3        promises_1.2.1        </span></span>
-<span><span class="co">#&gt; [121] KernSmooth_2.23-22     gridExtra_2.3          IRanges_2.30.1        </span></span>
-<span><span class="co">#&gt; [124] parallelly_1.36.0      codetools_0.2-19       MASS_7.3-60           </span></span>
-<span><span class="co">#&gt; [127] rjson_0.2.21           rprojroot_2.0.3        sctransform_0.4.0     </span></span>
-<span><span class="co">#&gt; [130] S4Vectors_0.34.0       parallel_4.2.1         tidyr_1.3.0           </span></span>
-<span><span class="co">#&gt; [133] rmarkdown_2.25         Rtsne_0.16             spatstat.explore_3.2-3</span></span>
-<span><span class="co">#&gt; [136] shiny_1.7.5</span></span></code></pre></div>
+<span><span class="co">#&gt;   [1] utf8_1.2.3             spatstat.explore_3.2-3 reticulate_1.32.0     </span></span>
+<span><span class="co">#&gt;   [4] R.utils_2.12.2         tidyselect_1.2.0       RSQLite_2.3.1         </span></span>
+<span><span class="co">#&gt;   [7] AnnotationDbi_1.58.0   htmlwidgets_1.6.2      Rtsne_0.16            </span></span>
+<span><span class="co">#&gt;  [10] munsell_0.5.0          codetools_0.2-19       ragg_1.2.5            </span></span>
+<span><span class="co">#&gt;  [13] ica_1.0-3              future_1.33.0          miniUI_0.1.1.1        </span></span>
+<span><span class="co">#&gt;  [16] spatstat.random_3.1-6  colorspace_2.1-0       progressr_0.14.0      </span></span>
+<span><span class="co">#&gt;  [19] filelock_1.0.2         stats4_4.2.1           ROCR_1.0-11           </span></span>
+<span><span class="co">#&gt;  [22] tensor_1.5             ggsignif_0.6.4         listenv_0.9.0         </span></span>
+<span><span class="co">#&gt;  [25] NMF_0.26               GenomeInfoDbData_1.2.8 polyclip_1.10-4       </span></span>
+<span><span class="co">#&gt;  [28] bit64_4.0.5            rprojroot_2.0.3        parallelly_1.36.0     </span></span>
+<span><span class="co">#&gt;  [31] vctrs_0.6.3            generics_0.1.3         xfun_0.40             </span></span>
+<span><span class="co">#&gt;  [34] BiocFileCache_2.4.0    doParallel_1.0.17      GenomeInfoDb_1.32.4   </span></span>
+<span><span class="co">#&gt;  [37] clue_0.3-65            spatstat.utils_3.0-3   bitops_1.0-7          </span></span>
+<span><span class="co">#&gt;  [40] cachem_1.0.8           promises_1.2.1         scales_1.2.1          </span></span>
+<span><span class="co">#&gt;  [43] gtable_0.3.4           globals_0.16.2         goftest_1.2-3         </span></span>
+<span><span class="co">#&gt;  [46] spam_2.9-1             rlang_1.1.1            systemfonts_1.0.4     </span></span>
+<span><span class="co">#&gt;  [49] GlobalOptions_0.1.2    splines_4.2.1          rstatix_0.7.2         </span></span>
+<span><span class="co">#&gt;  [52] lazyeval_0.2.2         spatstat.geom_3.2-5    broom_1.0.5           </span></span>
+<span><span class="co">#&gt;  [55] BiocManager_1.30.22    yaml_2.3.7             reshape2_1.4.4        </span></span>
+<span><span class="co">#&gt;  [58] abind_1.4-5            backports_1.4.1        httpuv_1.6.11         </span></span>
+<span><span class="co">#&gt;  [61] tools_4.2.1            gridBase_0.4-7         ggplot2_3.4.3         </span></span>
+<span><span class="co">#&gt;  [64] ellipsis_0.3.2         jquerylib_0.1.4        ggridges_0.5.4        </span></span>
+<span><span class="co">#&gt;  [67] Rcpp_1.0.11            progress_1.2.2         zlibbioc_1.42.0       </span></span>
+<span><span class="co">#&gt;  [70] purrr_1.0.2            RCurl_1.98-1.12        prettyunits_1.2.0     </span></span>
+<span><span class="co">#&gt;  [73] deldir_1.0-9           ggpubr_0.6.0           pbapply_1.7-2         </span></span>
+<span><span class="co">#&gt;  [76] GetoptLong_1.0.5       cowplot_1.1.1          S4Vectors_0.34.0      </span></span>
+<span><span class="co">#&gt;  [79] zoo_1.8-12             ggrepel_0.9.3          cluster_2.1.4         </span></span>
+<span><span class="co">#&gt;  [82] fs_1.6.3               magrittr_2.0.3         data.table_1.14.8     </span></span>
+<span><span class="co">#&gt;  [85] scattermore_1.2        lmtest_0.9-40          RANN_2.6.1            </span></span>
+<span><span class="co">#&gt;  [88] fitdistrplus_1.1-11    R.cache_0.16.0         matrixStats_1.0.0     </span></span>
+<span><span class="co">#&gt;  [91] hms_1.1.3              patchwork_1.1.3        mime_0.12             </span></span>
+<span><span class="co">#&gt;  [94] evaluate_0.21          xtable_1.8-4           XML_3.99-0.14         </span></span>
+<span><span class="co">#&gt;  [97] IRanges_2.30.1         gridExtra_2.3          shape_1.4.6           </span></span>
+<span><span class="co">#&gt; [100] compiler_4.2.1         biomaRt_2.52.0         tibble_3.2.1          </span></span>
+<span><span class="co">#&gt; [103] KernSmooth_2.23-22     crayon_1.5.2           R.oo_1.25.0           </span></span>
+<span><span class="co">#&gt; [106] htmltools_0.5.6        later_1.3.1            tidyr_1.3.0           </span></span>
+<span><span class="co">#&gt; [109] DBI_1.1.3              dbplyr_2.3.3           MASS_7.3-60           </span></span>
+<span><span class="co">#&gt; [112] rappdirs_0.3.3         Matrix_1.6-1.1         car_3.1-2             </span></span>
+<span><span class="co">#&gt; [115] cli_3.6.1              R.methodsS3_1.8.2      parallel_4.2.1        </span></span>
+<span><span class="co">#&gt; [118] dotCall64_1.0-2        igraph_1.5.1           pkgconfig_2.0.3       </span></span>
+<span><span class="co">#&gt; [121] pkgdown_2.0.7          registry_0.5-1         sp_2.0-0              </span></span>
+<span><span class="co">#&gt; [124] spatstat.sparse_3.0-2  plotly_4.10.2          xml2_1.3.5            </span></span>
+<span><span class="co">#&gt; [127] foreach_1.5.2          bslib_0.5.1            rngtools_1.5.2        </span></span>
+<span><span class="co">#&gt; [130] XVector_0.36.0         stringr_1.5.0          digest_0.6.33         </span></span>
+<span><span class="co">#&gt; [133] sctransform_0.4.0      RcppAnnoy_0.0.21       spatstat.data_3.0-1   </span></span>
+<span><span class="co">#&gt; [136] Biostrings_2.64.1      rmarkdown_2.25         leiden_0.4.3          </span></span>
+<span><span class="co">#&gt; [139] uwot_0.1.16            curl_5.0.2             shiny_1.7.5           </span></span>
+<span><span class="co">#&gt; [142] rjson_0.2.21           nlme_3.1-163           lifecycle_1.0.3       </span></span>
+<span><span class="co">#&gt; [145] jsonlite_1.8.7         carData_3.0-5          desc_1.4.2            </span></span>
+<span><span class="co">#&gt; [148] viridisLite_0.4.2      fansi_1.0.4            pillar_1.9.0          </span></span>
+<span><span class="co">#&gt; [151] lattice_0.21-8         KEGGREST_1.36.3        fastmap_1.1.1         </span></span>
+<span><span class="co">#&gt; [154] httr_1.4.7             survival_3.5-7         glue_1.6.2            </span></span>
+<span><span class="co">#&gt; [157] png_0.1-8              iterators_1.0.14       bit_4.0.5             </span></span>
+<span><span class="co">#&gt; [160] stringi_1.7.12         sass_0.4.7             blob_1.2.4            </span></span>
+<span><span class="co">#&gt; [163] textshaping_0.3.6      memoise_2.0.1          styler_1.10.2         </span></span>
+<span><span class="co">#&gt; [166] dplyr_1.1.3            irlba_2.3.5.1          future.apply_1.11.0</span></span></code></pre></div>
 </details>
 </div>
 </div>

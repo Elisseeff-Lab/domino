@@ -4,7 +4,7 @@
 \alias{cor_scatter}
 \title{Create a correlation plot between transcription factor activation score and receptor}
 \usage{
-cor_scatter(dom, tf, rec, remove_rec_dropout = FALSE, ...)
+cor_scatter(dom, tf, rec, remove_rec_dropout = TRUE, ...)
 }
 \arguments{
 \item{dom}{Domino object with network built (\code{\link[=build_domino]{build_domino()}})}

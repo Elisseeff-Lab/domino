@@ -16,6 +16,7 @@ NULL
 #' @param dom Domino object to rename clusters in
 #' @param clust_conv Named vector of conversions from old to new clusters. Values are taken as new clusters IDs and names as old cluster IDs.
 #' @return A domino object with clusters renamed in all applicable slots.
+#' @keywords internal
 #' @export 
 #' 
 rename_clusters <- function(dom, clust_conv) {
@@ -100,7 +101,9 @@ collate_network_items <- function(dom, clusters = NULL, return = NULL) {
 #' @param conversion_table A data.frame with column names corresponding to gene symbol types (mm.ens, hs.ens, mgi, hgnc)
 #' and rows corresponding to the gene symbols themselves
 #' @return Data frame of genes with original and corresponding converted symbols
+#' @keywords internal
 #' @export
+#' 
 table_convert_genes <- function(genes, from, to, conversion_table) {
   # Check inputs:
   stopifnot(`Genes must be a vector of characters` = (is(genes, "character") & is(genes, "vector")))

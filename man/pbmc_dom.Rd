@@ -3,17 +3,20 @@
 \docType{data}
 \name{pbmc_dom}
 \alias{pbmc_dom}
-\title{Domino object created from PBMC3K single cell RNA sequencing data}
+\title{Example domino object from pbmc3k data}
 \format{
 \subsection{\code{pbmc_dom}}{
 
-A domino object that has been built using SCENIC, CellphoneDB v4, and the domino2 package
+A domino object based on the 10x Genomics pbmc3k data set that serves as an example in tutorials
+and can also be used to explore the object structure and functionality.
 }
 }
 \usage{
 pbmc_dom
 }
 \description{
-A small example domino object created with the \code{pbmc} data
+A small example single cell data set from 10x Genomics that has been through preliminary analysis,
+including normalization, scaling, PCA, UMAP, clustering, and cluster annotation and then used in an example
+domino2 analysis.
 }
-\keyword{internal}
+\keyword{datasets}

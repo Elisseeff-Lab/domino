@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">domino2</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -74,33 +74,55 @@
 <span>  complexes <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  database_name <span class="op">=</span> <span class="st">"CellPhoneDB"</span>,</span>
 <span>  gene_conv <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  gene_conv_host <span class="op">=</span> <span class="st">"https://www.ensembl.org"</span></span>
+<span>  gene_conv_host <span class="op">=</span> <span class="st">"https://www.ensembl.org"</span>,</span>
+<span>  alternate_convert <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  alternate_convert_table <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>genes</dt>
-<dd><p>Dataframe or file path to table of gene names in uniprot, hgnc_symbol, or ensembl format in cellphonedb database format</p></dd>
+<dd><p>dataframe or file path to table of gene names in uniprot, hgnc_symbol, or ensembl format in cellphonedb database format</p></dd>
 
 
 <dt>proteins</dt>
-<dd><p>Dataframe or file path to table of protein features in cellphonedb format</p></dd>
+<dd><p>dataframe or file path to table of protein features in cellphonedb format</p></dd>
 
 
 <dt>interactions</dt>
-<dd><p>Dataframe or file path to table of protein-protein interactions in cellphonedb format</p></dd>
+<dd><p>dataframe or file path to table of protein-protein interactions in cellphonedb format</p></dd>
 
 
 <dt>complexes</dt>
-<dd><p>Optional: dataframe or file path to table of protein complexes in cellphonedb format</p></dd>
+<dd><p>optional: dataframe or file path to table of protein complexes in cellphonedb format</p></dd>
+
+
+<dt>database_name</dt>
+<dd><p>name of the database being used, stored in output</p></dd>
+
+
+<dt>gene_conv</dt>
+<dd><p>a tuple of (from, to) or (source, target) if gene conversion to orthologs is desired; options are ENSMUSG, ENSG, MGI, or HGNC</p></dd>
+
+
+<dt>gene_conv_host</dt>
+<dd><p>host for conversion; default ensembl, could also use mirrors if desired</p></dd>
+
+
+<dt>alternate_convert</dt>
+<dd><p>boolean if you would like to use a non-ensembl method of conversion (must supply table; not recommended, use only if ensembl is down)</p></dd>
+
+
+<dt>alternate_convert_table</dt>
+<dd><p>supplied table for non-ensembl method of conversion</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>A data frame where each row describes a possible receptor-ligand interaction</p>
+<p>Data frame where each row describes a possible receptor-ligand interaction</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

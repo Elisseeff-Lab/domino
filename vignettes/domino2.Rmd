@@ -19,7 +19,6 @@ knitr::opts_chunk$set(
   tidy = 'styler'
 )
 
-load("../data/pbmc.rda")
 ```
 
 ```{r libraries, include=FALSE}
@@ -42,9 +41,9 @@ domino2 is a tool for analysis of intra- and intercellular signaling in single c
 
 Analysis of cell-cell communication with domino2 often follows initial processing and annotation of scRNAseq data.  We are following the [Satija Lab's Guided Clustering Tutorial](https://satijalab.org/seurat/articles/pbmc3k_tutorial) to prepare the data set for analysis with domino2.
 
-```{r, eval=FALSE}
+```{r, eval=TRUE, message = FALSE}
 # Preprocessing of PBMC 3K tutorial data set using Seurat functions
-pbmc.data <- Read10X(data.dir = "../data/pbmc3k_filtered_gene_bc_matrices")
+pbmc.data <- Read10X(data.dir = "../inst/extdata/pbmc3k_filtered_gene_bc_matrices")
 pbmc <- CreateSeuratObject(counts = pbmc.data, project = "pbmc3k", min.cells = 3, min.features = 200)
 pbmc[["percent.mt"]] <- PercentageFeatureSet(pbmc, pattern = "^MT-")
 pbmc <- NormalizeData(pbmc, normalization.method = "LogNormalize", scale.factor = 10000)
@@ -57,7 +56,8 @@ pbmc <- RunUMAP(pbmc, dims = 1:10)
 # Annotate clusters with cell phenotypes
 cell_dict <- data.frame(
   cluster = c(0:8),
-  cell_type = c("naive_CD4_T_cell", "CD14_monocyte", "memory_CD4_T_cell", "B_cell", "CD8_T_cell", "CD16_monocyte", "NK_cell", "dendritic_cell", "platelet")
+  cell_type = c("naive_CD4_T_cell", "CD14_monocyte", "memory_CD4_T_cell", "B_cell", "CD8_T_cell", 
+    "CD16_monocyte", "NK_cell", "dendritic_cell", "platelet")
 )
 pbmc$cell_type <- 
   plyr::mapvalues(
@@ -91,13 +91,13 @@ If you would like to skip ahead to the rest of the analysis, the processed objec
 
 ## Installation
 
-Installation of domino2 from Github can be achieved using the `{remotes}` package. The current stable version is v0.2.1, so we will install that branch.
+Installation of domino2 from Github can be achieved using the `{remotes}` package. The current stable version is v0.2.2, so we will install that branch.
 
 ```{r, eval = FALSE}
 if(!require(remotes)){
     install.packages('remotes')
 }
-remotes::install_github('FertigLab/domino_development@v0.2.1')
+remotes::install_github('FertigLab/domino2@v0.2.2')
 ```
 
 ### Additional Downloads
@@ -108,7 +108,7 @@ For this tutorial, [pySCENIC](https://pyscenic.readthedocs.io/en/latest/) is use
 A singularity image of [SCENIC](https://scenic.aertslab.org/) v0.12.1 can be installed from the DockerHub image as a source (example scripts for use with Docker are provided in the scenic\_bash directory as well). [SCENIC](https://scenic.aertslab.org/) requires a list of TFs, motif annotations, and cisTarget motifs which are all available from the authors of [SCENIC](https://scenic.aertslab.org/) for human (HGNC), mouse (MGI), and fly. The following will download everything necessary for an analysis of a data set with HGNC gene labels for the hg38 genome.
 
 ```{bash, eval=FALSE}
-SCENIC_DIR="../scenic"
+SCENIC_DIR="../inst/extdata/scenic"
 mkdir ${SCENIC_DIR}
 
 # Build singularity image
@@ -141,7 +141,7 @@ curl "https://resources.aertslab.org/cistarget/motif2tf/motifs-v9-nr.hgnc-m0.001
 Database files from [CellPhoneDB v4.0.0](https://github.com/ventolab/cellphonedb-data/releases/tag/v4.0.0) for human scRNAseq data can be installed from a public Github repository from the Tiechmann Group that developed CellPhoneDB.
 
 ```{bash, eval=FALSE}
-CELLPHONE_DIR="../cellphonedb"
+CELLPHONE_DIR="../inst/extdata/cellphoneDB_v4"
 mkdir ${CELLPHONE_DIR}
 
 # Annotation of protein complexes
@@ -235,9 +235,9 @@ singularity exec "${SCENIC_DIR}/aertslab-pyscenic-0.12.1.sif" pyscenic aucell \
 The TF activities are a required input for domino2, and the regulons learned by [SCENIC](https://scenic.aertslab.org/) are an important but optional input needed to annotate TF-target interactions and to prune TF-receptor linkages where the receptor is a target of the TF. This prevents the distinction of receptor expression driving TF activity or the TF inducing the receptor's expression.
 
 ```{r Load SCENIC Results}
-scenic_dir = "../scenic/"
-regulons <- read.csv(paste0(scenic_dir, "/pbmc_regulons.csv"))
-auc <- read.table(paste0(scenic_dir, "/pbmc_auc.csv"),
+scenic_dir = "../inst/extdata/scenic/"
+regulons <- read.csv(paste0(scenic_dir, "/regulons_pbmc_3k.csv"))
+auc <- read.table(paste0(scenic_dir, "/auc_pbmc_3k.csv"),
                   header = TRUE, row.names = 1,
                   stringsAsFactors = FALSE, sep = ",")
 ```
@@ -246,7 +246,8 @@ The initial regulons data frame read into R from the ctx function has 2 rows of 
 
 ```{r Create Regulon List}
 regulons <- regulons[-1:-2,]
-colnames(regulons) <- c("TF", "MotifID", "AUC", "NES", "MotifSimilarityQvalue", "OrthologousIdentity", "Annotation", "Context", "TargetGenes", "RankAtMax")
+colnames(regulons) <- c("TF", "MotifID", "AUC", "NES", "MotifSimilarityQvalue", "OrthologousIdentity", 
+  "Annotation", "Context", "TargetGenes", "RankAtMax")
 regulon_list <- create_regulon_list_scenic(regulons = regulons)
 ```
 
@@ -265,15 +266,15 @@ domino2 has been updated to read ligand-receptor data bases in a uniform data.fr
 - int\_pair: the names of the interacting ligand and receptor separated by " & "
 - gene\_A: the gene or genes encoding partner A
 - gene\_B: the gene or genes encoding partner B
-- type\_A: ("L", "R") whether partner A is a ligand ("L") or receptor ("R")
-- type\_B: ("L", "R") whether partner B is a ligand ("L") or receptor ("R")
+- type\_A: ("L", "R") - indicates whether partner A is a ligand ("L") or receptor ("R")
+- type\_B: ("L", "R") - indicates whether partner B is a ligand ("L") or receptor ("R")
 
 Additional annotation columns can be provided such as name\_A and name\_B for ligands or receptors whose name in the interaction database does not match the names of their encoding genes. This formatting also allows for the consideration of ligand and receptor complexes comprised of a heteromeric combination of multiple proteins that must be co-expressed to function. In these cases, the "name\_\*" column shows the name of the protein complex, and the "gene\_\*" column shows the names of the genes encoding the components of the complex separated by commas ",". When plotting results from the build domino object, the names of the interacting ligands and receptors will be used based on combinatorial expression of the complex components.
 
 To facilitate the use of this formatting with the CellPhoneDB database, we include a helper function, `create_rl_map_cellphonedb()`, that automatically parses files from the cellPhoneDB database to arrive at the rl\_map format.
 
 ```{r Load CellPhoneDB Database}
-cellphonedb_2_path <- "../cellphonedb"
+cellphonedb_2_path <- "../inst/extdata/cellphoneDB_v4/"
 complexes <- read.csv(paste0(cellphonedb_2_path, "/complex_input.csv"), stringsAsFactors = FALSE)
 genes <- read.csv(paste0(cellphonedb_2_path, "/gene_input.csv"), stringsAsFactors = FALSE)
 interactions <- read.csv(paste0(cellphonedb_2_path, "/interaction_input.csv"), stringsAsFactors = FALSE)
@@ -311,11 +312,17 @@ knitr::kable(head(rl_map_append))
 
 domino2 analysis takes place in two steps. 
 1. `create_domino()`
+
   a. initializes the domino result object
+
   b. assesses differential TF activity across cell clusters by wilcoxon rank-sum test
+
   c. establishes TF-receptor linkages based on Spearman correlation of TF activities with receptor expression across the queried data set. 
+
 2. `build_domino()`
+  
   a. sets the parameters for which TFs and receptors are called as active within a cell cluster
+  
   b. aggregates the scaled expression of ligands capable of interacting with the active receptors for assessment of ligand type and cellular source triggering activation of a receptor.
 
 ### Required inputs from data set
@@ -439,7 +446,7 @@ incoming_signaling_heatmap(pbmc_dom, rec_clust = 'dendritic_cell', max_thresh = 
 
 Another form of comprehensive ligand expression assessment is available for individual active receptors in the form of circos plots new to domino2. The outer arcs correspond to clusters in the domino object with inner arcs representing each possible ligand of the plotted receptor. Arcs are drawn between ligands on a cell type and the receptor if the ligand is expressed above the specified threshold. Arc widths correspond to the mean express of the ligand by the cluster with the widest arc width scaling to the maximum expression of the ligand within the data.
 
-```{r, fig.asp = 1.5}
+```{r, fig.asp = 2.5}
 circos_ligand_receptor(pbmc_dom, receptor = "CD74")
 ```
 

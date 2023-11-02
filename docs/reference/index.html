@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">domino2</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -60,7 +60,7 @@
     </div>
 
     <div class="section level2">
-      <h2 id="domino-class">Domino Class<a class="anchor" aria-label="anchor" href="#domino-class"></a></h2>
+      <h2 id="domino-classes">Domino Classes<a class="anchor" aria-label="anchor" href="#domino-classes"></a></h2>
       
       <p class="section-desc"></p><p>An object class designed to store information used and produced in Domino2 analysis</p>
 
@@ -75,6 +75,16 @@
           <code><a href="domino-class.html">domino-class</a></code> <code><a href="domino-class.html">domino</a></code> 
         </dt>
         <dd>The domino Class</dd>
+      </dl><dl><dt>
+          
+          <code><a href="linkage_summary-class.html">linkage_summary-class</a></code> <code><a href="linkage_summary-class.html">linkage_summary</a></code> 
+        </dt>
+        <dd>The domino linkage summary class</dd>
+      </dl><dl><dt>
+          
+          <code><a href="pbmc_dom.html">pbmc_dom</a></code> 
+        </dt>
+        <dd>Example domino object from pbmc3k data</dd>
       </dl></div><div class="section level2">
       <h2 id="analysis-functions">Analysis Functions<a class="anchor" aria-label="anchor" href="#analysis-functions"></a></h2>
       
@@ -106,6 +116,16 @@
           <code><a href="build_domino.html">build_domino()</a></code> 
         </dt>
         <dd>Calculate a signaling network for a domino object</dd>
+      </dl><dl><dt>
+          
+          <code><a href="summarize_linkages.html">summarize_linkages()</a></code> 
+        </dt>
+        <dd>Summarize linkages from multiple domino objects</dd>
+      </dl><dl><dt>
+          
+          <code><a href="test_differential_linkages.html">test_differential_linkages()</a></code> 
+        </dt>
+        <dd>Statistical test for differential linkages across multiple domino results</dd>
       </dl></div><div class="section level2">
       <h2 id="plotting-functions">Plotting Functions<a class="anchor" aria-label="anchor" href="#plotting-functions"></a></h2>
       
@@ -185,6 +205,11 @@
           <code><a href="cor_scatter.html">cor_scatter()</a></code> 
         </dt>
         <dd>Create a correlation plot between transcription factor activation score and receptor</dd>
+      </dl><dl><dt>
+          
+          <code><a href="plot_differential_linkages.html">plot_differential_linkages()</a></code> 
+        </dt>
+        <dd>Plot differential linkages among domino results ranked by a comparative statistic</dd>
       </dl></div><div class="section level2">
       <h2 id="helper-functions">Helper Functions<a class="anchor" aria-label="anchor" href="#helper-functions"></a></h2>
       
@@ -211,6 +236,11 @@
           <code><a href="convert_genes.html">convert_genes()</a></code> 
         </dt>
         <dd>Use biomaRt to convert genes</dd>
+      </dl><dl><dt>
+          
+          <code><a href="count_linkage.html">count_linkage()</a></code> 
+        </dt>
+        <dd>Count occurrences of linkages across multiple domino results from a linkage summary</dd>
       </dl><dl><dt>
           
           <code><a href="mean_ligand_expression.html">mean_ligand_expression()</a></code> 
