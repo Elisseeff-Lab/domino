@@ -124,10 +124,7 @@
 <p><img src="plotting_vignette_files/figure-html/corheatmap-subset-1.png" width="700"></p>
 <p>The heatmap functions in domino2 are based on <code><a href="https://rdrr.io/pkg/NMF/man/aheatmap.html" class="external-link">NMF::aheatmap()</a></code> and will also accept additional arguments meant for that function. For example, while an argument for clustering rows or columns of the heatmap is not explicitly stated, they can still be passed to <code><a href="https://rdrr.io/pkg/NMF/man/aheatmap.html" class="external-link">NMF::aheatmap()</a></code> through <code><a href="../reference/cor_heatmap.html">cor_heatmap()</a></code>.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/cor_heatmap.html">cor_heatmap</a></span><span class="op">(</span><span class="va">dom</span>,</span>
-<span>  title <span class="op">=</span> <span class="cn">FALSE</span>, Rowv <span class="op">=</span> <span class="cn">NA</span>, Colv <span class="op">=</span> <span class="cn">NA</span>,</span>
-<span>  main <span class="op">=</span> <span class="st">"Heatmap Without Clustering"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/cor_heatmap.html">cor_heatmap</a></span><span class="op">(</span><span class="va">dom</span>, title <span class="op">=</span> <span class="cn">FALSE</span>, Rowv <span class="op">=</span> <span class="cn">NA</span>, Colv <span class="op">=</span> <span class="cn">NA</span>, main <span class="op">=</span> <span class="st">"Heatmap Without Clustering"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="plotting_vignette_files/figure-html/corheatmap-nmf-args-1.png" width="700"></p>
 </div>
 <div class="section level4">
@@ -139,10 +136,7 @@
 <p><img src="plotting_vignette_files/figure-html/featheatmap-1.png" width="700"></p>
 <p>It functions similarly to <code><a href="../reference/cor_heatmap.html">cor_heatmap()</a></code>, with arguments to select a specific vector of features, to use a boolean view with a threshold, and to pass other arguments to <code><a href="https://rdrr.io/pkg/NMF/man/aheatmap.html" class="external-link">NMF::aheatmap()</a></code>. Specific to this function though are arguments for setting the range of values to be visualized and one to choose whether or not to normalize the scores to the max value.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/feat_heatmap.html">feat_heatmap</a></span><span class="op">(</span><span class="va">dom</span>,</span>
-<span>  min_thresh <span class="op">=</span> <span class="fl">0.1</span>, max_thresh <span class="op">=</span> <span class="fl">0.6</span>,</span>
-<span>  norm <span class="op">=</span> <span class="cn">TRUE</span>, bool <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/feat_heatmap.html">feat_heatmap</a></span><span class="op">(</span><span class="va">dom</span>, min_thresh <span class="op">=</span> <span class="fl">0.1</span>, max_thresh <span class="op">=</span> <span class="fl">0.6</span>, norm <span class="op">=</span> <span class="cn">TRUE</span>, bool <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/feat_heatmap.html">feat_heatmap</a></span><span class="op">(</span><span class="va">dom</span>, bool <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="plotting_vignette_files/figure-html/featheatmap-options-1.png" width="50%"><img src="plotting_vignette_files/figure-html/featheatmap-options-2.png" width="50%"></p>
 </div>
@@ -185,17 +179,13 @@
 <p><img src="plotting_vignette_files/figure-html/genenetwork-1.png" width="700"></p>
 <p>Options to modify this plot include adjusting scaling for the ligands and different layouts (some of which are more legible than others).</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/gene_network.html">gene_network</a></span><span class="op">(</span><span class="va">dom</span>,</span>
-<span>  clust <span class="op">=</span> <span class="st">"CD16_monocyte"</span>, OutgoingSignalingClust <span class="op">=</span> <span class="st">"CD14_monocyte"</span>,</span>
-<span>  lig_scale <span class="op">=</span> <span class="fl">25</span>, layout <span class="op">=</span> <span class="st">"sphere"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/gene_network.html">gene_network</a></span><span class="op">(</span><span class="va">dom</span>, clust <span class="op">=</span> <span class="st">"CD16_monocyte"</span>, OutgoingSignalingClust <span class="op">=</span> <span class="st">"CD14_monocyte"</span>,</span>
+<span>    lig_scale <span class="op">=</span> <span class="fl">25</span>, layout <span class="op">=</span> <span class="st">"sphere"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="plotting_vignette_files/figure-html/genenetwork-options-1.png" width="700"></p>
 <p>Additionally, colors can be given for select genes (for example, to highlight a specific signaling path).</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/gene_network.html">gene_network</a></span><span class="op">(</span><span class="va">dom</span>,</span>
-<span>  clust <span class="op">=</span> <span class="st">"CD16_monocyte"</span>, OutgoingSignalingClust <span class="op">=</span> <span class="st">"CD14_monocyte"</span>,</span>
-<span>  cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CD1D"</span> <span class="op">=</span> <span class="st">"violet"</span>, <span class="st">"LILRB2"</span> <span class="op">=</span> <span class="st">"violet"</span>, <span class="st">"FOSB"</span> <span class="op">=</span> <span class="st">"violet"</span><span class="op">)</span>, lig_scale <span class="op">=</span> <span class="fl">10</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/gene_network.html">gene_network</a></span><span class="op">(</span><span class="va">dom</span>, clust <span class="op">=</span> <span class="st">"CD16_monocyte"</span>, OutgoingSignalingClust <span class="op">=</span> <span class="st">"CD14_monocyte"</span>,</span>
+<span>    cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>CD1D <span class="op">=</span> <span class="st">"violet"</span>, LILRB2 <span class="op">=</span> <span class="st">"violet"</span>, FOSB <span class="op">=</span> <span class="st">"violet"</span><span class="op">)</span>, lig_scale <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
 <p><img src="plotting_vignette_files/figure-html/genenetwork-cols-1.png" width="700"></p>
 </div>
 <div class="section level4">
@@ -207,10 +197,8 @@
 <p><img src="plotting_vignette_files/figure-html/signalingnet-1.png" width="700"></p>
 <p>In addition to changes such as scaling, thresholds, or layouts, this plot can be modified by selecting incoming or outgoing clusters (or both!). An example to view signaling from the CD14 Monocytes to other cluster:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/signaling_network.html">signaling_network</a></span><span class="op">(</span><span class="va">dom</span>,</span>
-<span>  showOutgoingSignalingClusts <span class="op">=</span> <span class="st">"CD14_monocyte"</span>, scale <span class="op">=</span> <span class="st">"none"</span>,</span>
-<span>  norm <span class="op">=</span> <span class="st">"none"</span>, layout <span class="op">=</span> <span class="st">"fr"</span>, scale_by <span class="op">=</span> <span class="st">"none"</span>, vert_scale <span class="op">=</span> <span class="fl">5</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/signaling_network.html">signaling_network</a></span><span class="op">(</span><span class="va">dom</span>, showOutgoingSignalingClusts <span class="op">=</span> <span class="st">"CD14_monocyte"</span>, scale <span class="op">=</span> <span class="st">"none"</span>,</span>
+<span>    norm <span class="op">=</span> <span class="st">"none"</span>, layout <span class="op">=</span> <span class="st">"fr"</span>, scale_by <span class="op">=</span> <span class="st">"none"</span>, vert_scale <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></code></pre></div>
 <p><img src="plotting_vignette_files/figure-html/signalingnet-clusts-1.png" width="700"></p>
 </div>
 </div>
@@ -226,11 +214,9 @@
 <p><img src="plotting_vignette_files/figure-html/circos-1.png" width="700"></p>
 <p>This function can be given cluster colors to match other plots you may make with your data. In addition, the plot can be adjusted by changing the threshold of ligand expression required for a linkage to be visualized or selecting clusters of interest.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cols</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>  <span class="st">"red"</span>, <span class="st">"orange"</span>, <span class="st">"green"</span>, <span class="st">"blue"</span>, <span class="st">"pink"</span>, <span class="st">"purple"</span>,</span>
-<span>  <span class="st">"slategrey"</span>, <span class="st">"firebrick"</span>, <span class="st">"hotpink"</span></span>
-<span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">cols</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">dom</span><span class="op">@</span><span class="va">clusters</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">cols</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red"</span>, <span class="st">"orange"</span>, <span class="st">"green"</span>, <span class="st">"blue"</span>, <span class="st">"pink"</span>, <span class="st">"purple"</span>, <span class="st">"slategrey"</span>, <span class="st">"firebrick"</span>,</span>
+<span>    <span class="st">"hotpink"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">cols</span><span class="op">)</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="va">dom</span><span class="op">@</span><span class="va">clusters</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/circos_ligand_receptor.html">circos_ligand_receptor</a></span><span class="op">(</span><span class="va">dom</span>, receptor <span class="op">=</span> <span class="st">"CD74"</span>, cell_colors <span class="op">=</span> <span class="va">cols</span><span class="op">)</span></span></code></pre></div>
 <p><img src="plotting_vignette_files/figure-html/circos-opt-1.png" width="700"></p>
 </div>
@@ -287,42 +273,41 @@
 <span><span class="co">#&gt;   [7] GlobalOptions_0.1.2    fs_1.6.3               clue_0.3-65           </span></span>
 <span><span class="co">#&gt;  [10] farver_2.1.1           ggpubr_0.6.0           bit64_4.0.5           </span></span>
 <span><span class="co">#&gt;  [13] AnnotationDbi_1.58.0   fansi_1.0.4            xml2_1.3.5            </span></span>
-<span><span class="co">#&gt;  [16] splines_4.2.1          codetools_0.2-19       R.methodsS3_1.8.2     </span></span>
-<span><span class="co">#&gt;  [19] doParallel_1.0.17      cachem_1.0.8           knitr_1.44            </span></span>
-<span><span class="co">#&gt;  [22] jsonlite_1.8.7         broom_1.0.5            gridBase_0.4-7        </span></span>
-<span><span class="co">#&gt;  [25] cluster_2.1.4          dbplyr_2.3.3           png_0.1-8             </span></span>
-<span><span class="co">#&gt;  [28] R.oo_1.25.0            BiocManager_1.30.22    compiler_4.2.1        </span></span>
-<span><span class="co">#&gt;  [31] httr_1.4.7             backports_1.4.1        Matrix_1.6-1.1        </span></span>
-<span><span class="co">#&gt;  [34] fastmap_1.1.1          cli_3.6.1              htmltools_0.5.6       </span></span>
-<span><span class="co">#&gt;  [37] prettyunits_1.2.0      tools_4.2.1            igraph_1.5.1          </span></span>
-<span><span class="co">#&gt;  [40] gtable_0.3.4           glue_1.6.2             GenomeInfoDbData_1.2.8</span></span>
-<span><span class="co">#&gt;  [43] reshape2_1.4.4         dplyr_1.1.3            rappdirs_0.3.3        </span></span>
-<span><span class="co">#&gt;  [46] Rcpp_1.0.11            carData_3.0-5          jquerylib_0.1.4       </span></span>
-<span><span class="co">#&gt;  [49] styler_1.10.2          pkgdown_2.0.7          NMF_0.26              </span></span>
-<span><span class="co">#&gt;  [52] vctrs_0.6.3            Biostrings_2.64.1      nlme_3.1-163          </span></span>
-<span><span class="co">#&gt;  [55] iterators_1.0.14       xfun_0.40              stringr_1.5.0         </span></span>
-<span><span class="co">#&gt;  [58] lifecycle_1.0.3        rngtools_1.5.2         rstatix_0.7.2         </span></span>
-<span><span class="co">#&gt;  [61] XML_3.99-0.14          zlibbioc_1.42.0        scales_1.2.1          </span></span>
-<span><span class="co">#&gt;  [64] ragg_1.2.5             hms_1.1.3              parallel_4.2.1        </span></span>
-<span><span class="co">#&gt;  [67] ComplexHeatmap_2.12.1  yaml_2.3.7             curl_5.0.2            </span></span>
-<span><span class="co">#&gt;  [70] memoise_2.0.1          ggplot2_3.4.3          sass_0.4.7            </span></span>
-<span><span class="co">#&gt;  [73] biomaRt_2.52.0         stringi_1.7.12         RSQLite_2.3.1         </span></span>
-<span><span class="co">#&gt;  [76] S4Vectors_0.34.0       desc_1.4.2             foreach_1.5.2         </span></span>
-<span><span class="co">#&gt;  [79] filelock_1.0.2         shape_1.4.6            GenomeInfoDb_1.32.4   </span></span>
-<span><span class="co">#&gt;  [82] rlang_1.1.1            pkgconfig_2.0.3        systemfonts_1.0.4     </span></span>
-<span><span class="co">#&gt;  [85] matrixStats_1.0.0      bitops_1.0-7           evaluate_0.21         </span></span>
-<span><span class="co">#&gt;  [88] lattice_0.21-8         purrr_1.0.2            labeling_0.4.3        </span></span>
-<span><span class="co">#&gt;  [91] bit_4.0.5              tidyselect_1.2.0       plyr_1.8.8            </span></span>
-<span><span class="co">#&gt;  [94] magrittr_2.0.3         R6_2.5.1               IRanges_2.30.1        </span></span>
-<span><span class="co">#&gt;  [97] generics_0.1.3         DBI_1.1.3              mgcv_1.9-0            </span></span>
-<span><span class="co">#&gt; [100] withr_2.5.1            pillar_1.9.0           KEGGREST_1.36.3       </span></span>
-<span><span class="co">#&gt; [103] abind_1.4-5            RCurl_1.98-1.12        tibble_3.2.1          </span></span>
-<span><span class="co">#&gt; [106] crayon_1.5.2           car_3.1-2              utf8_1.2.3            </span></span>
-<span><span class="co">#&gt; [109] BiocFileCache_2.4.0    rmarkdown_2.25         GetoptLong_1.0.5      </span></span>
-<span><span class="co">#&gt; [112] progress_1.2.2         grid_4.2.1             blob_1.2.4            </span></span>
-<span><span class="co">#&gt; [115] digest_0.6.33          R.cache_0.16.0         tidyr_1.3.0           </span></span>
-<span><span class="co">#&gt; [118] R.utils_2.12.2         textshaping_0.3.6      stats4_4.2.1          </span></span>
-<span><span class="co">#&gt; [121] munsell_0.5.0          registry_0.5-1         bslib_0.5.1</span></span></code></pre></div>
+<span><span class="co">#&gt;  [16] codetools_0.2-19       splines_4.2.1          doParallel_1.0.17     </span></span>
+<span><span class="co">#&gt;  [19] cachem_1.0.8           knitr_1.44             jsonlite_1.8.7        </span></span>
+<span><span class="co">#&gt;  [22] broom_1.0.5            gridBase_0.4-7         cluster_2.1.4         </span></span>
+<span><span class="co">#&gt;  [25] dbplyr_2.3.3           png_0.1-8              BiocManager_1.30.22   </span></span>
+<span><span class="co">#&gt;  [28] compiler_4.2.1         httr_1.4.7             backports_1.4.1       </span></span>
+<span><span class="co">#&gt;  [31] Matrix_1.6-1.1         fastmap_1.1.1          cli_3.6.1             </span></span>
+<span><span class="co">#&gt;  [34] formatR_1.14           htmltools_0.5.6        prettyunits_1.2.0     </span></span>
+<span><span class="co">#&gt;  [37] tools_4.2.1            igraph_1.5.1           gtable_0.3.4          </span></span>
+<span><span class="co">#&gt;  [40] glue_1.6.2             GenomeInfoDbData_1.2.8 reshape2_1.4.4        </span></span>
+<span><span class="co">#&gt;  [43] dplyr_1.1.3            rappdirs_0.3.3         Rcpp_1.0.11           </span></span>
+<span><span class="co">#&gt;  [46] carData_3.0-5          jquerylib_0.1.4        pkgdown_2.0.7         </span></span>
+<span><span class="co">#&gt;  [49] NMF_0.26               vctrs_0.6.3            Biostrings_2.64.1     </span></span>
+<span><span class="co">#&gt;  [52] nlme_3.1-163           iterators_1.0.14       xfun_0.40             </span></span>
+<span><span class="co">#&gt;  [55] stringr_1.5.0          lifecycle_1.0.3        rngtools_1.5.2        </span></span>
+<span><span class="co">#&gt;  [58] rstatix_0.7.2          XML_3.99-0.14          zlibbioc_1.42.0       </span></span>
+<span><span class="co">#&gt;  [61] scales_1.2.1           ragg_1.2.5             hms_1.1.3             </span></span>
+<span><span class="co">#&gt;  [64] parallel_4.2.1         ComplexHeatmap_2.12.1  yaml_2.3.7            </span></span>
+<span><span class="co">#&gt;  [67] curl_5.0.2             memoise_2.0.1          ggplot2_3.4.4         </span></span>
+<span><span class="co">#&gt;  [70] sass_0.4.7             biomaRt_2.52.0         stringi_1.7.12        </span></span>
+<span><span class="co">#&gt;  [73] RSQLite_2.3.1          S4Vectors_0.34.0       desc_1.4.2            </span></span>
+<span><span class="co">#&gt;  [76] foreach_1.5.2          filelock_1.0.2         shape_1.4.6           </span></span>
+<span><span class="co">#&gt;  [79] GenomeInfoDb_1.32.4    rlang_1.1.1            pkgconfig_2.0.3       </span></span>
+<span><span class="co">#&gt;  [82] systemfonts_1.0.4      matrixStats_1.0.0      bitops_1.0-7          </span></span>
+<span><span class="co">#&gt;  [85] evaluate_0.21          lattice_0.21-8         purrr_1.0.2           </span></span>
+<span><span class="co">#&gt;  [88] labeling_0.4.3         bit_4.0.5              tidyselect_1.2.0      </span></span>
+<span><span class="co">#&gt;  [91] plyr_1.8.8             magrittr_2.0.3         R6_2.5.1              </span></span>
+<span><span class="co">#&gt;  [94] IRanges_2.30.1         generics_0.1.3         DBI_1.1.3             </span></span>
+<span><span class="co">#&gt;  [97] pillar_1.9.0           withr_2.5.1            mgcv_1.9-0            </span></span>
+<span><span class="co">#&gt; [100] KEGGREST_1.36.3        abind_1.4-5            RCurl_1.98-1.12       </span></span>
+<span><span class="co">#&gt; [103] tibble_3.2.1           crayon_1.5.2           car_3.1-2             </span></span>
+<span><span class="co">#&gt; [106] utf8_1.2.3             BiocFileCache_2.4.0    rmarkdown_2.25        </span></span>
+<span><span class="co">#&gt; [109] GetoptLong_1.0.5       progress_1.2.2         grid_4.2.1            </span></span>
+<span><span class="co">#&gt; [112] blob_1.2.4             digest_0.6.33          tidyr_1.3.0           </span></span>
+<span><span class="co">#&gt; [115] textshaping_0.3.6      stats4_4.2.1           munsell_0.5.0         </span></span>
+<span><span class="co">#&gt; [118] registry_0.5-1         bslib_0.5.1</span></span></code></pre></div>
 </details>
 </div>
 </div>

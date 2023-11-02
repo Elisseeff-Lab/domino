@@ -76,13 +76,13 @@ pbmc_dom <- create_domino(
 
 # Build domino object with parameters
 pbmc_dom <- build_domino(
-  dom = pbmc_dom,
-  min_tf_pval = .001, # Threshold for p-value of DE for TFs
-  max_tf_per_clust = 25,
-  max_rec_per_tf = 25,
-  rec_tf_cor_threshold = .25, # Minimum correlation between receptor and TF
-  min_rec_percentage = 0.1 # Minimum percent of cells that must express receptor
+    dom = pbmc_dom,
+    min_tf_pval = .001, # Threshold for p-value of DE for TFs
+    max_tf_per_clust = 25,
+    max_rec_per_tf = 25,
+    rec_tf_cor_threshold = .25, # Minimum correlation between receptor and TF
+    min_rec_percentage = 0.1 # Minimum percent of cells that must express receptor
 )
 
 # Save
-usethis::use_data(pbmc_dom, compress = "xz")
+usethis::use_data(pbmc_dom, compress = "xz", overwrite = TRUE)

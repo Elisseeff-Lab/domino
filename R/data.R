@@ -7,5 +7,6 @@
 #' @format ## `pbmc_dom`
 #' A domino object based on the 10x Genomics pbmc3k data set that serves as an example in tutorials
 #' and can also be used to explore the object structure and functionality.
-#'
+#' 
+#' @usage data(pbmc_dom)
 "pbmc_dom"

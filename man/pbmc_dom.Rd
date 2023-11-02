@@ -12,7 +12,7 @@ and can also be used to explore the object structure and functionality.
 }
 }
 \usage{
-pbmc_dom
+data(pbmc_dom)
 }
 \description{
 A small example single cell data set from 10x Genomics that has been through preliminary analysis,
