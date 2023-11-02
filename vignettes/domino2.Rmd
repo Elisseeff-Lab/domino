@@ -75,14 +75,14 @@ domino2 was designed to be compatible with `{Seurat}` objects in addition to acc
 save(pbmc, file = "../data/pbmc.rda")
 
 # save loom counts matrix
-pbmc_counts <- pbmc@assays$RNA@counts
+pbmc_counts <- GetAssayData(object = pbmc, slot = "counts")
 pbmc_loom <- loomR::create(filename = "../inst/extdata/pbmc3k_counts.loom", data = pbmc_counts)
 pbmc_loom$close_all() # Remember to manually close connection to loom files!
 ```
 
 The cell x gene counts matrix may also be saved as a tab-separated value (.tsv) file if `{loomR}` cannot be used on your computing resource, but be aware that dense formatting of a .tsv can lead to very large file sizes and slow processing for large data sets. We have provided the necessary code below, but due to the large file size, this .tsv file is not provided in our data directory.
 ```{r Save Counts Matrix tsv File, eval=FALSE}
-pbmc_counts <- pbmc@assays$RNA@counts
+pbmc_counts <- GetAssayData(object = pbmc, slot = "counts")
 write.table(t(as.matrix(pbmc_counts)), "../data/pbmc3k_counts.tsv", 
     sep = "\t", col.names = NA)
 ```
@@ -330,9 +330,9 @@ domino2 analysis takes place in two steps.
 domino2 infers active receipt of signals via receptors based on the correlation of the receptor's expression with TF activity across the data set and differential activity of the TF within a cell cluster. Correlations are conducted using scaled expression values rather than raw counts or normalized counts. For assessment of receptor activity on a per cell type basis, a named vector of cell cluster assignments, where the names are cell barcodes matching the expression matrix, are provided. Assessing signaling based on other categorical groupings of cells can be achieved by passing these groupings as "clusters" to `build_domino()` in place of cell types. domino2 accepts either a `{Seurat}` object with counts, scaled counts, and clusters included, or it requires a matrix of counts, a matrix of scaled counts, and a named vector of cell cluster labels as factors. Shown below is how to extract these elements from a `{Seurat}` object.
 
 ```{r load cell features}
-counts <- pbmc@assays$RNA@counts
-z_scores <- as.matrix(pbmc@assays$RNA@scale.data)
-clusters <- as.factor(pbmc$cell_type)
+counts <- GetAssayData(object = pbmc, slot = "counts")
+z_scores <- as.matrix(GetAssayData(object = pbmc, slot = "scale.data"))
+clusters <- as.factor(pbmc[["cell_type"]])
 ```
 
 Note: Ligand and receptor expression can only be assessed for genes included in the z\_scores matrix. Many scRNAseq analysis pipelines recommend storing only genes with high variance in scaled expression slots for these data objects, thereby missing many genes encoding ligands and receptors. **Ensure that all your genes of interest are included in the rows of your z\_scores matrix.** Scaled expression was calculated for all genes in this PBMC data set after removal of genes expressed in less than 3 cells. 

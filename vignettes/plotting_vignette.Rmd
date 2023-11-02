@@ -144,7 +144,7 @@ This function can be given cluster colors to match other plots you may make with
 ```{r circos-opt, fig.asp = 0.8}
 cols = c("red", "orange", "green", "blue", "pink", "purple",
   "slategrey", "firebrick", "hotpink")
-names(cols) = levels(dom@clusters)
+names(cols) = levels(dom[["clusters"]])
 circos_ligand_receptor(dom, receptor = "CD74", cell_colors = cols)
 ```
 
