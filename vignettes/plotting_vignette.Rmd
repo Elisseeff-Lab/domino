@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
   message = FALSE,
   warning = FALSE,
   fig.cap="",
-  tidy = "styler"
+  tidy = TRUE
 )
 
 load("../data/pbmc_dom.rda")
@@ -136,12 +136,12 @@ signaling_network(dom, showOutgoingSignalingClusts = "CD14_monocyte", scale = "n
 
 ### Chord Diagrams Connecting Ligands and Receptors
 A new addition to domino2, `circos_ligand_receptor()` creates a chord plot showing ligands that can activate a specific receptor, displaying mean cluster expression of the ligand with the width of the chord.
-```{r circos, fig.asp = 2.5}
+```{r circos, fig.asp = 0.8}
 circos_ligand_receptor(dom, receptor = "CD74")
 ```
 
 This function can be given cluster colors to match other plots you may make with your data. In addition, the plot can be adjusted by changing the threshold of ligand expression required for a linkage to be visualized or selecting clusters of interest.
-```{r circos-opt, fig.asp = 2.5}
+```{r circos-opt, fig.asp = 0.8}
 cols = c("red", "orange", "green", "blue", "pink", "purple",
   "slategrey", "firebrick", "hotpink")
 names(cols) = levels(dom@clusters)

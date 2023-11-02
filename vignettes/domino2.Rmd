@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
   message = FALSE,
   warning = FALSE,
   fig.cap="",
-  tidy = 'styler'
+  tidy = TRUE
 )
 
 ```
@@ -446,7 +446,7 @@ incoming_signaling_heatmap(pbmc_dom, rec_clust = 'dendritic_cell', max_thresh = 
 
 Another form of comprehensive ligand expression assessment is available for individual active receptors in the form of circos plots new to domino2. The outer arcs correspond to clusters in the domino object with inner arcs representing each possible ligand of the plotted receptor. Arcs are drawn between ligands on a cell type and the receptor if the ligand is expressed above the specified threshold. Arc widths correspond to the mean express of the ligand by the cluster with the widest arc width scaling to the maximum expression of the ligand within the data.
 
-```{r, fig.asp = 2.5}
+```{r, fig.asp = 0.8}
 circos_ligand_receptor(pbmc_dom, receptor = "CD74")
 ```
 

@@ -111,11 +111,11 @@ incoming_signaling_heatmap <- function(dom, rec_clust, clusts = NULL, min_thresh
     stop("Do not recognize normalize input")
   }
   if (title == TRUE) {
-    aheatmap(mat, main = paste0("Expression of ligands targeting cluster ", rec_clust), ...)
+    return(aheatmap(mat, main = paste0("Expression of ligands targeting cluster ", rec_clust), ...))
   } else if (title == FALSE) {
-    aheatmap(mat, ...)
+    return(aheatmap(mat, ...))
   } else {
-    aheatmap(mat, main = title, ...)
+    return(aheatmap(mat, main = title, ...))
   }
 }
 #' Create a cluster to cluster signaling network diagram
