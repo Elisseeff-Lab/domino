@@ -16,7 +16,8 @@ knitr::opts_chunk$set(
   message = FALSE,
   warning = FALSE,
   fig.cap="",
-  tidy = TRUE
+  tidy = "styler",
+  global.device = TRUE
 )
 
 ```
@@ -59,6 +60,7 @@ cell_dict <- data.frame(
   cell_type = c("naive_CD4_T_cell", "CD14_monocyte", "memory_CD4_T_cell", "B_cell", "CD8_T_cell", 
     "CD16_monocyte", "NK_cell", "dendritic_cell", "platelet")
 )
+
 pbmc$cell_type <- 
   plyr::mapvalues(
     pbmc$seurat_clusters,
@@ -332,7 +334,7 @@ domino2 infers active receipt of signals via receptors based on the correlation 
 ```{r load cell features}
 counts <- GetAssayData(object = pbmc, slot = "counts")
 z_scores <- as.matrix(GetAssayData(object = pbmc, slot = "scale.data"))
-clusters <- as.factor(pbmc[["cell_type"]])
+clusters <- pbmc$cell_type
 ```
 
 Note: Ligand and receptor expression can only be assessed for genes included in the z\_scores matrix. Many scRNAseq analysis pipelines recommend storing only genes with high variance in scaled expression slots for these data objects, thereby missing many genes encoding ligands and receptors. **Ensure that all your genes of interest are included in the rows of your z\_scores matrix.** Scaled expression was calculated for all genes in this PBMC data set after removal of genes expressed in less than 3 cells. 
@@ -397,7 +399,7 @@ pbmc_dom_all <- build_domino(
   max_tf_per_clust = Inf,
   max_rec_per_tf = Inf,
   rec_tf_cor_threshold = .25,
-  min_rec_percentage = 0.1
+  min_rec_percentage = 0.1,
 )
 ```
 
