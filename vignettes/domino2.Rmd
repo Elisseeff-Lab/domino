@@ -332,7 +332,7 @@ domino2 infers active receipt of signals via receptors based on the correlation 
 ```{r load cell features}
 counts <- GetAssayData(object = pbmc, slot = "counts")
 z_scores <- as.matrix(GetAssayData(object = pbmc, slot = "scale.data"))
-clusters <- as.factor(pbmc[["cell_type"]])
+clusters <- pbmc$cell_type
 ```
 
 Note: Ligand and receptor expression can only be assessed for genes included in the z\_scores matrix. Many scRNAseq analysis pipelines recommend storing only genes with high variance in scaled expression slots for these data objects, thereby missing many genes encoding ligands and receptors. **Ensure that all your genes of interest are included in the rows of your z\_scores matrix.** Scaled expression was calculated for all genes in this PBMC data set after removal of genes expressed in less than 3 cells. 
@@ -344,28 +344,37 @@ At this point, the `create_domino()` function can be used to make the object. Pa
 To run `create_domino()` with matrix and vector inputs:
 ```{r Create Domino, results='hide', warning=FALSE}
 pbmc_dom <- create_domino(
-  rl_map = rl_map,             # receptor-ligand map data frame
-  features = auc_in,           # TF scores (AUC matrix)
-  counts = counts,             # counts matrix
-  z_scores = z_scores,         # scaled expression data
-  clusters = clusters,         # vector of cell cluster assignments
-  tf_targets = regulon_list,   # list of TFs and their regulons
-  use_clusters = TRUE,         # assess receptor activation and ligand expression on a per-cluster basis
-  use_complexes = TRUE,        # include receptors and genes that function as a complex in results
-  remove_rec_dropout = FALSE   # whether to remove zeroes from correlation calculations
+  rl_map = rl_map,
+  features = auc_in,
+  counts = counts,
+  z_scores = z_scores,
+  clusters = clusters,
+  tf_targets = regulon_list,
+  use_clusters = TRUE,
+  use_complexes = TRUE,
+  remove_rec_dropout = FALSE
 )
+# rl_map: receptor-ligand map data frame
+# features: TF scores (AUC matrix)
+# counts: counts matrix
+# z_scores: scaled expression data
+# clusters: named vector of cell cluster assignments
+# tf_targets: list of TFs and their regulons
+# use_clusters: assess receptor activation and ligand expression on a per-cluster basis
+# use_complexes: include receptors and genes that function as a complex in results
+# remove_rec_dropout: whether to remove zeroes from correlation calculations
 ```
 
 The above results will be equivalent to using the `{Seurat}` object directly. Note that inclusion of both the matrix inputs and the `{Seurat}` object will prioritize the `{Seurat}` object.
 ```{r Create Domino Seurat, results='hide', warning=FALSE, eval = FALSE}
 pbmc_dom <- create_domino(
-  rl_map = rl_map,             # receptor-ligand map data frame
-  features = auc_in,           # TF scores (AUC matrix)
-  ser = pbmc,                  # Seurat object containing counts, scaled counts, and cell cluster assignments
-  tf_targets = regulon_list,   # list of TFs and their regulons
-  use_clusters = TRUE,         # assess receptor activation and ligand expression on a per-cluster basis
-  use_complexes = TRUE,        # include receptors and genes that function as a complex in results
-  remove_rec_dropout = FALSE   # whether to remove zeroes from correlation calculations
+  rl_map = rl_map,
+  features = auc_in,
+  ser = pbmc,
+  tf_targets = regulon_list, 
+  use_clusters = TRUE,
+  use_complexes = TRUE,
+  remove_rec_dropout = FALSE
 )
 ```
 
@@ -380,12 +389,15 @@ There are also options for thresholds of the number of TFs that may be called ac
 ```{r Build Domino}
 pbmc_dom <- build_domino(
   dom = pbmc_dom,
-  min_tf_pval = .001, # Threshold for p-value of DE for TFs
+  min_tf_pval = .001,
   max_tf_per_clust = 25,
   max_rec_per_tf = 25,
-  rec_tf_cor_threshold = .25, # Minimum correlation between receptor and TF
-  min_rec_percentage = 0.1 # Minimum percent of cells that must express receptor
+  rec_tf_cor_threshold = .25,
+  min_rec_percentage = 0.1 
 )
+# min_tf_pval: Threshold for p-value of DE for TFs
+# rec_tf_cor_threshold: Minimum correlation between receptor and TF
+# min_rec_percentage: Minimum percent of cells that must express receptor
 ```
 
 Both of the thresholds for the number of receptors and TFs can be sent to infinity (Inf) to collect all receptors and TFs that meet statistical significance thresholds.
