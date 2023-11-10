@@ -53,10 +53,13 @@ tfs <- c("PAX5", "JUNB", "FOXJ3", "FOSB")
 cor_heatmap(dom, feats = tfs, recs = receptors)
 ```
 
-The heatmap functions in domino2 are based on `NMF::aheatmap()` and will also accept additional arguments meant for that function. For example, while an argument for clustering rows or columns of the heatmap is not explicitly stated, they can still be passed to `NMF::aheatmap()` through `cor_heatmap()`.
-```{r corheatmap-nmf-args}
-cor_heatmap(dom, title = FALSE, Rowv = NA, Colv = NA,
-    main = "Heatmap Without Clustering")
+The heatmap functions in domino2 are based on `ComplexHeatmap::Heatmap()` and will also accept additional arguments meant for that function. For example, while an argument for clustering rows or columns of the heatmap is not explicitly stated, they can still be passed to `ComplexHeatmap::Heatmap()` through `cor_heatmap()`.
+```{r corheatmap-ComplexHeatmap-args}
+cor_heatmap(
+  dom,
+  cluster_rows = FALSE, cluster_columns = FALSE,
+  column_title = "Heatmap Without Clustering"
+)
 ```
 
 ### Heatmap of Transcription Factor Activation Scores
@@ -144,7 +147,7 @@ This function can be given cluster colors to match other plots you may make with
 ```{r circos-opt, fig.asp = 0.8}
 cols = c("red", "orange", "green", "blue", "pink", "purple",
   "slategrey", "firebrick", "hotpink")
-names(cols) = levels(dom[["clusters"]])
+names(cols) = levels(dom@clusters)
 circos_ligand_receptor(dom, receptor = "CD74", cell_colors = cols)
 ```
 

@@ -31,12 +31,12 @@ incoming_signaling_heatmap(
 
 \item{normalize}{Options to normalize the matrix. Accepted inputs are 'none' for no normalization, 'rec_norm' to normalize to the maximum value with each receptor cluster, or 'lig_norm' to normalize to the maximum value within each ligand cluster}
 
-\item{title}{Either a string to use as the title or a boolean describing whether to include a title. In order to pass the 'main' parameter to  \code{\link[NMF:aheatmap]{NMF::aheatmap()}}  you must set title to FALSE.}
+\item{title}{Either a string to use as the title or a boolean describing whether to include a title. In order to pass the 'main' parameter to  \code{\link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap()}}  you must set title to FALSE.}
 
-\item{...}{Other parameters to pass to  \code{\link[NMF:aheatmap]{NMF::aheatmap()}}. Note that to use the 'main' parameter of  \code{\link[NMF:aheatmap]{NMF::aheatmap()}}  you must set title = FALSE}
+\item{...}{Other parameters to pass to  \code{\link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap()}}. Note that to use the 'column_title' parameter of  \code{\link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap()}}  you must set title = FALSE}
 }
 \value{
-an aheatmap rendered to the active graphics device
+a Heatmap rendered to the active graphics device
 }
 \description{
 Creates a heatmap of a cluster incoming signaling matrix. Each cluster has a
