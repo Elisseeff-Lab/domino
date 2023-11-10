@@ -41,8 +41,10 @@ create_rl_map_cellphonedb <- function(genes, proteins, interactions, complexes =
     1)
   stopifnot(`Alternate conversion argument (not recommended) must be TRUE or FALSE` = is(alternate_convert,
     "logical"))
-  stopifnot(`If using alternate conversion table (not recommended), table must be provided as data.frame` = (alternate_convert &
-    is(alternate_convert_table, "data.frame")))
+  if(alternate_convert & is.null(alternate_convert_table)) {
+      stop("If using alternate conversion table (not recommended), a table must be provided")
+  }
+  
   # Read in files if needed:
   if (is(genes, "character")) {
     genes <- read.csv(genes, stringsAsFactors = FALSE)
@@ -302,9 +304,11 @@ create_domino <- function(rl_map, features, ser = NULL, counts = NULL, z_scores 
     "data.frame") & c("gene_A", "gene_B", "type_A", "type_B") %in% colnames(rl_map)))
   stopifnot(`features must be either a file path or a named matrix with cells as columns and features as rows` = ((is(features,
     "character") & length(features) == 1) | (is(features, "matrix") & !is.null(rownames(features)) &
+    !is.null(colnames(features))) | (is(features, "data.frame") & !is.null(rownames(features)) &
     !is.null(colnames(features)))))
-  stopifnot(`Either a Seurat object OR z scores and clusters must be provided` = (is(ser, "Seurat") |
-    (is(features, "matrix") & !is.null(rownames(features)) & !is.null(colnames(features)) & is(clusters,
+  stopifnot(`Either a Seurat object OR counts, z scores, and clusters must be provided` = (is(ser, "Seurat") |
+    (!is.null(counts) & !is.null(rownames(counts)) & !is.null(colnames(counts)) &
+    is(z_scores, "matrix") & !is.null(rownames(z_scores)) & !is.null(colnames(z_scores)) & is(clusters,
       "factor") & !is.null(names(clusters)))))
   stopifnot(`rec_min_thresh must be a number between 0 and 1` = (is(rec_min_thresh, "numeric") &
     rec_min_thresh <= 1 & rec_min_thresh >= 0))
@@ -563,6 +567,7 @@ create_domino <- function(rl_map, features, ser = NULL, counts = NULL, z_scores 
 #' @param to Format of gene output (MGI, or HGNC)
 #' @param host Host to connect to. Defaults to https://www.ensembl.org following the useMart default, but can be changed to archived hosts if useMart fails to connect.
 #' @return A data frame with input genes as col 1 and output as col 2
+#' @keywords internal
 #' @export
 #' 
 convert_genes <- function(genes, from = c("ENSMUSG", "ENSG", "MGI", "HGNC"), to = c("MGI", "HGNC"),
@@ -649,17 +654,20 @@ add_rl_column <- function(map, map_ref, conv, new_name) {
 #' @param destination Name of the receptor with which each ligand interacts
 #' @return A data frame of ligand expression targeting the specified receptor
 #' @export
-#'
-mean_ligand_expression <- function(x, ligands, cell_ident, cell_barcodes, destination) {
+#' 
+mean_ligand_expression <- function(x, ligands, cell_ident, cell_barcodes, destination){
   # initiate data frame to store results
   df <- NULL
-  for (feat in ligands) {
+  for(feat in ligands){
     # index of ligand row
     lig_index <- grep(paste0("^", feat, "$"), rownames(x))
-    # column indices of cells belonging to cell_ident
+    # column indecies of cells belonging to cell_ident
     cell_index <- colnames(x) %in% cell_barcodes
-    cell_df <- data.frame(origin = paste0(cell_ident, "_", feat), destination = destination, mean.expression = mean(x[lig_index,
-      cell_index]))
+    cell_df <- data.frame(
+      origin = paste0(cell_ident, "_", feat),
+      destination = destination,
+      mean.expression = mean(x[lig_index, cell_index])
+    )
     df <- rbind(df, cell_df)
   }
   return(df)

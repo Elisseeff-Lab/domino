@@ -22,3 +22,4 @@ Data frame of genes with original and corresponding converted symbols
 \description{
 Takes a vector of gene inputs and returns converted gene table
 }
+\keyword{internal}

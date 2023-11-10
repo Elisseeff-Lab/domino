@@ -27,7 +27,7 @@ feat_heatmap(
 
 \item{bool_thresh}{Numeric indicating the threshold separating 'on' or 'off' for feature activity if making a boolean heatmap.}
 
-\item{title}{Either a string to use as the title or a boolean describing whether to include a title. In order to pass the 'main' parameter to  \code{\link[NMF:aheatmap]{NMF::aheatmap()}}  you must set title to FALSE.}
+\item{title}{Either a string to use as the title or a boolean describing whether to include a title. In order to pass the 'main' parameter to  \code{\link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap()}}  you must set title to FALSE.}
 
 \item{norm}{Boolean indicating whether or not to normalize the transcrption factors to their max value.}
 
@@ -39,10 +39,10 @@ feat_heatmap(
 
 \item{max_thresh}{Maximum threshold for color scaling if not a boolean heatmap}
 
-\item{...}{Other parameters to pass to  \code{\link[NMF:aheatmap]{NMF::aheatmap()}} . Note that to use the 'main' parameter of  \code{\link[NMF:aheatmap]{NMF::aheatmap()}}  you must set title = FALSE and to use 'annCol' or 'annColors' ann_cols must be FALSE.}
+\item{...}{Other parameters to pass to  \code{\link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap()}} . Note that to use the 'main' parameter of  \code{\link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap()}}  you must set title = FALSE and to use 'annCol' or 'annColors' ann_cols must be FALSE.}
 }
 \value{
-an aheatmap rendered to the active graphics device
+a Heatmap rendered to the active graphics device
 }
 \description{
 Creates a heatmap of feature expression (typically transcription factor

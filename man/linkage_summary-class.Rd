@@ -4,7 +4,7 @@
 \name{linkage_summary-class}
 \alias{linkage_summary-class}
 \alias{linkage_summary}
-\title{The Domino linkage summary class}
+\title{The domino linkage summary class}
 \description{
 The linkage summary class contains linkages established in multiple domino
 objects through gene regulatory network inference and reference to receptor-

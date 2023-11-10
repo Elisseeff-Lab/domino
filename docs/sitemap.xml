@@ -61,6 +61,9 @@
     <loc>/reference/cor_scatter.html</loc>
   </url>
   <url>
+    <loc>/reference/count_linkage.html</loc>
+  </url>
+  <url>
     <loc>/reference/create_domino.html</loc>
   </url>
   <url>
@@ -94,7 +97,19 @@
     <loc>/reference/lc.html</loc>
   </url>
   <url>
+    <loc>/reference/linkage_summary-class.html</loc>
+  </url>
+  <url>
     <loc>/reference/mean_ligand_expression.html</loc>
+  </url>
+  <url>
+    <loc>/reference/pbmc.html</loc>
+  </url>
+  <url>
+    <loc>/reference/pbmc_dom.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plot_differential_linkages.html</loc>
   </url>
   <url>
     <loc>/reference/print-domino-method.html</loc>
@@ -110,5 +125,14 @@
   </url>
   <url>
     <loc>/reference/signaling_network.html</loc>
+  </url>
+  <url>
+    <loc>/reference/summarize_linkages.html</loc>
+  </url>
+  <url>
+    <loc>/reference/table_convert_genes.html</loc>
+  </url>
+  <url>
+    <loc>/reference/test_differential_linkages.html</loc>
   </url>
 </urlset>

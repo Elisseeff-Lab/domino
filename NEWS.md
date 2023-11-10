@@ -1,4 +1,14 @@
-# Domino2 v0.2.1
+# domino2 v0.2.2
+
+## Linkage functions
+- Addition of new class to summarize linkages in objects
+- Addition of helper functions to count linkages and compare between objects
+- Plotting function for differential linkages
+
+## Package structure
+- Adjustments made to meet BioConductor standards
+
+# domino2 v0.2.1
 
 ## Updates to domino object construction
 - Uniform formats for inputs of receptor-ligand interaction databases, tf activity features, and regulon gene lists for operability with alternative databases and tf activity inference methods

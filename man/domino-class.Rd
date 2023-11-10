@@ -4,7 +4,7 @@
 \name{domino-class}
 \alias{domino-class}
 \alias{domino}
-\title{The Domino Class}
+\title{The domino Class}
 \description{
 The domino class contains all information necessary to calculate receptor-ligand
 signaling. It contains z-scored expression, cell cluster labels, feature values,

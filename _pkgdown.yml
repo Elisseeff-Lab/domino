@@ -21,12 +21,14 @@ template:
 
 
 reference:
-- title: "Domino Class"
+- title: "Domino Classes"
   desc: >
     An object class designed to store information used 
     and produced in Domino2 analysis
   contents:
   - domino-class
+  - linkage_summary
+  - pbmc_dom
 - title: "Analysis Functions"
   desc: >
     Functions for performing cell-cell communication analysis
@@ -36,6 +38,8 @@ reference:
   - create_regulon_list_scenic
   - create_domino
   - build_domino
+  - summarize_linkages
+  - test_differential_linkages
 - title: "Plotting Functions"
   desc: "Functions for visualizing Domino2 analysis results"
 - subtitle: "Heatmaps"
@@ -51,13 +55,15 @@ reference:
 - subtitle: "Other Plots"
   contents:
   - circos_ligand_receptor
-  - cor_scatter 
+  - cor_scatter
+  - plot_differential_linkages
 - title: "Helper Functions"
   desc: "Convenience functions for working with Domino2 objects"
   contents:
   - add_rl_column
   - collate_network_items
   - convert_genes
+  - count_linkage
   - mean_ligand_expression
   - rename_clusters
 
@@ -76,10 +82,12 @@ home:
     structure: [toc, authors, labs, citation, license]
     components:
       labs:
-        title: Lab Links
+        title: Contributing Labs
         text: |
-              For more work from these labs, click below.
-              <a href=https://elisseefflab.jhu.edu/> Elisseeff Lab </a>
+              For more information about these labs, click below.\n
+
+              <a href=https://elisseefflab.jhu.edu/> Elisseeff Lab </a> \n
+
               <a href=https://fertiglab.com/> Fertig Lab </a>
 
 footer:

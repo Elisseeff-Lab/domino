@@ -26,3 +26,4 @@ A data frame with input genes as col 1 and output as col 2
 \description{
 This function reads in a vector of genes and converts the genes to specified symbol type
 }
+\keyword{internal}

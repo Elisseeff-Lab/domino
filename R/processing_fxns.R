@@ -126,7 +126,7 @@ build_domino <- function(dom, max_tf_per_clust = 5, min_tf_pval = 0.01, max_rec_
         inc_ligs <- unlist(inc_ligs_list)
       }
       lig_genes <- intersect(inc_ligs, rownames(dom@z_scores))
-      if (length(lig_genes) == 1) {
+      if (length(lig_genes) %in% c(0, 1)) {
         lig_genes <- numeric(0)
       }
       cl_sig_mat <- matrix(0, ncol = length(levels(dom@clusters)), nrow = length(lig_genes))

@@ -2,7 +2,7 @@
 #' @importClassesFrom Matrix dgCMatrix
 #'
 NULL
-#' The Domino Class
+#' The domino Class
 #' 
 #' The domino class contains all information necessary to calculate receptor-ligand
 #' signaling. It contains z-scored expression, cell cluster labels, feature values,
@@ -43,7 +43,7 @@ domino <- methods::setClass(
     misc = list("build"=FALSE)
   )
 )
-#' The Domino linkage summary class
+#' The domino linkage summary class
 #' 
 #' The linkage summary class contains linkages established in multiple domino
 #' objects through gene regulatory network inference and reference to receptor-
@@ -59,8 +59,15 @@ domino <- methods::setClass(
 #' @rdname linkage_summary-class
 #' @exportClass linkage_summary
 #' 
-linkage_summary <- setClass(Class="linkage_summary", slots=c(subject_names="factor", subject_meta="data.frame",
-  subject_linkages="list"))
+linkage_summary <- setClass(
+  Class = "linkage_summary",
+  slots = c(
+    subject_names = "factor",
+    subject_meta = "data.frame",
+    subject_linkages = "list"
+  )
+)
+
 #' Print domino object
 #' 
 #' Prints a summary of a domino object

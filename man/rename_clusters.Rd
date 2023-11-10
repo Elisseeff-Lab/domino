@@ -23,3 +23,4 @@ using pySCENIC), and finds features enriched by cluster. It will return a
 domino object prepared for \code{\link[=build_domino]{build_domino()}}, which will calculate a signaling
 network.
 }
+\keyword{internal}
