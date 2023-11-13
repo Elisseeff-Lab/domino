@@ -23,7 +23,6 @@ Imports:
     igraph,
     Matrix,
     methods,
-    NMF,
     plyr,
     stats,
     utils
