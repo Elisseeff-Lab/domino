@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
   echo = TRUE,
   message = FALSE,
   warning = FALSE,
-  fig.cap="",
+  fig.cap = "",
   tidy = "styler",
   global.device = TRUE
 )
@@ -56,8 +56,10 @@ cor_heatmap(dom, feats = tfs, recs = receptors)
 
 The heatmap functions in domino2 are based on `NMF::aheatmap()` and will also accept additional arguments meant for that function. For example, while an argument for clustering rows or columns of the heatmap is not explicitly stated, they can still be passed to `NMF::aheatmap()` through `cor_heatmap()`.
 ```{r corheatmap-nmf-args}
-cor_heatmap(dom, title = FALSE, Rowv = NA, Colv = NA,
-    main = "Heatmap Without Clustering")
+cor_heatmap(dom,
+  title = FALSE, Rowv = NA, Colv = NA,
+  main = "Heatmap Without Clustering"
+)
 ```
 
 ### Heatmap of Transcription Factor Activation Scores
@@ -69,8 +71,10 @@ feat_heatmap(dom)
 
 It functions similarly to `cor_heatmap()`, with arguments to select a specific vector of features, to use a boolean view with a threshold, and to pass other arguments to `NMF::aheatmap()`. Specific to this function though are arguments for setting the range of values to be visualized and one to choose whether or not to normalize the scores to the max value.
 ```{r featheatmap-options, fig.show="hold", out.width = "50%"}
-feat_heatmap(dom, min_thresh = 0.1, max_thresh = 0.6, 
-    norm = TRUE, bool = FALSE)
+feat_heatmap(dom,
+  min_thresh = 0.1, max_thresh = 0.6,
+  norm = TRUE, bool = FALSE
+)
 feat_heatmap(dom, bool = TRUE)
 ```
 
@@ -111,14 +115,18 @@ gene_network(dom, clust = "CD16_monocyte", OutgoingSignalingClust = "CD14_monocy
 
 Options to modify this plot include adjusting scaling for the ligands and different layouts (some of which are more legible than others).
 ```{r genenetwork-options}
-gene_network(dom, clust = "CD16_monocyte", OutgoingSignalingClust = "CD14_monocyte",
-  lig_scale = 25, layout = "sphere")
+gene_network(dom,
+  clust = "CD16_monocyte", OutgoingSignalingClust = "CD14_monocyte",
+  lig_scale = 25, layout = "sphere"
+)
 ```
 
 Additionally, colors can be given for select genes (for example, to highlight a specific signaling path).
 ```{r genenetwork-cols}
-gene_network(dom, clust = "CD16_monocyte", OutgoingSignalingClust = "CD14_monocyte",
-  cols = c("CD1D" = "violet", "LILRB2" = "violet", "FOSB" = "violet"), lig_scale = 10)
+gene_network(dom,
+  clust = "CD16_monocyte", OutgoingSignalingClust = "CD14_monocyte",
+  cols = c("CD1D" = "violet", "LILRB2" = "violet", "FOSB" = "violet"), lig_scale = 10
+)
 ```
 
 ### Network Showing Interaction Strength Across Data
@@ -129,8 +137,10 @@ signaling_network(dom)
 
 In addition to changes such as scaling, thresholds, or layouts, this plot can be modified by selecting incoming or outgoing clusters (or both!). An example to view signaling from the CD14 Monocytes to other cluster:
 ```{r signalingnet-clusts}
-signaling_network(dom, showOutgoingSignalingClusts = "CD14_monocyte", scale = "none",
-  norm = "none", layout = "fr", scale_by = "none", vert_scale = 5)
+signaling_network(dom,
+  showOutgoingSignalingClusts = "CD14_monocyte", scale = "none",
+  norm = "none", layout = "fr", scale_by = "none", vert_scale = 5
+)
 ```
 
 ## Other Types of Plot
@@ -143,9 +153,11 @@ circos_ligand_receptor(dom, receptor = "CD74")
 
 This function can be given cluster colors to match other plots you may make with your data. In addition, the plot can be adjusted by changing the threshold of ligand expression required for a linkage to be visualized or selecting clusters of interest.
 ```{r circos-opt, fig.asp = 0.8, fig.width = 7}
-cols = c("red", "orange", "green", "blue", "pink", "purple",
-  "slategrey", "firebrick", "hotpink")
-names(cols) = dom_clusters(dom, labels = FALSE)
+cols <- c(
+  "red", "orange", "green", "blue", "pink", "purple",
+  "slategrey", "firebrick", "hotpink"
+)
+names(cols) <- dom_clusters(dom, labels = FALSE)
 circos_ligand_receptor(dom, receptor = "CD74", cell_colors = cols)
 ```
 
