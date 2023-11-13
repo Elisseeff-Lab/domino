@@ -96,15 +96,14 @@ dom_linkages <- function(dom, link_type = c("complexes", "receptor-ligand",
                 "tf-target", "tf-receptor", "receptor", "incoming-ligand"), by_cluster = FALSE) {
     links = slot(dom, "linkages")
     if (by_cluster) {
-        stopifnot(paste0("Because communication is between clusters, we cannot provide this information",
-            "on a per cluster basis. Change cluster to NULL to proceed."),
-            link_type %in% c("tf-receptor", "receptor", "incoming-ligand"))
         if (link_type == "tf-receptor") {
             return(links$clust_tf)
         } else if(link_type == "receptor") {
             return(links$clust_rec) 
+        } else if(link_type == "incoming-ligand") {
+            return(links$clust_incoming_lig)
         } else {
-            return(links$clust_incoming_ligand)
+            stop("This linkage type is not available")
         }
     } else {
         if (link_type == "complexes") {
