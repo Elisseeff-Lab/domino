@@ -38,7 +38,10 @@ biocViews:
     Network
 Suggests:
     knitr,
+    loomR,
+    patchwork,
     rmarkdown,
+    Seurat,
     testthat
 VignetteBuilder: knitr
 Language: en-US
