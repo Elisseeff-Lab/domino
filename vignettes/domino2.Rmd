@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
   echo = TRUE,
   message = FALSE,
   warning = FALSE,
-  fig.cap="",
+  fig.cap = "",
   tidy = TRUE
 )
 
@@ -24,15 +24,67 @@ knitr::opts_chunk$set(
 ```{r libraries, include=FALSE}
 library(domino2)
 library(Seurat)
-library(loomR)
 library(plyr)
 library(circlize)
 library(ComplexHeatmap)
 library(knitr)
 
 set.seed(123)
+
 ```
 
+
+``` {r files, include=FALSE}
+
+data_url <- "https://zenodo.org/records/10124866/files"
+temp_dir <- tempdir()
+
+#download the reduced pbmc files
+pbmc_dir <- paste0(temp_dir, "/pbmc")
+if (!dir.exists(pbmc_dir)) {
+  dir.create(pbmc_dir)
+}
+
+download.file(url = paste0(data_url, "/pbmc_filtered_gbcm_barcodes.tsv"),
+              destfile = paste0(pbmc_dir, "/barcodes.tsv"))
+
+download.file(url = paste0(data_url, "/pbmc_filtered_gbcm_genes.tsv"),
+              destfile = paste0(pbmc_dir, "/genes.tsv"))
+
+download.file(url = paste0(data_url, "/pbmc_filtered_gbcm_matrix.mtx"),
+              destfile = paste0(pbmc_dir, "/matrix.mtx"))
+
+
+#download scenic results
+scenic_dir <- paste0(temp_dir, "/scenic")
+if (!dir.exists(scenic_dir)) {
+  dir.create(scenic_dir)
+}
+download.file(url = paste0(data_url, "/scenic_auc_pbmc_3k.csv"),
+              destfile = paste0(scenic_dir, "/auc_pbmc_3k.csv"))
+
+download.file(url = paste0(data_url, "/scenic_regulons_pbmc_3k.csv"),
+              destfile = paste0(scenic_dir, "/regulons_pbmc_3k.csv"))
+
+#download cellphone files
+cellphone_dir <- paste0(temp_dir, "/cellphone")
+if (!dir.exists(cellphone_dir)) {
+  dir.create(cellphone_dir)
+}
+
+download.file(url = paste0(data_url, "/cellphone_dbv4_interaction_input.csv"),
+              destfile = paste0(cellphone_dir, "/interaction_input.csv"))
+
+download.file(url = paste0(data_url, "/cellphone_dbv4_complex_input.csv"),
+              destfile = paste0(cellphone_dir, "/complex_input.csv"))
+
+download.file(url = paste0(data_url, "/cellphone_dbv4_gene_input.csv"),
+              destfile = paste0(cellphone_dir, "/gene_input.csv"))
+
+download.file(url = paste0(data_url, "/cellphone_dbv4_protein_input.csv"),
+              destfile = paste0(cellphone_dir, "/protein_input.csv"))
+
+```
 # Using domino2 v0.2.1 for cell-cell communication inference
 
 domino2 is a tool for analysis of intra- and intercellular signaling in single cell RNA sequencing (scRNAseq) data based on transcription factor (TF) activation. Here, we show a basic example pipeline for generating communication networks as a domino object. This vignette will demonstrate how to use domino2 on the 10X Genomics Peripheral Blood Mononuclear Cells (PBMC) data set of 2,700 cells. The data can be downloaded [here](https://cf.10xgenomics.com/samples/cell/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz).
@@ -42,8 +94,8 @@ domino2 is a tool for analysis of intra- and intercellular signaling in single c
 Analysis of cell-cell communication with domino2 often follows initial processing and annotation of scRNAseq data.  We are following the [Satija Lab's Guided Clustering Tutorial](https://satijalab.org/seurat/articles/pbmc3k_tutorial) to prepare the data set for analysis with domino2.
 
 ```{r, eval=TRUE, message = FALSE}
-# Preprocessing of PBMC 3K tutorial data set using Seurat functions
-pbmc.data <- Read10X(data.dir = "../inst/extdata/pbmc3k_filtered_gene_bc_matrices")
+#preprocessing of PBMC 3K tutorial data set using Seurat functions
+pbmc.data <- Read10X(data.dir = pbmc_dir)
 pbmc <- CreateSeuratObject(counts = pbmc.data, project = "pbmc3k", min.cells = 3, min.features = 200)
 pbmc[["percent.mt"]] <- PercentageFeatureSet(pbmc, pattern = "^MT-")
 pbmc <- NormalizeData(pbmc, normalization.method = "LogNormalize", scale.factor = 10000)
@@ -53,6 +105,7 @@ pbmc <- RunPCA(pbmc, features = VariableFeatures(object = pbmc))
 pbmc <- FindNeighbors(pbmc, dims = 1:10)
 pbmc <- FindClusters(pbmc, resolution = 0.5)
 pbmc <- RunUMAP(pbmc, dims = 1:10)
+
 # Annotate clusters with cell phenotypes
 cell_dict <- data.frame(
   cluster = c(0:8),
@@ -69,22 +122,24 @@ pbmc$cell_type <-
 
 ### Saving Preprocessed Data:
 domino2 was designed to be compatible with `{Seurat}` objects in addition to accepting matrices and vectors of the data set as function inputs. Therefore, it's a good idea to save the processed `{Seurat}` object for further analysis. However, [pySCENIC](https://pyscenic.readthedocs.io/en/latest/) is used for TF activation inference, and it requires as input a cell by gene matrix. This is the opposite orientation of `{Seurat}` objects but is the default for Python based tools such as [scanpy](https://scanpy.readthedocs.io/en/stable/). Saving our data as a loom file using `{loomR}` will be helpful for that step and is therefore recommended as well.
-
 ```{r, eval = FALSE}
 # save Seurat object as RDS
-save(pbmc, file = "../data/pbmc.rda")
+save(pbmc, file = paste0(temp_dir, "/pbmc.rda"))
 
 # save loom counts matrix
 pbmc_counts <- GetAssayData(object = pbmc, slot = "counts")
-pbmc_loom <- loomR::create(filename = "../inst/extdata/pbmc3k_counts.loom", data = pbmc_counts)
+pbmc_loom <- loomR::create(filename = paste0(temp_dir, "/pbmc3k_counts.loom"),
+                           data = pbmc_counts)
 pbmc_loom$close_all() # Remember to manually close connection to loom files!
 ```
 
 The cell x gene counts matrix may also be saved as a tab-separated value (.tsv) file if `{loomR}` cannot be used on your computing resource, but be aware that dense formatting of a .tsv can lead to very large file sizes and slow processing for large data sets. We have provided the necessary code below, but due to the large file size, this .tsv file is not provided in our data directory.
 ```{r Save Counts Matrix tsv File, eval=FALSE}
 pbmc_counts <- GetAssayData(object = pbmc, slot = "counts")
-write.table(t(as.matrix(pbmc_counts)), "../data/pbmc3k_counts.tsv", 
-    sep = "\t", col.names = NA)
+write.table(t(as.matrix(pbmc_counts)),
+            paste0(temp_dir, "/pbmc3k_counts.tsv"),
+            sep = "\t",
+            col.names = NA)
 ```
 
 If you would like to skip ahead to the rest of the analysis, the processed objects from these steps are available in the data directory of this package.
@@ -95,9 +150,9 @@ Installation of domino2 from Github can be achieved using the `{remotes}` packag
 
 ```{r, eval = FALSE}
 if(!require(remotes)){
-    install.packages('remotes')
+  install.packages("remotes")
 }
-remotes::install_github('FertigLab/domino2@v0.2.2')
+remotes::install_github("FertigLab/domino2@v0.2.2")
 ```
 
 ### Additional Downloads
@@ -235,7 +290,7 @@ singularity exec "${SCENIC_DIR}/aertslab-pyscenic-0.12.1.sif" pyscenic aucell \
 The TF activities are a required input for domino2, and the regulons learned by [SCENIC](https://scenic.aertslab.org/) are an important but optional input needed to annotate TF-target interactions and to prune TF-receptor linkages where the receptor is a target of the TF. This prevents the distinction of receptor expression driving TF activity or the TF inducing the receptor's expression.
 
 ```{r Load SCENIC Results}
-scenic_dir = "../inst/extdata/scenic/"
+
 regulons <- read.csv(paste0(scenic_dir, "/regulons_pbmc_3k.csv"))
 auc <- read.table(paste0(scenic_dir, "/auc_pbmc_3k.csv"),
                   header = TRUE, row.names = 1,
@@ -274,11 +329,15 @@ Additional annotation columns can be provided such as name\_A and name\_B for li
 To facilitate the use of this formatting with the CellPhoneDB database, we include a helper function, `create_rl_map_cellphonedb()`, that automatically parses files from the cellPhoneDB database to arrive at the rl\_map format.
 
 ```{r Load CellPhoneDB Database}
-cellphonedb_2_path <- "../inst/extdata/cellphoneDB_v4/"
-complexes <- read.csv(paste0(cellphonedb_2_path, "/complex_input.csv"), stringsAsFactors = FALSE)
-genes <- read.csv(paste0(cellphonedb_2_path, "/gene_input.csv"), stringsAsFactors = FALSE)
-interactions <- read.csv(paste0(cellphonedb_2_path, "/interaction_input.csv"), stringsAsFactors = FALSE)
-proteins <- read.csv(paste0(cellphonedb_2_path, "/protein_input.csv"), stringsAsFactors = FALSE)
+
+complexes <- read.csv(paste0(cellphone_dir, "/complex_input.csv"), 
+                      stringsAsFactors = FALSE)
+genes <- read.csv(paste0(cellphone_dir, "/gene_input.csv"), 
+                  stringsAsFactors = FALSE)
+interactions <- read.csv(paste0(cellphone_dir, "/interaction_input.csv"), 
+                         stringsAsFactors = FALSE)
+proteins <- read.csv(paste0(cellphone_dir, "/protein_input.csv"), 
+                     stringsAsFactors = FALSE)
 
 rl_map <- create_rl_map_cellphonedb(
   genes = genes, 
