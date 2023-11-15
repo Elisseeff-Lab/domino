@@ -1,4 +1,4 @@
-name: r-build-check
+name: main
 on:
     push:
         branches: ['v0.2.2_development']
