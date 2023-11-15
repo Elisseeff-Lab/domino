@@ -24,7 +24,6 @@ knitr::opts_chunk$set(
 ```{r libraries, include=FALSE}
 library(domino2)
 library(Seurat)
-library(loomR)
 library(plyr)
 library(circlize)
 library(ComplexHeatmap)
@@ -68,11 +67,21 @@ pbmc$cell_type <-
 ```
 
 ### Saving Preprocessed Data:
-domino2 was designed to be compatible with `{Seurat}` objects in addition to accepting matrices and vectors of the data set as function inputs. Therefore, it's a good idea to save the processed `{Seurat}` object for further analysis. However, [pySCENIC](https://pyscenic.readthedocs.io/en/latest/) is used for TF activation inference, and it requires as input a cell by gene matrix. This is the opposite orientation of `{Seurat}` objects but is the default for Python based tools such as [scanpy](https://scanpy.readthedocs.io/en/stable/). Saving our data as a loom file using `{loomR}` will be helpful for that step and is therefore recommended as well.
+domino2 was designed to be compatible with `{Seurat}` objects in addition to accepting matrices and vectors of the data set as function inputs. Therefore, it's a good idea to save the processed `{Seurat}` object for further analysis. However, [pySCENIC](https://pyscenic.readthedocs.io/en/latest/) is used for TF activation inference, and it requires as input a cell by gene matrix. This is the opposite orientation of `{Seurat}` objects but is the default for Python based tools such as [scanpy](https://scanpy.readthedocs.io/en/stable/). The RNA counts matrix can be saved as a tab-seperated value (.tsv) or comma-sperated value (.csv) file after transposing the matrix to cell by gene orientation.
 
-```{r, eval = FALSE}
+```{r Save Counts Matrix as tsv File, eval=FALSE}
 # save Seurat object as RDS
 save(pbmc, file = "../data/pbmc.rda")
+
+pbmc_counts <- GetAssayData(object = pbmc, slot = "counts")
+write.table(t(as.matrix(pbmc_counts)), "../data/pbmc3k_counts.tsv", 
+    sep = "\t", col.names = NA)
+```
+
+tsv and csv files are very inefficient for storing large matrices. As an alternative, the counts matrix can be saved as a loom file and directly passed to [pySCENIC](https://pyscenic.readthedocs.io/en/latest/) in this format. Generating a loom file in R requires use of the [loomR](https://github.com/mojaveazure/loomR) package. The package automatically handles the transposition of the counts matrix to cell by gene orientation as well. We recommend this approach to passing a counts matrix to pySCENIC. However, users should be aware that [loomR](https://github.com/mojaveazure/loomR) is not hosted on CRAN or BioConductor at the time of this vignette's creation. 
+
+```{r Save Counts as loomR, eval = FALSE}
+library(loomR)
 
 # save loom counts matrix
 pbmc_counts <- GetAssayData(object = pbmc, slot = "counts")
@@ -81,11 +90,7 @@ pbmc_loom$close_all() # Remember to manually close connection to loom files!
 ```
 
 The cell x gene counts matrix may also be saved as a tab-separated value (.tsv) file if `{loomR}` cannot be used on your computing resource, but be aware that dense formatting of a .tsv can lead to very large file sizes and slow processing for large data sets. We have provided the necessary code below, but due to the large file size, this .tsv file is not provided in our data directory.
-```{r Save Counts Matrix tsv File, eval=FALSE}
-pbmc_counts <- GetAssayData(object = pbmc, slot = "counts")
-write.table(t(as.matrix(pbmc_counts)), "../data/pbmc3k_counts.tsv", 
-    sep = "\t", col.names = NA)
-```
+
 
 If you would like to skip ahead to the rest of the analysis, the processed objects from these steps are available in the data directory of this package.
 

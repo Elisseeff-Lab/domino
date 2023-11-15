@@ -37,7 +37,6 @@ biocViews:
     Network
 Suggests:
     knitr,
-    loomR,
     patchwork,
     rmarkdown,
     Seurat,
