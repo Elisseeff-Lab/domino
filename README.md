@@ -1,3 +1,5 @@
+[![R build status](https://github.com/FertigLab/domino2/workflows/r-build-check/badge.svg)](https://github.com/FertigLab/domino2/actions?workflow=r-build-check)
+
 ## Domino2: Inferring Cell Signaling from Single Cell RNA Sequencing Data
 
 Domino2 is an updated version of the original [domino](https://github.com/Elisseeff-Lab/domino) R package published in Nature Biomedical Engineering in [Computational reconstruction of the signalling networks surrounding implanted biomaterials from single-cell transcriptomics](https://doi.org/10.1038/s41551-021-00770-5). Domino2 is a tool for analysis of intra- and intercellular signaling in single cell RNA sequencing data based on transcription factor activation and receptor and ligand linkages.
