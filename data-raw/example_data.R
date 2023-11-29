@@ -4,7 +4,7 @@ library(Seurat)
 library(domino2)
 
 # Zenodo host of outputs from SCENIC analysis
-data_url <- "https://zenodo.org/records/10161143/files"
+data_url <- "https://zenodo.org/records/10222767/files"
 temp_dir <- tempdir()
 
 # install 10X Genomics PBMC3K data

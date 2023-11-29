@@ -5,7 +5,7 @@ library(domino2, lib = "../domino_libraries/libraries/v0_2_1/")
 
 # load data for generation of test results from zenodo repository
 # Zenodo host of outputs from SCENIC analysis
-data_url <- "https://zenodo.org/records/10161143/files"
+data_url <- "https://zenodo.org/records/10222767/files"
 temp_dir <- tempdir()
 
 pbmc_dir <- paste0(temp_dir, "/pbmc")
@@ -45,10 +45,10 @@ genes <- read.csv(paste0(cellphone_data, "/gene_input.csv"), stringsAsFactors = 
 proteins <- read.csv(paste0(cellphone_data, "/protein_input.csv"), stringsAsFactors = FALSE)
 
 # subset the pbmc data to fewer cells to meet package requirements
-RNA_features <- c("FAS", "FASLG", "ITGAM", "ITGB2", "FCER2", "LCK", "CD8A", "CD8B", "C5", "C5AR1")
-TF_features <- c("CLOCK", "TAF1", "BCL6")
-name_features <- c("FAS", "FASLG", "integrin_aMb2_complex", "FCER2", "LCK", "CD8_receptor", "C5", "C5AR1")
-cell_types_dwn <- c("CD8_T_cell", "NK_cell", "B_cell")
+RNA_features <- c("TNF", "FAS", "ITGAM", "ITGB2", "FCER2", "IL7", "IL7R", "IL2RG", "IGF1", "IGF1R")
+TF_features <- c("ZNF257", "ATF4", "RUNX1")
+name_features <- c("TNF", "FAS", "integrin_aMb2_complex", "FCER2", "IL7", "IL7_receptor", "IGF1", "IGF1R")
+cell_types_dwn <- c("CD8_T_cell", "CD14_monocyte", "B_cell")
 n <- 120
 cell_list <- list()
 set.seed(123)
@@ -63,69 +63,69 @@ cluster_dwn <- factor(
     pbmc$cell_type[barcodes_dwn],
     levels = cell_types_dwn
 )
-clusters_test <- cluster_dwn
-RNA_count_test <- pbmc@assays$RNA@counts[
+clusters_tiny <- cluster_dwn
+RNA_count_tiny <- pbmc@assays$RNA@counts[
   rownames(pbmc@assays$RNA@counts) %in% RNA_features, 
   colnames(pbmc@assays$RNA@counts) %in% barcodes_dwn]
-RNA_zscore_test <- pbmc@assays$RNA@scale.data[
+RNA_zscore_tiny <- pbmc@assays$RNA@scale.data[
   rownames(pbmc@assays$RNA@scale.data) %in% RNA_features, 
   colnames(pbmc@assays$RNA@scale.data) %in% barcodes_dwn]
 
 # subset CellPhoneDB inputs
-complexes_test <- complexes[complexes$complex_name %in% name_features,]
-genes_test <- genes[genes$gene_name %in% RNA_features,]
-proteins_test <- proteins[proteins$uniprot %in% genes_test$uniprot,]
-interactions_test <- interactions[
-  (interactions$partner_a %in% proteins_test$uniprot | interactions$partner_a %in% complexes_test$complex_name) & 
-    (interactions$partner_b%in% proteins_test$uniprot | interactions$partner_b %in% complexes_test$complex_name),]
+complexes_tiny <- complexes[complexes$complex_name %in% name_features,]
+genes_tiny <- genes[genes$gene_name %in% RNA_features,]
+proteins_tiny <- proteins[proteins$uniprot %in% genes_tiny$uniprot,]
+interactions_tiny <- interactions[
+  (interactions$partner_a %in% proteins_tiny$uniprot | interactions$partner_a %in% complexes_tiny$complex_name) & 
+    (interactions$partner_b%in% proteins_tiny$uniprot | interactions$partner_b %in% complexes_tiny$complex_name),]
 
 
 # subset SCENIC inputs
 auc <- t(auc)
 rownames(auc) <- gsub("\\.\\.\\.$", "", rownames(auc))
-auc_test <- auc[TF_features, barcodes_dwn]
+auc_tiny <- auc[TF_features, barcodes_dwn]
 
 regulons <- regulons[-1:-2, ]
 colnames(regulons) <- c("TF", "MotifID", "AUC", "NES", "MotifSimilarityQvalue", "OrthologousIdentity", "Annotation", "Context", "TargetGenes", "RankAtMax")
-regulons_test <- regulons[regulons$TF %in% TF_features,]
+regulons_tiny <- regulons[regulons$TF %in% TF_features,]
 
 # Make rl_map
-rl_map_test <- domino2::create_rl_map_cellphonedb(
-  genes = genes_test,
-  proteins = proteins_test,
-  interactions = interactions_test,
-  complexes = complexes_test
+rl_map_tiny <- domino2::create_rl_map_cellphonedb(
+  genes = genes_tiny,
+  proteins = proteins_tiny,
+  interactions = interactions_tiny,
+  complexes = complexes_tiny
 )
 
 # Get regulon list
-regulon_list_test <- domino2::create_regulon_list_scenic(
-  regulons = regulons_test
+regulon_list_tiny <- domino2::create_regulon_list_scenic(
+  regulons = regulons_tiny
 )
 
 # Create test domino object
-pbmc_dom_test <- create_domino(
-  rl_map = rl_map_test,
-  features = auc_test,
-  counts = RNA_count_test,
-  z_scores = RNA_zscore_test,
-  clusters = clusters_test,
-  tf_targets = regulon_list_test,
+pbmc_dom_tiny <- create_domino(
+  rl_map = rl_map_tiny,
+  features = auc_tiny,
+  counts = RNA_count_tiny,
+  z_scores = RNA_zscore_tiny,
+  clusters = clusters_tiny,
+  tf_targets = regulon_list_tiny,
   use_clusters = TRUE,
   use_complexes = TRUE,
   remove_rec_dropout = FALSE
 )
 
 # Create built domino object
-pbmc_dom_built_test <- build_domino(
-  dom = pbmc_dom_test,
+pbmc_dom_built_tiny <- build_domino(
+  dom = pbmc_dom_tiny,
   min_tf_pval = .05,
   max_tf_per_clust = Inf,
   max_rec_per_tf = Inf,
-  rec_tf_cor_threshold = .15,
-  min_rec_percentage = 0.03 
+  rec_tf_cor_threshold = .1,
+  min_rec_percentage = 0.01
 )
 
 # Save all test files to internal sysdata object
-usethis::use_data(pbmc_dom_built_test, complexes_test, genes_test, proteins_test, interactions_test,
-    pbmc_dom_test, regulon_list_test, rl_map_test, regulons_test, clusters_test,
-    RNA_count_test, RNA_zscore_test, auc_test, internal = TRUE)
+usethis::use_data(pbmc_dom_built_tiny, complexes_tiny, genes_tiny, proteins_tiny, interactions_tiny,
+    pbmc_dom_tiny, regulon_list_tiny, rl_map_tiny, regulons_tiny, clusters_tiny,
+    RNA_count_tiny, RNA_zscore_tiny, auc_tiny, internal = TRUE)
