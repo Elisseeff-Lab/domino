@@ -693,43 +693,20 @@ add_rl_column <- function(map, map_ref, conv, new_name) {
 #' @param destination Name of the receptor with which each ligand interacts
 #' @return A data frame of ligand expression targeting the specified receptor
 #' @export
-#'
-mean_ligand_expression <-
-  function(x, ligands, cell_ident, cell_barcodes, destination) {
-    # initiate data frame to store results
-    df <- NULL
-
-    for (feat in ligands) {
-      # index of ligand row
-      lig_index <- grep(paste0("^", feat, "$"), rownames(x))
-      # column indecies of cells belonging to cell_ident
-      cell_index <- colnames(x) %in% cell_barcodes
-
-      cell_df <- data.frame(
-        origin = paste0(cell_ident, "_", feat),
-        destination = destination,
-        mean.expression = mean(x[lig_index, cell_index])
-      )
-
-      df <- rbind(df, cell_df)
-    }
-    return(df)
-  }
-
-#' @export
-#'
-mean_ligand_expression <- function(x, ligands, cell_ident, cell_barcodes, destination) {
+#' 
+mean_ligand_expression <- function(x, ligands, cell_ident, cell_barcodes, destination){
   # initiate data frame to store results
   df <- NULL
-  for (feat in ligands) {
+  for(feat in ligands){
     # index of ligand row
     lig_index <- grep(paste0("^", feat, "$"), rownames(x))
-    # column indices of cells belonging to cell_ident
+    # column indecies of cells belonging to cell_ident
     cell_index <- colnames(x) %in% cell_barcodes
-    cell_df <- data.frame(origin = paste0(cell_ident, "_", feat), destination = destination, mean.expression = mean(x[
-      lig_index,
-      cell_index
-    ]))
+    cell_df <- data.frame(
+      origin = paste0(cell_ident, "_", feat),
+      destination = destination,
+      mean.expression = mean(x[lig_index, cell_index])
+    )
     df <- rbind(df, cell_df)
   }
   return(df)

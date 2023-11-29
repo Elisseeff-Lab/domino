@@ -23,7 +23,6 @@ Imports:
     igraph,
     Matrix,
     methods,
-    NMF,
     plyr,
     stats,
     utils
@@ -38,7 +37,9 @@ biocViews:
     Network
 Suggests:
     knitr,
+    patchwork,
     rmarkdown,
+    Seurat,
     testthat
 VignetteBuilder: knitr
 Language: en-US

@@ -27,10 +27,10 @@ signaling_heatmap(
 
 \item{normalize}{Options to normalize the matrix. Normalization is done after thresholding and scaling. Accepted inputs are 'none' for no normalization, 'rec_norm' to normalize to the maximum value with each receptor cluster, or 'lig_norm' to normalize to the maximum value within each ligand cluster}
 
-\item{...}{Other parameters to pass to  \code{\link[NMF:aheatmap]{NMF::aheatmap()}}}
+\item{...}{Other parameters to pass to  \code{\link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap()}}}
 }
 \value{
-an aheatmap rendered to the active graphics device
+a Heatmap rendered to the active graphics device
 }
 \description{
 Creates a heatmap of the signaling network. Alternatively, the network
