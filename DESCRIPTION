@@ -40,7 +40,8 @@ Suggests:
     patchwork,
     rmarkdown,
     Seurat,
-    testthat
+    testthat,
+    formatR
 VignetteBuilder: knitr
 Language: en-US
 Roxygen: list(markdown = TRUE)
