@@ -1,1 +1,22 @@
+#' Check input arguments
 #'
+#' Accepts an object and rules for checking, stops if rules not met.
+#'
+#' @param arg The argument to check
+#' @param allow_class Vector of allowed classes
+#' @param allw_len Vector of allowed lengths
+check_arg <- function(arg, allow_class = c("character"), allow_len = NULL) {
+  argname <- deparse(substitute(arg))
+  classes <- paste(allow_class, collapse = ",")
+  lengths <- paste(allow_len, collapse = ",")
+
+  if (!(class(arg) %in% allow_class)) {
+    stop(sprintf("Class of %s must be one of: %s", argname, classes))
+  }
+
+  if (!is.null(allow_len)) {
+    if (!(length(arg) %in% allow_len)) {
+      stop(sprintf("Length of %s must be one of: %s", argname, lengths))
+    }
+  }
+}
