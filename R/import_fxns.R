@@ -17,13 +17,12 @@ NULL
 #' @param database_name name of the database being used, stored in output
 #' @param gene_conv a tuple of (from, to) or (source, target) if gene conversion to orthologs is desired; options are ENSMUSG, ENSG, MGI, or HGNC
 #' @param gene_conv_host host for conversion; default ensembl, could also use mirrors if desired
-#' @param alternate_convert boolean if you would like to use a non-ensembl method of conversion (must supply table; not recommended, use only if ensembl is down)
-#' @param alternate_convert_table supplied table for non-ensembl method of conversion
+#' @param alternate_convert_table supplied table for non-ensembl method of conversion (not recommended, use only if ensembl is down))
 #' @return Data frame where each row describes a possible receptor-ligand interaction
 #' @export create_rl_map_cellphonedb
-#' 
+#'
 create_rl_map_cellphonedb <- function(genes, proteins, interactions, complexes = NULL, database_name = "CellPhoneDB",
-  gene_conv = NULL, gene_conv_host = "https://www.ensembl.org", alternate_convert = FALSE, alternate_convert_table = NULL) {
+  gene_conv = NULL, gene_conv_host = "https://www.ensembl.org", alternate_convert_table = NULL) {
   # Check input structures:
   check_arg(genes, c("character", "data.frame"))
   check_arg(proteins, c("character", "data.frame"))
@@ -33,12 +32,6 @@ create_rl_map_cellphonedb <- function(genes, proteins, interactions, complexes =
   check_arg(gene_conv, c("NULL", "character"), allow_len = c(0, 2))
   check_arg(gene_conv_host, c("character"), allow_len = c(1))
 
-  stopifnot(`Alternate conversion argument (not recommended) must be TRUE or FALSE` = is(alternate_convert,
-    "logical"))
-  if(alternate_convert & is.null(alternate_convert_table)) {
-      stop("If using alternate conversion table (not recommended), a table must be provided")
-  }
-  
   # Read in files if needed:
   if (is(genes, "character")) {
     genes <- read.csv(genes, stringsAsFactors = FALSE)
@@ -87,7 +80,7 @@ create_rl_map_cellphonedb <- function(genes, proteins, interactions, complexes =
   # gene conversions
   if (!is.null(gene_conv) & !identical(gene_conv[1], gene_conv[2])) {
     # obtain conversion dictionary
-    if (alternate_convert) {
+    if (!is.null(alternate_convert_table)) {
       conv_dict <- table_convert_genes(genes$gene_name, from = gene_conv[1], to = gene_conv[2],
         alternate_convert_table)
     } else {
