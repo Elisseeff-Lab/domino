@@ -27,7 +27,7 @@ create_rl_map_cellphonedb <- function(genes, proteins, interactions, complexes =
   check_arg(genes, c("character", "data.frame"))
   check_arg(proteins, c("character", "data.frame"))
   check_arg(interactions, c("character", "data.frame"))
-  check_arg(complexes, c("character", "data.frame"))
+  check_arg(complexes, c("character", "data.frame", "NULL"))
   check_arg(database_name, c("character"), allow_len = c(1))
   check_arg(gene_conv, c("NULL", "character"), allow_len = c(0, 2))
   check_arg(gene_conv_host, c("character"), allow_len = c(1))

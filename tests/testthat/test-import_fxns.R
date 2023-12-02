@@ -113,11 +113,4 @@ test_that("create_rl_map_cellphonedb fails on wrong input arg type.", {
     interactions = interactions_test, complexes = complexes_test,
     database_name = c("length", ">1")
   ))
-
-  expect_error(create_rl_map_cellphonedb(
-    genes = genes_test, proteins = proteins_test,
-    interactions = interactions_test, complexes = complexes_test,
-    database_name = c("test", "test")
-  ))
-
 })
