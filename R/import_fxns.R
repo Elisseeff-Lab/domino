@@ -23,6 +23,7 @@ NULL
 #'
 create_rl_map_cellphonedb <- function(genes, proteins, interactions, complexes = NULL, database_name = "CellPhoneDB",
   gene_conv = NULL, gene_conv_host = "https://www.ensembl.org", alternate_convert_table = NULL) {
+
   # Check input structures:
   check_arg(genes, c("character", "data.frame"))
   check_arg(proteins, c("character", "data.frame"))
@@ -33,18 +34,11 @@ create_rl_map_cellphonedb <- function(genes, proteins, interactions, complexes =
   check_arg(gene_conv_host, c("character"), allow_len = c(1))
 
   # Read in files if needed:
-  if (is(genes, "character")) {
-    genes <- read.csv(genes, stringsAsFactors = FALSE)
-  }
-  if (is(proteins, "character")) {
-    proteins <- read.csv(proteins, stringsAsFactors = FALSE)
-  }
-  if (is(interactions, "character")) {
-    interactions <- read.csv(interactions, stringsAsFactors = FALSE)
-  }
-  if (is(complexes, "character")) {
-    complexes <- read.csv(complexes, stringsAsFactors = FALSE)
-  }
+  genes <- read_if_char(genes)
+  proteins <- read_if_char(proteins)
+  interactions <- read_if_char(interactions)
+  complexes <- read_if_char(complexes)
+
   # replace empty cells in columns annotating gene properties with 'False' There are some
   # unannotated genes in database v2.0 that seem to have been fixed in v4.0
   gene_features <- c("transmembrane", "peripheral", "secreted", "secreted_highlight", "receptor",
@@ -69,6 +63,7 @@ create_rl_map_cellphonedb <- function(genes, proteins, interactions, complexes =
     # column 1 is the source gene names used by the reference data base column 2 is the
     # orthologous gene names for the organism to which the reference is being converted
   }
+  
   # Step through the interactions and build rl connections.
   rl_map <- NULL
   for (i in 1:nrow(interactions)) {
