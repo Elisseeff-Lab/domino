@@ -7,13 +7,14 @@
 do_norm(mat, dir)
 }
 \arguments{
-\item{mat}{The matrix to be normalized}
+\item{mat}{Matrix to be normalized}
 
-\item{dir}{The direction to normalize the matrix c('row', 'col')}
+\item{dir}{Direction to normalize the matrix c('row', 'col')}
 }
 \value{
-Normalized matrix in the direction specified.
+A normalized matrix in the direction specified.
 }
 \description{
 Normalizes a matrix to its max value by row or column
 }
+\keyword{internal}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_fxns.R
 \name{gene_network}
 \alias{gene_network}
-\title{Creates a gene association network}
+\title{Create a gene association network}
 \usage{
 gene_network(
   dom,
@@ -16,24 +16,27 @@ gene_network(
 )
 }
 \arguments{
-\item{dom}{A domino object with network built (build_domino)}
+\item{dom}{Domino object with network built (\code{\link[=build_domino]{build_domino()}})}
 
-\item{clust}{The receptor cluster to create the gene association network for. A vector of clusters may be provided.}
+\item{clust}{Receptor cluster to create the gene association network for. A vector of clusters may be provided.}
 
-\item{OutgoingSignalingClust}{A vector of clusters to plot the outgoing signaling from}
+\item{OutgoingSignalingClust}{Vector of clusters to plot the outgoing signaling from}
 
-\item{class_cols}{A named vector of colors used to color classes of vertices. Values must be colors and names must be classes ('rec', 'lig', and 'feat' for receptors, ligands, and features.).}
+\item{class_cols}{Named vector of colors used to color classes of vertices. Values must be colors and names must be classes ('rec', 'lig', and 'feat' for receptors, ligands, and features.).}
 
-\item{cols}{A named vector of colors for individual genes. Genes not included in this vector will be colored according to class_cols.}
+\item{cols}{Named vector of colors for individual genes. Genes not included in this vector will be colored according to class_cols.}
 
 \item{lig_scale}{FALSE or a numeric value to scale the size of ligand vertices based on z-scored expression in the data set.}
 
 \item{layout}{Type of layout to use. Options are 'grid', 'random', 'sphere', 'circle', 'fr' for Fruchterman-Reingold force directed layout, and 'kk' for Kamada Kawai for directed layout.}
 
-\item{...}{Other parameters to pass to plot() with an igraph object. See igraph manual for options.}
+\item{...}{Other parameters to pass to plot() with an \link{igraph} object. See \link{igraph} manual for options.}
+}
+\value{
+an igraph rendered to the active graphics device
 }
 \description{
-Creates a gene association network for genes from a given cluster. The 
+Create a gene association network for genes from a given cluster. The
 selected cluster acts as the receptor for the gene association network, so
 only ligands, receptors, and features associated with the receptor cluster
 will be included in the plot.

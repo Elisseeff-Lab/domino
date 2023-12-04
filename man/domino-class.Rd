@@ -6,10 +6,10 @@
 \alias{domino}
 \title{The domino Class}
 \description{
-The domino class contains all information necessary to calculate receptor
-ligand signaling. It contains z scored expression, cluster, feature values,
-and formatted receptor ligand databases as well as all calculated 
-intermediates.
+The domino class contains all information necessary to calculate receptor-ligand
+signaling. It contains z-scored expression, cell cluster labels, feature values,
+and a referenced receptor-ligand database formatted as a receptor-ligand map.
+Calculated intermediate values are also stored.
 }
 \section{Slots}{
 
@@ -23,8 +23,6 @@ intermediates.
 \item{\code{clusters}}{Named factor with cluster identity of each cell}
 
 \item{\code{features}}{Matrix of features to correlate receptor-ligand expression with. Cells are columns and features are rows.}
-
-\item{\code{df}}{List containing transcriptional targets by transcription factor.}
 
 \item{\code{cor}}{Correlation matrix of receptor expression to features.}
 

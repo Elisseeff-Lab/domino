@@ -7,7 +7,7 @@
 cor_scatter(dom, tf, rec, remove_rec_dropout = TRUE, ...)
 }
 \arguments{
-\item{dom}{A domino object with network built (build_domino)}
+\item{dom}{Domino object with network built (\code{\link[=build_domino]{build_domino()}})}
 
 \item{tf}{Target TF module for plotting with receptor}
 
@@ -16,6 +16,9 @@ cor_scatter(dom, tf, rec, remove_rec_dropout = TRUE, ...)
 \item{remove_rec_dropout}{Whether to remove cells with zero expression for plot. This should match the same setting as in build_domino.}
 
 \item{...}{Other parameters to pass to ggscatter.}
+}
+\value{
+a ggplot object
 }
 \description{
 Create a correlation plot between transcription factor activation score and receptor
