@@ -21,11 +21,22 @@ check_arg <- function(arg, allow_class = c("character"), allow_len = NULL) {
   }
 }
 
+#' Read in data if an object looks like path to it.
+#'
+#' @param obj
+#' @return obj the object itself in case its not a character
+read_if_char <- function(obj) {
+  if (is(obj, "character")) {
+    obj <- read.csv(obj, stringsAsFactors = FALSE)
+  }
+  return(obj)
+}
+
 
 #' Change cases of True/False syntax from Python to TRUE/FALSE R syntax
-#' 
-#' @param obj Object that will be converted
 #'
+#' @param obj Object that will be converted
+#' @return obj The converted object
 conv_py_bools <- function(obj) {
   for (x in colnames(obj)) {
     bools <- sort(unique(obj[[x]]))
