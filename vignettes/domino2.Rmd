@@ -30,13 +30,10 @@ library(ComplexHeatmap)
 library(knitr)
 
 set.seed(123)
-
 ```
 
-
 ``` {r files, include=FALSE}
-
-data_url <- "https://zenodo.org/records/10124866/files"
+data_url <- "https://zenodo.org/records/10222767/files"
 temp_dir <- tempdir()
 
 #download the reduced pbmc files
@@ -45,15 +42,9 @@ if (!dir.exists(pbmc_dir)) {
   dir.create(pbmc_dir)
 }
 
-download.file(url = paste0(data_url, "/pbmc_filtered_gbcm_barcodes.tsv"),
-              destfile = paste0(pbmc_dir, "/barcodes.tsv"))
-
-download.file(url = paste0(data_url, "/pbmc_filtered_gbcm_genes.tsv"),
-              destfile = paste0(pbmc_dir, "/genes.tsv"))
-
-download.file(url = paste0(data_url, "/pbmc_filtered_gbcm_matrix.mtx"),
-              destfile = paste0(pbmc_dir, "/matrix.mtx"))
-
+# preprocessed PBMC 3K scRNAseq data set as a Seurat object
+download.file(url = paste0(data_url, "/pbmc_seurat.rds"),
+              destfile = paste0(pbmc_dir, "/pbmc_seurat.rds"))
 
 #download scenic results
 scenic_dir <- paste0(temp_dir, "/scenic")
@@ -66,58 +57,29 @@ download.file(url = paste0(data_url, "/scenic_auc_pbmc_3k.csv"),
 download.file(url = paste0(data_url, "/scenic_regulons_pbmc_3k.csv"),
               destfile = paste0(scenic_dir, "/regulons_pbmc_3k.csv"))
 
-#download cellphone files
-cellphone_dir <- paste0(temp_dir, "/cellphone")
+# create directory for cellphoneDB files
+cellphone_dir <- paste0(temp_dir, "/cellphoneDB")
 if (!dir.exists(cellphone_dir)) {
   dir.create(cellphone_dir)
 }
 
-download.file(url = paste0(data_url, "/cellphone_dbv4_interaction_input.csv"),
-              destfile = paste0(cellphone_dir, "/interaction_input.csv"))
-
-download.file(url = paste0(data_url, "/cellphone_dbv4_complex_input.csv"),
-              destfile = paste0(cellphone_dir, "/complex_input.csv"))
-
-download.file(url = paste0(data_url, "/cellphone_dbv4_gene_input.csv"),
-              destfile = paste0(cellphone_dir, "/gene_input.csv"))
-
-download.file(url = paste0(data_url, "/cellphone_dbv4_protein_input.csv"),
-              destfile = paste0(cellphone_dir, "/protein_input.csv"))
-
+# directory for created inputs to pySCENIC and domino2
+input_dir <- paste0(temp_dir, "/inputs")
+if (!dir.exists(input_dir)) {
+  dir.create(input_dir)
+}
 ```
-# Using domino2 v0.2.1 for cell-cell communication inference
+
+# Using domino2 v0.2.2 for cell-cell communication inference
 
 domino2 is a tool for analysis of intra- and intercellular signaling in single cell RNA sequencing (scRNAseq) data based on transcription factor (TF) activation. Here, we show a basic example pipeline for generating communication networks as a domino object. This vignette will demonstrate how to use domino2 on the 10X Genomics Peripheral Blood Mononuclear Cells (PBMC) data set of 2,700 cells. The data can be downloaded [here](https://cf.10xgenomics.com/samples/cell/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz).
 
 ## Preprocessing scRNAseq data
 
-Analysis of cell-cell communication with domino2 often follows initial processing and annotation of scRNAseq data.  We are following the [Satija Lab's Guided Clustering Tutorial](https://satijalab.org/seurat/articles/pbmc3k_tutorial) to prepare the data set for analysis with domino2.
+Analysis of cell-cell communication with domino2 often follows initial processing and annotation of scRNAseq data.  We used the [Satija Lab's Guided Clustering Tutorial](https://satijalab.org/seurat/articles/pbmc3k_tutorial) to prepare the data set for analysis with domino2. The [complete processing script](data-raw/example_data.R) is available in the data-raw directory of the domino2 package. The processed data can be downloaded from [Zenodo](https://zenodo.org/records/10222767).
 
-```{r, eval=TRUE, message = FALSE}
-#preprocessing of PBMC 3K tutorial data set using Seurat functions
-pbmc.data <- Read10X(data.dir = pbmc_dir)
-pbmc <- CreateSeuratObject(counts = pbmc.data, project = "pbmc3k", min.cells = 3, min.features = 200)
-pbmc[["percent.mt"]] <- PercentageFeatureSet(pbmc, pattern = "^MT-")
-pbmc <- NormalizeData(pbmc, normalization.method = "LogNormalize", scale.factor = 10000)
-pbmc <- FindVariableFeatures(pbmc, selection.method = "vst", nfeatures = 2000)
-pbmc <- ScaleData(pbmc, features = rownames(pbmc))
-pbmc <- RunPCA(pbmc, features = VariableFeatures(object = pbmc))
-pbmc <- FindNeighbors(pbmc, dims = 1:10)
-pbmc <- FindClusters(pbmc, resolution = 0.5)
-pbmc <- RunUMAP(pbmc, dims = 1:10)
-
-# Annotate clusters with cell phenotypes
-cell_dict <- data.frame(
-  cluster = c(0:8),
-  cell_type = c("naive_CD4_T_cell", "CD14_monocyte", "memory_CD4_T_cell", "B_cell", "CD8_T_cell", 
-    "CD16_monocyte", "NK_cell", "dendritic_cell", "platelet")
-)
-pbmc$cell_type <- 
-  plyr::mapvalues(
-    pbmc$seurat_clusters,
-    from = cell_dict$cluster,
-    to = cell_dict$cell_type
-  )
+```{r}
+pbmc <- readRDS(paste0(pbmc_dir, "/pbmc_seurat.rds"))
 ```
 
 ### Saving Preprocessed Data:
@@ -125,10 +87,10 @@ domino2 was designed to be compatible with `{Seurat}` objects in addition to acc
 
 ```{r Save Counts Matrix as tsv File, eval=FALSE}
 # save Seurat object as RDS
-save(pbmc, file = "../data/pbmc.rda")
+save(pbmc, file = paste0(input_dir, "/pbmc.rda"))
 
 pbmc_counts <- GetAssayData(object = pbmc, slot = "counts")
-write.table(t(as.matrix(pbmc_counts)), "../data/pbmc3k_counts.tsv", 
+write.table(t(as.matrix(pbmc_counts)), paste0(input_dir, "/pbmc3k_counts.tsv"), 
     sep = "\t", col.names = NA)
 ```
 
@@ -139,9 +101,10 @@ library(loomR)
 
 # save loom counts matrix
 pbmc_counts <- GetAssayData(object = pbmc, slot = "counts")
-pbmc_loom <- loomR::create(filename = paste0(temp_dir, "/pbmc3k_counts.loom"),
+pbmc_loom <- loomR::create(filename = paste0(input_dir, "/pbmc3k_counts.loom"),
                            data = pbmc_counts)
-pbmc_loom$close_all() # Remember to manually close connection to loom files!
+# connection to the loom file must be closed to complete file creation
+pbmc_loom$close_all()
 ```
 
 The cell x gene counts matrix may also be saved as a tab-separated value (.tsv) file if `{loomR}` cannot be used on your computing resource, but be aware that dense formatting of a .tsv can lead to very large file sizes and slow processing for large data sets. We have provided the necessary code below, but due to the large file size, this .tsv file is not provided in our data directory.
@@ -168,22 +131,17 @@ For this tutorial, [pySCENIC](https://pyscenic.readthedocs.io/en/latest/) is use
 A singularity image of [SCENIC](https://scenic.aertslab.org/) v0.12.1 can be installed from the DockerHub image as a source (example scripts for use with Docker are provided in the scenic\_bash directory as well). [SCENIC](https://scenic.aertslab.org/) requires a list of TFs, motif annotations, and cisTarget motifs which are all available from the authors of [SCENIC](https://scenic.aertslab.org/) for human (HGNC), mouse (MGI), and fly. The following will download everything necessary for an analysis of a data set with HGNC gene labels for the hg38 genome.
 
 ```{bash, eval=FALSE}
-SCENIC_DIR="../inst/extdata/scenic"
+SCENIC_DIR="'temp_dir'/scenic"
 mkdir ${SCENIC_DIR}
 
 # Build singularity image
 singularity build "${SCENIC_DIR}/aertslab-pyscenic-0.12.1.sif" docker://aertslab/pyscenic:0.12.1
 
-# Matrix containing motifs as rows and genes as columns and ranking position for each gene and motif (based on CRM scores) as values
-# below is a feather v1 format link; feather v2 required for this version of pySCENIC
-# "https://resources.aertslab.org/cistarget/databases/old/homo_sapiens/hg38/refseq_r80/mc9nr/gene_based/hg38__refseq-r80__10kb_up_and_down_tss.mc9nr.feather"
-# Feather v2 link:
+# Matrix containing motifs as rows and genes as columns and ranking position for each gene and motif (based on CRM scores) as values. URLs provided link to v2 feather files required for the 0.12.1 version of pySENIC.
+
 curl "https://resources.aertslab.org/cistarget/databases/homo_sapiens/hg38/refseq_r80/mc_v10_clust/gene_based/hg38_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather" \
   -o "${SCENIC_DIR}/hg38_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather"
 
-# below is a feather v1 format link; feather v2 required for this version of pySCENIC
-# "https://resources.aertslab.org/cistarget/databases/old/homo_sapiens/hg38/refseq_r80/mc9nr/gene_based/hg38__refseq-r80__500bp_up_and_100bp_down_tss.mc9nr.feather"
-# Feather v2 link:
 curl "https://resources.aertslab.org/cistarget/databases/homo_sapiens/hg38/refseq_r80/mc_v10_clust/gene_based/hg38_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather" \
   -o "${SCENIC_DIR}/hg38_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather"
 
@@ -200,22 +158,17 @@ curl "https://resources.aertslab.org/cistarget/motif2tf/motifs-v9-nr.hgnc-m0.001
 
 Database files from [CellPhoneDB v4.0.0](https://github.com/ventolab/cellphonedb-data/releases/tag/v4.0.0) for human scRNAseq data can be installed from a public Github repository from the Tiechmann Group that developed CellPhoneDB.
 
-```{bash, eval=FALSE}
-CELLPHONE_DIR="../inst/extdata/cellphoneDB_v4"
-mkdir ${CELLPHONE_DIR}
+```{r download cellPhoneDB}
+# 
+cellphone_url <- "https://github.com/ventolab/cellphonedb-data/archive/refs/tags/v4.0.0.tar.gz"
 
-# Annotation of protein complexes
-curl "https://raw.githubusercontent.com/Teichlab/cellphonedb-data/master/data/complex_input.csv" \
-  -o "${CELLPHONE_DIR}/complex_input.csv"
-# Annotation of genes encoding database proteins
-curl "https://raw.githubusercontent.com/Teichlab/cellphonedb-data/master/data/gene_input.csv" \
-  -o "${CELLPHONE_DIR}/gene_input.csv"
-# Annotated protein interactions
-curl "https://raw.githubusercontent.com/Teichlab/cellphonedb-data/master/data/interaction_input.csv" \
-  -o "${CELLPHONE_DIR}/interaction_input.csv"
-# Annotated protein features
-curl "https://raw.githubusercontent.com/Teichlab/cellphonedb-data/master/data/protein_input.csv" \
-  -o "${CELLPHONE_DIR}/protein_input.csv"
+# download compressed database
+cellphone_tar <- paste0(temp_dir, "/cellphoneDB_v4.tar.gz")
+download.file(url = cellphone_url, destfile = cellphone_tar)
+
+# move contents of the compressed file to a new directory
+untar(tarfile = cellphone_tar, exdir = cellphone_dir)
+cellphone_data <- paste0(cellphone_dir, "/cellphonedb-data-4.0.0/data")
 ```
 
 ## SCENIC Analysis
@@ -295,14 +248,13 @@ singularity exec "${SCENIC_DIR}/aertslab-pyscenic-0.12.1.sif" pyscenic aucell \
 The TF activities are a required input for domino2, and the regulons learned by [SCENIC](https://scenic.aertslab.org/) are an important but optional input needed to annotate TF-target interactions and to prune TF-receptor linkages where the receptor is a target of the TF. This prevents the distinction of receptor expression driving TF activity or the TF inducing the receptor's expression.
 
 ```{r Load SCENIC Results}
-
 regulons <- read.csv(paste0(scenic_dir, "/regulons_pbmc_3k.csv"))
 auc <- read.table(paste0(scenic_dir, "/auc_pbmc_3k.csv"),
                   header = TRUE, row.names = 1,
                   stringsAsFactors = FALSE, sep = ",")
 ```
 
-The initial regulons data frame read into R from the ctx function has 2 rows of column names that need to be replaced with one succinct description. domino2 has changed the input format for TF regulons to be a list storing vectors of target genes in each regulon, where the names of the list are the TF genes. This facilitates the use of alternative methods for TF activity quantification methods. We provide a helper function, `create_regulon_list_scenic()` for easy retrieval of TF regulons from the output of the [pySCENIC](https://pyscenic.readthedocs.io/en/latest/) ctx function.
+The initial regulons data frame read into R from the ctx function has 2 rows of column names that need to be replaced with one succinct description. domino2 has changed the input format for TF regulons to be a list storing vectors of target genes in each regulon, where the names of the list are the TF genes. This facilitates the use of alternative methods for TF activity quantification. We provide a helper function, `create_regulon_list_scenic()` for easy retrieval of TF regulons from the output of the [pySCENIC](https://pyscenic.readthedocs.io/en/latest/) ctx function.
 
 ```{r Create Regulon List}
 regulons <- regulons[-1:-2,]
@@ -334,14 +286,17 @@ Additional annotation columns can be provided such as name\_A and name\_B for li
 To facilitate the use of this formatting with the CellPhoneDB database, we include a helper function, `create_rl_map_cellphonedb()`, that automatically parses files from the cellPhoneDB database to arrive at the rl\_map format.
 
 ```{r Load CellPhoneDB Database}
-
-complexes <- read.csv(paste0(cellphone_dir, "/complex_input.csv"), 
+complexes <- read.csv(paste0(cellphone_dir,
+                             "/cellphonedb-data-4.0.0/data/complex_input.csv"), 
                       stringsAsFactors = FALSE)
-genes <- read.csv(paste0(cellphone_dir, "/gene_input.csv"), 
+genes <- read.csv(paste0(cellphone_dir,
+                         "/cellphonedb-data-4.0.0/data/gene_input.csv"), 
                   stringsAsFactors = FALSE)
-interactions <- read.csv(paste0(cellphone_dir, "/interaction_input.csv"), 
+interactions <- read.csv(paste0(cellphone_dir,
+                                "/cellphonedb-data-4.0.0/data/interaction_input.csv"), 
                          stringsAsFactors = FALSE)
-proteins <- read.csv(paste0(cellphone_dir, "/protein_input.csv"), 
+proteins <- read.csv(paste0(cellphone_dir,
+                            "/cellphonedb-data-4.0.0/data/protein_input.csv"), 
                      stringsAsFactors = FALSE)
 
 rl_map <- create_rl_map_cellphonedb(
