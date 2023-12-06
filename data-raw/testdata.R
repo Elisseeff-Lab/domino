@@ -45,9 +45,19 @@ genes <- read.csv(paste0(cellphone_data, "/gene_input.csv"), stringsAsFactors = 
 proteins <- read.csv(paste0(cellphone_data, "/protein_input.csv"), stringsAsFactors = FALSE)
 
 # subset the pbmc data to fewer cells to meet package requirements
-RNA_features <- c("TNF", "FAS", "ITGAM", "ITGB2", "FCER2", "IL7", "IL7R", "IL2RG", "IGF1", "IGF1R")
+RNA_features <- c(
+  "TNF", "TNFSF13", "FASLG", "FAS", 
+  "ITGAM", "ITGB2", "ITGAV", "ITGB3", "FCER2", 
+  "IL7", "IL7R", "IL2RG",
+  "CD22", "PTPRC",
+  "IGF1", "IGF1R")
 TF_features <- c("ZNF257", "ATF4", "RUNX1")
-name_features <- c("TNF", "FAS", "integrin_aMb2_complex", "FCER2", "IL7", "IL7_receptor", "IGF1", "IGF1R")
+name_features <- c(
+  "TNF", "TNFSF13", "FASLG", "FAS", 
+  "integrin_aMb2_complex", "integrin_aVb3_complex", "FCER2", 
+  "IL7", "IL7_receptor", 
+  "CD22", "PTPRC",
+  "IGF1", "IGF1R")
 cell_types_dwn <- c("CD8_T_cell", "CD14_monocyte", "B_cell")
 n <- 120
 cell_list <- list()
