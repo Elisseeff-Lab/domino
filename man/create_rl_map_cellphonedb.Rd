@@ -11,7 +11,9 @@ create_rl_map_cellphonedb(
   complexes = NULL,
   database_name = "CellPhoneDB",
   gene_conv = NULL,
-  gene_conv_host = "https://www.ensembl.org"
+  gene_conv_host = "https://www.ensembl.org",
+  alternate_convert = FALSE,
+  alternate_convert_table = NULL
 )
 }
 \arguments{
@@ -22,6 +24,16 @@ create_rl_map_cellphonedb(
 \item{interactions}{dataframe or file path to table of protein-protein interactions in cellphonedb format}
 
 \item{complexes}{optional: dataframe or file path to table of protein complexes in cellphonedb format}
+
+\item{database_name}{name of the database being used, stored in output}
+
+\item{gene_conv}{a tuple of (from, to) or (source, target) if gene conversion to orthologs is desired; options are ENSMUSG, ENSG, MGI, or HGNC}
+
+\item{gene_conv_host}{host for conversion; default ensembl, could also use mirrors if desired}
+
+\item{alternate_convert}{boolean if you would like to use a non-ensembl method of conversion (must supply table; not recommended, use only if ensembl is down)}
+
+\item{alternate_convert_table}{supplied table for non-ensembl method of conversion}
 }
 \value{
 Data frame where each row describes a possible receptor-ligand interaction

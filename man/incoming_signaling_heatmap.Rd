@@ -17,11 +17,11 @@ incoming_signaling_heatmap(
 )
 }
 \arguments{
-\item{dom}{A domino object with network built (build_domino)}
+\item{dom}{Domino object with network built (\code{\link[=build_domino]{build_domino()}})}
 
 \item{rec_clust}{Which cluster to select as the receptor. Must match naming of clusters in the domino object.}
 
-\item{clusts}{A vector of clusters to be included. If NULL then all clusters are used.}
+\item{clusts}{Vector of clusters to be included. If NULL then all clusters are used.}
 
 \item{min_thresh}{Minimum signaling threshold for plotting. Defaults to -Inf for no threshold.}
 
@@ -31,14 +31,17 @@ incoming_signaling_heatmap(
 
 \item{normalize}{Options to normalize the matrix. Accepted inputs are 'none' for no normalization, 'rec_norm' to normalize to the maximum value with each receptor cluster, or 'lig_norm' to normalize to the maximum value within each ligand cluster}
 
-\item{title}{Either a string to use as the title or a boolean describing whether to include a title. In order to pass the 'main' parameter to NMF::aheatmap you must set title to FALSE.}
+\item{title}{Either a string to use as the title or a boolean describing whether to include a title. In order to pass the 'main' parameter to  \code{\link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap()}}  you must set title to FALSE.}
 
-\item{...}{Other parameters to pass to NMF::aheatmap. Note that to use the 'main' parameter of NMF::aheatmap you must set title = FALSE}
+\item{...}{Other parameters to pass to  \code{\link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap()}}. Note that to use the 'column_title' parameter of  \code{\link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap()}}  you must set title = FALSE}
+}
+\value{
+a Heatmap rendered to the active graphics device
 }
 \description{
 Creates a heatmap of a cluster incoming signaling matrix. Each cluster has a
 list of ligands capable of activating its enriched transcription factors. The
-function creates a heatmap of cluster average expression for all of those 
+function creates a heatmap of cluster average expression for all of those
 ligands. A list of all cluster incoming signaling matrices can be found in
 the cl_signaling_matrices slot of a domino option as an alternative to this
 plotting function.
