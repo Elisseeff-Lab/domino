@@ -290,12 +290,12 @@ create_domino <- function(rl_map, features, ser = NULL, counts = NULL, z_scores 
   }
   # Read in lr db info
   if (verbose) {
-    print("Reading in and processing signaling database")
+    message("Reading in and processing signaling database")
   }
   if ("database_name" %in% colnames(rl_map)) {
     dom@db_info <- rl_map
     if (verbose) {
-      print(paste0("Database provided from source: ", unique(rl_map[["database_name"]])))
+      message(paste0("Database provided from source: ", unique(rl_map[["database_name"]])))
     }
   } else {
     dom@db_info <- rl_map
@@ -362,7 +362,7 @@ create_domino <- function(rl_map, features, ser = NULL, counts = NULL, z_scores 
   dom@misc[["rl_map"]] <- rl_reading
   # Get z-score and cluster info
   if (verbose) {
-    print("Getting z_scores, clusters, and counts")
+    message("Getting z_scores, clusters, and counts")
   }
   if (!is.null(ser)) {
     z_scores <- ser@assays$RNA@scale.data
