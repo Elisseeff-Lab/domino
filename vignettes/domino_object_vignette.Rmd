@@ -23,7 +23,7 @@ dom <- pbmc_dom
 ```
 
 ```{r setup, include = FALSE}
-devtools::load_all()
+library(domino2)
 ```
 
 # The new domino object structure
