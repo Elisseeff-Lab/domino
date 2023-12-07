@@ -79,37 +79,36 @@ test_that("building a domino object under set parameters", {
 })
 
 test_that("create_rl_map_cellphonedb fails on wrong input arg type.", {
-  load(test_path("testdata", "sysdata.rda"))
 
   expect_error(create_rl_map_cellphonedb(
-    genes = list(), proteins = proteins_test,
-    interactions = interactions_test, complexes = complexes_test
+    genes = list(), proteins = proteins_tiny,
+    interactions = interactions_tiny, complexes = complexes_tiny
   ))
 
   expect_error(create_rl_map_cellphonedb(
-    genes = genes_test, proteins = list(),
-    interactions = interactions_test, complexes = complexes_test
+    genes = genes_tiny, proteins = list(),
+    interactions = interactions_tiny, complexes = complexes_tiny
   ))
 
   expect_error(create_rl_map_cellphonedb(
-    genes = genes_test, proteins = proteins_test,
-    interactions = list(), complexes = complexes_test
+    genes = genes_tiny, proteins = proteins_tiny,
+    interactions = list(), complexes = complexes_tiny
   ))
 
   expect_error(create_rl_map_cellphonedb(
-    genes = genes_test, proteins = proteins_test,
-    interactions = interactions_test, complexes = list()
+    genes = genes_tiny, proteins = proteins_tiny,
+    interactions = interactions_tiny, complexes = list()
   ))
 
   expect_error(create_rl_map_cellphonedb(
-    genes = genes_test, proteins = proteins_test,
-    interactions = interactions_test, complexes = complexes_test,
+    genes = genes_tiny, proteins = proteins_tiny,
+    interactions = interactions_tiny, complexes = complexes_tiny,
     database_name = list()
   ))
 
   expect_error(create_rl_map_cellphonedb(
-    genes = genes_test, proteins = proteins_test,
-    interactions = interactions_test, complexes = complexes_test,
+    genes = genes_tiny, proteins = proteins_tiny,
+    interactions = interactions_tiny, complexes = complexes_tiny,
     database_name = c("length", ">1")
   ))
 })
