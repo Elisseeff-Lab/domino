@@ -67,19 +67,19 @@ Setting an argument `labels = TRUE` will return the vector of cluster labels for
 
 To access the counts:
 ```{r counts}
-count_matrix = dom_counts(dom)
+count_matrix <- dom_counts(dom)
 knitr::kable(count_matrix[1:5, 1:5])
 ```
 
 Or z-scored counts:
 ```{r zcounts}
-z_matrix = dom_zscores(dom)
+z_matrix <- dom_zscores(dom)
 knitr::kable(z_matrix[1:5, 1:5])
 ```
 
 The transcription factor activation scores can be similarly accessed:
 ```{r tf_activation}
-activation_matrix = dom_tf_activation(dom)
+activation_matrix <- dom_tf_activation(dom)
 knitr::kable(activation_matrix[1:5, 1:5])
 ```
 
@@ -90,7 +90,7 @@ dom_database(dom)
 
 But if you would like to view the entire ligand-receptor map, set `name_only = FALSE`:
 ```{r db-all}
-db_matrix = dom_database(dom, name_only = FALSE)
+db_matrix <- dom_database(dom, name_only = FALSE)
 knitr::kable(db_matrix[1:5, 1:5])
 ```
 
@@ -98,14 +98,14 @@ knitr::kable(db_matrix[1:5, 1:5])
 Active transcription factors in each cluster are determined by conducting wilcoxon rank sum tests for each transcription factor where the trascription factor activity scores amongst all cells in the cluster are tested against the activity scores of all cells outside of the cluster. The p-value for the one-sided test for greater activity within the cluster compared to outside can be accessed with the `dom_de()` function.
 
 ```{r de}
-de_matrix = dom_de(dom)
+de_matrix <- dom_de(dom)
 knitr::kable(de_matrix[1:5, 1:5])
 ```
 
 Linkage between receptors and transcription factors is assessed by Spearman correlation between transcription factor activity scores and scaled expression of receptor-encoding genes across all cells in the data set. Spearman coefficients can be accessed with the `dom_correlations()` function.
 
 ```{r correlations}
-cor_matrix = dom_correlations(dom)
+cor_matrix <- dom_correlations(dom)
 knitr::kable(cor_matrix[1:5, 1:5])
 ```
 
@@ -113,20 +113,20 @@ knitr::kable(cor_matrix[1:5, 1:5])
 Linkages between various ligands, receptors, and transcription factors can be accessed in several different ways, depending on the specific link and the scope desired. The `dom_linkages()` function has three arguments - the first, like all of our access functions, is for the domino object. The second, `link_type`, is used to specify which linkages are desired (options are complexes, receptor-ligand, tf-target, or tf-receptor). The third argument, `by_cluster`, determines whether the linkages returned are arranged by cluster (though this does change the available linkage types to tf-receptor, receptor, or incoming-ligand). For example, to access the complexes used across the dataset:
 
 ```{r, complex}
-complex_links = dom_linkages(dom, link_type = "complexes")
+complex_links <- dom_linkages(dom, link_type = "complexes")
 # Look for components of NODAL receptor complex
 complex_links$NODAL_receptor
 ```
 To view incoming ligands to each cluster:
 ```{r, lig-by-clust}
-incoming_links = dom_linkages(dom, link_type = "incoming-ligand", by_cluster = TRUE)
+incoming_links <- dom_linkages(dom, link_type = "incoming-ligand", by_cluster = TRUE)
 # Check incoming signals to dendritic cells
 incoming_links$dendritic_cell
 ```
 
 If, for some reason, you find yourself in need of the entire linkage structure (not recommended), it can be accessed through its slot name; domino objects are S4 objects.
 ```{r link}
-all_linkages = slot(dom, "linkages")
+all_linkages <- slot(dom, "linkages")
 # Names of all sub-structures:
 names(all_linkages)
 ```
@@ -139,13 +139,13 @@ collate_network_items(dom, "dendritic_cell", return = "features")
 ### Signaling Matrices
 The averaged z-scored expression of ligands and receptors between different clusters can be accessed in matrix form.
 ```{r global-signalling}
-signal_matrix = dom_signaling(dom)
+signal_matrix <- dom_signaling(dom)
 knitr::kable(signal_matrix)
 ```
 To view signaling to a specific cluster from the other clusters, set the `cluster` argument to the cluster name.
 
 ```{r clust-signal}
-dc_matrix = dom_signaling(dom, "dendritic_cell")
+dc_matrix <- dom_signaling(dom, "dendritic_cell")
 knitr::kable(dc_matrix)
 ```
 
