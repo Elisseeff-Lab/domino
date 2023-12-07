@@ -15,8 +15,9 @@ knitr::opts_chunk$set(
   echo = TRUE,
   message = FALSE,
   warning = FALSE,
-  fig.cap = "",
-  tidy = TRUE
+  fig.cap="",
+  tidy = "styler",
+  global.device = TRUE
 )
 options(timeout=300)
 ```

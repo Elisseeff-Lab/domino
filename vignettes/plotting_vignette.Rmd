@@ -15,7 +15,8 @@ knitr::opts_chunk$set(
   message = FALSE,
   warning = FALSE,
   fig.cap="",
-  tidy = TRUE
+  tidy = "styler",
+  global.device = TRUE
 )
 options(timeout=300)
 ```
@@ -153,7 +154,7 @@ circos_ligand_receptor(dom, receptor = "CD74")
 ```
 
 This function can be given cluster colors to match other plots you may make with your data. In addition, the plot can be adjusted by changing the threshold of ligand expression required for a linkage to be visualized or selecting clusters of interest.
-```{r circos-opt, fig.asp = 0.8}
+```{r circos-opt, fig.asp = 0.8, fig.width = 7}
 cols = c("red", "orange", "green", "blue", "pink", "purple",
   "slategrey", "firebrick", "hotpink")
 names(cols) = levels(dom@clusters)

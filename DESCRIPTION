@@ -9,7 +9,8 @@ Authors@R: c(
     person("Elana", "Fertig", role = "ctb", email = "ejfertig@jhmi.edu", comment = c(ORCID = "0000-0003-3204-342X")),
     person("Jennifer", "Elisseeff", role = "ctb", email = "jhe@jhu.edu", comment = c(ORCID = "0000-0002-5066-1996"))
     )
-Description: Domino2 is a package developed to analyze cell signaling through ligand - receptor - transcription factor networks in scRNAseq data. It takes as input information transcriptomic data, requiring counts, z-scored counts, and cluster labels, as well as information on transcription factor activation (such as from SCENIC) and a database of ligand and receptor pairings (such as from cellphoneDB). This package creates an object storing ligand - receptor - transcription factor linkages by cluster and provides several methods for exploring, summarizing, and visualizing the analysis.
+Description: 
+    Domino2 is a package developed to analyze cell signaling through ligand - receptor - transcription factor networks in scRNAseq data. It takes as input information transcriptomic data, requiring counts, z-scored counts, and cluster labels, as well as information on transcription factor activation (such as from SCENIC) and a database of ligand and receptor pairings (such as from cellphoneDB). This package creates an object storing ligand - receptor - transcription factor linkages by cluster and provides several methods for exploring, summarizing, and visualizing the analysis.
 BugReports: https://github.com/FertigLab/domino_development/issues
 Depends:
     R(>= 3.6.2),
