@@ -18,9 +18,7 @@ knitr::opts_chunk$set(
   tidy = "styler",
   global.device = TRUE
 )
-
-load("../data/pbmc_dom.rda")
-dom <- pbmc_dom
+options(timeout=300)
 ```
 
 ```{r setup, include = FALSE, eval = TRUE}
@@ -30,6 +28,17 @@ library(patchwork)
 
 # Visualizing domino2 data
 In addition to the numerous plotting options available in the original [Domino](https://github.com/Elisseeff-Lab/domino), domino2 has added more functionality and new methods to improve visualization and interpretation of analysis results. Here, we will go over the different plotting functions available, as well as different options that can be utilized, and options for customization. We will be using the domino object (loaded as `dom`) from our example analysis in [Getting Started](vignette("domino2")).
+
+### Loading example domino data
+
+```{r}
+data_url <- "https://zenodo.org/records/10222767/files"
+temp_dir <- tempdir()
+
+download.file(url = paste0(data_url, "/pbmc_domino_built.rds"),
+              destfile = paste0(temp_dir, "/pbmc_domino_built.rds"))
+dom <- readRDS(paste0(temp_dir, "/pbmc_domino_built.rds"))
+```
 
 ## Heatmaps
 

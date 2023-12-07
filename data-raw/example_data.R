@@ -1,7 +1,20 @@
 # Code for preparing example objects for use in vignettes
 # Accessible to users for exploration as well
 library(Seurat)
-pbmc.data <- Read10X(data.dir = "../inst/extdata/pbmc3k_filtered_gene_bc_matrices")
+library(domino2)
+
+# Zenodo host of outputs from SCENIC analysis
+data_url <- "https://zenodo.org/records/10222767/files"
+temp_dir <- tempdir()
+
+# install 10X Genomics PBMC3K data
+pbmc_url <- "https://cf.10xgenomics.com/samples/cell/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz"
+pbmc_tar <- paste0(temp_dir, "/pbmc3k_filtered_gene_bc_matrices.tar.gz")
+download.file(url = pbmc_url, destfile = pbmc_tar)
+pbmc_dir <- paste0(temp_dir, "/pbmc3k_filtered_gene_bc_matrices")
+untar(tarfile = pbmc_tar, exdir = pbmc_dir)
+pbmc.data <- Read10X(data.dir = paste0(pbmc_dir, "/filtered_gene_bc_matrices/hg19"))
+
 pbmc <- CreateSeuratObject(counts = pbmc.data, project = "pbmc3k", min.cells = 3, min.features = 200)
 pbmc <- NormalizeData(pbmc, normalization.method = "LogNormalize", scale.factor = 10000)
 pbmc <- FindVariableFeatures(pbmc, selection.method = "vst", nfeatures = 2000)
@@ -23,12 +36,22 @@ pbmc$cell_type <-
     to = cell_dict$cell_type
     )
 
+# Save Seurat object for generating test data
+saveRDS(pbmc, "inst/extdata/pbmc_seurat.rds")
+
 # Load SCENIC outputs
-scenic_dir = "../inst/extdata/scenic/"
-regulons <- read.csv(paste0(scenic_dir, "/regulons_pbmc_3k.csv"))
+scenic_dir <- paste0(temp_dir, "/scenic")
+if (!dir.exists(scenic_dir)) {
+  dir.create(scenic_dir)
+}
+download.file(url = paste0(data_url, "/scenic_auc_pbmc_3k.csv"),
+              destfile = paste0(scenic_dir, "/auc_pbmc_3k.csv"))
+download.file(url = paste0(data_url, "/scenic_regulons_pbmc_3k.csv"),
+              destfile = paste0(scenic_dir, "/regulons_pbmc_3k.csv"))
 auc <- read.table(paste0(scenic_dir, "/auc_pbmc_3k.csv"),
                 header = TRUE, row.names = 1,
                 stringsAsFactors = FALSE, sep = ",")
+regulons <- read.csv(paste0(scenic_dir, "/regulons_pbmc_3k.csv"))
 
 # Create list of SCENIC regulons
 regulons <- regulons[-1:-2,]
@@ -41,11 +64,17 @@ auc_in <- as.data.frame(t(auc))
 rownames(auc_in) <- gsub("\\.\\.\\.$", "", rownames(auc_in))
 
 # Load CellPhoneDB Database
-cellphonedb_2_path <- "../inst/extdata/cellphoneDB_v4"
-complexes <- read.csv(paste0(cellphonedb_2_path, "/complex_input.csv"), stringsAsFactors = FALSE)
-genes <- read.csv(paste0(cellphonedb_2_path, "/gene_input.csv"), stringsAsFactors = FALSE)
-interactions <- read.csv(paste0(cellphonedb_2_path, "/interaction_input.csv"), stringsAsFactors = FALSE)
-proteins <- read.csv(paste0(cellphonedb_2_path, "/protein_input.csv"), stringsAsFactors = FALSE)
+cellphone_url <- "https://github.com/ventolab/cellphonedb-data/archive/refs/tags/v4.0.0.tar.gz"
+cellphone_tar <- paste0(temp_dir, "/cellphoneDB_v4.tar.gz")
+download.file(url = cellphone_url, destfile = cellphone_tar)
+cellphone_dir <- paste0(temp_dir, "/cellphoneDB_v4")
+untar(tarfile = cellphone_tar, exdir = cellphone_dir)
+cellphone_data <- paste0(cellphone_dir, "/cellphonedb-data-4.0.0/data")
+
+interactions <- read.csv(paste0(cellphone_data, "/interaction_input.csv"), stringsAsFactors = FALSE)
+complexes <- read.csv(paste0(cellphone_data, "/complex_input.csv"), stringsAsFactors = FALSE)
+genes <- read.csv(paste0(cellphone_data, "/gene_input.csv"), stringsAsFactors = FALSE)
+proteins <- read.csv(paste0(cellphone_data, "/protein_input.csv"), stringsAsFactors = FALSE)
 
 # Make RL Map
 rl_map <- create_rl_map_cellphonedb(
@@ -84,5 +113,5 @@ pbmc_dom <- build_domino(
     min_rec_percentage = 0.1 # Minimum percent of cells that must express receptor
 )
 
-# Save
-usethis::use_data(pbmc_dom, compress = "xz", overwrite = TRUE)
+# Save domino object for generating test data
+saveRDS(pbmc_dom, "inst/extdata/pbmc_domino_built.rds")

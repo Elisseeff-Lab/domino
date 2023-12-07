@@ -17,13 +17,20 @@ knitr::opts_chunk$set(
   fig.cap="",
   tidy = "styler"
 )
-
-load("../data/pbmc_dom.rda")
-dom <- pbmc_dom
+options(timeout=300)
 ```
 
 ```{r setup, include = FALSE}
 library(domino2)
+```
+
+```{r}
+data_url <- "https://zenodo.org/records/10222767/files"
+temp_dir <- tempdir()
+
+download.file(url = paste0(data_url, "/pbmc_domino_built.rds"),
+              destfile = paste0(temp_dir, "/pbmc_domino_built.rds"))
+dom <- readRDS(paste0(temp_dir, "/pbmc_domino_built.rds"))
 ```
 
 # The new domino object structure
