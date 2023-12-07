@@ -12,7 +12,6 @@ create_rl_map_cellphonedb(
   database_name = "CellPhoneDB",
   gene_conv = NULL,
   gene_conv_host = "https://www.ensembl.org",
-  alternate_convert = FALSE,
   alternate_convert_table = NULL
 )
 }
@@ -31,9 +30,7 @@ create_rl_map_cellphonedb(
 
 \item{gene_conv_host}{host for conversion; default ensembl, could also use mirrors if desired}
 
-\item{alternate_convert}{boolean if you would like to use a non-ensembl method of conversion (must supply table; not recommended, use only if ensembl is down)}
-
-\item{alternate_convert_table}{supplied table for non-ensembl method of conversion}
+\item{alternate_convert_table}{supplied table for non-ensembl method of conversion (not recommended, use only if ensembl is down))}
 }
 \value{
 Data frame where each row describes a possible receptor-ligand interaction
