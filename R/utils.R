@@ -23,8 +23,8 @@ check_arg <- function(arg, allow_class = c("character"), allow_len = NULL) {
 
 #' Read in data if an object looks like path to it.
 #'
-#' @param obj
-#' @return obj the object itself in case its not a character
+#' @param obj Object to read if not already object
+#' @return obj Object itself in case its not a character
 read_if_char <- function(obj) {
   if (is(obj, "character")) {
     obj <- read.csv(obj, stringsAsFactors = FALSE)
