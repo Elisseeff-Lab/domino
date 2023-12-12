@@ -96,6 +96,17 @@ and rows corresponding to the gene symbols themselves</p></dd>
 <p>Data frame of genes with original and corresponding converted symbols</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">conversion_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span> <span class="st">"http://www.informatics.jax.org/downloads/reports/HOM_MouseHumanSequence.rpt"</span>,</span></span>
+<span class="r-in"><span> sep <span class="op">=</span> <span class="st">"\t"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">mgi_genes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ptprc"</span>, <span class="st">"Cd3e"</span>, <span class="st">"Cd8a"</span>, <span class="st">"Cd4"</span>, <span class="st">"Foxp3"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">table_convert_genes</span><span class="op">(</span><span class="va">mgi_genes</span>, <span class="st">"MGI"</span>, <span class="st">"HGNC"</span>, <span class="va">conversion_table</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in table_convert_genes(mgi_genes, "MGI", "HGNC", conversion_table):</span> Conversion table must be provided with at least two of column names mm.ens, hs.ens, mgi and/or hgnc</span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 

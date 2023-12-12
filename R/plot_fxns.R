@@ -22,8 +22,7 @@ NULL
 #' @return a Heatmap rendered to the active graphics device
 #' @export signaling_heatmap
 #' @examples
-#' load("data/pbmc_dom.rda")
-#' signaling_heatmap(pbmc_dom)
+#' signaling_heatmap(pbmc_dom_built_tiny)
 #'
 signaling_heatmap <- function(
     dom, clusts = NULL, min_thresh = -Inf, max_thresh = Inf, scale = "none",
@@ -60,6 +59,7 @@ signaling_heatmap <- function(
     ...
   )
 }
+
 #' Create a cluster incoming signaling heatmap
 #'
 #' Creates a heatmap of a cluster incoming signaling matrix. Each cluster has a
@@ -81,8 +81,7 @@ signaling_heatmap <- function(
 #' @return a Heatmap rendered to the active graphics device
 #' @export incoming_signaling_heatmap
 #' @examples
-#' load("data/pbmc_dom.rda")
-#' incoming_signaling_heatmap(pbmc_dom, "CD8_T_cell")
+#' incoming_signaling_heatmap(pbmc_dom_built_tiny, "CD8_T_cell")
 #'
 incoming_signaling_heatmap <- function(
     dom, rec_clust, clusts = NULL, min_thresh = -Inf, max_thresh = Inf,
@@ -149,6 +148,7 @@ incoming_signaling_heatmap <- function(
     )
   }
 }
+
 #' Create a cluster to cluster signaling network diagram
 #'
 #' Creates a network diagram of signaling between clusters. Nodes are clusters
@@ -173,8 +173,8 @@ incoming_signaling_heatmap <- function(
 #' @return an igraph rendered to the active graphics device
 #' @export signaling_network
 #' @examples
-#' load("data/pbmc_dom.rda")
-#' signaling_network(pbmc_dom, layout = "fr")
+#' signaling_network(pbmc_dom_built_tiny, layout = "fr")
+#' 
 signaling_network <- function(
     dom, cols = NULL, edge_weight = 0.3, clusts = NULL, showOutgoingSignalingClusts = NULL,
     showIncomingSignalingClusts = NULL, min_thresh = -Inf, max_thresh = Inf, normalize = "none", scale = "sq",
@@ -290,6 +290,7 @@ signaling_network <- function(
   }
   plot(graph, layout = l, main = plot_title, ...)
 }
+
 #' Create a gene association network
 #'
 #' Create a gene association network for genes from a given cluster. The
@@ -308,12 +309,11 @@ signaling_network <- function(
 #' @return an igraph rendered to the active graphics device
 #' @export gene_network
 #' @examples
-#' load("data/pbmc_dom.rda")
-#' gene_network(pbmc_dom, clust = "CD8_T_cell", OutgoingSignalingClust = "CD14_monocyte")
-gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL, class_cols = c(
-                            lig = "#FF685F",
-                            rec = "#47a7ff", feat = "#39C740"
-                          ), cols = NULL, lig_scale = 1, layout = "grid", ...) {
+#' gene_network(pbmc_dom_built_tiny, clust = "CD8_T_cell", OutgoingSignalingClust = "CD14_monocyte")
+#' 
+gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL, 
+    class_cols = c(lig = "#FF685F",rec = "#47a7ff", feat = "#39C740"),
+    cols = NULL, lig_scale = 1, layout = "grid", ...) {
   if (!dom@misc[["build"]]) {
     warning("Please build a signaling network with domino_build prior to plotting.")
   }
@@ -448,6 +448,7 @@ gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL, class
   plot(graph, layout = l, main = paste0("Signaling ", OutgoingSignalingClust, " to ", clust), ...)
   return(invisible(list(graph = graph, layout = l)))
 }
+
 #' Create a heatmap of features organized by cluster
 #'
 #' Creates a heatmap of feature expression (typically transcription factor
@@ -467,8 +468,7 @@ gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL, class
 #' @return a Heatmap rendered to the active graphics device
 #' @export feat_heatmap
 #' @examples
-#' load("data/pbmc_dom.rda")
-#' feat_heatmap(pbmc_dom, min_thresh = 0.1, max_thresh = 0.6, norm = TRUE)
+#' feat_heatmap(pbmc_dom_built_tiny, min_thresh = 0.1, max_thresh = 0.6, norm = TRUE)
 #'
 feat_heatmap <- function(
     dom, feats = NULL, bool = FALSE, bool_thresh = 0.2, title = TRUE, norm = FALSE,
@@ -570,6 +570,7 @@ feat_heatmap <- function(
     )
   }
 }
+
 #' Create a heatmap of correlation between receptors and transcription factors
 #'
 #' Creates a heatmap of correlation values between receptors and transcription
@@ -586,10 +587,10 @@ feat_heatmap <- function(
 #' @return a Heatmap rendered to the active graphics device
 #' @export cor_heatmap
 #' @examples
-#' load("data/pbmc_dom.rda")
-#' receptors <- c("CSF1R", "CSF3R", "CCR7", "FCER2")
-#' tfs <- c("PAX5", "JUNB", "FOXJ3", "FOSB")
-#' cor_heatmap(pbmc_dom, feats = tfs, recs = receptors)
+#' receptors <- c("FAS", "CD22", "FCER2")
+#' tfs <- c("ZNF257", "RUNX1")
+#' cor_heatmap(pbmc_dom_built_tiny, feats = tfs, recs = receptors)
+#' 
 cor_heatmap <- function(
     dom, bool = FALSE, bool_thresh = 0.15, title = TRUE, feats = NULL, recs = NULL,
     mark_connections = FALSE, ...) {
@@ -666,6 +667,7 @@ cor_heatmap <- function(
     )
   }
 }
+
 #' Create a correlation plot between transcription factor activation score and receptor
 #'
 #' Create a correlation plot between transcription factor activation score and receptor
@@ -678,8 +680,7 @@ cor_heatmap <- function(
 #' @return a ggplot object
 #' @export cor_scatter
 #' @examples
-#' load("data/pbmc_dom.rda")
-#' cor_scatter(dom, "FOSB", "CD74")
+#' cor_scatter(pbmc_dom_built_tiny, "RUNX1", "FAS")
 #'
 cor_scatter <- function(dom, tf, rec, remove_rec_dropout = TRUE, ...) {
   if (remove_rec_dropout) {
@@ -694,6 +695,7 @@ cor_scatter <- function(dom, tf, rec, remove_rec_dropout = TRUE, ...) {
   ggscatter(dat, x = "rec", y = "tf", add = "reg.line", conf.int = FALSE, cor.coef = FALSE,
     cor.method = "pearson", xlab = rec, ylab = tf, size = 0.25, ...)
 }
+
 #' Plot expression of a receptor's ligands by other cell types as a chord plot
 #'
 #' Creates a chord plot of expression of ligands that can activate a specified
@@ -707,13 +709,13 @@ cor_scatter <- function(dom, tf, rec, remove_rec_dropout = TRUE, ...) {
 #' @return renders a circos plot to the active graphics device
 #' @export circos_ligand_receptor
 #' @examples
-#' load("data/pbmc_dom.rda")
 #' cols <- c(
 #'   "red", "orange", "green", "blue", "pink", "purple",
 #'   "slategrey", "firebrick", "hotpink"
 #' )
-#' names(cols) <- dom_clusters(pbmc_dom, labels = FALSE)
-#' circos_ligand_receptor(pbmc_dom, receptor = "CD74", cell_colors = cols)
+#' names(cols) <- dom_clusters(pbmc_dom_built_tiny, labels = FALSE)
+#' circos_ligand_receptor(pbmc_dom_built_tiny, receptor = "FCER2", cell_colors = cols)
+#' 
 circos_ligand_receptor <- function(
     dom, receptor, ligand_expression_threshold = 0.01, cell_idents = NULL,
     cell_colors = NULL) {
@@ -832,6 +834,7 @@ circos_ligand_receptor <- function(
   lgd_list_vertical <- ComplexHeatmap::packLegend(lgd_cells, lgd_ligands, lgd_chord)
   ComplexHeatmap::draw(lgd_list_vertical, x = grid::unit(0.02, "npc"), y = grid::unit(0.98, "npc"), just = c("left", "top"))
 }
+
 #' Plot differential linkages among domino results ranked by a comparative statistic
 #'
 #' Plot differential linkages among domino results ranked by a comparative statistic
@@ -917,6 +920,7 @@ plot_differential_linkages <- function(
   }
   return(plot)
 }
+
 #' Normalize a matrix to its max value by row or column
 #'
 #' Normalizes a matrix to its max value by row or column
@@ -942,6 +946,7 @@ do_norm <- function(mat, dir) {
     return(mat)
   }
 }
+
 #' Generate ggplot colors
 #'
 #' Accepts a number of colors to generate and generates a ggplot color spectrum.
@@ -951,6 +956,7 @@ do_norm <- function(mat, dir) {
 #' @keywords internal
 #' @examples
 #' ggplot_col_gen(7)
+#' 
 ggplot_col_gen <- function(n) {
   hues <- seq(15, 375, length = n + 1)
   return(grDevices::hcl(h = hues, l = 65, c = 100)[1:n])

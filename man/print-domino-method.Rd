@@ -15,4 +15,8 @@ a printed description of the number of cell clusters in the object
 \description{
 Prints a summary of a domino object
 }
+\examples{
+print(pbmc_dom_tiny_built)
+
+}
 \keyword{internal}

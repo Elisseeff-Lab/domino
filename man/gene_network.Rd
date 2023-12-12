@@ -41,3 +41,7 @@ selected cluster acts as the receptor for the gene association network, so
 only ligands, receptors, and features associated with the receptor cluster
 will be included in the plot.
 }
+\examples{
+gene_network(pbmc_dom_built_tiny, clust = "CD8_T_cell", OutgoingSignalingClust = "CD14_monocyte")
+
+}

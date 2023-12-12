@@ -15,4 +15,8 @@ A vector of colors according to ggplot color generation.
 \description{
 Accepts a number of colors to generate and generates a ggplot color spectrum.
 }
+\examples{
+ggplot_col_gen(7)
+
+}
 \keyword{internal}

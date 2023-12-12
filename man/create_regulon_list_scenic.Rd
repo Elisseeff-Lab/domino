@@ -15,3 +15,7 @@ A list where names are transcription factors and the stored values are character
 \description{
 Generates a list of transcription factors and the genes targeted by the transcription factor as part of their regulon inferred by pySCENIC
 }
+\examples{
+regulon_list_tiny <- create_regulon_list_scenic(regulons = regulons_tiny)
+
+}

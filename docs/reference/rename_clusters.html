@@ -105,6 +105,15 @@ network.</p>
 <p>A domino object with clusters renamed in all applicable slots.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">new_clust</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CD8_T_cell"</span> <span class="op">=</span> <span class="st">"CD8+ T Cells"</span>,</span></span>
+<span class="r-in"><span> <span class="st">"CD14_monocyte"</span> <span class="op">=</span> <span class="st">"CD14+ Monocytes"</span>, <span class="st">"B_cell"</span> <span class="op">=</span> <span class="st">"B Cells"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">pbmc_dom_built_tiny</span> <span class="op">&lt;-</span> <span class="fu">rename_clusters</span><span class="op">(</span><span class="va">pbmc_dom_built_tiny</span>, <span class="va">new_clust</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in rename_clusters(pbmc_dom_built_tiny, new_clust):</span> object 'pbmc_dom_built_tiny' not found</span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 

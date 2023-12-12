@@ -21,7 +21,15 @@ NULL
 #' @param alternate_convert_table supplied table for non-ensembl method of conversion
 #' @return Data frame where each row describes a possible receptor-ligand interaction
 #' @export create_rl_map_cellphonedb
-#'
+#' @examples
+#' rl_map_tiny <- create_rl_map_cellphonedb(genes = genes_tiny, 
+#'  proteins = proteins_tiny, interactions = interactions_tiny, 
+#'  complexes = complexes_tiny)
+#' 
+#' rl_map_tiny_mgi <- create_rl_map_cellphonedb(genes = genes_tiny, 
+#'  proteins = proteins_tiny, interactions = interactions_tiny, 
+#'  complexes = complexes_tiny, gene_conv = c("HGNC", "MGI"))
+#' 
 create_rl_map_cellphonedb <- function(
     genes, proteins, interactions, complexes = NULL, database_name = "CellPhoneDB",
     gene_conv = NULL, gene_conv_host = "https://www.ensembl.org", alternate_convert = FALSE, alternate_convert_table = NULL) {
@@ -267,6 +275,8 @@ create_rl_map_cellphonedb <- function(
 #' @param regulons Dataframe or file path to the table of the output of the grn (gene regulatory network) function from pySCENIC
 #' @return A list where names are transcription factors and the stored values are character vectors of genes in the inferred regulons
 #' @export create_regulon_list_scenic
+#' @examples
+#' regulon_list_tiny <- create_regulon_list_scenic(regulons = regulons_tiny)
 #'
 create_regulon_list_scenic <- function(regulons) {
   if (is(regulons, "character")) {
@@ -318,7 +328,17 @@ create_regulon_list_scenic <- function(regulons) {
 #' @param tf_variance_quantile What proportion of variable features to take if using variance to threshold features. Default is 0.5. Higher numbers will keep more features. Ignored if tf_selection_method is not 'variable'
 #' @return A domino object
 #' @export create_domino
-#'
+#' @examples 
+#' pbmc_dom_tiny_all <- pbmc_dom_tiny <- create_domino(rl_map = rl_map_tiny,
+#'  features = auc_tiny, counts = RNA_count_tiny, z_scores = RNA_zscore_tiny,
+#'  tf_targets = regulon_list_tiny, use_clusters = FALSE, use_complexes = FALSE,
+#'  rec_min_thresh = 0.1, remove_rec_dropout = TRUE, tf_selection_method = "all")
+#' 
+#' pbmc_dom_tiny_clustered <- create_domino(rl_map = rl_map_tiny,
+#'  features = auc_tiny, counts = RNA_count_tiny, z_scores = RNA_zscore_tiny,
+#'  clusters = clusters_tiny, tf_targets = regulon_list_tiny,
+#'  use_clusters = TRUE, use_complexes = TRUE, remove_rec_dropout = FALSE)
+#' 
 create_domino <- function(
     rl_map, features, ser = NULL, counts = NULL, z_scores = NULL, clusters = NULL,
     use_clusters = TRUE, tf_targets = NULL, verbose = TRUE, use_complexes = TRUE, rec_min_thresh = 0.025,
@@ -645,6 +665,7 @@ convert_genes <- function(
   )
   return(genesV2)
 }
+
 #' Adds a column to the RL signaling data frame.
 #'
 #' This function adds a column to the internal rl 'map' used to map all
@@ -655,7 +676,12 @@ convert_genes <- function(
 #' @param conv Data frame matching current data in map to new data.
 #' @param new_name Name of new column to be created in RL map
 #' @return An updated RL signaling data frame
-#'
+#' @export
+#' @examples 
+#' lr_name <- data.frame("abbrev" = c("L", "R"), "full" = c("Ligand", "Receptor"))
+#' rl_map_expanded <- add_rl_column(map = rl_map_tiny, map_ref = "type_A",
+#'  conv = lr_name, new_name = "type_A_full")
+#' 
 add_rl_column <- function(map, map_ref, conv, new_name) {
   map_in_ref <- match(map[[map_ref]], conv[, 1])
   not_in_ref <- which(is.na(map_in_ref))
@@ -693,6 +719,10 @@ add_rl_column <- function(map, map_ref, conv, new_name) {
 #' @param destination Name of the receptor with which each ligand interacts
 #' @return A data frame of ligand expression targeting the specified receptor
 #' @export
+#' @examples
+#' counts <- dom_counts(pbmc_dom_built_tiny)
+#' mean_exp <- mean_ligand_expression(counts,
+#'  ligands = c("PTPRC", "FASLG"), cell_ident = "CD14_monocyte")
 #' 
 mean_ligand_expression <- function(x, ligands, cell_ident, cell_barcodes, destination){
   # initiate data frame to store results

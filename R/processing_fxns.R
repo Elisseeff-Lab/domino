@@ -13,16 +13,9 @@
 #' @return A domino object with a signaling network built
 #' @export
 #' @examples
-#' load("data/pbmc_dom.rda")
-#' pbmc_dom <- build_domino(
-#'  dom = pbmc_dom,
-#'  min_tf_pval = .001, # Threshold for p-value of DE for TFs
-#'  max_tf_per_clust = 25,
-#'  max_rec_per_tf = 25,
-#'  rec_tf_cor_threshold = .25, # Minimum correlation between receptor and TF
-#'  min_rec_percentage = 0.1 # Minimum percent of cells that must express receptor
-#' )
-
+#' pbmc_dom_tiny_built <- build_domino(dom = pbmc_dom_tiny, min_tf_pval = .001, max_tf_per_clust = 25,
+#'  max_rec_per_tf = 25, rec_tf_cor_threshold = .25, min_rec_percentage = 0.1)
+#' 
 build_domino <- function(
     dom, max_tf_per_clust = 5, min_tf_pval = 0.01, max_rec_per_tf = 5, rec_tf_cor_threshold = 0.15,
     min_rec_percentage = 0.1) {
@@ -207,6 +200,7 @@ build_domino <- function(
   }
   return(dom)
 }
+
 #' Pulls all items from a list pooled into a single vector
 #'
 #' Helper function to convert from a nested series of lists to a single vector.

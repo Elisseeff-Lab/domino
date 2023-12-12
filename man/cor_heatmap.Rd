@@ -39,3 +39,9 @@ a Heatmap rendered to the active graphics device
 Creates a heatmap of correlation values between receptors and transcription
 factors either with boolean threshold or with continuous values displayed
 }
+\examples{
+receptors <- c("FAS", "CD22", "FCER2")
+tfs <- c("ZNF257", "RUNX1")
+cor_heatmap(pbmc_dom_built_tiny, feats = tfs, recs = receptors)
+
+}

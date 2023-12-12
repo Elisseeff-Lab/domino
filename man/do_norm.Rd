@@ -17,4 +17,9 @@ A normalized matrix in the direction specified.
 \description{
 Normalizes a matrix to its max value by row or column
 }
+\examples{
+mat <- matrix(c(1, 3, 2, 5, 3, 5, 2, 1, 6), nrow = 3)
+do_norm(mat, "row")
+
+}
 \keyword{internal}

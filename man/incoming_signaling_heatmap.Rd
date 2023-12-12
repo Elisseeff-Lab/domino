@@ -46,3 +46,7 @@ ligands. A list of all cluster incoming signaling matrices can be found in
 the cl_signaling_matrices slot of a domino option as an alternative to this
 plotting function.
 }
+\examples{
+incoming_signaling_heatmap(pbmc_dom_built_tiny, "CD8_T_cell")
+
+}

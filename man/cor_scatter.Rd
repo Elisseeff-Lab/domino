@@ -23,3 +23,7 @@ a ggplot object
 \description{
 Create a correlation plot between transcription factor activation score and receptor
 }
+\examples{
+cor_scatter(pbmc_dom_built_tiny, "RUNX1", "FAS")
+
+}

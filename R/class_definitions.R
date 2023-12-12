@@ -76,8 +76,8 @@ linkage_summary <- setClass(
 #' @return a printed description of the number of cell clusters in the object
 #' @keywords internal
 #' @examples
-#' load("data/pbmc_dom.rda")
-#' print(obmc_dom)
+#' print(pbmc_dom_tiny_built)
+#' 
 setMethod("print", "domino", function(x, ...) {
   if (x@misc$build) {
     cat(
@@ -103,10 +103,10 @@ setMethod("print", "domino", function(x, ...) {
 #' @return a printed description of the number of cells in a domino object and its build status
 #' @keywords internal
 #' @examples
-#' load("data/pbmc_dom.rda")
-#' show(pbmc_dom)
+#' pbmc_dom_tiny_built
 #' 
-#' pbmc_dom
+#' show(pbmc_dom_tiny_built)
+#' 
 setMethod("show", "domino", function(object) {
   if (object@misc$build) {
     cat(c(

@@ -61,3 +61,7 @@ Creates a network diagram of signaling between clusters. Nodes are clusters
 and directed edges indicate signaling from one cluster to another. Edges are
 colored based on the color scheme of the ligand expressing cluster.
 }
+\examples{
+signaling_network(pbmc_dom_built_tiny, layout = "fr")
+
+}

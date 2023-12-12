@@ -16,3 +16,7 @@ build parameters that were used in \code{\link[=build_domino]{build_domino()}} t
 \description{
 A function to pull the parameters used when running \code{\link[=build_domino]{build_domino()}} from a domino object
 }
+\examples{
+build_details <- dom_info(pbmc_dom_built_tiny)
+
+}

@@ -18,6 +18,10 @@ NULL
 #' @return A domino object with clusters renamed in all applicable slots.
 #' @keywords internal
 #' @export
+#' @examples 
+#' new_clust <- c("CD8_T_cell" = "CD8+ T Cells",
+#'  "CD14_monocyte" = "CD14+ Monocytes", "B_cell" = "B Cells")
+#' pbmc_dom_built_tiny <- rename_clusters(pbmc_dom_built_tiny, new_clust)
 #'
 rename_clusters <- function(dom, clust_conv) {
   if (is.null(dom@clusters)) {
@@ -43,56 +47,7 @@ rename_clusters <- function(dom, clust_conv) {
   }
   return(dom)
 }
-#' Extracts all features, receptors, or ligands present in a signaling network.
-#'
-#' This function collates all of the features, receptors, or ligands found in a
-#' signaling network anywhere in a list of clusters. This can be useful for
-#' comparing signaling networks across two separate conditions. In order to run
-#' this [build_domino()] must be run on the object previously.
-#'
-#' @param dom Domino object containing a signaling network (i.e. [build_domino()] run)
-#' @param return String indicating where to collate 'features', 'receptors', or 'ligands'. If 'all' then a list of all three will be returned.
-#' @param clusters Vector indicating clusters to collate network items from. If left as NULL then all clusters will be included.
-#' @return A vector containing all features, receptors, or ligands in the data set or a list containing all three.
-#' @export
-#' @examples
-#' load("data/pbmc_dom.rda")
-#' collate_network_items(pbmc_dom, "CD14_monocyte", "receptors")
-collate_network_items <- function(dom, clusters = NULL, return = NULL) {
-  if (!dom@misc[["build"]]) {
-    stop("Please run domino_build prior to generate signaling network.")
-  }
-  if (is.null(clusters) & is.null(dom@clusters)) {
-    stop("There are no clusters in this domino object. Please provide clusters.")
-  }
-  if (is.null(clusters)) {
-    clusters <- levels(dom@clusters)
-  }
-  # Get all enriched TFs and correlated + expressed receptors for specified clusters
-  all_recs <- c()
-  all_tfs <- c()
-  all_ligs <- c()
-  for (cl in clusters) {
-    all_recs <- c(all_recs, unlist(dom@linkages$clust_tf_rec[[cl]]))
-    tfs <- names(dom@linkages$clust_tf_rec[[cl]])
-    tf_wo_rec <- which(sapply(dom@linkages$clust_tf_rec[[cl]], length) == 0)
-    if (length(tf_wo_rec > 0)) {
-      tfs <- tfs[-tf_wo_rec]
-    }
-    all_tfs <- c(all_tfs, tfs)
-    all_ligs <- c(all_ligs, rownames(dom@cl_signaling_matrices[[cl]]))
-  }
-  all_recs <- unique(all_recs)
-  all_tfs <- unique(all_tfs)
-  all_ligs <- unique(all_ligs)
-  # Make list and return whats asked for
-  list_out <- list(features = all_tfs, receptors = all_recs, ligands = all_ligs)
-  if (is.null(return)) {
-    return(list_out)
-  } else {
-    return(list_out[[return]])
-  }
-}
+
 #' Convert Genes Using Table
 #'
 #' Takes a vector of gene inputs and returns converted gene table
@@ -106,8 +61,9 @@ collate_network_items <- function(dom, clusters = NULL, return = NULL) {
 #' @keywords internal
 #' @export
 #' @examples
-#' @examples
-#' conversion_table <- read.csv("http://www.informatics.jax.org/downloads/reports/HOM_MouseHumanSequence.rpt", sep = "\t")
+#' conversion_table <- read.csv(
+#'  "http://www.informatics.jax.org/downloads/reports/HOM_MouseHumanSequence.rpt",
+#'  sep = "\t")
 #' mgi_genes <- c("Ptprc", "Cd3e", "Cd8a", "Cd4", "Foxp3")
 #' table_convert_genes(mgi_genes, "MGI", "HGNC", conversion_table)
 #'
@@ -147,5 +103,3 @@ table_convert_genes <- function(genes, from, to, conversion_table) {
   genesV2 <- cbind(col1[which(col1 %in% genes)], col2[which(col1 %in% genes)])
   return(genesV2)
 }
-## Back up gene table for back up function: mouse_human_genes =
-## read.csv('http://www.informatics.jax.org/downloads/reports/HOM_MouseHumanSequence.rpt',sep='\t')

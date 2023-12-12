@@ -26,4 +26,9 @@ A data frame with input genes as col 1 and output as col 2
 \description{
 This function reads in a vector of genes and converts the genes to specified symbol type
 }
+\examples{
+mgi_genes <- c("Ptprc", "Cd3e", "CD8a", "Cd4", "Foxp3")
+convert_genes(mgi_genes, "MGI", "HGNC")
+
+}
 \keyword{internal}
