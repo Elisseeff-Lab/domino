@@ -691,10 +691,8 @@ cor_scatter <- function(dom, tf, rec, remove_rec_dropout = TRUE, ...) {
     tar_tf_scores <- dom@features[tf, ]
   }
   dat <- data.frame(rec = rec_z_scores, tf = tar_tf_scores)
-  ggscatter(dat,
-    x = "rec", y = "tf", add = "reg.line", conf.int = FALSE, cor.coef = FALSE,
-    cor.method = "pearson", xlab = rec, ylab = tf, size = 0.25
-  )
+  ggscatter(dat, x = "rec", y = "tf", add = "reg.line", conf.int = FALSE, cor.coef = FALSE,
+    cor.method = "pearson", xlab = rec, ylab = tf, size = 0.25, ...)
 }
 #' Plot expression of a receptor's ligands by other cell types as a chord plot
 #'
