@@ -7,7 +7,6 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -15,8 +14,9 @@ knitr::opts_chunk$set(
   echo = TRUE,
   message = FALSE,
   warning = FALSE,
-  fig.cap = "",
-  tidy = TRUE
+  fig.cap="",
+  tidy = TRUE,
+  global.device = TRUE
 )
 options(timeout=300)
 ```
@@ -441,7 +441,7 @@ Multiple functions are available to visualize the intracellular networks between
 Enrichment of TF activities by cell types can be visualized by `feat_heatmap()` which plots data set-wide TF activity scores as a heatmap.
 
 ```{r}
-feat_heatmap(pbmc_dom, norm = TRUE, bool = FALSE, use_raster = TRUE)
+feat_heatmap(pbmc_dom, norm = TRUE, bool = FALSE, use_raster = FALSE)
 ```
 
 ### Cumulative signaling between cell types
@@ -472,7 +472,7 @@ gene_network(pbmc_dom, clust = 'dendritic_cell', OutgoingSignalingClust = "CD14_
 A comprehensive assessment of ligand expression targeting active receptors on a given cluster can be assessed with `incoming_signaling_heatmap()`.
 
 ```{r}
-incoming_signaling_heatmap(pbmc_dom, rec_clust = 'dendritic_cell', max_thresh = 2.5, use_raster = TRUE)
+incoming_signaling_heatmap(pbmc_dom, rec_clust = 'dendritic_cell', max_thresh = 2.5, use_raster = FALSE)
 ```
 
 Another form of comprehensive ligand expression assessment is available for individual active receptors in the form of circos plots new to domino2. The outer arcs correspond to clusters in the domino object with inner arcs representing each possible ligand of the plotted receptor. Arcs are drawn between ligands on a cell type and the receptor if the ligand is expressed above the specified threshold. Arc widths correspond to the mean express of the ligand by the cluster with the widest arc width scaling to the maximum expression of the ligand within the data.
