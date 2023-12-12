@@ -48,3 +48,10 @@ a Heatmap rendered to the active graphics device
 Creates a heatmap of feature expression (typically transcription factor
 activation scores) by cells organized by cluster.
 }
+\examples{
+#basic usage
+feat_heatmap(dom)
+#using thresholds
+feat_heatmap(dom, min_thresh = 0.1, max_thresh = 0.6, norm = TRUE, bool = FALSE)
+
+}

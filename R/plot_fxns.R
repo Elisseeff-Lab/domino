@@ -21,7 +21,15 @@ NULL
 #' @param ... Other parameters to pass to  [ComplexHeatmap::Heatmap()]
 #' @return a Heatmap rendered to the active graphics device
 #' @export signaling_heatmap
-#' 
+#' @examples
+#' #basic usage
+#' signaling_heatmap(dom)
+#' #scale
+#' signaling_heatmap(dom, scale = "sqrt")
+#' #normalize
+#' signaling_heatmap(dom, normalize = "rec_norm")
+#'
+ 
 signaling_heatmap <- function(dom, clusts = NULL, min_thresh = -Inf, max_thresh = Inf, scale = "none",
   normalize = "none", ...) {
   if (!dom@misc[["build"]]) {
@@ -76,6 +84,9 @@ signaling_heatmap <- function(dom, clusts = NULL, min_thresh = -Inf, max_thresh 
 #' @param ... Other parameters to pass to  [ComplexHeatmap::Heatmap()]. Note that to use the 'column_title' parameter of  [ComplexHeatmap::Heatmap()]  you must set title = FALSE
 #' @return a Heatmap rendered to the active graphics device
 #' @export incoming_signaling_heatmap
+#' @examples
+#' #incoming signaling of the CD8  T cells
+#' incoming_signaling_heatmap(dom, "CD8_T_cell")
 #' 
 incoming_signaling_heatmap <- function(dom, rec_clust, clusts = NULL, min_thresh = -Inf, max_thresh = Inf,
   scale = "none", normalize = "none", title = TRUE, ...) {
@@ -164,6 +175,12 @@ incoming_signaling_heatmap <- function(dom, rec_clust, clusts = NULL, min_thresh
 #' @param ... Other parameters to be passed to plot when used with an `{igraph}` object.
 #' @return an igraph rendered to the active graphics device
 #' @export signaling_network
+#' @examples 
+#' #basic usage
+#' signaling_network(dom)
+#' # scaling, thresholds, layouts, selecting clusters
+#' signaling_network(dom, showOutgoingSignalingClusts = "CD14_monocyte", scale = "none",
+#'  norm = "none", layout = "fr", scale_by = "none", vert_scale = 5)
 #' 
 signaling_network <- function(dom, cols = NULL, edge_weight = 0.3, clusts = NULL, showOutgoingSignalingClusts = NULL,
   showIncomingSignalingClusts = NULL, min_thresh = -Inf, max_thresh = Inf, normalize = "none", scale = "sq",
@@ -296,6 +313,12 @@ signaling_network <- function(dom, cols = NULL, edge_weight = 0.3, clusts = NULL
 #' @param ... Other parameters to pass to plot() with an [igraph] object. See [igraph] manual for options.
 #' @return an igraph rendered to the active graphics device
 #' @export gene_network
+#' @examples
+#' #basic usage
+#' gene_network(dom, clust = "CD16_monocyte", OutgoingSignalingClust = "CD14_monocyte")
+#' #scaling and coloring
+#' gene_network(dom, clust = "CD16_monocyte", OutgoingSignalingClust = "CD14_monocyte",
+#'  cols = c("CD1D" = "violet", "LILRB2" = "violet", "FOSB" = "violet"), lig_scale = 10)
 #' 
 gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL, class_cols = c(lig = "#FF685F",
   rec = "#47a7ff", feat = "#39C740"), cols = NULL, lig_scale = 1, layout = "grid", ...) {
@@ -451,6 +474,11 @@ gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL, class
 #' @param ... Other parameters to pass to  [ComplexHeatmap::Heatmap()] . Note that to use the 'main' parameter of  [ComplexHeatmap::Heatmap()]  you must set title = FALSE and to use 'annCol' or 'annColors' ann_cols must be FALSE.
 #' @return a Heatmap rendered to the active graphics device
 #' @export feat_heatmap
+#' @examples 
+#' #basic usage
+#' feat_heatmap(dom)
+#' #using thresholds
+#' feat_heatmap(dom, min_thresh = 0.1, max_thresh = 0.6, norm = TRUE, bool = FALSE)
 #' 
 feat_heatmap <- function(dom, feats = NULL, bool = FALSE, bool_thresh = 0.2, title = TRUE, norm = FALSE,
   cols = NULL, ann_cols = TRUE, min_thresh = NULL, max_thresh = NULL, ...) {
@@ -566,6 +594,13 @@ feat_heatmap <- function(dom, feats = NULL, bool = FALSE, bool_thresh = 0.2, tit
 #' @param ... Other parameters to pass to  [ComplexHeatmap::Heatmap()] . Note that to use the 'main' parameter of  [ComplexHeatmap::Heatmap()]  you must set title = FALSE and to use 'annCol' or 'annColors' ann_cols must be FALSE.
 #' @return a Heatmap rendered to the active graphics device
 #' @export cor_heatmap
+#' @examples 
+#' #basic usage
+#' cor_heatmap(dom, title = "PBMC R-TF Correlations")
+#' #show correlations above a specific value
+#' cor_heatmap(dom, bool = TRUE, bool_thresh = 0.25)
+#' #identify combinations that are connected
+#' cor_heatmap(dom, bool = FALSE, mark_connections = TRUE)
 #' 
 cor_heatmap <- function(dom, bool = FALSE, bool_thresh = 0.15, title = TRUE, feats = NULL, recs = NULL,
   mark_connections = FALSE, ...) {
@@ -653,6 +688,9 @@ cor_heatmap <- function(dom, bool = FALSE, bool_thresh = 0.15, title = TRUE, fea
 #' @param ... Other parameters to pass to ggscatter.
 #' @return a ggplot object
 #' @export cor_scatter
+#' @examples 
+#' #basic usage
+#' cor_scatter(dom, "FOSB", "CD74")
 #' 
 cor_scatter <- function(dom, tf, rec, remove_rec_dropout = TRUE, ...) {
   if (remove_rec_dropout) {
@@ -679,6 +717,13 @@ cor_scatter <- function(dom, tf, rec, remove_rec_dropout = TRUE, ...) {
 #' @param cell_colors Named vector of color names or hex codes where names correspond to the plotted cell types and the color values
 #' @return renders a circos plot to the active graphics device
 #' @export circos_ligand_receptor
+#' @examples 
+#' #basic usage
+#' circos_ligand_receptor(dom, receptor = "CD74")
+#' #specify colors
+#' cols = c("red", "orange", "green", "blue", "pink", "purple", "slategrey", "firebrick", "hotpink")
+#' names(cols) = levels(dom@clusters)
+#' circos_ligand_receptor(dom, receptor = "CD74", cell_colors = cols)
 #' 
 circos_ligand_receptor <- function(dom, receptor, ligand_expression_threshold = 0.01, cell_idents = NULL,
   cell_colors = NULL) {
