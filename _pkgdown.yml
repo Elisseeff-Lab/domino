@@ -59,6 +59,19 @@ reference:
   - plot_differential_linkages
 - title: "Helper Functions"
   desc: "Convenience functions for working with Domino2 objects"
+- subtitle: "Access functions"
+  contents:
+  - dom_clusters
+  - dom_correlations
+  - dom_counts
+  - dom_database
+  - dom_de
+  - dom_info
+  - dom_linkages
+  - dom_signaling
+  - dom_tf_activation
+  - dom_zscores
+- subtitle: "Misc. utility functions"
   contents:
   - add_rl_column
   - collate_network_items
