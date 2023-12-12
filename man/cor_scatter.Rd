@@ -23,8 +23,3 @@ a ggplot object
 \description{
 Create a correlation plot between transcription factor activation score and receptor
 }
-\examples{
-#basic usage
-cor_scatter(dom, "FOSB", "CD74")
-
-}
