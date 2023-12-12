@@ -36,3 +36,12 @@ a Heatmap rendered to the active graphics device
 Creates a heatmap of the signaling network. Alternatively, the network
 matrix can be accessed directly in the signaling slot of a domino object.
 }
+\examples{
+#basic usage
+signaling_heatmap(dom)
+#scale
+signaling_heatmap(dom, scale = "sqrt")
+#normalize
+signaling_heatmap(dom, normalize = "rec_norm")
+
+}

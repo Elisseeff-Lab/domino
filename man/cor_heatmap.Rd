@@ -39,3 +39,12 @@ a Heatmap rendered to the active graphics device
 Creates a heatmap of correlation values between receptors and transcription
 factors either with boolean threshold or with continuous values displayed
 }
+\examples{
+#basic usage
+cor_heatmap(dom, title = "PBMC R-TF Correlations")
+#show correlations above a specific value
+cor_heatmap(dom, bool = TRUE, bool_thresh = 0.25)
+#identify combinations that are connected
+cor_heatmap(dom, bool = FALSE, mark_connections = TRUE)
+
+}
