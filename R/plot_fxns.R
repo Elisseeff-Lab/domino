@@ -22,6 +22,7 @@ NULL
 #' @return a Heatmap rendered to the active graphics device
 #' @export signaling_heatmap
 #' @examples
+#' load("R/sysdata.rda")
 #' signaling_heatmap(pbmc_dom_built_tiny)
 #'
 signaling_heatmap <- function(
@@ -81,6 +82,7 @@ signaling_heatmap <- function(
 #' @return a Heatmap rendered to the active graphics device
 #' @export incoming_signaling_heatmap
 #' @examples
+#' load("R/sysdata.rda")
 #' incoming_signaling_heatmap(pbmc_dom_built_tiny, "CD8_T_cell")
 #'
 incoming_signaling_heatmap <- function(
@@ -173,6 +175,7 @@ incoming_signaling_heatmap <- function(
 #' @return an igraph rendered to the active graphics device
 #' @export signaling_network
 #' @examples
+#' load("R/sysdata.rda")
 #' signaling_network(pbmc_dom_built_tiny, layout = "fr")
 #' 
 signaling_network <- function(
@@ -309,6 +312,7 @@ signaling_network <- function(
 #' @return an igraph rendered to the active graphics device
 #' @export gene_network
 #' @examples
+#' load("R/sysdata.rda")
 #' gene_network(pbmc_dom_built_tiny, clust = "CD8_T_cell", OutgoingSignalingClust = "CD14_monocyte")
 #' 
 gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL, 
@@ -468,6 +472,7 @@ gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL,
 #' @return a Heatmap rendered to the active graphics device
 #' @export feat_heatmap
 #' @examples
+#' load("R/sysdata.rda")
 #' feat_heatmap(pbmc_dom_built_tiny, min_thresh = 0.1, max_thresh = 0.6, norm = TRUE)
 #'
 feat_heatmap <- function(
@@ -587,6 +592,7 @@ feat_heatmap <- function(
 #' @return a Heatmap rendered to the active graphics device
 #' @export cor_heatmap
 #' @examples
+#' load("R/sysdata.rda")
 #' receptors <- c("FAS", "CD22", "FCER2")
 #' tfs <- c("ZNF257", "RUNX1")
 #' cor_heatmap(pbmc_dom_built_tiny, feats = tfs, recs = receptors)
@@ -680,6 +686,7 @@ cor_heatmap <- function(
 #' @return a ggplot object
 #' @export cor_scatter
 #' @examples
+#' load("R/sysdata.rda")
 #' cor_scatter(pbmc_dom_built_tiny, "RUNX1", "FAS")
 #'
 cor_scatter <- function(dom, tf, rec, remove_rec_dropout = TRUE, ...) {
@@ -709,6 +716,7 @@ cor_scatter <- function(dom, tf, rec, remove_rec_dropout = TRUE, ...) {
 #' @return renders a circos plot to the active graphics device
 #' @export circos_ligand_receptor
 #' @examples
+#' load("R/sysdata.rda")
 #' cols <- c(
 #'   "red", "orange", "green", "blue", "pink", "purple",
 #'   "slategrey", "firebrick", "hotpink"

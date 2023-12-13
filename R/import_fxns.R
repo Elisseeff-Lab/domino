@@ -22,6 +22,7 @@ NULL
 #' @return Data frame where each row describes a possible receptor-ligand interaction
 #' @export create_rl_map_cellphonedb
 #' @examples
+#' load("R/sysdata.rda")
 #' rl_map_tiny <- create_rl_map_cellphonedb(genes = genes_tiny, 
 #'  proteins = proteins_tiny, interactions = interactions_tiny, 
 #'  complexes = complexes_tiny)
@@ -276,6 +277,7 @@ create_rl_map_cellphonedb <- function(
 #' @return A list where names are transcription factors and the stored values are character vectors of genes in the inferred regulons
 #' @export create_regulon_list_scenic
 #' @examples
+#' load("R/sysdata.rda")
 #' regulon_list_tiny <- create_regulon_list_scenic(regulons = regulons_tiny)
 #'
 create_regulon_list_scenic <- function(regulons) {
@@ -329,6 +331,7 @@ create_regulon_list_scenic <- function(regulons) {
 #' @return A domino object
 #' @export create_domino
 #' @examples 
+#' load("R/sysdata.rda")
 #' pbmc_dom_tiny_all <- pbmc_dom_tiny <- create_domino(rl_map = rl_map_tiny,
 #'  features = auc_tiny, counts = RNA_count_tiny, z_scores = RNA_zscore_tiny,
 #'  tf_targets = regulon_list_tiny, use_clusters = FALSE, use_complexes = FALSE,
@@ -678,6 +681,7 @@ convert_genes <- function(
 #' @return An updated RL signaling data frame
 #' @export
 #' @examples 
+#' load("R/sysdata.rda")
 #' lr_name <- data.frame("abbrev" = c("L", "R"), "full" = c("Ligand", "Receptor"))
 #' rl_map_expanded <- add_rl_column(map = rl_map_tiny, map_ref = "type_A",
 #'  conv = lr_name, new_name = "type_A_full")
@@ -720,6 +724,7 @@ add_rl_column <- function(map, map_ref, conv, new_name) {
 #' @return A data frame of ligand expression targeting the specified receptor
 #' @export
 #' @examples
+#' load("R/sysdata.rda")
 #' counts <- dom_counts(pbmc_dom_built_tiny)
 #' mean_exp <- mean_ligand_expression(counts,
 #'  ligands = c("PTPRC", "FASLG"), cell_ident = "CD14_monocyte")
