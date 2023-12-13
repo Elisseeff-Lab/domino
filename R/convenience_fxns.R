@@ -50,8 +50,8 @@ rename_clusters <- function(dom, clust_conv) {
 
 #' Convert Genes Using Table
 #'
-#' Takes a vector of gene inputs and a conversion table ([an example]("http://www.informatics.jax.org/downloads/reports/HOM_MouseHumanSequence.rpt")
-#' and returns converted gene table
+#' Takes a vector of gene inputs and a conversion table  and returns a 
+#' converted gene table
 #'
 #' @param genes The genes to convert.
 #' @param from  Gene symbol type of the input (ENSG, ENSMUSG, HGNC, MGI)
