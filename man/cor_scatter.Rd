@@ -26,5 +26,4 @@ Create a correlation plot between transcription factor activation score and rece
 \examples{
 #basic usage
 cor_scatter(domino2:::pbmc_dom_built_tiny, "ATF4","CD22")
-
 }

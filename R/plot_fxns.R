@@ -29,7 +29,6 @@ NULL
 #' #normalize
 #' signaling_heatmap(domino2:::pbmc_dom_built_tiny, normalize = "rec_norm")
 #'
- 
 signaling_heatmap <- function(dom, clusts = NULL, min_thresh = -Inf, max_thresh = Inf, scale = "none",
   normalize = "none", ...) {
   if (!dom@misc[["build"]]) {

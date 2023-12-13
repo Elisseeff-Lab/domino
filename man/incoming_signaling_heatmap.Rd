@@ -49,5 +49,4 @@ plotting function.
 \examples{
 #incoming signaling of the CD8  T cells
 incoming_signaling_heatmap(domino2:::pbmc_dom_built_tiny, "CD8_T_cell")
-
 }
