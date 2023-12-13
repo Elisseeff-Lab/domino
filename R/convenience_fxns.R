@@ -19,10 +19,9 @@ NULL
 #' @keywords internal
 #' @export
 #' @examples 
-#' load("R/sysdata.rda")
 #' new_clust <- c("CD8_T_cell" = "CD8+ T Cells",
 #'  "CD14_monocyte" = "CD14+ Monocytes", "B_cell" = "B Cells")
-#' pbmc_dom_built_tiny <- rename_clusters(pbmc_dom_built_tiny, new_clust)
+#' pbmc_dom_built_tiny <- rename_clusters(domino2:::pbmc_dom_built_tiny, new_clust)
 #'
 rename_clusters <- function(dom, clust_conv) {
   if (is.null(dom@clusters)) {
@@ -51,7 +50,8 @@ rename_clusters <- function(dom, clust_conv) {
 
 #' Convert Genes Using Table
 #'
-#' Takes a vector of gene inputs and returns converted gene table
+#' Takes a vector of gene inputs and a conversion table ([an example]("http://www.informatics.jax.org/downloads/reports/HOM_MouseHumanSequence.rpt")
+#' and returns converted gene table
 #'
 #' @param genes The genes to convert.
 #' @param from  Gene symbol type of the input (ENSG, ENSMUSG, HGNC, MGI)
@@ -60,13 +60,6 @@ rename_clusters <- function(dom, clust_conv) {
 #' and rows corresponding to the gene symbols themselves
 #' @return Data frame of genes with original and corresponding converted symbols
 #' @keywords internal
-#' @export
-#' @examples
-#' conversion_table <- read.csv(
-#'  "http://www.informatics.jax.org/downloads/reports/HOM_MouseHumanSequence.rpt",
-#'  sep = "\t")
-#' mgi_genes <- c("Ptprc", "Cd3e", "Cd8a", "Cd4", "Foxp3")
-#' table_convert_genes(mgi_genes, "MGI", "HGNC", conversion_table)
 #'
 table_convert_genes <- function(genes, from, to, conversion_table) {
   # Check inputs:

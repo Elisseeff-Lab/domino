@@ -16,6 +16,6 @@ A matrix containing the correlation values for each receptor (row) by transcript
 A function to pull receptor-transcription factor correlations from a domino object
 }
 \examples{
-cor_matrix <- dom_correlations(pbmc_dom_built_tiny)
+cor_matrix <- dom_correlations(domino2:::pbmc_dom_built_tiny)
 
 }

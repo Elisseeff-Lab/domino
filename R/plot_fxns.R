@@ -22,8 +22,7 @@ NULL
 #' @return a Heatmap rendered to the active graphics device
 #' @export signaling_heatmap
 #' @examples
-#' load("R/sysdata.rda")
-#' signaling_heatmap(pbmc_dom_built_tiny)
+#' signaling_heatmap(domino2:::pbmc_dom_built_tiny)
 #'
 signaling_heatmap <- function(
     dom, clusts = NULL, min_thresh = -Inf, max_thresh = Inf, scale = "none",
@@ -82,8 +81,7 @@ signaling_heatmap <- function(
 #' @return a Heatmap rendered to the active graphics device
 #' @export incoming_signaling_heatmap
 #' @examples
-#' load("R/sysdata.rda")
-#' incoming_signaling_heatmap(pbmc_dom_built_tiny, "CD8_T_cell")
+#' incoming_signaling_heatmap(domino2:::pbmc_dom_built_tiny, "CD8_T_cell")
 #'
 incoming_signaling_heatmap <- function(
     dom, rec_clust, clusts = NULL, min_thresh = -Inf, max_thresh = Inf,
@@ -96,7 +94,7 @@ incoming_signaling_heatmap <- function(
   }
   mat <- dom@cl_signaling_matrices[[rec_clust]]
   if (dim(mat)[1] == 0) {
-    print("No signaling found for this cluster under build parameters.")
+    message("No signaling found for this cluster under build parameters.")
     return()
   }
   if (!is.null(clusts)) {
@@ -175,8 +173,7 @@ incoming_signaling_heatmap <- function(
 #' @return an igraph rendered to the active graphics device
 #' @export signaling_network
 #' @examples
-#' load("R/sysdata.rda")
-#' signaling_network(pbmc_dom_built_tiny, layout = "fr")
+#' signaling_network(domino2:::pbmc_dom_built_tiny, layout = "fr")
 #' 
 signaling_network <- function(
     dom, cols = NULL, edge_weight = 0.3, clusts = NULL, showOutgoingSignalingClusts = NULL,
@@ -312,8 +309,7 @@ signaling_network <- function(
 #' @return an igraph rendered to the active graphics device
 #' @export gene_network
 #' @examples
-#' load("R/sysdata.rda")
-#' gene_network(pbmc_dom_built_tiny, clust = "CD8_T_cell", OutgoingSignalingClust = "CD14_monocyte")
+#' gene_network(domino2:::pbmc_dom_built_tiny, clust = "CD8_T_cell", OutgoingSignalingClust = "CD14_monocyte")
 #' 
 gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL, 
     class_cols = c(lig = "#FF685F",rec = "#47a7ff", feat = "#39C740"),
@@ -334,7 +330,7 @@ gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL,
       # Check if signaling exists for target cluster
       mat <- dom@cl_signaling_matrices[[cl]]
       if (dim(mat)[1] == 0) {
-        print(paste("No signaling found for", cl, "under build parameters."))
+        message(paste("No signaling found for", cl, "under build parameters."))
         (next)()
       }
       all_sums <- c(all_sums, rowSums(mat))
@@ -344,7 +340,7 @@ gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL,
     all_sums <- all_sums[!duplicated(names(all_sums))]
     # If no signaling for target clusters then don't do anything
     if (length(tfs) == 0) {
-      print("No signaling found for provided clusters")
+      message("No signaling found for provided clusters")
       return()
     }
   } else {
@@ -472,8 +468,7 @@ gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL,
 #' @return a Heatmap rendered to the active graphics device
 #' @export feat_heatmap
 #' @examples
-#' load("R/sysdata.rda")
-#' feat_heatmap(pbmc_dom_built_tiny, min_thresh = 0.1, max_thresh = 0.6, norm = TRUE)
+#' feat_heatmap(domino2:::pbmc_dom_built_tiny, min_thresh = 0.1, max_thresh = 0.6, norm = TRUE)
 #'
 feat_heatmap <- function(
     dom, feats = NULL, bool = FALSE, bool_thresh = 0.2, title = TRUE, norm = FALSE,
@@ -518,7 +513,7 @@ feat_heatmap <- function(
     na <- which(is.na(mid))
     na_feats <- paste(feats[na], collapse = " ")
     if (length(na) != 0) {
-      print(paste("Unable to find", na_feats))
+      message(paste("Unable to find", na_feats))
       feats <- feats[-na]
     }
   } else if (feats == "all") {
@@ -592,10 +587,9 @@ feat_heatmap <- function(
 #' @return a Heatmap rendered to the active graphics device
 #' @export cor_heatmap
 #' @examples
-#' load("R/sysdata.rda")
 #' receptors <- c("FAS", "CD22", "FCER2")
 #' tfs <- c("ZNF257", "RUNX1")
-#' cor_heatmap(pbmc_dom_built_tiny, feats = tfs, recs = receptors)
+#' cor_heatmap(domino2:::pbmc_dom_built_tiny, feats = tfs, recs = receptors)
 #' 
 cor_heatmap <- function(
     dom, bool = FALSE, bool_thresh = 0.15, title = TRUE, feats = NULL, recs = NULL,
@@ -622,7 +616,7 @@ cor_heatmap <- function(
     na <- which(is.na(mid))
     na_feats <- paste(feats[na], collapse = " ")
     if (length(na) != 0) {
-      print(paste("Unable to find", na_feats))
+      message(paste("Unable to find", na_feats))
       feats <- feats[-na]
     }
   } else if (identical(feats, "all")) {
@@ -686,8 +680,7 @@ cor_heatmap <- function(
 #' @return a ggplot object
 #' @export cor_scatter
 #' @examples
-#' load("R/sysdata.rda")
-#' cor_scatter(pbmc_dom_built_tiny, "RUNX1", "FAS")
+#' cor_scatter(domino2:::pbmc_dom_built_tiny, "RUNX1", "FAS")
 #'
 cor_scatter <- function(dom, tf, rec, remove_rec_dropout = TRUE, ...) {
   if (remove_rec_dropout) {
@@ -716,13 +709,12 @@ cor_scatter <- function(dom, tf, rec, remove_rec_dropout = TRUE, ...) {
 #' @return renders a circos plot to the active graphics device
 #' @export circos_ligand_receptor
 #' @examples
-#' load("R/sysdata.rda")
 #' cols <- c(
 #'   "red", "orange", "green", "blue", "pink", "purple",
 #'   "slategrey", "firebrick", "hotpink"
 #' )
-#' names(cols) <- dom_clusters(pbmc_dom_built_tiny, labels = FALSE)
-#' circos_ligand_receptor(pbmc_dom_built_tiny, receptor = "FCER2", cell_colors = cols)
+#' names(cols) <- dom_clusters(domino2:::pbmc_dom_built_tiny, labels = FALSE)
+#' circos_ligand_receptor(domino2:::pbmc_dom_built_tiny, receptor = "FCER2", cell_colors = cols)
 #' 
 circos_ligand_receptor <- function(
     dom, receptor, ligand_expression_threshold = 0.01, cell_idents = NULL,
@@ -937,9 +929,6 @@ plot_differential_linkages <- function(
 #' @param dir Direction to normalize the matrix c('row', 'col')
 #' @return A normalized matrix in the direction specified.
 #' @keywords internal
-#' @examples
-#' mat <- matrix(c(1, 3, 2, 5, 3, 5, 2, 1, 6), nrow = 3)
-#' do_norm(mat, "row")
 #'
 do_norm <- function(mat, dir) {
   if (dir == "row") {
@@ -962,8 +951,6 @@ do_norm <- function(mat, dir) {
 #' @param n Number of colors to generate
 #' @return A vector of colors according to ggplot color generation.
 #' @keywords internal
-#' @examples
-#' ggplot_col_gen(7)
 #' 
 ggplot_col_gen <- function(n) {
   hues <- seq(15, 375, length = n + 1)

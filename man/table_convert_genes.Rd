@@ -20,14 +20,7 @@ and rows corresponding to the gene symbols themselves}
 Data frame of genes with original and corresponding converted symbols
 }
 \description{
-Takes a vector of gene inputs and returns converted gene table
-}
-\examples{
-conversion_table <- read.csv(
- "http://www.informatics.jax.org/downloads/reports/HOM_MouseHumanSequence.rpt",
- sep = "\t")
-mgi_genes <- c("Ptprc", "Cd3e", "Cd8a", "Cd4", "Foxp3")
-table_convert_genes(mgi_genes, "MGI", "HGNC", conversion_table)
-
+Takes a vector of gene inputs and a conversion table (\href{"http://www.informatics.jax.org/downloads/reports/HOM_MouseHumanSequence.rpt"}{an example}
+and returns converted gene table
 }
 \keyword{internal}

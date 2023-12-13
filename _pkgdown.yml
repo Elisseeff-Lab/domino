@@ -74,7 +74,6 @@ reference:
 - subtitle: "Misc. utility functions"
   contents:
   - add_rl_column
-  - convert_genes
   - count_linkage
   - mean_ligand_expression
   - rename_clusters

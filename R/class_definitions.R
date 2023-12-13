@@ -76,11 +76,11 @@ linkage_summary <- setClass(
 #' @return a printed description of the number of cell clusters in the object
 #' @keywords internal
 #' @examples
-#' print(pbmc_dom_tiny_built)
+#' print(domino2:::pbmc_dom_built_tiny)
 #' 
 setMethod("print", "domino", function(x, ...) {
   if (x@misc$build) {
-    cat(
+    message(
       "A domino object of ", length(x@clusters), " cells
                 Contains signaling between",
       length(levels(x@clusters)), "clusters
@@ -90,7 +90,7 @@ setMethod("print", "domino", function(x, ...) {
       "receptors per TF\n"
     )
   } else {
-    cat(c("A domino object of ", length(x@clusters), " cells\n", "A signaling network has not been built\n"),
+    message(c("A domino object of ", length(x@clusters), " cells\n", "A signaling network has not been built\n"),
       sep = ""
     )
   }
@@ -103,9 +103,9 @@ setMethod("print", "domino", function(x, ...) {
 #' @return a printed description of the number of cells in a domino object and its build status
 #' @keywords internal
 #' @examples
-#' pbmc_dom_tiny_built
+#' domino2:::pbmc_dom_built_tiny
 #' 
-#' show(pbmc_dom_tiny_built)
+#' show(domino2:::pbmc_dom_built_tiny)
 #' 
 setMethod("show", "domino", function(object) {
   if (object@misc$build) {

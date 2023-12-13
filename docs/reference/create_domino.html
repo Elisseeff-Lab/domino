@@ -170,17 +170,53 @@ network.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">pbmc_dom_tiny_all</span> <span class="op">&lt;-</span> <span class="va">pbmc_dom_tiny</span> <span class="op">&lt;-</span> <span class="fu">create_domino</span><span class="op">(</span>rl_map <span class="op">=</span> <span class="va">rl_map_tiny</span>,</span></span>
-<span class="r-in"><span> features <span class="op">=</span> <span class="va">auc_tiny</span>, counts <span class="op">=</span> <span class="va">RNA_count_tiny</span>, z_scores <span class="op">=</span> <span class="va">RNA_zscore_tiny</span>,</span></span>
-<span class="r-in"><span> tf_targets <span class="op">=</span> <span class="va">regulon_list_tiny</span>, use_clusters <span class="op">=</span> <span class="cn">FALSE</span>, use_complexes <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
-<span class="r-in"><span> rec_min_thresh <span class="op">=</span> <span class="fl">0.1</span>, remove_rec_dropout <span class="op">=</span> <span class="cn">TRUE</span>, tf_selection_method <span class="op">=</span> <span class="st">"all"</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in is(rl_map, "data.frame"):</span> object 'rl_map_tiny' not found</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">pbmc_dom_tiny_all</span> <span class="op">&lt;-</span> <span class="va">pbmc_dom_tiny</span> <span class="op">&lt;-</span> <span class="fu">create_domino</span><span class="op">(</span>rl_map <span class="op">=</span> <span class="fu">domino2</span><span class="fu">:::</span><span class="va">rl_map_tiny</span>,</span></span>
+<span class="r-in"><span> features <span class="op">=</span> <span class="fu">domino2</span><span class="fu">:::</span><span class="va">auc_tiny</span>, counts <span class="op">=</span> <span class="fu">domino2</span><span class="fu">:::</span><span class="va">RNA_count_tiny</span>, z_scores <span class="op">=</span> <span class="fu">domino2</span><span class="fu">:::</span><span class="va">RNA_zscore_tiny</span>,</span></span>
+<span class="r-in"><span> clusters <span class="op">=</span> <span class="fu">domino2</span><span class="fu">:::</span><span class="va">clusters_tiny</span>, tf_targets <span class="op">=</span> <span class="fu">domino2</span><span class="fu">:::</span><span class="va">regulon_list_tiny</span>, use_clusters <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
+<span class="r-in"><span> use_complexes <span class="op">=</span> <span class="cn">FALSE</span>, rec_min_thresh <span class="op">=</span> <span class="fl">0.1</span>, remove_rec_dropout <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span> tf_selection_method <span class="op">=</span> <span class="st">"all"</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading in and processing signaling database</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Database provided from source: CellPhoneDB</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting z_scores, clusters, and counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Calculating correlations</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 1 of 3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2 of 3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 3 of 3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> FAS has component genes that did not pass testing parameters</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> CD22 has component genes that did not pass testing parameters</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> IGF1R has component genes that did not pass testing parameters</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">pbmc_dom_tiny_clustered</span> <span class="op">&lt;-</span> <span class="fu">create_domino</span><span class="op">(</span>rl_map <span class="op">=</span> <span class="va">rl_map_tiny</span>,</span></span>
-<span class="r-in"><span> features <span class="op">=</span> <span class="va">auc_tiny</span>, counts <span class="op">=</span> <span class="va">RNA_count_tiny</span>, z_scores <span class="op">=</span> <span class="va">RNA_zscore_tiny</span>,</span></span>
-<span class="r-in"><span> clusters <span class="op">=</span> <span class="va">clusters_tiny</span>, tf_targets <span class="op">=</span> <span class="va">regulon_list_tiny</span>,</span></span>
+<span class="r-in"><span><span class="va">pbmc_dom_tiny_clustered</span> <span class="op">&lt;-</span> <span class="fu">create_domino</span><span class="op">(</span>rl_map <span class="op">=</span> <span class="fu">domino2</span><span class="fu">:::</span><span class="va">rl_map_tiny</span>,</span></span>
+<span class="r-in"><span> features <span class="op">=</span> <span class="fu">domino2</span><span class="fu">:::</span><span class="va">auc_tiny</span>, counts <span class="op">=</span> <span class="fu">domino2</span><span class="fu">:::</span><span class="va">RNA_count_tiny</span>, z_scores <span class="op">=</span> <span class="fu">domino2</span><span class="fu">:::</span><span class="va">RNA_zscore_tiny</span>,</span></span>
+<span class="r-in"><span> clusters <span class="op">=</span> <span class="fu">domino2</span><span class="fu">:::</span><span class="va">clusters_tiny</span>, tf_targets <span class="op">=</span> <span class="fu">domino2</span><span class="fu">:::</span><span class="va">regulon_list_tiny</span>,</span></span>
 <span class="r-in"><span> use_clusters <span class="op">=</span> <span class="cn">TRUE</span>, use_complexes <span class="op">=</span> <span class="cn">TRUE</span>, remove_rec_dropout <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in is(rl_map, "data.frame"):</span> object 'rl_map_tiny' not found</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Reading in and processing signaling database</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Database provided from source: CellPhoneDB</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Getting z_scores, clusters, and counts</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Calculating feature enrichment by cluster</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 1 of 3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2 of 3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 3 of 3</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Calculating correlations</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 1 of 3</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Cannot compute exact p-value with ties</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Cannot compute exact p-value with ties</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Cannot compute exact p-value with ties</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Cannot compute exact p-value with ties</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Cannot compute exact p-value with ties</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2 of 3</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Cannot compute exact p-value with ties</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Cannot compute exact p-value with ties</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Cannot compute exact p-value with ties</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Cannot compute exact p-value with ties</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Cannot compute exact p-value with ties</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 3 of 3</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Cannot compute exact p-value with ties</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Cannot compute exact p-value with ties</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Cannot compute exact p-value with ties</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Cannot compute exact p-value with ties</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Cannot compute exact p-value with ties</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> IGF1R has component genes that did not pass testing parameters</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

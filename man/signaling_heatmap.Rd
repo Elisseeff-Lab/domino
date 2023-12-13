@@ -37,6 +37,6 @@ Creates a heatmap of the signaling network. Alternatively, the network
 matrix can be accessed directly in the signaling slot of a domino object.
 }
 \examples{
-signaling_heatmap(pbmc_dom_built_tiny)
+signaling_heatmap(domino2:::pbmc_dom_built_tiny)
 
 }

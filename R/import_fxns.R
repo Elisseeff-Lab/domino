@@ -22,14 +22,9 @@ NULL
 #' @return Data frame where each row describes a possible receptor-ligand interaction
 #' @export create_rl_map_cellphonedb
 #' @examples
-#' load("R/sysdata.rda")
-#' rl_map_tiny <- create_rl_map_cellphonedb(genes = genes_tiny, 
-#'  proteins = proteins_tiny, interactions = interactions_tiny, 
-#'  complexes = complexes_tiny)
-#' 
-#' rl_map_tiny_mgi <- create_rl_map_cellphonedb(genes = genes_tiny, 
-#'  proteins = proteins_tiny, interactions = interactions_tiny, 
-#'  complexes = complexes_tiny, gene_conv = c("HGNC", "MGI"))
+#' rl_map_tiny <- create_rl_map_cellphonedb(genes = domino2:::genes_tiny, 
+#'  proteins = domino2:::proteins_tiny, interactions = domino2:::interactions_tiny, 
+#'  complexes = domino2:::complexes_tiny)
 #' 
 create_rl_map_cellphonedb <- function(
     genes, proteins, interactions, complexes = NULL, database_name = "CellPhoneDB",
@@ -190,8 +185,8 @@ create_rl_map_cellphonedb <- function(
       next
     }
     if (length(conversion_flag)) {
-      print(paste("No gene orthologs found for:", names(conversion_flag), collapse = " "))
-      print(paste("Skipping interaction:", partner_a, partner_b, collapse = " "))
+      message(paste("No gene orthologs found for:", names(conversion_flag), collapse = " "))
+      message(paste("Skipping interaction:", partner_a, partner_b, collapse = " "))
       next
     }
     a_df <- as.data.frame(a_features)
@@ -246,8 +241,8 @@ create_rl_map_cellphonedb <- function(
       next
     }
     if (length(conversion_flag)) {
-      print(paste("No gene orthologs found for:", names(conversion_flag), collapse = " "))
-      print(paste("Skipping interaction:", partner_a, partner_b, collapse = " "))
+      message(paste("No gene orthologs found for:", names(conversion_flag), collapse = " "))
+      message(paste("Skipping interaction:", partner_a, partner_b, collapse = " "))
       next
     }
     b_df <- as.data.frame(b_features)
@@ -277,8 +272,7 @@ create_rl_map_cellphonedb <- function(
 #' @return A list where names are transcription factors and the stored values are character vectors of genes in the inferred regulons
 #' @export create_regulon_list_scenic
 #' @examples
-#' load("R/sysdata.rda")
-#' regulon_list_tiny <- create_regulon_list_scenic(regulons = regulons_tiny)
+#' regulon_list_tiny <- create_regulon_list_scenic(regulons = domino2:::regulons_tiny)
 #'
 create_regulon_list_scenic <- function(regulons) {
   if (is(regulons, "character")) {
@@ -331,15 +325,15 @@ create_regulon_list_scenic <- function(regulons) {
 #' @return A domino object
 #' @export create_domino
 #' @examples 
-#' load("R/sysdata.rda")
-#' pbmc_dom_tiny_all <- pbmc_dom_tiny <- create_domino(rl_map = rl_map_tiny,
-#'  features = auc_tiny, counts = RNA_count_tiny, z_scores = RNA_zscore_tiny,
-#'  tf_targets = regulon_list_tiny, use_clusters = FALSE, use_complexes = FALSE,
-#'  rec_min_thresh = 0.1, remove_rec_dropout = TRUE, tf_selection_method = "all")
+#' pbmc_dom_tiny_all <- pbmc_dom_tiny <- create_domino(rl_map = domino2:::rl_map_tiny,
+#'  features = domino2:::auc_tiny, counts = domino2:::RNA_count_tiny, z_scores = domino2:::RNA_zscore_tiny,
+#'  clusters = domino2:::clusters_tiny, tf_targets = domino2:::regulon_list_tiny, use_clusters = FALSE,
+#'  use_complexes = FALSE, rec_min_thresh = 0.1, remove_rec_dropout = TRUE,
+#'  tf_selection_method = "all")
 #' 
-#' pbmc_dom_tiny_clustered <- create_domino(rl_map = rl_map_tiny,
-#'  features = auc_tiny, counts = RNA_count_tiny, z_scores = RNA_zscore_tiny,
-#'  clusters = clusters_tiny, tf_targets = regulon_list_tiny,
+#' pbmc_dom_tiny_clustered <- create_domino(rl_map = domino2:::rl_map_tiny,
+#'  features = domino2:::auc_tiny, counts = domino2:::RNA_count_tiny, z_scores = domino2:::RNA_zscore_tiny,
+#'  clusters = domino2:::clusters_tiny, tf_targets = domino2:::regulon_list_tiny,
 #'  use_clusters = TRUE, use_complexes = TRUE, remove_rec_dropout = FALSE)
 #' 
 create_domino <- function(
@@ -477,13 +471,13 @@ create_domino <- function(
     rownames(p_vals) <- rownames(features)
     colnames(p_vals) <- levels(dom@clusters)
     if (verbose) {
-      print("Calculating feature enrichment by cluster")
+      message("Calculating feature enrichment by cluster")
       clust_n <- length(levels(dom@clusters))
     }
     for (clust in levels(dom@clusters)) {
       if (verbose) {
         cur <- which(levels(dom@clusters) == clust)
-        print(paste0(cur, " of ", clust_n))
+        message(paste0(cur, " of ", clust_n))
       }
       cells <- which(dom@clusters == clust)
       for (feat in rownames(dom@features)) {
@@ -523,7 +517,7 @@ create_domino <- function(
   rownames(rho) <- ser_receptors
   colnames(rho) <- rownames(dom@features)
   if (verbose) {
-    print("Calculating correlations")
+    message("Calculating correlations")
     n_tf <- nrow(dom@features)
   }
   for (module in rownames(dom@features)) {
@@ -531,7 +525,7 @@ create_domino <- function(
     # correlation equal to 0.
     if (verbose) {
       cur <- which(rownames(dom@features) == module)
-      print(paste0(cur, " of ", n_tf))
+      message(paste0(cur, " of ", n_tf))
     }
     if (!is.null(dom@linkages$tf_targets)) {
       tf <- gsub(pattern = "\\.\\.\\.", replacement = "", module) # correction for AUC values from pySCENIC that append an elipses to TF names due to (+) characters in the orignial python output
@@ -578,7 +572,7 @@ create_domino <- function(
       r_genes <- r
     }
     if (sum(rownames(rho) %in% r_genes) != length(r_genes)) {
-      print(paste0(r, " has component genes that did not pass testing parameters"))
+      message(paste0(r, " has component genes that did not pass testing parameters"))
       cor_list[[r]] <- rep(0, ncol(rho))
       next
     }
@@ -622,10 +616,6 @@ create_domino <- function(
 #' @param host Host to connect to. Defaults to https://www.ensembl.org following the useMart default, but can be changed to archived hosts if useMart fails to connect.
 #' @return A data frame with input genes as col 1 and output as col 2
 #' @keywords internal
-#' @export
-#' @examples
-#' mgi_genes <- c("Ptprc", "Cd3e", "CD8a", "Cd4", "Foxp3")
-#' convert_genes(mgi_genes, "MGI", "HGNC")
 #'
 convert_genes <- function(
     genes, from = c("ENSMUSG", "ENSG", "MGI", "HGNC"), to = c("MGI", "HGNC"),
@@ -681,9 +671,8 @@ convert_genes <- function(
 #' @return An updated RL signaling data frame
 #' @export
 #' @examples 
-#' load("R/sysdata.rda")
 #' lr_name <- data.frame("abbrev" = c("L", "R"), "full" = c("Ligand", "Receptor"))
-#' rl_map_expanded <- add_rl_column(map = rl_map_tiny, map_ref = "type_A",
+#' rl_map_expanded <- add_rl_column(map = domino2:::rl_map_tiny, map_ref = "type_A",
 #'  conv = lr_name, new_name = "type_A_full")
 #' 
 add_rl_column <- function(map, map_ref, conv, new_name) {
@@ -724,10 +713,10 @@ add_rl_column <- function(map, map_ref, conv, new_name) {
 #' @return A data frame of ligand expression targeting the specified receptor
 #' @export
 #' @examples
-#' load("R/sysdata.rda")
-#' counts <- dom_counts(pbmc_dom_built_tiny)
+#' counts <- dom_counts(domino2:::pbmc_dom_built_tiny)
 #' mean_exp <- mean_ligand_expression(counts,
-#'  ligands = c("PTPRC", "FASLG"), cell_ident = "CD14_monocyte")
+#'  ligands = c("PTPRC", "FASLG"), cell_ident = "CD14_monocyte",
+#'  cell_barcodes = colnames(counts), destination = "FAS")
 #' 
 mean_ligand_expression <- function(x, ligands, cell_ident, cell_barcodes, destination){
   # initiate data frame to store results

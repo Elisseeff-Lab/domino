@@ -62,6 +62,6 @@ and directed edges indicate signaling from one cluster to another. Edges are
 colored based on the color scheme of the ligand expressing cluster.
 }
 \examples{
-signaling_network(pbmc_dom_built_tiny, layout = "fr")
+signaling_network(domino2:::pbmc_dom_built_tiny, layout = "fr")
 
 }
