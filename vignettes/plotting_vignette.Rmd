@@ -41,7 +41,7 @@ if (!(file.exists(tmp_path) &&
   download.file(url = data_url, destfile = tmp_path)
 }
 
-dom <- readRDS(paste0(temp_dir, "/pbmc_domino_built.rds"))
+dom <- readRDS(tmp_path)
 ```
 
 ## Heatmaps
