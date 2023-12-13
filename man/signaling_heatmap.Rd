@@ -38,10 +38,10 @@ matrix can be accessed directly in the signaling slot of a domino object.
 }
 \examples{
 #basic usage
-signaling_heatmap(dom)
+signaling_heatmap(domino2:::pbmc_dom_built_tiny)
 #scale
-signaling_heatmap(dom, scale = "sqrt")
+signaling_heatmap(domino2:::pbmc_dom_built_tiny, scale = "sqrt")
 #normalize
-signaling_heatmap(dom, normalize = "rec_norm")
+signaling_heatmap(domino2:::pbmc_dom_built_tiny, normalize = "rec_norm")
 
 }

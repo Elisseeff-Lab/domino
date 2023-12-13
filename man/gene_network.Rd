@@ -43,9 +43,6 @@ will be included in the plot.
 }
 \examples{
 #basic usage
-gene_network(dom, clust = "CD16_monocyte", OutgoingSignalingClust = "CD14_monocyte")
-#scaling and coloring
-gene_network(dom, clust = "CD16_monocyte", OutgoingSignalingClust = "CD14_monocyte",
- cols = c("CD1D" = "violet", "LILRB2" = "violet", "FOSB" = "violet"), lig_scale = 10)
+gene_network(domino2:::pbmc_dom_built_tiny, clust = "CD8_T_cell", OutgoingSignalingClust = "CD14_monocyte")
 
 }
