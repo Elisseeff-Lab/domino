@@ -182,8 +182,10 @@ incoming_signaling_heatmap <- function(
 #' #basic usage
 #' signaling_network(domino2:::pbmc_dom_built_tiny)
 #' # scaling, thresholds, layouts, selecting clusters
-#' signaling_network(domino2:::pbmc_dom_built_tiny, showOutgoingSignalingClusts = "CD14_monocyte", scale = "none",
-#'  norm = "none", layout = "fr", scale_by = "none", vert_scale = 5)
+#' signaling_network(
+#'  domino2:::pbmc_dom_built_tiny, showOutgoingSignalingClusts = "CD14_monocyte", 
+#'  scale = "none", norm = "none", layout = "fr", scale_by = "none", 
+#'  vert_scale = 5)
 #' 
 signaling_network <- function(
     dom, cols = NULL, edge_weight = 0.3, clusts = NULL, showOutgoingSignalingClusts = NULL,
@@ -320,7 +322,9 @@ signaling_network <- function(
 #' @export gene_network
 #' @examples
 #' #basic usage
-#' gene_network(domino2:::pbmc_dom_built_tiny, clust = "CD8_T_cell", OutgoingSignalingClust = "CD14_monocyte")
+#' gene_network(
+#'  domino2:::pbmc_dom_built_tiny, clust = "CD8_T_cell", 
+#'  OutgoingSignalingClust = "CD14_monocyte")
 #'
 gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL, 
     class_cols = c(lig = "#FF685F",rec = "#47a7ff", feat = "#39C740"),
@@ -482,7 +486,9 @@ gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL,
 #' #basic usage
 #' feat_heatmap(domino2:::pbmc_dom_built_tiny)
 #' #using thresholds
-#' feat_heatmap(domino2:::pbmc_dom_built_tiny, min_thresh = 0.1, max_thresh = 0.6, norm = TRUE, bool = FALSE)
+#' feat_heatmap(
+#'  domino2:::pbmc_dom_built_tiny, min_thresh = 0.1, 
+#'   max_thresh = 0.6, norm = TRUE, bool = FALSE)
 #' 
 feat_heatmap <- function(
     dom, feats = NULL, bool = FALSE, bool_thresh = 0.2, title = TRUE, norm = FALSE,
@@ -863,6 +869,14 @@ circos_ligand_receptor <- function(
 #' @param group_palette a named vector of colors to use for each group being compared
 #' @return a Heatmap-class object of features ranked by test_statistic annotated with the proportion of subjects that showed active linkage of the features.
 #' @export
+#' @examples
+#' \dontrun{
+#' plot_differential_linkages(
+#'  differential_linkages = diff_linkages_tiny,
+#'  test_statistic = "p.value",
+#'  stat_ranking = "ascending"
+#' )
+#' }
 #'
 plot_differential_linkages <- function(
     differential_linkages, test_statistic, stat_range = c(0, 1),

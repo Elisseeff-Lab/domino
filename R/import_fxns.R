@@ -325,14 +325,17 @@ create_regulon_list_scenic <- function(regulons) {
 #' @return A domino object
 #' @export create_domino
 #' @examples 
-#' pbmc_dom_tiny_all <- pbmc_dom_tiny <- create_domino(rl_map = domino2:::rl_map_tiny,
-#'  features = domino2:::auc_tiny, counts = domino2:::RNA_count_tiny, z_scores = domino2:::RNA_zscore_tiny,
-#'  clusters = domino2:::clusters_tiny, tf_targets = domino2:::regulon_list_tiny, use_clusters = FALSE,
-#'  use_complexes = FALSE, rec_min_thresh = 0.1, remove_rec_dropout = TRUE,
+#' pbmc_dom_tiny_all <- pbmc_dom_tiny <- create_domino(
+#'  rl_map = domino2:::rl_map_tiny, features = domino2:::auc_tiny, 
+#'  counts = domino2:::RNA_count_tiny, z_scores = domino2:::RNA_zscore_tiny,
+#'  clusters = domino2:::clusters_tiny, tf_targets = domino2:::regulon_list_tiny, 
+#'  use_clusters = FALSE, use_complexes = FALSE, 
+#'  rec_min_thresh = 0.1, remove_rec_dropout = TRUE,
 #'  tf_selection_method = "all")
 #' 
-#' pbmc_dom_tiny_clustered <- create_domino(rl_map = domino2:::rl_map_tiny,
-#'  features = domino2:::auc_tiny, counts = domino2:::RNA_count_tiny, z_scores = domino2:::RNA_zscore_tiny,
+#' pbmc_dom_tiny_clustered <- create_domino(
+#'  rl_map = domino2:::rl_map_tiny, features = domino2:::auc_tiny, 
+#'  counts = domino2:::RNA_count_tiny, z_scores = domino2:::RNA_zscore_tiny,
 #'  clusters = domino2:::clusters_tiny, tf_targets = domino2:::regulon_list_tiny,
 #'  use_clusters = TRUE, use_complexes = TRUE, remove_rec_dropout = FALSE)
 #' 
