@@ -43,4 +43,5 @@ signaling_heatmap(domino2:::pbmc_dom_built_tiny)
 signaling_heatmap(domino2:::pbmc_dom_built_tiny, scale = "sqrt")
 #normalize
 signaling_heatmap(domino2:::pbmc_dom_built_tiny, normalize = "rec_norm")
+
 }

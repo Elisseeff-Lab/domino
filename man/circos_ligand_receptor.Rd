@@ -37,4 +37,5 @@ circos_ligand_receptor(domino2:::pbmc_dom_built_tiny, receptor = "FAS")
 cols = c("red", "orange", "green", "blue", "pink", "purple", "slategrey", "firebrick", "hotpink")
 names(cols) = levels(domino2:::pbmc_dom_built_tiny@clusters)
 circos_ligand_receptor(domino2:::pbmc_dom_built_tiny, receptor = "FAS", cell_colors = cols)
+
 }
