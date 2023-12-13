@@ -14,11 +14,11 @@ knitr::opts_chunk$set(
   echo = TRUE,
   message = FALSE,
   warning = FALSE,
-  fig.cap="",
+  fig.cap = "",
   tidy = TRUE,
   global.device = TRUE
 )
-options(timeout=300)
+options(timeout = 300)
 ```
 
 ```{r libraries, include=FALSE}
@@ -43,8 +43,14 @@ if (!dir.exists(pbmc_dir)) {
 }
 
 # preprocessed PBMC 3K scRNAseq data set as a Seurat object
-download.file(url = paste0(data_url, "/pbmc_seurat.rds"),
-              destfile = paste0(pbmc_dir, "/pbmc_seurat.rds"))
+
+fname <- paste0(pbmc_dir, "/pbmc_seurat.rds")
+if (!(file.exists(fname)
+      && tools::md5sum(fname) == "0cd3bf26708be10ae4a32f378c94a2b2")) {
+  download.file(url = paste0(data_url, "/pbmc_seurat.rds"),
+                destfile = fname)
+}
+
 
 #download scenic results
 scenic_dir <- paste0(temp_dir, "/scenic")
