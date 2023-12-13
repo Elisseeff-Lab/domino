@@ -25,5 +25,4 @@ Create a correlation plot between transcription factor activation score and rece
 }
 \examples{
 cor_scatter(domino2:::pbmc_dom_built_tiny, "RUNX1", "FAS")
-
 }

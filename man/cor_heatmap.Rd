@@ -40,8 +40,10 @@ Creates a heatmap of correlation values between receptors and transcription
 factors either with boolean threshold or with continuous values displayed
 }
 \examples{
-receptors <- c("FAS", "CD22", "FCER2")
-tfs <- c("ZNF257", "RUNX1")
-cor_heatmap(domino2:::pbmc_dom_built_tiny, feats = tfs, recs = receptors)
-
+#basic usage
+cor_heatmap(domino2:::pbmc_dom_built_tiny, title = "PBMC R-TF Correlations")
+#show correlations above a specific value
+cor_heatmap(domino2:::pbmc_dom_built_tiny, bool = TRUE, bool_thresh = 0.25)
+#identify combinations that are connected
+cor_heatmap(domino2:::pbmc_dom_built_tiny, bool = FALSE, mark_connections = TRUE)
 }

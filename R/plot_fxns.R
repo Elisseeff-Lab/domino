@@ -22,7 +22,12 @@ NULL
 #' @return a Heatmap rendered to the active graphics device
 #' @export signaling_heatmap
 #' @examples
+#' #basic usage
 #' signaling_heatmap(domino2:::pbmc_dom_built_tiny)
+#' #scale
+#' signaling_heatmap(domino2:::pbmc_dom_built_tiny, scale = "sqrt")
+#' #normalize
+#' signaling_heatmap(domino2:::pbmc_dom_built_tiny, normalize = "rec_norm")
 #'
 signaling_heatmap <- function(
     dom, clusts = NULL, min_thresh = -Inf, max_thresh = Inf, scale = "none",
@@ -81,6 +86,7 @@ signaling_heatmap <- function(
 #' @return a Heatmap rendered to the active graphics device
 #' @export incoming_signaling_heatmap
 #' @examples
+#' #incoming signaling of the CD8  T cells
 #' incoming_signaling_heatmap(domino2:::pbmc_dom_built_tiny, "CD8_T_cell")
 #'
 incoming_signaling_heatmap <- function(
@@ -172,8 +178,12 @@ incoming_signaling_heatmap <- function(
 #' @param ... Other parameters to be passed to plot when used with an `{igraph}` object.
 #' @return an igraph rendered to the active graphics device
 #' @export signaling_network
-#' @examples
-#' signaling_network(domino2:::pbmc_dom_built_tiny, layout = "fr")
+#' @examples 
+#' #basic usage
+#' signaling_network(domino2:::pbmc_dom_built_tiny)
+#' # scaling, thresholds, layouts, selecting clusters
+#' signaling_network(domino2:::pbmc_dom_built_tiny, showOutgoingSignalingClusts = "CD14_monocyte", scale = "none",
+#'  norm = "none", layout = "fr", scale_by = "none", vert_scale = 5)
 #' 
 signaling_network <- function(
     dom, cols = NULL, edge_weight = 0.3, clusts = NULL, showOutgoingSignalingClusts = NULL,
@@ -309,8 +319,9 @@ signaling_network <- function(
 #' @return an igraph rendered to the active graphics device
 #' @export gene_network
 #' @examples
+#' #basic usage
 #' gene_network(domino2:::pbmc_dom_built_tiny, clust = "CD8_T_cell", OutgoingSignalingClust = "CD14_monocyte")
-#' 
+#'
 gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL, 
     class_cols = c(lig = "#FF685F",rec = "#47a7ff", feat = "#39C740"),
     cols = NULL, lig_scale = 1, layout = "grid", ...) {
@@ -467,9 +478,12 @@ gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL,
 #' @param ... Other parameters to pass to  [ComplexHeatmap::Heatmap()] . Note that to use the 'main' parameter of  [ComplexHeatmap::Heatmap()]  you must set title = FALSE and to use 'annCol' or 'annColors' ann_cols must be FALSE.
 #' @return a Heatmap rendered to the active graphics device
 #' @export feat_heatmap
-#' @examples
-#' feat_heatmap(domino2:::pbmc_dom_built_tiny, min_thresh = 0.1, max_thresh = 0.6, norm = TRUE)
-#'
+#' @examples 
+#' #basic usage
+#' feat_heatmap(domino2:::pbmc_dom_built_tiny)
+#' #using thresholds
+#' feat_heatmap(domino2:::pbmc_dom_built_tiny, min_thresh = 0.1, max_thresh = 0.6, norm = TRUE, bool = FALSE)
+#' 
 feat_heatmap <- function(
     dom, feats = NULL, bool = FALSE, bool_thresh = 0.2, title = TRUE, norm = FALSE,
     cols = NULL, ann_cols = TRUE, min_thresh = NULL, max_thresh = NULL, ...) {
@@ -586,11 +600,14 @@ feat_heatmap <- function(
 #' @param ... Other parameters to pass to  [ComplexHeatmap::Heatmap()] . Note that to use the 'main' parameter of  [ComplexHeatmap::Heatmap()]  you must set title = FALSE and to use 'annCol' or 'annColors' ann_cols must be FALSE.
 #' @return a Heatmap rendered to the active graphics device
 #' @export cor_heatmap
-#' @examples
-#' receptors <- c("FAS", "CD22", "FCER2")
-#' tfs <- c("ZNF257", "RUNX1")
-#' cor_heatmap(domino2:::pbmc_dom_built_tiny, feats = tfs, recs = receptors)
-#' 
+#' @examples 
+#' #basic usage
+#' cor_heatmap(domino2:::pbmc_dom_built_tiny, title = "PBMC R-TF Correlations")
+#' #show correlations above a specific value
+#' cor_heatmap(domino2:::pbmc_dom_built_tiny, bool = TRUE, bool_thresh = 0.25)
+#' #identify combinations that are connected
+#' cor_heatmap(domino2:::pbmc_dom_built_tiny, bool = FALSE, mark_connections = TRUE)
+#'  
 cor_heatmap <- function(
     dom, bool = FALSE, bool_thresh = 0.15, title = TRUE, feats = NULL, recs = NULL,
     mark_connections = FALSE, ...) {
@@ -680,7 +697,7 @@ cor_heatmap <- function(
 #' @return a ggplot object
 #' @export cor_scatter
 #' @examples
-#' cor_scatter(domino2:::pbmc_dom_built_tiny, "RUNX1", "FAS")
+#' cor_scatter(domino2:::pbmc_dom_built_tiny, "ATF4","CD22")
 #'
 cor_scatter <- function(dom, tf, rec, remove_rec_dropout = TRUE, ...) {
   if (remove_rec_dropout) {
@@ -708,13 +725,13 @@ cor_scatter <- function(dom, tf, rec, remove_rec_dropout = TRUE, ...) {
 #' @param cell_colors Named vector of color names or hex codes where names correspond to the plotted cell types and the color values
 #' @return renders a circos plot to the active graphics device
 #' @export circos_ligand_receptor
-#' @examples
-#' cols <- c(
-#'   "red", "orange", "green", "blue", "pink", "purple",
-#'   "slategrey", "firebrick", "hotpink"
-#' )
-#' names(cols) <- dom_clusters(domino2:::pbmc_dom_built_tiny, labels = FALSE)
-#' circos_ligand_receptor(domino2:::pbmc_dom_built_tiny, receptor = "FCER2", cell_colors = cols)
+#' @examples 
+#' #basic usage
+#' circos_ligand_receptor(domino2:::pbmc_dom_built_tiny, receptor = "FAS")
+#' #specify colors
+#' cols = c("red", "orange", "green", "blue", "pink", "purple", "slategrey", "firebrick", "hotpink")
+#' names(cols) = levels(domino2:::pbmc_dom_built_tiny@clusters)
+#' circos_ligand_receptor(domino2:::pbmc_dom_built_tiny, receptor = "FAS", cell_colors = cols)
 #' 
 circos_ligand_receptor <- function(
     dom, receptor, ligand_expression_threshold = 0.01, cell_idents = NULL,

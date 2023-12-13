@@ -31,11 +31,10 @@ Creates a chord plot of expression of ligands that can activate a specified
 receptor where chord widths correspond to mean ligand expression by the cluster.
 }
 \examples{
-cols <- c(
-  "red", "orange", "green", "blue", "pink", "purple",
-  "slategrey", "firebrick", "hotpink"
-)
-names(cols) <- dom_clusters(domino2:::pbmc_dom_built_tiny, labels = FALSE)
-circos_ligand_receptor(domino2:::pbmc_dom_built_tiny, receptor = "FCER2", cell_colors = cols)
-
+#basic usage
+circos_ligand_receptor(domino2:::pbmc_dom_built_tiny, receptor = "FAS")
+#specify colors
+cols = c("red", "orange", "green", "blue", "pink", "purple", "slategrey", "firebrick", "hotpink")
+names(cols) = levels(domino2:::pbmc_dom_built_tiny@clusters)
+circos_ligand_receptor(domino2:::pbmc_dom_built_tiny, receptor = "FAS", cell_colors = cols)
 }
