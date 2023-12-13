@@ -11,6 +11,14 @@ NULL
 #' @param subject_names vector of subject names in domino_results. If NULL, defaults to first column of subject_meta.
 #' @return A linkage summary class object consisting of nested lists of the active transcription factors, active receptors, and incoming ligands for each cluster across multiple domino results.
 #' @export
+#' @examples 
+#' \dontrun{
+#' meta_df <- data.frame("ID" = c("P1", "P2"), "group" = c("A", "B"))}
+#' dom_ls <- list("P1" = dom1, "P2" = dom2)
+#' summarize_linkages(
+#'  domino_results = dom_ls, subject_meta = meta_df, 
+#'  subject_names = meta_df$ID)
+#' }
 #' 
 summarize_linkages <- function(domino_results, subject_meta, subject_names = NULL) {
   if (!is(domino_results, "list")) {
@@ -99,6 +107,11 @@ summarize_linkages <- function(domino_results, subject_meta, subject_names = NUL
 #' @param subject_names a vector of subject_names from the linkage_summary to be compared. If NULL, all subject_names in the linkage summary are included in counting.
 #' @return a data frame with columns for the unique linkage features and the counts of how many times the linkage occured across the compared domino results. If group.by is used, counts of the linkages are also provided as columns named by the unique values of the group.by variable.
 #' @export
+#' @examples
+#' \dontrun{
+#' count_linkage(linkage_summary = linkage_ls, cluster = "CD8_T_cell", 
+#'  group.by = "group", linkage = "rec_lig")
+#' }
 #' 
 count_linkage <- function(linkage_summary, cluster, group.by = NULL, linkage = "rec_lig", subject_names = NULL) {
   if (is.null(subject_names)) {
@@ -156,6 +169,11 @@ count_linkage <- function(linkage_summary, cluster, group.by = NULL, linkage = "
 #'  \item{'X_n'} : total number of subjects in each category of group.by (X)
 #' }
 #' @export
+#' @examples
+#' \dontrun{
+#' test_differential_linkages(linkage_summary = linkage_ls, cluster = "CD8_T_cell", 
+#'  group.by = "group", linkage = "rec_lig", test_name = "fishers.exact")
+#' }
 #' 
 test_differential_linkages <- function(linkage_summary, cluster, group.by, linkage = "rec_lig", subject_names = NULL,
   test_name = "fishers.exact") {
