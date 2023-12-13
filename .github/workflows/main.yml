@@ -1,0 +1,12 @@
+name: main
+on:
+    push:
+        branches: ['v0.2.2_development']
+    pull_request:
+        branches: ['master', 'v0.2.2']
+    workflow_dispatch:
+
+jobs:
+    build-check:
+        uses: FertigLab/actions/.github/workflows/r-build-check.yml@v1
+        secrets: inherit
