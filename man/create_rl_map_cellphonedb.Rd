@@ -41,3 +41,9 @@ Data frame where each row describes a possible receptor-ligand interaction
 \description{
 Generates a data frame of ligand-receptor interactions from a CellPhoneDB database annotating the genes encoding the interacting ligands and receptors to be queried in transcriptomic data.
 }
+\examples{
+rl_map_tiny <- create_rl_map_cellphonedb(genes = domino2:::genes_tiny, 
+ proteins = domino2:::proteins_tiny, interactions = domino2:::interactions_tiny, 
+ complexes = domino2:::complexes_tiny)
+
+}

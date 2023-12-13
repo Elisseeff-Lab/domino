@@ -15,3 +15,7 @@ A matrix containing the z-scored gene expression values for each gene (row) by c
 \description{
 A function to pull z-scored expression from a domino object
 }
+\examples{
+zscores <- dom_zscores(domino2:::pbmc_dom_built_tiny)
+
+}

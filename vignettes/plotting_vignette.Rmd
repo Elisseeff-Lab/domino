@@ -30,7 +30,7 @@ library(patchwork)
 
 In addition to the numerous plotting options available in the original [Domino](https://github.com/Elisseeff-Lab/domino), domino2 has added more functionality and new methods to improve visualization and interpretation of analysis results. Here, we will go over the different plotting functions available, as well as different options that can be utilized, and options for customization. We will be using the domino object (loaded as `dom`) from our example analysis in [Getting Started](vignette("domino2")).
 
-### Loading example domino data
+## Loading example domino data
 
 ```{r}
 data_url <- "https://zenodo.org/records/10222767/files"
@@ -136,15 +136,19 @@ gene_network(dom, clust = "CD16_monocyte", OutgoingSignalingClust = "CD14_monocy
 Options to modify this plot include adjusting scaling for the ligands and different layouts (some of which are more legible than others).
 
 ```{r genenetwork-options}
-gene_network(dom, clust = "CD16_monocyte", OutgoingSignalingClust = "CD14_monocyte",
-  lig_scale = 25, layout = "sphere")
+gene_network(dom,
+  clust = "CD16_monocyte", OutgoingSignalingClust = "CD14_monocyte",
+  lig_scale = 25, layout = "sphere"
+)
 ```
 
 Additionally, colors can be given for select genes (for example, to highlight a specific signaling path).
 
 ```{r genenetwork-cols}
-gene_network(dom, clust = "CD16_monocyte", OutgoingSignalingClust = "CD14_monocyte",
-  cols = c("CD1D" = "violet", "LILRB2" = "violet", "FOSB" = "violet"), lig_scale = 10)
+gene_network(dom,
+  clust = "CD16_monocyte", OutgoingSignalingClust = "CD14_monocyte",
+  cols = c("CD1D" = "violet", "LILRB2" = "violet", "FOSB" = "violet"), lig_scale = 10
+)
 ```
 
 ### Network Showing Interaction Strength Across Data
@@ -158,8 +162,10 @@ signaling_network(dom)
 In addition to changes such as scaling, thresholds, or layouts, this plot can be modified by selecting incoming or outgoing clusters (or both!). An example to view signaling from the CD14 Monocytes to other cluster:
 
 ```{r signalingnet-clusts}
-signaling_network(dom, showOutgoingSignalingClusts = "CD14_monocyte", scale = "none",
-  norm = "none", layout = "fr", scale_by = "none", vert_scale = 5)
+signaling_network(dom,
+  showOutgoingSignalingClusts = "CD14_monocyte", scale = "none",
+  norm = "none", layout = "fr", scale_by = "none", vert_scale = 5
+)
 ```
 
 ## Other Types of Plot
@@ -174,9 +180,11 @@ circos_ligand_receptor(dom, receptor = "CD74")
 This function can be given cluster colors to match other plots you may make with your data. In addition, the plot can be adjusted by changing the threshold of ligand expression required for a linkage to be visualized or selecting clusters of interest.
 
 ```{r circos-opt, fig.asp = 0.8, fig.width = 7}
-cols = c("red", "orange", "green", "blue", "pink", "purple",
-  "slategrey", "firebrick", "hotpink")
-names(cols) = levels(dom@clusters)
+cols <- c(
+  "red", "orange", "green", "blue", "pink", "purple",
+  "slategrey", "firebrick", "hotpink"
+)
+names(cols) <- dom_clusters(dom, labels = FALSE)
 circos_ligand_receptor(dom, receptor = "CD74", cell_colors = cols)
 ```
 

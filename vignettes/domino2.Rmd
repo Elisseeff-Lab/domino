@@ -14,9 +14,8 @@ knitr::opts_chunk$set(
   echo = TRUE,
   message = FALSE,
   warning = FALSE,
-  fig.cap="",
-  tidy = TRUE,
-  global.device = TRUE
+  fig.cap = "",
+  tidy = TRUE
 )
 options(timeout=300)
 ```
@@ -250,16 +249,19 @@ The TF activities are a required input for domino2, and the regulons learned by 
 ```{r Load SCENIC Results}
 regulons <- read.csv(paste0(scenic_dir, "/regulons_pbmc_3k.csv"))
 auc <- read.table(paste0(scenic_dir, "/auc_pbmc_3k.csv"),
-                  header = TRUE, row.names = 1,
-                  stringsAsFactors = FALSE, sep = ",")
+  header = TRUE, row.names = 1,
+  stringsAsFactors = FALSE, sep = ","
+)
 ```
 
 The initial regulons data frame read into R from the ctx function has 2 rows of column names that need to be replaced with one succinct description. domino2 has changed the input format for TF regulons to be a list storing vectors of target genes in each regulon, where the names of the list are the TF genes. This facilitates the use of alternative methods for TF activity quantification. We provide a helper function, `create_regulon_list_scenic()` for easy retrieval of TF regulons from the output of the [pySCENIC](https://pyscenic.readthedocs.io/en/latest/) ctx function.
 
 ```{r Create Regulon List}
-regulons <- regulons[-1:-2,]
-colnames(regulons) <- c("TF", "MotifID", "AUC", "NES", "MotifSimilarityQvalue", "OrthologousIdentity", 
-  "Annotation", "Context", "TargetGenes", "RankAtMax")
+regulons <- regulons[-1:-2, ]
+colnames(regulons) <- c(
+  "TF", "MotifID", "AUC", "NES", "MotifSimilarityQvalue", "OrthologousIdentity",
+  "Annotation", "Context", "TargetGenes", "RankAtMax"
+)
 regulon_list <- create_regulon_list_scenic(regulons = regulons)
 ```
 
@@ -300,8 +302,8 @@ proteins <- read.csv(paste0(cellphone_dir,
                      stringsAsFactors = FALSE)
 
 rl_map <- create_rl_map_cellphonedb(
-  genes = genes, 
-  proteins = proteins, 
+  genes = genes,
+  proteins = proteins,
   interactions = interactions,
   complexes = complexes,
   database_name = "CellPhoneDB_v4.0" # database version used
@@ -459,14 +461,16 @@ Signaling networks can also be drawn with the edges only rendering the signals d
 Beyond the aggregated degree of signaling between cell types, the degrees of signaling through specific ligand-receptor interactions can be assessed. `gene_network()` provides a graph of linkages between active TFs in a cluster, the linked receptors in that cluster, and the possible ligands of these active receptors.
 
 ```{r}
-gene_network(pbmc_dom, clust = 'dendritic_cell', layout = 'grid')
+gene_network(pbmc_dom, clust = "dendritic_cell", layout = "grid")
 ```
 
 New to domino2, `gene_network()` can be used between two clusters to determine if any of the possible ligands for a given receptor are expressed by a putative outgoing signaling cluster.
 
 ```{r}
-gene_network(pbmc_dom, clust = 'dendritic_cell', OutgoingSignalingClust = "CD14_monocyte",
-              layout = 'grid')
+gene_network(pbmc_dom,
+  clust = "dendritic_cell", OutgoingSignalingClust = "CD14_monocyte",
+  layout = "grid"
+)
 ```
 
 A comprehensive assessment of ligand expression targeting active receptors on a given cluster can be assessed with `incoming_signaling_heatmap()`.
