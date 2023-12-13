@@ -116,10 +116,10 @@ If you would like to skip ahead to the rest of the analysis, the processed objec
 Installation of domino2 from Github can be achieved using the `{remotes}` package. The current stable version is v0.2.2, so we will install that branch.
 
 ```{r, eval = FALSE}
-if(!require(remotes)){
-  install.packages("remotes")
-}
-remotes::install_github("FertigLab/domino2@v0.2.2")
+# if(!require(remotes)){
+#   install.packages("remotes")
+# }
+# remotes::install_github("FertigLab/domino2@v0.2.2")
 ```
 
 ### Additional Downloads
