@@ -29,3 +29,10 @@ a data frame with columns for the unique linkage features and the counts of how 
 \description{
 Count occurrences of linkages across multiple domino results from a linkage summary
 }
+\examples{
+\dontrun{
+count_linkage(linkage_summary = linkage_ls, cluster = "CD8_T_cell", 
+ group.by = "group", linkage = "rec_lig")
+}
+
+}

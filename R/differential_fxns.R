@@ -13,7 +13,7 @@ NULL
 #' @export
 #' @examples 
 #' \dontrun{
-#' meta_df <- data.frame("ID" = c("P1", "P2"), "group" = c("A", "B"))}
+#' meta_df <- data.frame("ID" = c("P1", "P2"), "group" = c("A", "B"))
 #' dom_ls <- list("P1" = dom1, "P2" = dom2)
 #' summarize_linkages(
 #'  domino_results = dom_ls, subject_meta = meta_df, 
