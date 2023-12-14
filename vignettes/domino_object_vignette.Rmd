@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
   fig.cap = "",
   tidy = "styler"
 )
-options(timeout=300)
+options(timeout = 300)
 ```
 
 ```{r setup, include = FALSE}
@@ -25,12 +25,15 @@ library(domino2)
 ```
 
 ```{r}
-data_url <- "https://zenodo.org/records/10222767/files"
-temp_dir <- tempdir()
+data_url <- "https://zenodo.org/records/10222767/files/pbmc_domino_built.rds"
+tmp_path <- paste0(tempdir(), "/pbmc_domino_built.rds")
 
-download.file(url = paste0(data_url, "/pbmc_domino_built.rds"),
-              destfile = paste0(temp_dir, "/pbmc_domino_built.rds"))
-dom <- readRDS(paste0(temp_dir, "/pbmc_domino_built.rds"))
+if (!(file.exists(tmp_path) &&
+        tools::md5sum(tmp_path) == "c1ba759a11b61dd36618f71c84f0aa13")) {
+  download.file(url = data_url, destfile = tmp_path)
+}
+
+dom <- readRDS(tmp_path)
 ```
 
 # The new domino object structure
