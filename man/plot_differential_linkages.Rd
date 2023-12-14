@@ -30,7 +30,7 @@ a Heatmap-class object of features ranked by test_statistic annotated with the p
 Plot differential linkages among domino results ranked by a comparative statistic
 }
 \examples{
-\donttest{
+\dontrun{
 plot_differential_linkages(
  differential_linkages = diff_linkages_tiny,
  test_statistic = "p.value",
