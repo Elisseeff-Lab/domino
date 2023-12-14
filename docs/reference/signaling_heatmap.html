@@ -33,14 +33,8 @@ matrix can be accessed directly in the signaling slot of a domino object."><meta
 <li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
-<li class="nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-news">News</a>
-  <div class="dropdown-menu" aria-labelledby="dropdown-news">
-    <h6 class="dropdown-header" data-toc-skip>Releases</h6>
-    <h6 class="dropdown-header" data-toc-skip>Version 0.2</h6>
-    <div class="dropdown-divider"></div>
-    <a class="dropdown-item" href="../news/index.html">Changelog</a>
-  </div>
+<li class="nav-item">
+  <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
@@ -120,8 +114,15 @@ matrix can be accessed directly in the signaling slot of a domino object.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">signaling_heatmap</span><span class="op">(</span><span class="fu">domino2</span><span class="fu">:::</span><span class="va">pbmc_dom_built_tiny</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">#basic usage</span></span></span>
+<span class="r-in"><span><span class="fu">signaling_heatmap</span><span class="op">(</span><span class="fu">domino2</span><span class="fu">:::</span><span class="va">pbmc_dom_built_tiny</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="signaling_heatmap-1.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="co">#scale</span></span></span>
+<span class="r-in"><span><span class="fu">signaling_heatmap</span><span class="op">(</span><span class="fu">domino2</span><span class="fu">:::</span><span class="va">pbmc_dom_built_tiny</span>, scale <span class="op">=</span> <span class="st">"sqrt"</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="signaling_heatmap-2.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="co">#normalize</span></span></span>
+<span class="r-in"><span><span class="fu">signaling_heatmap</span><span class="op">(</span><span class="fu">domino2</span><span class="fu">:::</span><span class="va">pbmc_dom_built_tiny</span>, normalize <span class="op">=</span> <span class="st">"rec_norm"</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="signaling_heatmap-3.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

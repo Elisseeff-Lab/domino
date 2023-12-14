@@ -173,7 +173,7 @@ incoming_signaling_heatmap <- function(
 #' @param scale How to scale the values (after thresholding). Options are 'none', 'sqrt' for square root, 'log' for log10, or 'sq' for square.
 #' @param layout Type of layout to use. Options are 'random', 'sphere', 'circle', 'fr' for Fruchterman-Reingold force directed layout, and 'kk' for Kamada Kawai for directed layout.
 #' @param scale_by How to size vertices. Options are 'lig_sig' for summed outgoing signaling, 'rec_sig' for summed incoming signaling, and 'none'. In the former two cases the values are scaled with asinh after summing all incoming or outgoing signaling.
-#' @param vert_scale Integer used to scale size of vertices with our without variable scaling from size_verts_by.
+#' @param vert_scale Integer used to scale size of vertices with or without variable scaling from size_verts_by.
 #' @param plot_title Text for the plot's title.
 #' @param ... Other parameters to be passed to plot when used with an `{igraph}` object.
 #' @return an igraph rendered to the active graphics device

@@ -43,14 +43,8 @@ network."><meta property="og:image" content="/logo.svg"><!-- mathjax --><script 
 <li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
-<li class="nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-news">News</a>
-  <div class="dropdown-menu" aria-labelledby="dropdown-news">
-    <h6 class="dropdown-header" data-toc-skip>Releases</h6>
-    <h6 class="dropdown-header" data-toc-skip>Version 0.2</h6>
-    <div class="dropdown-divider"></div>
-    <a class="dropdown-item" href="../news/index.html">Changelog</a>
-  </div>
+<li class="nav-item">
+  <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
@@ -170,10 +164,12 @@ network.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">pbmc_dom_tiny_all</span> <span class="op">&lt;-</span> <span class="va">pbmc_dom_tiny</span> <span class="op">&lt;-</span> <span class="fu">create_domino</span><span class="op">(</span>rl_map <span class="op">=</span> <span class="fu">domino2</span><span class="fu">:::</span><span class="va">rl_map_tiny</span>,</span></span>
-<span class="r-in"><span> features <span class="op">=</span> <span class="fu">domino2</span><span class="fu">:::</span><span class="va">auc_tiny</span>, counts <span class="op">=</span> <span class="fu">domino2</span><span class="fu">:::</span><span class="va">RNA_count_tiny</span>, z_scores <span class="op">=</span> <span class="fu">domino2</span><span class="fu">:::</span><span class="va">RNA_zscore_tiny</span>,</span></span>
-<span class="r-in"><span> clusters <span class="op">=</span> <span class="fu">domino2</span><span class="fu">:::</span><span class="va">clusters_tiny</span>, tf_targets <span class="op">=</span> <span class="fu">domino2</span><span class="fu">:::</span><span class="va">regulon_list_tiny</span>, use_clusters <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
-<span class="r-in"><span> use_complexes <span class="op">=</span> <span class="cn">FALSE</span>, rec_min_thresh <span class="op">=</span> <span class="fl">0.1</span>, remove_rec_dropout <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">pbmc_dom_tiny_all</span> <span class="op">&lt;-</span> <span class="va">pbmc_dom_tiny</span> <span class="op">&lt;-</span> <span class="fu">create_domino</span><span class="op">(</span></span></span>
+<span class="r-in"><span> rl_map <span class="op">=</span> <span class="fu">domino2</span><span class="fu">:::</span><span class="va">rl_map_tiny</span>, features <span class="op">=</span> <span class="fu">domino2</span><span class="fu">:::</span><span class="va">auc_tiny</span>, </span></span>
+<span class="r-in"><span> counts <span class="op">=</span> <span class="fu">domino2</span><span class="fu">:::</span><span class="va">RNA_count_tiny</span>, z_scores <span class="op">=</span> <span class="fu">domino2</span><span class="fu">:::</span><span class="va">RNA_zscore_tiny</span>,</span></span>
+<span class="r-in"><span> clusters <span class="op">=</span> <span class="fu">domino2</span><span class="fu">:::</span><span class="va">clusters_tiny</span>, tf_targets <span class="op">=</span> <span class="fu">domino2</span><span class="fu">:::</span><span class="va">regulon_list_tiny</span>, </span></span>
+<span class="r-in"><span> use_clusters <span class="op">=</span> <span class="cn">FALSE</span>, use_complexes <span class="op">=</span> <span class="cn">FALSE</span>, </span></span>
+<span class="r-in"><span> rec_min_thresh <span class="op">=</span> <span class="fl">0.1</span>, remove_rec_dropout <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span> tf_selection_method <span class="op">=</span> <span class="st">"all"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Reading in and processing signaling database</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Database provided from source: CellPhoneDB</span>
@@ -186,8 +182,9 @@ network.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> CD22 has component genes that did not pass testing parameters</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> IGF1R has component genes that did not pass testing parameters</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">pbmc_dom_tiny_clustered</span> <span class="op">&lt;-</span> <span class="fu">create_domino</span><span class="op">(</span>rl_map <span class="op">=</span> <span class="fu">domino2</span><span class="fu">:::</span><span class="va">rl_map_tiny</span>,</span></span>
-<span class="r-in"><span> features <span class="op">=</span> <span class="fu">domino2</span><span class="fu">:::</span><span class="va">auc_tiny</span>, counts <span class="op">=</span> <span class="fu">domino2</span><span class="fu">:::</span><span class="va">RNA_count_tiny</span>, z_scores <span class="op">=</span> <span class="fu">domino2</span><span class="fu">:::</span><span class="va">RNA_zscore_tiny</span>,</span></span>
+<span class="r-in"><span><span class="va">pbmc_dom_tiny_clustered</span> <span class="op">&lt;-</span> <span class="fu">create_domino</span><span class="op">(</span></span></span>
+<span class="r-in"><span> rl_map <span class="op">=</span> <span class="fu">domino2</span><span class="fu">:::</span><span class="va">rl_map_tiny</span>, features <span class="op">=</span> <span class="fu">domino2</span><span class="fu">:::</span><span class="va">auc_tiny</span>, </span></span>
+<span class="r-in"><span> counts <span class="op">=</span> <span class="fu">domino2</span><span class="fu">:::</span><span class="va">RNA_count_tiny</span>, z_scores <span class="op">=</span> <span class="fu">domino2</span><span class="fu">:::</span><span class="va">RNA_zscore_tiny</span>,</span></span>
 <span class="r-in"><span> clusters <span class="op">=</span> <span class="fu">domino2</span><span class="fu">:::</span><span class="va">clusters_tiny</span>, tf_targets <span class="op">=</span> <span class="fu">domino2</span><span class="fu">:::</span><span class="va">regulon_list_tiny</span>,</span></span>
 <span class="r-in"><span> use_clusters <span class="op">=</span> <span class="cn">TRUE</span>, use_complexes <span class="op">=</span> <span class="cn">TRUE</span>, remove_rec_dropout <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Reading in and processing signaling database</span>

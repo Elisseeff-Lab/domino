@@ -56,14 +56,8 @@
 <li class="nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
-<li class="nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-news">News</a>
-  <div class="dropdown-menu" aria-labelledby="dropdown-news">
-    <h6 class="dropdown-header" data-toc-skip>Releases</h6>
-    <h6 class="dropdown-header" data-toc-skip>Version 0.2</h6>
-    <div class="dropdown-divider"></div>
-    <a class="dropdown-item" href="../news/index.html">Changelog</a>
-  </div>
+<li class="nav-item">
+  <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
       </ul>
 <form class="form-inline my-2 my-lg-0" role="search">
@@ -97,56 +91,44 @@
 
     
     
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">data_url</span> <span class="op">&lt;-</span> <span class="st">"https://zenodo.org/records/10222767/files"</span></span>
-<span><span class="va">temp_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/download.file.html" class="external-link">download.file</a></span><span class="op">(</span></span>
-<span>  url <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">data_url</span>, <span class="st">"/pbmc_domino_built.rds"</span><span class="op">)</span>,</span>
-<span>  destfile <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">temp_dir</span>, <span class="st">"/pbmc_domino_built.rds"</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">dom</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">temp_dir</span>, <span class="st">"/pbmc_domino_built.rds"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<div class="section level2">
-<h2 id="the-new-domino-object-structure">The new domino object structure<a class="anchor" aria-label="anchor" href="#the-new-domino-object-structure"></a>
-</h2>
 <p>In order to better implement some of the changes that have been made in domino2, the structure of the domino object has been modified. Here, we describe the data that is stored in the domino object, as well as how best to access this data.</p>
-<div class="section level3">
-<h3 id="object-contents">Object contents<a class="anchor" aria-label="anchor" href="#object-contents"></a>
-</h3>
-<p>The contents of the domino object class include a few broad groups: - input data, such as the L-R database used, counts, and z-scores - calculations, such as correlations or differential expression results - linkages, which show connections between TFs, receptors, and ligands across the data set and within clusters - signaling matrices, which show expression of ligands signaling to active receptors in clusters (or a summary of overall signaling) - build information, which includes the parameters used to build the object in the <code><a href="../reference/build_domino.html">build_domino()</a></code> functions</p>
+<div class="section level2">
+<h2 id="object-contents">Object contents<a class="anchor" aria-label="anchor" href="#object-contents"></a>
+</h2>
+<p>The contents of the <a href="%60domino-class%60">domino object class</a> include a few broad groups: - input data, such as the L-R database used, counts, and z-scores - calculations, such as correlations or differential expression results - linkages, which show connections between TFs, receptors, and ligands across the data set and within clusters - signaling matrices, which show expression of ligands signaling to active receptors in clusters (or a summary of overall signaling) - build information, which includes the parameters used to build the object in the <code><a href="../reference/build_domino.html">build_domino()</a></code> functions</p>
 <p>For commonly accessed information (the number of cells, clusters, and some build information), the show and print methods for domino objects can be used.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dom</span></span>
 <span><span class="co">#&gt; A domino object of 2700 cells</span></span>
 <span><span class="co">#&gt; Built with signaling between 9 clusters</span></span></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">dom</span><span class="op">)</span></span>
 <span><span class="co">#&gt; A domino object of 2700 cells</span></span>
 <span><span class="co">#&gt; Built with signaling between 9 clusters</span></span></code></pre></div>
 </div>
-<div class="section level3">
-<h3 id="access-functions">Access functions<a class="anchor" aria-label="anchor" href="#access-functions"></a>
-</h3>
+<div class="section level2">
+<h2 id="access-functions">Access functions<a class="anchor" aria-label="anchor" href="#access-functions"></a>
+</h2>
 <p>In order to facilitate access to the information stored in the domino object, we have provided a collection of functions to retrieve specific items. These functions begin with “dom_” and can be listed using <code><a href="https://rdrr.io/r/base/ls.html" class="external-link">ls()</a></code>.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/ls.html" class="external-link">ls</a></span><span class="op">(</span><span class="st">"package:domino2"</span>, pattern <span class="op">=</span> <span class="st">"^dom_"</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  [1] "dom_clusters"      "dom_correlations"  "dom_counts"       </span></span>
 <span><span class="co">#&gt;  [4] "dom_database"      "dom_de"            "dom_info"         </span></span>
 <span><span class="co">#&gt;  [7] "dom_linkages"      "dom_network_items" "dom_signaling"    </span></span>
 <span><span class="co">#&gt; [10] "dom_tf_activation" "dom_zscores"</span></span></code></pre></div>
-<div class="section level4">
-<h4 id="input-data">Input data<a class="anchor" aria-label="anchor" href="#input-data"></a>
-</h4>
+<div class="section level3">
+<h3 id="input-data">Input data<a class="anchor" aria-label="anchor" href="#input-data"></a>
+</h3>
 <p>When creating a domino object with the <code><a href="../reference/create_domino.html">create_domino()</a></code> function, several inputs are required which are then stored in the domino object itself. These include cluster labels, the counts matrix, z-scored counts matrix, transcription factor activation scores, and the R-L database used in <code><a href="../reference/create_rl_map_cellphonedb.html">create_rl_map_cellphonedb()</a></code>.</p>
 <p>For example, to access the cluster names in the domino object:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/dom_clusters.html">dom_clusters</a></span><span class="op">(</span><span class="va">dom</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "naive_CD4_T_cell"  "CD14_monocyte"     "memory_CD4_T_cell"</span></span>
 <span><span class="co">#&gt; [4] "B_cell"            "CD8_T_cell"        "CD16_monocyte"    </span></span>
 <span><span class="co">#&gt; [7] "NK_cell"           "dendritic_cell"    "platelet"</span></span></code></pre></div>
 <p>Setting an argument <code>labels = TRUE</code> will return the vector of cluster labels for each cell rather than the unique cluster names.</p>
 <p>To access the counts:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">count_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dom_counts.html">dom_counts</a></span><span class="op">(</span><span class="va">dom</span><span class="op">)</span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">count_matrix</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
@@ -210,7 +192,7 @@
 </tbody>
 </table>
 <p>Or z-scored counts:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">z_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dom_zscores.html">dom_zscores</a></span><span class="op">(</span><span class="va">dom</span><span class="op">)</span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">z_matrix</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
@@ -274,7 +256,7 @@
 </tbody>
 </table>
 <p>The transcription factor activation scores can be similarly accessed:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">activation_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dom_tf_activation.html">dom_tf_activation</a></span><span class="op">(</span><span class="va">dom</span><span class="op">)</span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">activation_matrix</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <table style="width:100%;" class="table">
@@ -338,11 +320,11 @@
 </tbody>
 </table>
 <p>Information about the database referenced for ligand-receptor pairs and composition of protien complexes can be extracted from the <code><a href="../reference/dom_database.html">dom_database()</a></code> function. By default, the function returns the name(s) of the database(s) used:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/dom_database.html">dom_database</a></span><span class="op">(</span><span class="va">dom</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "CellPhoneDB_v4.0"</span></span></code></pre></div>
 <p>If you would like to view the entire ligand-receptor map, set <code>name_only = FALSE</code>:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">db_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dom_database.html">dom_database</a></span><span class="op">(</span><span class="va">dom</span>, name_only <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">db_matrix</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
@@ -392,11 +374,11 @@
 </tbody>
 </table>
 </div>
-<div class="section level4">
-<h4 id="calculations">Calculations<a class="anchor" aria-label="anchor" href="#calculations"></a>
-</h4>
+<div class="section level3">
+<h3 id="calculations">Calculations<a class="anchor" aria-label="anchor" href="#calculations"></a>
+</h3>
 <p>Active transcription factors in each cluster are determined by conducting wilcoxon rank sum tests for each transcription factor where the transcription factor activity scores amongst all cells in a cluster are tested against the activity scores of all cells outside of the cluster. The p-values for the one-sided test for greater activity within the cluster compared to outside can be accessed with the <code><a href="../reference/dom_de.html">dom_de()</a></code> function.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">de_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dom_de.html">dom_de</a></span><span class="op">(</span><span class="va">dom</span><span class="op">)</span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">de_matrix</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
@@ -452,7 +434,7 @@
 </tbody>
 </table>
 <p>Linkage between receptors and transcription factors is assessed by Spearman correlation between transcription factor activity scores and scaled expression of receptor-encoding genes across all cells in the data set. Spearman coefficients can be accessed with the <code><a href="../reference/dom_correlations.html">dom_correlations()</a></code> function.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cor_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dom_correlations.html">dom_correlations</a></span><span class="op">(</span><span class="va">dom</span><span class="op">)</span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">cor_matrix</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
@@ -508,17 +490,17 @@
 </tbody>
 </table>
 </div>
-<div class="section level4">
-<h4 id="linkages">Linkages<a class="anchor" aria-label="anchor" href="#linkages"></a>
-</h4>
+<div class="section level3">
+<h3 id="linkages">Linkages<a class="anchor" aria-label="anchor" href="#linkages"></a>
+</h3>
 <p>Linkages between ligands, receptors, and transcription factors can be accessed in several different ways, depending on the specific link and the scope desired. The <code><a href="../reference/dom_linkages.html">dom_linkages()</a></code> function has three arguments - the first, like all of our access functions, is for the domino object. The second, <code>link_type</code>, is used to specify which linkages are desired (options are complexes, receptor-ligand, tf-target, or tf-receptor). The third argument, <code>by_cluster</code>, determines whether the linkages returned are arranged by cluster (though this does change the available linkage types to tf-receptor, receptor, or incoming-ligand). For example, to access the complexes used across the dataset:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">complex_links</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dom_linkages.html">dom_linkages</a></span><span class="op">(</span><span class="va">dom</span>, link_type <span class="op">=</span> <span class="st">"complexes"</span><span class="op">)</span></span>
 <span><span class="co"># Look for components of NODAL receptor complex</span></span>
 <span><span class="va">complex_links</span><span class="op">$</span><span class="va">NODAL_receptor</span></span>
 <span><span class="co">#&gt; [1] "ACVR1B"       "ACVR2B"       "TDGF1"        "character(0)"</span></span></code></pre></div>
 <p>To view incoming ligands to each cluster:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">incoming_links</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dom_linkages.html">dom_linkages</a></span><span class="op">(</span><span class="va">dom</span>, link_type <span class="op">=</span> <span class="st">"incoming-ligand"</span>, by_cluster <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co"># Check incoming signals to dendritic cells</span></span>
 <span><span class="va">incoming_links</span><span class="op">$</span><span class="va">dendritic_cell</span></span>
@@ -528,7 +510,7 @@
 <span><span class="co">#&gt; [16] "CSF1"         "CSF2"         "TNF"          "GRN"          "LTA"         </span></span>
 <span><span class="co">#&gt; [21] "CTLA4"        "CD28"</span></span></code></pre></div>
 <p>If, for some reason, you find yourself in need of the entire linkage structure (not recommended), it can be accessed through its slot name; domino objects are S4 objects.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">all_linkages</span> <span class="op">&lt;-</span> <span class="fu">slot</span><span class="op">(</span><span class="va">dom</span>, <span class="st">"linkages"</span><span class="op">)</span></span>
 <span><span class="co"># Names of all sub-structures:</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">all_linkages</span><span class="op">)</span></span>
@@ -536,16 +518,16 @@
 <span><span class="co">#&gt; [4] "clust_tf"           "tf_rec"             "clust_tf_rec"      </span></span>
 <span><span class="co">#&gt; [7] "clust_rec"          "clust_incoming_lig"</span></span></code></pre></div>
 <p>Alternately, to obtain a simplified list of receptors, ligands, and/or features in the domino object, use the <code><a href="../reference/dom_network_items.html">dom_network_items()</a></code> function. To pull all transcription factors associated with the dendritic cell cluster:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dc_tfs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dom_network_items.html">dom_network_items</a></span><span class="op">(</span><span class="va">dom</span>, <span class="st">"dendritic_cell"</span>, return <span class="op">=</span> <span class="st">"features"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">dc_tfs</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "ZNF189" "KLF12"  "ETV7"   "IRF8"   "KLF6"   "FOS"</span></span></code></pre></div>
 </div>
-<div class="section level4">
-<h4 id="signaling-matrices">Signaling Matrices<a class="anchor" aria-label="anchor" href="#signaling-matrices"></a>
-</h4>
+<div class="section level3">
+<h3 id="signaling-matrices">Signaling Matrices<a class="anchor" aria-label="anchor" href="#signaling-matrices"></a>
+</h3>
 <p>The averaged z-scored expression of ligands and receptors between different clusters can be accessed in matrix form.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">signal_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dom_signaling.html">dom_signaling</a></span><span class="op">(</span><span class="va">dom</span><span class="op">)</span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">signal_matrix</span><span class="op">)</span></span></code></pre></div>
 <table style="width:100%;" class="table">
@@ -685,7 +667,7 @@
 </tbody>
 </table>
 <p>To view signaling to a specific cluster from the other clusters, set the <code>cluster</code> argument to the cluster name.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dc_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dom_signaling.html">dom_signaling</a></span><span class="op">(</span><span class="va">dom</span>, <span class="st">"dendritic_cell"</span><span class="op">)</span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">dc_matrix</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
@@ -885,11 +867,11 @@
 </tbody>
 </table>
 </div>
-<div class="section level4">
-<h4 id="build-information">Build information<a class="anchor" aria-label="anchor" href="#build-information"></a>
-</h4>
+<div class="section level3">
+<h3 id="build-information">Build information<a class="anchor" aria-label="anchor" href="#build-information"></a>
+</h3>
 <p>To keep track of the options set when running <code><a href="../reference/build_domino.html">build_domino()</a></code>, they are stored within the domino object itself. To view these options, use the <code><a href="../reference/dom_info.html">dom_info()</a></code> function.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/dom_info.html">dom_info</a></span><span class="op">(</span><span class="va">dom</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $create</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
@@ -904,14 +886,14 @@
 <span><span class="co">#&gt;                0.250                0.100</span></span></code></pre></div>
 </div>
 </div>
-<div class="section level3">
-<h3 id="continued-development">Continued Development<a class="anchor" aria-label="anchor" href="#continued-development"></a>
-</h3>
+<div class="section level2">
+<h2 id="continued-development">Continued Development<a class="anchor" aria-label="anchor" href="#continued-development"></a>
+</h2>
 <p>Since domino2 is a package still being developed, there are new functions and features that will be implemented in future versions. In the meantime, we have put together further information on <a href="vignette(%22plotting_vignette%22)">plotting</a> and an example analysis can be viewed on our <a href="vignette(%22domino2%22)">Getting Started</a> page. Additionally, if you find any bugs, have further questions, or want to share an idea, please let us know <a href="https://github.com/FertigLab/domino_development/issues" class="external-link">here</a>.</p>
 <details><p><summary>Vignette Build Information</summary> Date last built and session information:</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "2023-12-13"</span></span>
+<span><span class="co">#&gt; [1] "2023-12-14"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; R version 4.2.1 (2022-06-23)</span></span>
 <span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu (64-bit)</span></span>
@@ -975,7 +957,6 @@
 <span><span class="co">#&gt; [109] tibble_3.2.1           iterators_1.0.14       AnnotationDbi_1.60.2  </span></span>
 <span><span class="co">#&gt; [112] memoise_2.0.1          IRanges_2.32.0         cluster_2.1.4</span></span></code></pre></div>
 </details>
-</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

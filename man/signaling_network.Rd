@@ -47,7 +47,7 @@ signaling_network(
 
 \item{scale_by}{How to size vertices. Options are 'lig_sig' for summed outgoing signaling, 'rec_sig' for summed incoming signaling, and 'none'. In the former two cases the values are scaled with asinh after summing all incoming or outgoing signaling.}
 
-\item{vert_scale}{Integer used to scale size of vertices with our without variable scaling from size_verts_by.}
+\item{vert_scale}{Integer used to scale size of vertices with or without variable scaling from size_verts_by.}
 
 \item{plot_title}{Text for the plot's title.}
 

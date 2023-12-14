@@ -1,13 +1,3 @@
-# domino2 v0.2.2
-
-## Linkage functions
-- Addition of new class to summarize linkages in objects
-- Addition of helper functions to count linkages and compare between objects
-- Plotting function for differential linkages
-
-## Package structure
-- Adjustments made to meet BioConductor standards
-
 # domino2 v0.2.1
 
 ## Updates to domino object construction
@@ -29,3 +19,13 @@
 - Ligand nodes sizes in gene networks correspond to quantity of ligand expression
 - `create_domino()` can be run without providing a regulon list
 - References to the host GitHub repository have been updated to "Elisseeff-Lab"
+
+# domino2 v0.2.2
+
+## Linkage functions
+- Addition of new class to summarize linkages in objects
+- Addition of helper functions to count linkages and compare between objects
+- Plotting function for differential linkages
+
+## Package structure
+- Adjustments made to meet BioConductor standards

@@ -107,10 +107,7 @@ footer:
     right: built_with
 
 news:
-  one_page: false
-  releases:
-  - text: "Version 0.2"
-    href: 
+  one_page: true
 
 authors:
   footer:

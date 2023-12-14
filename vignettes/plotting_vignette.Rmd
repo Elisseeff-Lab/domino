@@ -30,9 +30,7 @@ library(patchwork)
 
 In addition to the numerous plotting options available in the original [Domino](https://github.com/Elisseeff-Lab/domino), domino2 has added more functionality and new methods to improve visualization and interpretation of analysis results. Here, we will go over the different plotting functions available, as well as different options that can be utilized, and options for customization. We will be using the domino object (loaded as `dom`) from our example analysis in [Getting Started](vignette("domino2")).
 
-## Loading example domino data
-
-```{r}
+```{r load data, include = FALSE}
 data_url <- "https://zenodo.org/records/10222767/files"
 temp_dir <- tempdir()
 
@@ -48,7 +46,7 @@ dom <- readRDS(paste0(temp_dir, "/pbmc_domino_built.rds"))
 `cor_heatmap()` can be used to show the correlations calculated between receptors and transcription factors.
 
 ```{r corheatmap}
-cor_heatmap(dom, title = "PBMC R-TF Correlations")
+cor_heatmap(dom, title = "PBMC R-TF Correlations", column_names_gp = grid::gpar(fontsize = 8))
 ```
 
 In addition to displaying the scores for the correlations, this function can also be used to identify correlations above a certain value (using the `bool` and `bool_thresh` arguments) or to identify the combinations of receptors and transcription factors (TFs) that are connected (with argument `mark_connections`).
@@ -72,7 +70,7 @@ The heatmap functions in domino2 are based on `ComplexHeatmap::Heatmap()` and wi
 cor_heatmap(
   dom,
   cluster_rows = FALSE, cluster_columns = FALSE,
-  column_title = "Heatmap Without Clustering"
+  column_title = "Heatmap Without Clustering", column_names_gp = grid::gpar(fontsize = 4)
 )
 ```
 
@@ -81,10 +79,10 @@ cor_heatmap(
 `feat_heatmap()` is used to show the transcription factor activation for features in the signaling network. 
 
 ```{r featheatmap}
-feat_heatmap(dom, use_raster = FALSE)
+feat_heatmap(dom, use_raster = FALSE, row_names_gp = grid::gpar(fontsize = 4))
 ```
 
-It functions similarly to `cor_heatmap()`, with arguments to select a specific vector of features, to use a boolean view with a threshold, and to pass other arguments to `NMF::aheatmap()`. Specific to this function though are arguments for setting the range of values to be visualized and one to choose whether or not to normalize the scores to the max value.
+It functions similarly to `cor_heatmap()`, with arguments to select a specific vector of features, to use a boolean view with a threshold, and to pass other arguments to `ComplexHeatmap::Heatmap()`. Specific to this function though are arguments for setting the range of values to be visualized and one to choose whether or not to normalize the scores to the max value.
 
 ```{r featheatmap-options, fig.show="hold", out.width = "50%"}
 feat_heatmap(dom, min_thresh = 0.1, max_thresh = 0.6, 
@@ -106,7 +104,7 @@ We can also select for specific clusters of interest that are signaling to the C
 incoming_signaling_heatmap(dom, "CD8_T_cell", clusts = c("CD14_monocyte", "CD16_monocyte"))
 ```
 
-As with our other heatmap functions, options are available for a minimum threshold, maximum threshold, whether to scale the values after thresholding, whether to normalize the matrix, and the ability to pass further arguments to `NMF::aheatmap()`.
+As with our other heatmap functions, options are available for a minimum threshold, maximum threshold, whether to scale the values after thresholding, whether to normalize the matrix, and the ability to pass further arguments to `ComplexHeatmap::Heatmap()`.
 
 ### Heatmap of Signaling Between Clusters
 
@@ -164,7 +162,7 @@ In addition to changes such as scaling, thresholds, or layouts, this plot can be
 ```{r signalingnet-clusts}
 signaling_network(dom,
   showOutgoingSignalingClusts = "CD14_monocyte", scale = "none",
-  norm = "none", layout = "fr", scale_by = "none", vert_scale = 5
+  norm = "none", layout = "fr", scale_by = "none", edge_weight = 2, vert_scale = 10
 )
 ```
 
@@ -173,13 +171,13 @@ signaling_network(dom,
 ### Chord Diagrams Connecting Ligands and Receptors
 A new addition to domino2, `circos_ligand_receptor()` creates a chord plot showing ligands that can activate a specific receptor, displaying mean cluster expression of the ligand with the width of the chord.
 
-```{r circos, fig.asp = 0.8}
+```{r circos, fig.asp = 0.6, out.width = "90%"}
 circos_ligand_receptor(dom, receptor = "CD74")
 ```
 
 This function can be given cluster colors to match other plots you may make with your data. In addition, the plot can be adjusted by changing the threshold of ligand expression required for a linkage to be visualized or selecting clusters of interest.
 
-```{r circos-opt, fig.asp = 0.8, fig.width = 7}
+```{r circos-opt, fig.asp = 0.6, out.width = "90%"}
 cols <- c(
   "red", "orange", "green", "blue", "pink", "purple",
   "slategrey", "firebrick", "hotpink"
