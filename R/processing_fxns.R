@@ -13,8 +13,10 @@
 #' @return A domino object with a signaling network built
 #' @export
 #' @examples
-#' pbmc_dom_tiny_built <- build_domino(dom = domino2:::pbmc_dom_tiny, min_tf_pval = .001, max_tf_per_clust = 25,
-#'  max_rec_per_tf = 25, rec_tf_cor_threshold = .25, min_rec_percentage = 0.1)
+#' pbmc_dom_tiny_built <- build_domino(
+#'  dom = domino2:::pbmc_dom_tiny, min_tf_pval = .001, max_tf_per_clust = 25,
+#'  max_rec_per_tf = 25, rec_tf_cor_threshold = .25, min_rec_percentage = 0.1
+#' )
 #' 
 build_domino <- function(
     dom, max_tf_per_clust = 5, min_tf_pval = 0.01, max_rec_per_tf = 5, rec_tf_cor_threshold = 0.15,
