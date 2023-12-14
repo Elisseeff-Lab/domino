@@ -91,19 +91,16 @@
 
     
     
-<div class="section level2">
-<h2 id="using-domino2-v0-2-2-for-cell-cell-communication-inference">Using domino2 v0.2.2 for cell-cell communication inference<a class="anchor" aria-label="anchor" href="#using-domino2-v0-2-2-for-cell-cell-communication-inference"></a>
-</h2>
 <p>domino2 is a tool for analysis of intra- and intercellular signaling in single cell RNA sequencing (scRNAseq) data based on transcription factor (TF) activation. Here, we show a basic example pipeline for generating communication networks as a domino object. This vignette will demonstrate how to use domino2 on the 10X Genomics Peripheral Blood Mononuclear Cells (PBMC) data set of 2,700 cells. The data can be downloaded <a href="https://cf.10xgenomics.com/samples/cell/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz" class="external-link">here</a>.</p>
-<div class="section level3">
-<h3 id="preprocessing-scrnaseq-data">Preprocessing scRNAseq data<a class="anchor" aria-label="anchor" href="#preprocessing-scrnaseq-data"></a>
-</h3>
+<div class="section level2">
+<h2 id="data-preparation">Data preparation<a class="anchor" aria-label="anchor" href="#data-preparation"></a>
+</h2>
 <p>Analysis of cell-cell communication with domino2 often follows initial processing and annotation of scRNAseq data. We used the <a href="https://satijalab.org/seurat/articles/pbmc3k_tutorial" class="external-link">Satija Lab’s Guided Clustering Tutorial</a> to prepare the data set for analysis with domino2. The <a href="data-raw/example_data.R">complete processing script</a> is available in the data-raw directory of the domino2 package. The processed data can be downloaded from <a href="https://zenodo.org/records/10222767" class="external-link">Zenodo</a>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">pbmc_dir</span>, <span class="st">"/pbmc_seurat.rds"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<div class="section level4">
-<h4 id="preparing-preprocessed-data">Preparing Preprocessed Data:<a class="anchor" aria-label="anchor" href="#preparing-preprocessed-data"></a>
-</h4>
+<div class="section level3">
+<h3 id="preparing-preprocessed-data">Preparing Preprocessed Data:<a class="anchor" aria-label="anchor" href="#preparing-preprocessed-data"></a>
+</h3>
 <p>domino2 was designed to be compatible with <a href="https://satijalab.org/seurat" class="external-link">Seurat</a> objects in addition to accepting matrices and vectors of the data set as function inputs. However, <a href="https://pyscenic.readthedocs.io/en/latest/" class="external-link">pySCENIC</a> is used for TF activation inference, and it requires as input a cell by gene matrix. This is the opposite orientation of <a href="https://satijalab.org/seurat" class="external-link">Seurat</a> objects but is the default for Python based tools such as <a href="https://scanpy.readthedocs.io/en/stable/" class="external-link">scanpy</a>. The RNA counts matrix can be saved as a tab-seperated value (.tsv) or comma-sperated value (.csv) file after transposing the matrix to cell by gene orientation.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pbmc_counts</span> <span class="op">&lt;-</span> <span class="fu">GetAssayData</span><span class="op">(</span>object <span class="op">=</span> <span class="va">pbmc</span>, slot <span class="op">=</span> <span class="st">"counts"</span><span class="op">)</span></span>
@@ -120,20 +117,20 @@
 <span><span class="va">pbmc_loom</span><span class="op">$</span><span class="fu">close_all</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
-<div class="section level3">
-<h3 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
-</h3>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
 <p>Installation of domino2 from Github can be achieved using the <a href="https://remotes.r-lib.org" class="external-link">remotes</a> package. The current stable version is v0.2.2, so we will install that version.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># if(!require(remotes)){ install.packages('remotes') }</span></span>
 <span><span class="co"># remotes::install_github('FertigLab/domino2@v0.2.2')</span></span></code></pre></div>
-<div class="section level4">
-<h4 id="additional-downloads">Additional Downloads<a class="anchor" aria-label="anchor" href="#additional-downloads"></a>
-</h4>
+<div class="section level3">
+<h3 id="additional-downloads">Additional Downloads<a class="anchor" aria-label="anchor" href="#additional-downloads"></a>
+</h3>
 <p>For this tutorial, <a href="https://pyscenic.readthedocs.io/en/latest/" class="external-link">pySCENIC</a> is used as the method for TF activity inference, and the assessment of ligand-receptor interactions is based on curated interactions from <a href="https://github.com/ventolab/cellphonedb-data/releases/tag/v4.0.0" class="external-link">CellPhoneDB v4.0.0</a>. Each of these requires downloading some files prior to use in our analysis pipeline.</p>
-<div class="section level5">
-<h5 id="downloads-for-scenic">Downloads for SCENIC:<a class="anchor" aria-label="anchor" href="#downloads-for-scenic"></a>
-</h5>
+<div class="section level4">
+<h4 id="downloads-for-scenic">Downloads for SCENIC:<a class="anchor" aria-label="anchor" href="#downloads-for-scenic"></a>
+</h4>
 <p>A singularity image of <a href="https://scenic.aertslab.org/" class="external-link">SCENIC</a> v0.12.1 can be installed from the DockerHub image as a source (example scripts for use with Docker are provided in the scenic_bash directory as well). <a href="https://scenic.aertslab.org/" class="external-link">SCENIC</a> requires a list of TFs, motif annotations, and cisTarget motifs which are all available from the authors of <a href="https://scenic.aertslab.org/" class="external-link">SCENIC</a> for human (HGNC), mouse (MGI), and fly. The following will download everything necessary for an analysis of a data set with HGNC gene labels for the hg38 genome.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1"></a><span class="va">SCENIC_DIR=</span><span class="st">"'temp_dir'/scenic"</span></span>
 <span id="cb5-2"><a href="#cb5-2"></a><span class="fu">mkdir</span> <span class="va">${SCENIC_DIR}</span></span>
@@ -157,9 +154,9 @@
 <span id="cb5-20"><a href="#cb5-20"></a><span class="ex">curl</span> <span class="st">"https://resources.aertslab.org/cistarget/motif2tf/motifs-v9-nr.hgnc-m0.001-o0.0.tbl"</span> \</span>
 <span id="cb5-21"><a href="#cb5-21"></a>  -o <span class="st">"</span><span class="va">${SCENIC_DIR}</span><span class="st">/motifs-v9-nr.hgnc-m0.001-o0.0.tbl"</span></span></code></pre></div>
 </div>
-<div class="section level5">
-<h5 id="downloads-for-cellphonedb">Downloads for CellPhoneDB:<a class="anchor" aria-label="anchor" href="#downloads-for-cellphonedb"></a>
-</h5>
+<div class="section level4">
+<h4 id="downloads-for-cellphonedb">Downloads for CellPhoneDB:<a class="anchor" aria-label="anchor" href="#downloads-for-cellphonedb"></a>
+</h4>
 <p>Database files from <a href="https://github.com/ventolab/cellphonedb-data/releases/tag/v4.0.0" class="external-link">CellPhoneDB v4.0.0</a> for human scRNAseq data can be installed from a public Github repository from the Tiechmann Group that developed CellPhoneDB.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#</span></span>
@@ -175,15 +172,15 @@
 </div>
 </div>
 </div>
-<div class="section level3">
-<h3 id="scenic-analysis">SCENIC Analysis<a class="anchor" aria-label="anchor" href="#scenic-analysis"></a>
-</h3>
+<div class="section level2">
+<h2 id="scenic-analysis">SCENIC Analysis<a class="anchor" aria-label="anchor" href="#scenic-analysis"></a>
+</h2>
 <p>SCENIC is our lab’s preferred software for TF activity scoring. We recommend using the Python implementation (<a href="https://pyscenic.readthedocs.io/en/latest/" class="external-link">pySCENIC</a>) as it is faster than the original R implementation. Be aware, the use of <a href="https://scenic.aertslab.org/" class="external-link">SCENIC</a> is often the slowest and most memory intensive step of this analysis pipeline. <a href="https://scenic.aertslab.org/" class="external-link">SCENIC</a> should be run on computing resources with access to multi-core processing and large amounts of memory.</p>
 <p>As described in the section on saving preprocessed data, <a href="https://scenic.aertslab.org/" class="external-link">SCENIC</a> requires RNA counts to be provided in a cell by gene matrix format, so we will be using the pbmc3k_counts.loom file in this stage of analysis.</p>
 <p><a href="https://pyscenic.readthedocs.io/en/latest/" class="external-link">pySCENIC</a> is initiated using bash scripting in the terminal. The analysis consists of 3 steps to score genes for TF motif enrichment, construct TF regulons consisting of genes targeted by the TFs, and arrive at AUC scores for enrichment of regulon gene transcription within each cell.</p>
-<div class="section level4">
-<h4 id="grn-construct-tf-modules">grn: construct TF-modules<a class="anchor" aria-label="anchor" href="#grn-construct-tf-modules"></a>
-</h4>
+<div class="section level3">
+<h3 id="grn-construct-tf-modules">grn: construct TF-modules<a class="anchor" aria-label="anchor" href="#grn-construct-tf-modules"></a>
+</h3>
 <p>Co-expression modules are used to quantify gene-TF adjacencies.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1"></a><span class="ex">singularity</span> exec <span class="st">"</span><span class="va">${SCENIC_DIR}</span><span class="st">/aertslab-pyscenic-0.12.1.sif"</span> pyscenic grn \</span>
 <span id="cb7-2"><a href="#cb7-2"></a>    <span class="st">"pbmc3k_counts.loom"</span> \</span>
@@ -199,9 +196,9 @@
 <span id="cb7-12"><a href="#cb7-12"></a>    <span class="co"># number of CPUs to use if multi-core processing is available</span></span>
 <span id="cb7-13"><a href="#cb7-13"></a>    <span class="co"># specify a random seed for reproducibility</span></span></code></pre></div>
 </div>
-<div class="section level4">
-<h4 id="ctx-construct-tf-regulons-with-pruning-based-on-tf-motif-enrichment">ctx: construct TF regulons with pruning based on TF motif enrichment<a class="anchor" aria-label="anchor" href="#ctx-construct-tf-regulons-with-pruning-based-on-tf-motif-enrichment"></a>
-</h4>
+<div class="section level3">
+<h3 id="ctx-construct-tf-regulons-with-pruning-based-on-tf-motif-enrichment">ctx: construct TF regulons with pruning based on TF motif enrichment<a class="anchor" aria-label="anchor" href="#ctx-construct-tf-regulons-with-pruning-based-on-tf-motif-enrichment"></a>
+</h3>
 <p>The rankings of genes based on enrichment of TF motifs to the transcription start site (TSS) are considered in the construction of regulons, where target genes in the TF-modules are removed if they lack motifs proximal to the TSS where the TF may bind.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1"></a><span class="ex">singularity</span> exec <span class="st">"</span><span class="va">${SCENIC_DIR}</span><span class="st">/aertslab-pyscenic-0.12.1.sif"</span> pyscenic ctx \</span>
 <span id="cb8-2"><a href="#cb8-2"></a>    <span class="st">"</span><span class="va">${SCENIC_DIR}</span><span class="st">/pbmc_adj.tsv"</span> \</span>
@@ -223,9 +220,9 @@
 <span id="cb8-18"><a href="#cb8-18"></a>    <span class="co"># output file of learned TF regulons</span></span>
 <span id="cb8-19"><a href="#cb8-19"></a>    <span class="co"># number of CPU cores</span></span></code></pre></div>
 </div>
-<div class="section level4">
-<h4 id="aucell-calculate-tf-activity-scores">aucell: calculate TF activity scores<a class="anchor" aria-label="anchor" href="#aucell-calculate-tf-activity-scores"></a>
-</h4>
+<div class="section level3">
+<h3 id="aucell-calculate-tf-activity-scores">aucell: calculate TF activity scores<a class="anchor" aria-label="anchor" href="#aucell-calculate-tf-activity-scores"></a>
+</h3>
 <p>Enrichment of a regulon is measured as the Area Under the recovery Curve (AUC) of the genes that define this regulon.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1"></a><span class="ex">singularity</span> exec <span class="st">"</span><span class="va">${SCENIC_DIR}</span><span class="st">/aertslab-pyscenic-0.12.1.sif"</span> pyscenic aucell \</span>
 <span id="cb9-2"><a href="#cb9-2"></a>    <span class="st">"pbmc3k_counts.loom"</span> \</span>
@@ -238,12 +235,12 @@
 <span id="cb9-9"><a href="#cb9-9"></a>    <span class="co"># cell x TF matrix of TF enrichment AUC values</span></span></code></pre></div>
 </div>
 </div>
+<div class="section level2">
+<h2 id="building-a-signaling-network-with-domino2">Building a Signaling Network with domino2<a class="anchor" aria-label="anchor" href="#building-a-signaling-network-with-domino2"></a>
+</h2>
 <div class="section level3">
-<h3 id="building-a-signaling-network-with-domino2">Building a Signaling Network with domino2<a class="anchor" aria-label="anchor" href="#building-a-signaling-network-with-domino2"></a>
+<h3 id="loading-scenic-results">Loading SCENIC Results<a class="anchor" aria-label="anchor" href="#loading-scenic-results"></a>
 </h3>
-<div class="section level4">
-<h4 id="loading-scenic-results">Loading SCENIC Results<a class="anchor" aria-label="anchor" href="#loading-scenic-results"></a>
-</h4>
 <p>The TF activities are a required input for domino2, and the regulons learned by <a href="https://scenic.aertslab.org/" class="external-link">SCENIC</a> are an important but optional input needed to annotate TF-target interactions and to prune TF-receptor linkages where the receptor is a target of the TF. This prevents the distinction of receptor expression driving TF activity or the TF inducing the receptor’s expression.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">regulons</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">scenic_dir</span>, <span class="st">"/regulons_pbmc_3k.csv"</span><span class="op">)</span><span class="op">)</span></span>
@@ -261,9 +258,9 @@
 <span><span class="co"># Remove pattern '...' from the end of all rownames:</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">auc_in</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"\\.\\.\\.$"</span>, <span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">auc_in</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level4">
-<h4 id="load-cellphonedb-database">Load CellPhoneDB Database<a class="anchor" aria-label="anchor" href="#load-cellphonedb-database"></a>
-</h4>
+<div class="section level3">
+<h3 id="load-cellphonedb-database">Load CellPhoneDB Database<a class="anchor" aria-label="anchor" href="#load-cellphonedb-database"></a>
+</h3>
 <p>domino2 has been updated to read ligand-receptor data bases in a uniform data.frame format referred to as a receptor-ligand map (rl_map) to enable the use of alternative or updated reference databases as opposed to a particular version of CellPhoneDB’s database in older versions of Domino. Each row corresponds to a ligand-receptor interaction. Genes participating in an interaction are referred to as “partner A” and “partner B” without a requirement for fixed ordering of whether A or B is the ligand and vice versa. The minimum required columns of this data frame are:</p>
 <ul>
 <li>int_pair: the names of the interacting ligand and receptor separated by " &amp; "</li>
@@ -413,9 +410,9 @@
 </tr>
 </tbody>
 </table>
-<div class="section level5">
-<h5 id="optional-adding-interactions-manually">Optional: Adding interactions manually<a class="anchor" aria-label="anchor" href="#optional-adding-interactions-manually"></a>
-</h5>
+<div class="section level4">
+<h4 id="optional-adding-interactions-manually">Optional: Adding interactions manually<a class="anchor" aria-label="anchor" href="#optional-adding-interactions-manually"></a>
+</h4>
 <p>The change to use rl_map formatting also enables users to manually append interactions of interest that are not included in the interaction database if need be. This can be attained by formatting the desired interactions as a data.frame with the same column headers as the rl_map and using the <code><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind()</a></code> function.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Integrin complexes are not annotated as receptors in CellPhoneDB_v4.0</span></span>
@@ -555,9 +552,9 @@
 </div>
 </div>
 </div>
-<div class="section level3">
-<h3 id="creating-the-domino-object">Creating the Domino Object<a class="anchor" aria-label="anchor" href="#creating-the-domino-object"></a>
-</h3>
+<div class="section level2">
+<h2 id="creating-the-domino-object">Creating the Domino Object<a class="anchor" aria-label="anchor" href="#creating-the-domino-object"></a>
+</h2>
 <p>domino2 analysis takes place in two steps.</p>
 <ol style="list-style-type: decimal">
 <li>
@@ -576,9 +573,9 @@
 </ol>
 </li>
 </ol>
-<div class="section level4">
-<h4 id="required-inputs-from-data-set">Required inputs from data set<a class="anchor" aria-label="anchor" href="#required-inputs-from-data-set"></a>
-</h4>
+<div class="section level3">
+<h3 id="required-inputs-from-data-set">Required inputs from data set<a class="anchor" aria-label="anchor" href="#required-inputs-from-data-set"></a>
+</h3>
 <p>domino2 infers active receipt of signals via receptors based on the correlation of the receptor’s expression with TF activity across the data set and differential activity of the TF within a cell cluster. Correlations are conducted using scaled expression values rather than raw counts or normalized counts. For assessment of receptor activity on a per cell type basis, a named vector of cell cluster assignments, where the names are cell barcodes matching the expression matrix, are provided. Assessing signaling based on other categorical groupings of cells can be achieved by passing these groupings as “clusters” to <code><a href="../reference/build_domino.html">build_domino()</a></code> in place of cell types. domino2 accepts either a <a href="https://satijalab.org/seurat" class="external-link">Seurat</a> object with counts, scaled counts, and clusters included, or it requires a matrix of counts, a matrix of scaled counts, and a named vector of cell cluster labels as factors. Shown below is how to extract these elements from a <a href="https://satijalab.org/seurat" class="external-link">Seurat</a> object.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">counts</span> <span class="op">&lt;-</span> <span class="fu">GetAssayData</span><span class="op">(</span>object <span class="op">=</span> <span class="va">pbmc</span>, slot <span class="op">=</span> <span class="st">"counts"</span><span class="op">)</span></span>
@@ -586,9 +583,9 @@
 <span><span class="va">clusters</span> <span class="op">&lt;-</span> <span class="va">pbmc</span><span class="op">$</span><span class="va">cell_type</span></span></code></pre></div>
 <p>Note: Ligand and receptor expression can only be assessed for genes included in the z_scores matrix. Many scRNAseq analysis pipelines recommend storing only genes with high variance in scaled expression slots for these data objects, thereby missing many genes encoding ligands and receptors. <strong>Ensure that all your genes of interest are included in the rows of your z_scores matrix.</strong> Scaled expression was calculated for all genes in this PBMC data set after removal of genes expressed in less than 3 cells.</p>
 </div>
-<div class="section level4">
-<h4 id="create-domino-object">Create Domino object<a class="anchor" aria-label="anchor" href="#create-domino-object"></a>
-</h4>
+<div class="section level3">
+<h3 id="create-domino-object">Create Domino object<a class="anchor" aria-label="anchor" href="#create-domino-object"></a>
+</h3>
 <p>At this point, the <code><a href="../reference/create_domino.html">create_domino()</a></code> function can be used to make the object. Parameters of note include “use_clusters” which is required to assess signaling between cell types rather than linkage of TFs and receptors broadly across the data set. “use_complexes” decides if receptors that function in heteromeric complexes will be considered in testing linkages between TFs and receptors. If TRUE, a receptor complex is only linked to a TF if a majority of the component genes meet the Spearman correlation threshold. “remove_rec_dropout” decides whether receptor values of 0 will be considered in correlation calculations; this measure is intended to reduce the effect of dropout on receptors with low expression.</p>
 <p>To run <code><a href="../reference/create_domino.html">create_domino()</a></code> with matrix and vector inputs:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
@@ -608,9 +605,9 @@
 <span>    use_clusters <span class="op">=</span> <span class="cn">TRUE</span>, use_complexes <span class="op">=</span> <span class="cn">TRUE</span>, remove_rec_dropout <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p>For information on what is stored in a domino object and how to access it, please see our <a href="vignette(%22domino_object_vignette%22)">vignette on the structure of domino objects</a>.</p>
 </div>
-<div class="section level4">
-<h4 id="build-domino">Build Domino<a class="anchor" aria-label="anchor" href="#build-domino"></a>
-</h4>
+<div class="section level3">
+<h3 id="build-domino">Build Domino<a class="anchor" aria-label="anchor" href="#build-domino"></a>
+</h3>
 <p><code><a href="../reference/build_domino.html">build_domino()</a></code> finalizes the construction of the domino object by setting parameters for identifying TFs with differential activation between clusters, receptor linkage with TFs based on magnitude of positive correlation, and the minimum percentage of cells within a cluster that have expression of a receptor for the receptor to be called as active.</p>
 <p>There are also options for thresholds of the number of TFs that may be called active in a cluster and the number of receptors that may be linked to any one TF. For thresholds of <em>n</em> TFs and <em>m</em> receptors, the bottom <em>n</em> TFs by lowest p-values from the wilcoxon rank sum test and the top <em>m</em> receptors by Spearman correlation coefficient are chosen.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
@@ -625,30 +622,30 @@
 <span>    max_rec_per_tf <span class="op">=</span> <span class="cn">Inf</span>, rec_tf_cor_threshold <span class="op">=</span> <span class="fl">0.25</span>, min_rec_percentage <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
-<div class="section level3">
-<h3 id="visualization-of-domino-results">Visualization of Domino Results<a class="anchor" aria-label="anchor" href="#visualization-of-domino-results"></a>
-</h3>
+<div class="section level2">
+<h2 id="visualization-of-domino-results">Visualization of Domino Results<a class="anchor" aria-label="anchor" href="#visualization-of-domino-results"></a>
+</h2>
 <p>Multiple functions are available to visualize the intracellular networks between receptors and TFs and the ligand-receptor mediated intercellular networks between cell types.</p>
-<div class="section level4">
-<h4 id="summarize-tf-activity-and-linkage">Summarize TF Activity and Linkage<a class="anchor" aria-label="anchor" href="#summarize-tf-activity-and-linkage"></a>
-</h4>
+<div class="section level3">
+<h3 id="summarize-tf-activity-and-linkage">Summarize TF Activity and Linkage<a class="anchor" aria-label="anchor" href="#summarize-tf-activity-and-linkage"></a>
+</h3>
 <p>Enrichment of TF activities by cell types can be visualized by <code><a href="../reference/feat_heatmap.html">feat_heatmap()</a></code> which plots data set-wide TF activity scores as a heatmap.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/feat_heatmap.html">feat_heatmap</a></span><span class="op">(</span><span class="va">pbmc_dom</span>, norm <span class="op">=</span> <span class="cn">TRUE</span>, bool <span class="op">=</span> <span class="cn">FALSE</span>, use_raster <span class="op">=</span> <span class="cn">FALSE</span>, row_names_gp <span class="op">=</span> <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/gpar.html" class="external-link">gpar</a></span><span class="op">(</span>fontsize <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="domino2_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
 </div>
-<div class="section level4">
-<h4 id="cumulative-signaling-between-cell-types">Cumulative signaling between cell types<a class="anchor" aria-label="anchor" href="#cumulative-signaling-between-cell-types"></a>
-</h4>
+<div class="section level3">
+<h3 id="cumulative-signaling-between-cell-types">Cumulative signaling between cell types<a class="anchor" aria-label="anchor" href="#cumulative-signaling-between-cell-types"></a>
+</h3>
 <p>The cumulative degree of signaling between clusters is assessed as the sum of the scaled expression of ligands targeting active receptors on another cluster. This can be visualized in graph format using the <code><a href="../reference/signaling_network.html">signaling_network()</a></code> function. Nodes represent each cell cluster and edges scale with the magnitude of signaling between the clusters. The color of the edge corresponds to the sender cluster for that signal.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/signaling_network.html">signaling_network</a></span><span class="op">(</span><span class="va">pbmc_dom</span>, edge_weight <span class="op">=</span> <span class="fl">0.5</span>, max_thresh <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
 <p><img src="domino2_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
 <p>Signaling networks can also be drawn with the edges only rendering the signals directed towards a given cell type or signals from one cell type directed to others. To see those options in use, as well as other plotting functions and their options, please see our <a href="vignette(%22plotting_vignette%22)">plotting vignette</a>.</p>
 </div>
-<div class="section level4">
-<h4 id="specific-signaling-interactions-between-clusters">Specific Signaling Interactions between Clusters<a class="anchor" aria-label="anchor" href="#specific-signaling-interactions-between-clusters"></a>
-</h4>
+<div class="section level3">
+<h3 id="specific-signaling-interactions-between-clusters">Specific Signaling Interactions between Clusters<a class="anchor" aria-label="anchor" href="#specific-signaling-interactions-between-clusters"></a>
+</h3>
 <p>Beyond the aggregated degree of signaling between cell types, the degrees of signaling through specific ligand-receptor interactions can be assessed. <code><a href="../reference/gene_network.html">gene_network()</a></code> provides a graph of linkages between active TFs in a cluster, the linked receptors in that cluster, and the possible ligands of these active receptors.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/gene_network.html">gene_network</a></span><span class="op">(</span><span class="va">pbmc_dom</span>, clust <span class="op">=</span> <span class="st">"dendritic_cell"</span>, layout <span class="op">=</span> <span class="st">"grid"</span><span class="op">)</span></span></code></pre></div>
@@ -669,9 +666,9 @@
 <p><img src="domino2_files/figure-html/unnamed-chunk-10-1.png" width="90%"></p>
 </div>
 </div>
-<div class="section level3">
-<h3 id="continued-development">Continued Development<a class="anchor" aria-label="anchor" href="#continued-development"></a>
-</h3>
+<div class="section level2">
+<h2 id="continued-development">Continued Development<a class="anchor" aria-label="anchor" href="#continued-development"></a>
+</h2>
 <p>Since domino2 is a package still being developed, there are new functions and features that will be implemented in future versions. In the meantime, we have put together further information on <a href="vignette(%22plotting_vignette%22)">plotting</a> and the <a href="vignette(%22domino_object_vignette%22)">domino object structure</a> if you would like to explore more of the package’s functionality. Additionally, if you find any bugs, have further questions, or want to share an idea, please let us know <a href="https://github.com/FertigLab/domino_development/issues" class="external-link">here</a>.</p>
 <details><p><summary>Vignette Build Information</summary> Date last built and session information:</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
@@ -761,7 +758,6 @@
 <span><span class="co">#&gt; [163] textshaping_0.3.7      RcppHNSW_0.5.0         memoise_2.0.1         </span></span>
 <span><span class="co">#&gt; [166] dplyr_1.1.4            irlba_2.3.5.1          future.apply_1.11.0</span></span></code></pre></div>
 </details>
-</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

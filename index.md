@@ -1,7 +1,7 @@
 
 <!-- index.md is generated from index.Rmd. Please edit that file -->
 
-# Introducing domino2
+## Introducing domino2
 
 domino2 is an updated version of the original
 [domino](https://github.com/Elisseeff-Lab/domino) R package published in

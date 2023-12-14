@@ -26,8 +26,6 @@ library(domino2)
 library(patchwork)
 ```
 
-# Visualizing domino2 data
-
 In addition to the numerous plotting options available in the original [Domino](https://github.com/Elisseeff-Lab/domino), domino2 has added more functionality and new methods to improve visualization and interpretation of analysis results. Here, we will go over the different plotting functions available, as well as different options that can be utilized, and options for customization. We will be using the domino object (loaded as `dom`) from our example analysis in [Getting Started](vignette("domino2")).
 
 ```{r load data, include = FALSE}

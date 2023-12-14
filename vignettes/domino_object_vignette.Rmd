@@ -36,7 +36,7 @@ dom <- readRDS(paste0(temp_dir, "/pbmc_domino_built.rds"))
 
 In order to better implement some of the changes that have been made in domino2, the structure of the domino object has been modified. Here, we describe the data that is stored in the domino object, as well as how best to access this data.
 
-# Object contents
+## Object contents
 
 The contents of the [domino object class](`domino-class`) include a few broad groups: 
 - input data, such as the L-R database used, counts, and z-scores
@@ -55,7 +55,7 @@ dom
 print(dom)
 ```
 
-# Access functions
+## Access functions
 
 In order to facilitate access to the information stored in the domino object, we have provided a collection of functions to retrieve specific items. These functions begin with "dom_" and can be listed using `ls()`.
 
@@ -63,7 +63,7 @@ In order to facilitate access to the information stored in the domino object, we
 ls("package:domino2", pattern = "^dom_")
 ```
 
-## Input data
+### Input data
 
 When creating a domino object with the `create_domino()` function, several inputs are required which are then stored in the domino object itself. These include cluster labels, the counts matrix, z-scored counts matrix, transcription factor activation scores, and the R-L database used in `create_rl_map_cellphonedb()`.
 
@@ -109,7 +109,7 @@ db_matrix <- dom_database(dom, name_only = FALSE)
 knitr::kable(db_matrix[1:5, 1:5])
 ```
 
-## Calculations
+### Calculations
 
 Active transcription factors in each cluster are determined by conducting wilcoxon rank sum tests for each transcription factor where the transcription factor activity scores amongst all cells in a cluster are tested against the activity scores of all cells outside of the cluster. The p-values for the one-sided test for greater activity within the cluster compared to outside can be accessed with the `dom_de()` function.
 
@@ -125,7 +125,7 @@ cor_matrix <- dom_correlations(dom)
 knitr::kable(cor_matrix[1:5, 1:5])
 ```
 
-## Linkages
+### Linkages
 
 Linkages between ligands, receptors, and transcription factors can be accessed in several different ways, depending on the specific link and the scope desired. The `dom_linkages()` function has three arguments - the first, like all of our access functions, is for the domino object. The second, `link_type`, is used to specify which linkages are desired (options are complexes, receptor-ligand, tf-target, or tf-receptor). The third argument, `by_cluster`, determines whether the linkages returned are arranged by cluster (though this does change the available linkage types to tf-receptor, receptor, or incoming-ligand). For example, to access the complexes used across the dataset:
 
@@ -158,7 +158,7 @@ dc_tfs <- dom_network_items(dom, "dendritic_cell", return = "features")
 head(dc_tfs)
 ```
 
-## Signaling Matrices
+### Signaling Matrices
 
 The averaged z-scored expression of ligands and receptors between different clusters can be accessed in matrix form.
 
@@ -174,7 +174,7 @@ dc_matrix <- dom_signaling(dom, "dendritic_cell")
 knitr::kable(dc_matrix)
 ```
 
-## Build information
+### Build information
 
 To keep track of the options set when running `build_domino()`, they are stored within the domino object itself. To view these options, use the `dom_info()` function.
 
@@ -182,7 +182,7 @@ To keep track of the options set when running `build_domino()`, they are stored 
 dom_info(dom)
 ```
 
-# Continued Development
+## Continued Development
 
 Since domino2 is a package still being developed, there are new functions and features that will be implemented in future versions. In the meantime, we have put together further information on [plotting](vignette("plotting_vignette")) and an example analysis can be viewed on our [Getting Started](vignette("domino2")) page. Additionally, if you find any bugs, have further questions, or want to share an idea, please let us know [here](https://github.com/FertigLab/domino_development/issues).
 
