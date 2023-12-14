@@ -98,67 +98,36 @@
     
     
 <div class="section level2">
-<h2 id="using-domino2-v0-2-1-for-cell-cell-communication-inference">Using domino2 v0.2.1 for cell-cell communication inference<a class="anchor" aria-label="anchor" href="#using-domino2-v0-2-1-for-cell-cell-communication-inference"></a>
+<h2 id="using-domino2-v0-2-2-for-cell-cell-communication-inference">Using domino2 v0.2.2 for cell-cell communication inference<a class="anchor" aria-label="anchor" href="#using-domino2-v0-2-2-for-cell-cell-communication-inference"></a>
 </h2>
 <p>domino2 is a tool for analysis of intra- and intercellular signaling in single cell RNA sequencing (scRNAseq) data based on transcription factor (TF) activation. Here, we show a basic example pipeline for generating communication networks as a domino object. This vignette will demonstrate how to use domino2 on the 10X Genomics Peripheral Blood Mononuclear Cells (PBMC) data set of 2,700 cells. The data can be downloaded <a href="https://cf.10xgenomics.com/samples/cell/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz" class="external-link">here</a>.</p>
 <div class="section level3">
 <h3 id="preprocessing-scrnaseq-data">Preprocessing scRNAseq data<a class="anchor" aria-label="anchor" href="#preprocessing-scrnaseq-data"></a>
 </h3>
-<p>Analysis of cell-cell communication with domino2 often follows initial processing and annotation of scRNAseq data. We are following the <a href="https://satijalab.org/seurat/articles/pbmc3k_tutorial" class="external-link">Satija Lab’s Guided Clustering Tutorial</a> to prepare the data set for analysis with domino2.</p>
+<p>Analysis of cell-cell communication with domino2 often follows initial processing and annotation of scRNAseq data. We used the <a href="https://satijalab.org/seurat/articles/pbmc3k_tutorial" class="external-link">Satija Lab’s Guided Clustering Tutorial</a> to prepare the data set for analysis with domino2. The <a href="data-raw/example_data.R">complete processing script</a> is available in the data-raw directory of the domino2 package. The processed data can be downloaded from <a href="https://zenodo.org/records/10222767" class="external-link">Zenodo</a>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Preprocessing of PBMC 3K tutorial data set using Seurat functions</span></span>
-<span><span class="va">pbmc.data</span> <span class="op">&lt;-</span> <span class="fu">Read10X</span><span class="op">(</span>data.dir <span class="op">=</span> <span class="st">"../inst/extdata/pbmc3k_filtered_gene_bc_matrices"</span><span class="op">)</span></span>
-<span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu">CreateSeuratObject</span><span class="op">(</span>counts <span class="op">=</span> <span class="va">pbmc.data</span>, project <span class="op">=</span> <span class="st">"pbmc3k"</span>, min.cells <span class="op">=</span> <span class="fl">3</span>, min.features <span class="op">=</span> <span class="fl">200</span><span class="op">)</span></span>
-<span><span class="va">pbmc</span><span class="op">[[</span><span class="st">"percent.mt"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu">PercentageFeatureSet</span><span class="op">(</span><span class="va">pbmc</span>, pattern <span class="op">=</span> <span class="st">"^MT-"</span><span class="op">)</span></span>
-<span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu">NormalizeData</span><span class="op">(</span><span class="va">pbmc</span>, normalization.method <span class="op">=</span> <span class="st">"LogNormalize"</span>, scale.factor <span class="op">=</span> <span class="fl">10000</span><span class="op">)</span></span>
-<span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu">FindVariableFeatures</span><span class="op">(</span><span class="va">pbmc</span>, selection.method <span class="op">=</span> <span class="st">"vst"</span>, nfeatures <span class="op">=</span> <span class="fl">2000</span><span class="op">)</span></span>
-<span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu">ScaleData</span><span class="op">(</span><span class="va">pbmc</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">pbmc</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu">RunPCA</span><span class="op">(</span><span class="va">pbmc</span>, features <span class="op">=</span> <span class="fu">VariableFeatures</span><span class="op">(</span>object <span class="op">=</span> <span class="va">pbmc</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu">FindNeighbors</span><span class="op">(</span><span class="va">pbmc</span>, dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span></span>
-<span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu">FindClusters</span><span class="op">(</span><span class="va">pbmc</span>, resolution <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Number of nodes: 2700</span></span>
-<span><span class="co">#&gt; Number of edges: 97892</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Running Louvain algorithm...</span></span>
-<span><span class="co">#&gt; Maximum modularity in 10 random starts: 0.8719</span></span>
-<span><span class="co">#&gt; Number of communities: 9</span></span>
-<span><span class="co">#&gt; Elapsed time: 0 seconds</span></span>
-<span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu">RunUMAP</span><span class="op">(</span><span class="va">pbmc</span>, dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span></span>
-<span><span class="co"># Annotate clusters with cell phenotypes</span></span>
-<span><span class="va">cell_dict</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>  cluster <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span>,</span>
-<span>  cell_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>    <span class="st">"naive_CD4_T_cell"</span>, <span class="st">"CD14_monocyte"</span>, <span class="st">"memory_CD4_T_cell"</span>, <span class="st">"B_cell"</span>, <span class="st">"CD8_T_cell"</span>,</span>
-<span>    <span class="st">"CD16_monocyte"</span>, <span class="st">"NK_cell"</span>, <span class="st">"dendritic_cell"</span>, <span class="st">"platelet"</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">pbmc</span><span class="op">$</span><span class="va">cell_type</span> <span class="op">&lt;-</span></span>
-<span>  <span class="fu">plyr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/plyr/man/mapvalues.html" class="external-link">mapvalues</a></span><span class="op">(</span></span>
-<span>    <span class="va">pbmc</span><span class="op">$</span><span class="va">seurat_clusters</span>,</span>
-<span>    from <span class="op">=</span> <span class="va">cell_dict</span><span class="op">$</span><span class="va">cluster</span>,</span>
-<span>    to <span class="op">=</span> <span class="va">cell_dict</span><span class="op">$</span><span class="va">cell_type</span></span>
-<span>  <span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">pbmc_dir</span>, <span class="st">"/pbmc_seurat.rds"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="section level4">
 <h4 id="saving-preprocessed-data">Saving Preprocessed Data:<a class="anchor" aria-label="anchor" href="#saving-preprocessed-data"></a>
 </h4>
-<p>domino2 was designed to be compatible with <a href="https://satijalab.org/seurat" class="external-link">Seurat</a> objects in addition to accepting matrices and vectors of the data set as function inputs. Therefore, it’s a good idea to save the processed <a href="https://satijalab.org/seurat" class="external-link">Seurat</a> object for further analysis. However, <a href="https://pyscenic.readthedocs.io/en/latest/" class="external-link">pySCENIC</a> is used for TF activation inference, and it requires as input a cell by gene matrix. This is the opposite orientation of <a href="https://satijalab.org/seurat" class="external-link">Seurat</a> objects but is the default for Python based tools such as <a href="https://scanpy.readthedocs.io/en/stable/" class="external-link">scanpy</a>. Saving our data as a loom file using <a href="https://github.com/mojaveazure/loomR" class="external-link">loomR</a> will be helpful for that step and is therefore recommended as well.</p>
+<p>domino2 was designed to be compatible with <a href="https://satijalab.org/seurat" class="external-link">Seurat</a> objects in addition to accepting matrices and vectors of the data set as function inputs. Therefore, it’s a good idea to save the processed <a href="https://satijalab.org/seurat" class="external-link">Seurat</a> object for further analysis. However, <a href="https://pyscenic.readthedocs.io/en/latest/" class="external-link">pySCENIC</a> is used for TF activation inference, and it requires as input a cell by gene matrix. This is the opposite orientation of <a href="https://satijalab.org/seurat" class="external-link">Seurat</a> objects but is the default for Python based tools such as <a href="https://scanpy.readthedocs.io/en/stable/" class="external-link">scanpy</a>. The RNA counts matrix can be saved as a tab-seperated value (.tsv) or comma-sperated value (.csv) file after transposing the matrix to cell by gene orientation.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># save Seurat object as RDS</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/save.html" class="external-link">save</a></span><span class="op">(</span><span class="va">pbmc</span>, file <span class="op">=</span> <span class="st">"../data/pbmc.rda"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/save.html" class="external-link">save</a></span><span class="op">(</span><span class="va">pbmc</span>, file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">input_dir</span>, <span class="st">"/pbmc.rda"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">pbmc_counts</span> <span class="op">&lt;-</span> <span class="fu">GetAssayData</span><span class="op">(</span>object <span class="op">=</span> <span class="va">pbmc</span>, slot <span class="op">=</span> <span class="st">"counts"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">pbmc_counts</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">input_dir</span>, <span class="st">"/pbmc3k_counts.tsv"</span><span class="op">)</span>, sep <span class="op">=</span> <span class="st">"\t"</span>,</span>
+<span>    col.names <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></span></code></pre></div>
+<p>tsv and csv files are very inefficient for storing large matrices. As an alternative, the counts matrix can be saved as a loom file and directly passed to <a href="https://pyscenic.readthedocs.io/en/latest/" class="external-link">pySCENIC</a> in this format. Generating a loom file in R requires use of the <a href="https://github.com/mojaveazure/loomR" class="external-link">loomR</a> package. The package automatically handles the transposition of the counts matrix to cell by gene orientation as well. We recommend this approach to passing a counts matrix to pySCENIC. However, users should be aware that <a href="https://github.com/mojaveazure/loomR" class="external-link">loomR</a> is not hosted on CRAN or BioConductor at the time of this vignette’s creation.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mojaveazure/loomR" class="external-link">loomR</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># save loom counts matrix</span></span>
 <span><span class="va">pbmc_counts</span> <span class="op">&lt;-</span> <span class="fu">GetAssayData</span><span class="op">(</span>object <span class="op">=</span> <span class="va">pbmc</span>, slot <span class="op">=</span> <span class="st">"counts"</span><span class="op">)</span></span>
-<span><span class="va">pbmc_loom</span> <span class="op">&lt;-</span> <span class="fu">loomR</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/loomR/man/create.html" class="external-link">create</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="st">"../inst/extdata/pbmc3k_counts.loom"</span>, data <span class="op">=</span> <span class="va">pbmc_counts</span><span class="op">)</span></span>
-<span><span class="va">pbmc_loom</span><span class="op">$</span><span class="fu">close_all</span><span class="op">(</span><span class="op">)</span> <span class="co"># Remember to manually close connection to loom files!</span></span></code></pre></div>
+<span><span class="va">pbmc_loom</span> <span class="op">&lt;-</span> <span class="fu">loomR</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/loomR/man/create.html" class="external-link">create</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">input_dir</span>, <span class="st">"/pbmc3k_counts.loom"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">pbmc_counts</span><span class="op">)</span></span>
+<span><span class="co"># connection to the loom file must be closed to complete file creation</span></span>
+<span><span class="va">pbmc_loom</span><span class="op">$</span><span class="fu">close_all</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>The cell x gene counts matrix may also be saved as a tab-separated value (.tsv) file if <a href="https://github.com/mojaveazure/loomR" class="external-link">loomR</a> cannot be used on your computing resource, but be aware that dense formatting of a .tsv can lead to very large file sizes and slow processing for large data sets. We have provided the necessary code below, but due to the large file size, this .tsv file is not provided in our data directory.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">pbmc_counts</span> <span class="op">&lt;-</span> <span class="fu">GetAssayData</span><span class="op">(</span>object <span class="op">=</span> <span class="va">pbmc</span>, slot <span class="op">=</span> <span class="st">"counts"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">pbmc_counts</span><span class="op">)</span><span class="op">)</span>, <span class="st">"../data/pbmc3k_counts.tsv"</span>,</span>
-<span>  sep <span class="op">=</span> <span class="st">"\t"</span>, col.names <span class="op">=</span> <span class="cn">NA</span></span>
-<span><span class="op">)</span></span></code></pre></div>
 <p>If you would like to skip ahead to the rest of the analysis, the processed objects from these steps are available in the data directory of this package.</p>
 </div>
 </div>
@@ -168,7 +137,7 @@
 <p>Installation of domino2 from Github can be achieved using the <a href="https://remotes.r-lib.org" class="external-link">remotes</a> package. The current stable version is v0.2.2, so we will install that branch.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://remotes.r-lib.org" class="external-link">remotes</a></span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"FertigLab/domino2@v0.2.2"</span><span class="op">)</span></span></code></pre></div>
 <div class="section level4">
@@ -179,52 +148,43 @@
 <h5 id="downloads-for-scenic">Downloads for SCENIC:<a class="anchor" aria-label="anchor" href="#downloads-for-scenic"></a>
 </h5>
 <p>A singularity image of <a href="https://scenic.aertslab.org/" class="external-link">SCENIC</a> v0.12.1 can be installed from the DockerHub image as a source (example scripts for use with Docker are provided in the scenic_bash directory as well). <a href="https://scenic.aertslab.org/" class="external-link">SCENIC</a> requires a list of TFs, motif annotations, and cisTarget motifs which are all available from the authors of <a href="https://scenic.aertslab.org/" class="external-link">SCENIC</a> for human (HGNC), mouse (MGI), and fly. The following will download everything necessary for an analysis of a data set with HGNC gene labels for the hg38 genome.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1"></a><span class="va">SCENIC_DIR=</span><span class="st">"../inst/extdata/scenic"</span></span>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1"></a><span class="va">SCENIC_DIR=</span><span class="st">"'temp_dir'/scenic"</span></span>
 <span id="cb5-2"><a href="#cb5-2"></a><span class="fu">mkdir</span> <span class="va">${SCENIC_DIR}</span></span>
 <span id="cb5-3"><a href="#cb5-3"></a></span>
 <span id="cb5-4"><a href="#cb5-4"></a><span class="co"># Build singularity image</span></span>
 <span id="cb5-5"><a href="#cb5-5"></a><span class="ex">singularity</span> build <span class="st">"</span><span class="va">${SCENIC_DIR}</span><span class="st">/aertslab-pyscenic-0.12.1.sif"</span> docker://aertslab/pyscenic:0.12.1</span>
 <span id="cb5-6"><a href="#cb5-6"></a></span>
-<span id="cb5-7"><a href="#cb5-7"></a><span class="co"># Matrix containing motifs as rows and genes as columns and ranking position for each gene and motif (based on CRM scores) as values</span></span>
-<span id="cb5-8"><a href="#cb5-8"></a><span class="co"># below is a feather v1 format link; feather v2 required for this version of pySCENIC</span></span>
-<span id="cb5-9"><a href="#cb5-9"></a><span class="co"># "https://resources.aertslab.org/cistarget/databases/old/homo_sapiens/hg38/refseq_r80/mc9nr/gene_based/hg38__refseq-r80__10kb_up_and_down_tss.mc9nr.feather"</span></span>
-<span id="cb5-10"><a href="#cb5-10"></a><span class="co"># Feather v2 link:</span></span>
-<span id="cb5-11"><a href="#cb5-11"></a><span class="ex">curl</span> <span class="st">"https://resources.aertslab.org/cistarget/databases/homo_sapiens/hg38/refseq_r80/mc_v10_clust/gene_based/hg38_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather"</span> \</span>
-<span id="cb5-12"><a href="#cb5-12"></a>  -o <span class="st">"</span><span class="va">${SCENIC_DIR}</span><span class="st">/hg38_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather"</span></span>
-<span id="cb5-13"><a href="#cb5-13"></a></span>
-<span id="cb5-14"><a href="#cb5-14"></a><span class="co"># below is a feather v1 format link; feather v2 required for this version of pySCENIC</span></span>
-<span id="cb5-15"><a href="#cb5-15"></a><span class="co"># "https://resources.aertslab.org/cistarget/databases/old/homo_sapiens/hg38/refseq_r80/mc9nr/gene_based/hg38__refseq-r80__500bp_up_and_100bp_down_tss.mc9nr.feather"</span></span>
-<span id="cb5-16"><a href="#cb5-16"></a><span class="co"># Feather v2 link:</span></span>
-<span id="cb5-17"><a href="#cb5-17"></a><span class="ex">curl</span> <span class="st">"https://resources.aertslab.org/cistarget/databases/homo_sapiens/hg38/refseq_r80/mc_v10_clust/gene_based/hg38_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather"</span> \</span>
-<span id="cb5-18"><a href="#cb5-18"></a>  -o <span class="st">"</span><span class="va">${SCENIC_DIR}</span><span class="st">/hg38_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather"</span></span>
-<span id="cb5-19"><a href="#cb5-19"></a></span>
-<span id="cb5-20"><a href="#cb5-20"></a><span class="co"># List of genes encoding TFs in the HG38 reference genome</span></span>
-<span id="cb5-21"><a href="#cb5-21"></a><span class="ex">curl</span> <span class="st">"https://resources.aertslab.org/cistarget/tf_lists/allTFs_hg38.txt"</span> \</span>
-<span id="cb5-22"><a href="#cb5-22"></a>  -o <span class="st">"</span><span class="va">${SCENIC_DIR}</span><span class="st">/allTFs_hg38.txt"</span></span>
-<span id="cb5-23"><a href="#cb5-23"></a></span>
-<span id="cb5-24"><a href="#cb5-24"></a><span class="co"># Motif annotations based on the 2017 cisTarget motif collection. Use these files if you are using the mc9nr databases.</span></span>
-<span id="cb5-25"><a href="#cb5-25"></a><span class="ex">curl</span> <span class="st">"https://resources.aertslab.org/cistarget/motif2tf/motifs-v9-nr.hgnc-m0.001-o0.0.tbl"</span> \</span>
-<span id="cb5-26"><a href="#cb5-26"></a>  -o <span class="st">"</span><span class="va">${SCENIC_DIR}</span><span class="st">/motifs-v9-nr.hgnc-m0.001-o0.0.tbl"</span></span></code></pre></div>
+<span id="cb5-7"><a href="#cb5-7"></a><span class="co"># Matrix containing motifs as rows and genes as columns and ranking position for each gene and motif (based on CRM scores) as values. URLs provided link to v2 feather files required for the 0.12.1 version of pySENIC.</span></span>
+<span id="cb5-8"><a href="#cb5-8"></a></span>
+<span id="cb5-9"><a href="#cb5-9"></a><span class="ex">curl</span> <span class="st">"https://resources.aertslab.org/cistarget/databases/homo_sapiens/hg38/refseq_r80/mc_v10_clust/gene_based/hg38_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather"</span> \</span>
+<span id="cb5-10"><a href="#cb5-10"></a>  -o <span class="st">"</span><span class="va">${SCENIC_DIR}</span><span class="st">/hg38_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather"</span></span>
+<span id="cb5-11"><a href="#cb5-11"></a></span>
+<span id="cb5-12"><a href="#cb5-12"></a><span class="ex">curl</span> <span class="st">"https://resources.aertslab.org/cistarget/databases/homo_sapiens/hg38/refseq_r80/mc_v10_clust/gene_based/hg38_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather"</span> \</span>
+<span id="cb5-13"><a href="#cb5-13"></a>  -o <span class="st">"</span><span class="va">${SCENIC_DIR}</span><span class="st">/hg38_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather"</span></span>
+<span id="cb5-14"><a href="#cb5-14"></a></span>
+<span id="cb5-15"><a href="#cb5-15"></a><span class="co"># List of genes encoding TFs in the HG38 reference genome</span></span>
+<span id="cb5-16"><a href="#cb5-16"></a><span class="ex">curl</span> <span class="st">"https://resources.aertslab.org/cistarget/tf_lists/allTFs_hg38.txt"</span> \</span>
+<span id="cb5-17"><a href="#cb5-17"></a>  -o <span class="st">"</span><span class="va">${SCENIC_DIR}</span><span class="st">/allTFs_hg38.txt"</span></span>
+<span id="cb5-18"><a href="#cb5-18"></a></span>
+<span id="cb5-19"><a href="#cb5-19"></a><span class="co"># Motif annotations based on the 2017 cisTarget motif collection. Use these files if you are using the mc9nr databases.</span></span>
+<span id="cb5-20"><a href="#cb5-20"></a><span class="ex">curl</span> <span class="st">"https://resources.aertslab.org/cistarget/motif2tf/motifs-v9-nr.hgnc-m0.001-o0.0.tbl"</span> \</span>
+<span id="cb5-21"><a href="#cb5-21"></a>  -o <span class="st">"</span><span class="va">${SCENIC_DIR}</span><span class="st">/motifs-v9-nr.hgnc-m0.001-o0.0.tbl"</span></span></code></pre></div>
 </div>
 <div class="section level5">
 <h5 id="downloads-for-cellphonedb">Downloads for CellPhoneDB:<a class="anchor" aria-label="anchor" href="#downloads-for-cellphonedb"></a>
 </h5>
 <p>Database files from <a href="https://github.com/ventolab/cellphonedb-data/releases/tag/v4.0.0" class="external-link">CellPhoneDB v4.0.0</a> for human scRNAseq data can be installed from a public Github repository from the Tiechmann Group that developed CellPhoneDB.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1"></a><span class="va">CELLPHONE_DIR=</span><span class="st">"../inst/extdata/cellphoneDB_v4"</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a><span class="fu">mkdir</span> <span class="va">${CELLPHONE_DIR}</span></span>
-<span id="cb6-3"><a href="#cb6-3"></a></span>
-<span id="cb6-4"><a href="#cb6-4"></a><span class="co"># Annotation of protein complexes</span></span>
-<span id="cb6-5"><a href="#cb6-5"></a><span class="ex">curl</span> <span class="st">"https://raw.githubusercontent.com/Teichlab/cellphonedb-data/master/data/complex_input.csv"</span> \</span>
-<span id="cb6-6"><a href="#cb6-6"></a>  -o <span class="st">"</span><span class="va">${CELLPHONE_DIR}</span><span class="st">/complex_input.csv"</span></span>
-<span id="cb6-7"><a href="#cb6-7"></a><span class="co"># Annotation of genes encoding database proteins</span></span>
-<span id="cb6-8"><a href="#cb6-8"></a><span class="ex">curl</span> <span class="st">"https://raw.githubusercontent.com/Teichlab/cellphonedb-data/master/data/gene_input.csv"</span> \</span>
-<span id="cb6-9"><a href="#cb6-9"></a>  -o <span class="st">"</span><span class="va">${CELLPHONE_DIR}</span><span class="st">/gene_input.csv"</span></span>
-<span id="cb6-10"><a href="#cb6-10"></a><span class="co"># Annotated protein interactions</span></span>
-<span id="cb6-11"><a href="#cb6-11"></a><span class="ex">curl</span> <span class="st">"https://raw.githubusercontent.com/Teichlab/cellphonedb-data/master/data/interaction_input.csv"</span> \</span>
-<span id="cb6-12"><a href="#cb6-12"></a>  -o <span class="st">"</span><span class="va">${CELLPHONE_DIR}</span><span class="st">/interaction_input.csv"</span></span>
-<span id="cb6-13"><a href="#cb6-13"></a><span class="co"># Annotated protein features</span></span>
-<span id="cb6-14"><a href="#cb6-14"></a><span class="ex">curl</span> <span class="st">"https://raw.githubusercontent.com/Teichlab/cellphonedb-data/master/data/protein_input.csv"</span> \</span>
-<span id="cb6-15"><a href="#cb6-15"></a>  -o <span class="st">"</span><span class="va">${CELLPHONE_DIR}</span><span class="st">/protein_input.csv"</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#</span></span>
+<span><span class="va">cellphone_url</span> <span class="op">&lt;-</span> <span class="st">"https://github.com/ventolab/cellphonedb-data/archive/refs/tags/v4.0.0.tar.gz"</span></span>
+<span></span>
+<span><span class="co"># download compressed database</span></span>
+<span><span class="va">cellphone_tar</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">temp_dir</span>, <span class="st">"/cellphoneDB_v4.tar.gz"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/download.file.html" class="external-link">download.file</a></span><span class="op">(</span>url <span class="op">=</span> <span class="va">cellphone_url</span>, destfile <span class="op">=</span> <span class="va">cellphone_tar</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># move contents of the compressed file to a new directory</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/untar.html" class="external-link">untar</a></span><span class="op">(</span>tarfile <span class="op">=</span> <span class="va">cellphone_tar</span>, exdir <span class="op">=</span> <span class="va">cellphone_dir</span><span class="op">)</span></span>
+<span><span class="va">cellphone_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">cellphone_dir</span>, <span class="st">"/cellphonedb-data-4.0.0/data"</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 </div>
@@ -299,24 +259,19 @@
 </h4>
 <p>The TF activities are a required input for domino2, and the regulons learned by <a href="https://scenic.aertslab.org/" class="external-link">SCENIC</a> are an important but optional input needed to annotate TF-target interactions and to prune TF-receptor linkages where the receptor is a target of the TF. This prevents the distinction of receptor expression driving TF activity or the TF inducing the receptor’s expression.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">scenic_dir</span> <span class="op">&lt;-</span> <span class="st">"../inst/extdata/scenic/"</span></span>
-<span><span class="va">regulons</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">scenic_dir</span>, <span class="st">"/regulons_pbmc_3k.csv"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">auc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">scenic_dir</span>, <span class="st">"/auc_pbmc_3k.csv"</span><span class="op">)</span>,</span>
-<span>  header <span class="op">=</span> <span class="cn">TRUE</span>, row.names <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span>, sep <span class="op">=</span> <span class="st">","</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>The initial regulons data frame read into R from the ctx function has 2 rows of column names that need to be replaced with one succinct description. domino2 has changed the input format for TF regulons to be a list storing vectors of target genes in each regulon, where the names of the list are the TF genes. This facilitates the use of alternative methods for TF activity quantification methods. We provide a helper function, <code><a href="../reference/create_regulon_list_scenic.html">create_regulon_list_scenic()</a></code> for easy retrieval of TF regulons from the output of the <a href="https://pyscenic.readthedocs.io/en/latest/" class="external-link">pySCENIC</a> ctx function.</p>
+<code class="sourceCode R"><span><span class="va">regulons</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">scenic_dir</span>, <span class="st">"/regulons_pbmc_3k.csv"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">auc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">scenic_dir</span>, <span class="st">"/auc_pbmc_3k.csv"</span><span class="op">)</span>, header <span class="op">=</span> <span class="cn">TRUE</span>, row.names <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>    stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span>, sep <span class="op">=</span> <span class="st">","</span><span class="op">)</span></span></code></pre></div>
+<p>The initial regulons data frame read into R from the ctx function has 2 rows of column names that need to be replaced with one succinct description. domino2 has changed the input format for TF regulons to be a list storing vectors of target genes in each regulon, where the names of the list are the TF genes. This facilitates the use of alternative methods for TF activity quantification. We provide a helper function, <code><a href="../reference/create_regulon_list_scenic.html">create_regulon_list_scenic()</a></code> for easy retrieval of TF regulons from the output of the <a href="https://pyscenic.readthedocs.io/en/latest/" class="external-link">pySCENIC</a> ctx function.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">regulons</span> <span class="op">&lt;-</span> <span class="va">regulons</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">:</span><span class="op">-</span><span class="fl">2</span>, <span class="op">]</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">regulons</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>  <span class="st">"TF"</span>, <span class="st">"MotifID"</span>, <span class="st">"AUC"</span>, <span class="st">"NES"</span>, <span class="st">"MotifSimilarityQvalue"</span>, <span class="st">"OrthologousIdentity"</span>,</span>
-<span>  <span class="st">"Annotation"</span>, <span class="st">"Context"</span>, <span class="st">"TargetGenes"</span>, <span class="st">"RankAtMax"</span></span>
-<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">regulons</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TF"</span>, <span class="st">"MotifID"</span>, <span class="st">"AUC"</span>, <span class="st">"NES"</span>, <span class="st">"MotifSimilarityQvalue"</span>, <span class="st">"OrthologousIdentity"</span>,</span>
+<span>    <span class="st">"Annotation"</span>, <span class="st">"Context"</span>, <span class="st">"TargetGenes"</span>, <span class="st">"RankAtMax"</span><span class="op">)</span></span>
 <span><span class="va">regulon_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_regulon_list_scenic.html">create_regulon_list_scenic</a></span><span class="op">(</span>regulons <span class="op">=</span> <span class="va">regulons</span><span class="op">)</span></span></code></pre></div>
 <p>Users should be aware that the AUC matrix from <a href="https://scenic.aertslab.org/" class="external-link">SCENIC</a> is loaded in a cell x TF orientation and should be transposed to TF x cell orientation. pySCENIC also appends “(+)” to TF names that are converted to “…” upon loading into R. These characters can be included without affecting the results of domino2 analysis, but can be confusing when querying TF features in the data. We recommend comprehensive removal of the “…” characters using the <code><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub()</a></code> function.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">auc_in</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">auc</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co"># Remove pattern "..." from the end of all rownames:</span></span>
+<span><span class="co"># Remove pattern '...' from the end of all rownames:</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">auc_in</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">"\\.\\.\\.$"</span>, <span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">auc_in</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
@@ -333,37 +288,38 @@
 <p>Additional annotation columns can be provided such as name_A and name_B for ligands or receptors whose name in the interaction database does not match the names of their encoding genes. This formatting also allows for the consideration of ligand and receptor complexes comprised of a heteromeric combination of multiple proteins that must be co-expressed to function. In these cases, the “name_*” column shows the name of the protein complex, and the “gene_*” column shows the names of the genes encoding the components of the complex separated by commas “,”. When plotting results from the build domino object, the names of the interacting ligands and receptors will be used based on combinatorial expression of the complex components.</p>
 <p>To facilitate the use of this formatting with the CellPhoneDB database, we include a helper function, <code><a href="../reference/create_rl_map_cellphonedb.html">create_rl_map_cellphonedb()</a></code>, that automatically parses files from the cellPhoneDB database to arrive at the rl_map format.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cellphonedb_2_path</span> <span class="op">&lt;-</span> <span class="st">"../inst/extdata/cellphoneDB_v4/"</span></span>
-<span><span class="va">complexes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">cellphonedb_2_path</span>, <span class="st">"/complex_input.csv"</span><span class="op">)</span>, stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="va">genes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">cellphonedb_2_path</span>, <span class="st">"/gene_input.csv"</span><span class="op">)</span>, stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="va">interactions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">cellphonedb_2_path</span>, <span class="st">"/interaction_input.csv"</span><span class="op">)</span>, stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="va">proteins</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">cellphonedb_2_path</span>, <span class="st">"/protein_input.csv"</span><span class="op">)</span>, stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">complexes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">cellphone_dir</span>, <span class="st">"/cellphonedb-data-4.0.0/data/complex_input.csv"</span><span class="op">)</span>,</span>
+<span>    stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">genes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">cellphone_dir</span>, <span class="st">"/cellphonedb-data-4.0.0/data/gene_input.csv"</span><span class="op">)</span>,</span>
+<span>    stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">interactions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">cellphone_dir</span>, <span class="st">"/cellphonedb-data-4.0.0/data/interaction_input.csv"</span><span class="op">)</span>,</span>
+<span>    stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">proteins</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">cellphone_dir</span>, <span class="st">"/cellphonedb-data-4.0.0/data/protein_input.csv"</span><span class="op">)</span>,</span>
+<span>    stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">rl_map</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_rl_map_cellphonedb.html">create_rl_map_cellphonedb</a></span><span class="op">(</span></span>
-<span>  genes <span class="op">=</span> <span class="va">genes</span>,</span>
-<span>  proteins <span class="op">=</span> <span class="va">proteins</span>,</span>
-<span>  interactions <span class="op">=</span> <span class="va">interactions</span>,</span>
-<span>  complexes <span class="op">=</span> <span class="va">complexes</span>,</span>
-<span>  database_name <span class="op">=</span> <span class="st">"CellPhoneDB_v4.0"</span> <span class="co"># database version used</span></span>
+<span><span class="va">rl_map</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_rl_map_cellphonedb.html">create_rl_map_cellphonedb</a></span><span class="op">(</span>genes <span class="op">=</span> <span class="va">genes</span>, proteins <span class="op">=</span> <span class="va">proteins</span>, interactions <span class="op">=</span> <span class="va">interactions</span>,</span>
+<span>    complexes <span class="op">=</span> <span class="va">complexes</span>, database_name <span class="op">=</span> <span class="st">"CellPhoneDB_v4.0"</span>  <span class="co"># database version used</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">rl_map</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
-<col width="13%">
-<col width="5%">
+<col width="1%">
+<col width="21%">
+<col width="8%">
+<col width="7%">
 <col width="6%">
+<col width="3%">
+<col width="12%">
 <col width="5%">
 <col width="4%">
-<col width="6%">
-<col width="6%">
-<col width="6%">
-<col width="4%">
-<col width="16%">
+<col width="3%">
 <col width="10%">
-<col width="11%">
+<col width="8%">
+<col width="8%">
 </colgroup>
 <thead><tr class="header">
+<th align="left"></th>
 <th align="left">int_pair</th>
 <th align="left">name_A</th>
 <th align="left">uniprot_A</th>
@@ -379,87 +335,93 @@
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">FGF4 &amp; FGFR1</td>
-<td align="left">FGF4</td>
-<td align="left">P08620</td>
-<td align="left">FGF4</td>
-<td align="left">L</td>
-<td align="left">FGFR1</td>
-<td align="left">P11362</td>
-<td align="left">FGFR1</td>
+<td align="left">4</td>
+<td align="left">RAreceptor_RXRG &amp; atRetinoicAcid_byALDH1A3</td>
+<td align="left">RAreceptor_RXRG</td>
+<td align="left">P48443,P29373</td>
+<td align="left">RXRG,CRABP2</td>
 <td align="left">R</td>
-<td align="left">I2D</td>
-<td align="left"></td>
+<td align="left">atRetinoicAcid_byALDH1A3</td>
+<td align="left">P47895</td>
+<td align="left">ALDH1A3</td>
+<td align="left">L</td>
+<td align="left">curated</td>
+<td align="left">uniprot;reactome</td>
 <td align="left">CellPhoneDB_v4.0</td>
 </tr>
 <tr class="even">
-<td align="left">ADORA3 &amp; ENTPD1</td>
-<td align="left">ADORA3</td>
-<td align="left">P0DMS8</td>
-<td align="left">ADORA3</td>
+<td align="left">5</td>
+<td align="left">RAreceptor_RXRG &amp; atRetinoicAcid_byALDH1A2</td>
+<td align="left">RAreceptor_RXRG</td>
+<td align="left">P48443,P29373</td>
+<td align="left">RXRG,CRABP2</td>
 <td align="left">R</td>
-<td align="left">ENTPD1</td>
-<td align="left">P49961</td>
-<td align="left">ENTPD1</td>
+<td align="left">atRetinoicAcid_byALDH1A2</td>
+<td align="left">O94788</td>
+<td align="left">ALDH1A2</td>
 <td align="left">L</td>
 <td align="left">curated</td>
-<td align="left">uniprot</td>
+<td align="left">uniprot;reactome</td>
 <td align="left">CellPhoneDB_v4.0</td>
 </tr>
 <tr class="odd">
-<td align="left">EPHB3 &amp; EFNB1</td>
-<td align="left">EPHB3</td>
-<td align="left">P54753</td>
-<td align="left">EPHB3</td>
+<td align="left">6</td>
+<td align="left">RAreceptor_RXRG &amp; atRetinoicAcid_byALDH1A1</td>
+<td align="left">RAreceptor_RXRG</td>
+<td align="left">P48443,P29373</td>
+<td align="left">RXRG,CRABP2</td>
 <td align="left">R</td>
-<td align="left">EFNB1</td>
-<td align="left">P98172</td>
-<td align="left">EFNB1</td>
+<td align="left">atRetinoicAcid_byALDH1A1</td>
+<td align="left">P00352</td>
+<td align="left">ALDH1A1</td>
 <td align="left">L</td>
 <td align="left">curated</td>
-<td align="left">PMID: 15114347</td>
+<td align="left">uniprot;reactome</td>
 <td align="left">CellPhoneDB_v4.0</td>
 </tr>
 <tr class="even">
-<td align="left">TNFSF18 &amp; TNFRSF18</td>
-<td align="left">TNFSF18</td>
-<td align="left">Q9UNG2</td>
-<td align="left">TNFSF18</td>
-<td align="left">L</td>
-<td align="left">TNFRSF18</td>
-<td align="left">Q9Y5U5</td>
-<td align="left">TNFRSF18</td>
+<td align="left">7</td>
+<td align="left">RAreceptor_RXRB &amp; atRetinoicAcid_byALDH1A3</td>
+<td align="left">RAreceptor_RXRB</td>
+<td align="left">P28702,P29373</td>
+<td align="left">RXRB,CRABP2</td>
 <td align="left">R</td>
+<td align="left">atRetinoicAcid_byALDH1A3</td>
+<td align="left">P47895</td>
+<td align="left">ALDH1A3</td>
+<td align="left">L</td>
 <td align="left">curated</td>
-<td align="left">uniprot</td>
+<td align="left">uniprot;reactome</td>
 <td align="left">CellPhoneDB_v4.0</td>
 </tr>
 <tr class="odd">
-<td align="left">EFNA1 &amp; EPHA1</td>
-<td align="left">EFNA1</td>
-<td align="left">P20827</td>
-<td align="left">EFNA1</td>
-<td align="left">L</td>
-<td align="left">EPHA1</td>
-<td align="left">P21709</td>
-<td align="left">EPHA1</td>
+<td align="left">8</td>
+<td align="left">RAreceptor_RXRB &amp; atRetinoicAcid_byALDH1A2</td>
+<td align="left">RAreceptor_RXRB</td>
+<td align="left">P28702,P29373</td>
+<td align="left">RXRB,CRABP2</td>
 <td align="left">R</td>
+<td align="left">atRetinoicAcid_byALDH1A2</td>
+<td align="left">O94788</td>
+<td align="left">ALDH1A2</td>
+<td align="left">L</td>
 <td align="left">curated</td>
-<td align="left">PMID: 15114347</td>
+<td align="left">uniprot;reactome</td>
 <td align="left">CellPhoneDB_v4.0</td>
 </tr>
 <tr class="even">
-<td align="left">PYY &amp; NPY2R</td>
-<td align="left">PYY</td>
-<td align="left">P10082</td>
-<td align="left">PYY</td>
-<td align="left">L</td>
-<td align="left">NPY2R</td>
-<td align="left">P49146</td>
-<td align="left">NPY2R</td>
+<td align="left">9</td>
+<td align="left">RAreceptor_RXRB &amp; atRetinoicAcid_byALDH1A1</td>
+<td align="left">RAreceptor_RXRB</td>
+<td align="left">P28702,P29373</td>
+<td align="left">RXRB,CRABP2</td>
 <td align="left">R</td>
-<td align="left">guidetopharmacology.org</td>
-<td align="left"></td>
+<td align="left">atRetinoicAcid_byALDH1A1</td>
+<td align="left">P00352</td>
+<td align="left">ALDH1A1</td>
+<td align="left">L</td>
+<td align="left">curated</td>
+<td align="left">uniprot;reactome</td>
 <td align="left">CellPhoneDB_v4.0</td>
 </tr>
 </tbody>
@@ -470,31 +432,30 @@
 <p>The change to use rl_map formatting also enables users to manually append interactions of interest that are not included in the interaction database if need be. This can be attained by formatting the desired interactions as a data.frame with the same column headers as the rl_map and using the <code><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind()</a></code> function.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Integrin complexes are not annotated as receptors in CellPhoneDB_v4.0</span></span>
-<span><span class="co"># collagen-integrin interactions between cells may be missed unless tables from the CellPhoneDB reference are edited or the interactions are manually added</span></span>
+<span><span class="co"># collagen-integrin interactions between cells may be missed unless tables from</span></span>
+<span><span class="co"># the CellPhoneDB reference are edited or the interactions are manually added</span></span>
 <span></span>
-<span><span class="va">col_int_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>  <span class="st">"int_pair"</span> <span class="op">=</span> <span class="st">"a11b1 complex &amp; COLA1_HUMAN"</span>,</span>
-<span>  <span class="st">"name_A"</span> <span class="op">=</span> <span class="st">"a11b1 complex"</span>, <span class="st">"uniprot_A"</span> <span class="op">=</span> <span class="st">"P05556,Q9UKX5"</span>, <span class="st">"gene_A"</span> <span class="op">=</span> <span class="st">"ITB1,ITA11"</span>, <span class="st">"type_A"</span> <span class="op">=</span> <span class="st">"R"</span>,</span>
-<span>  <span class="st">"name_B"</span> <span class="op">=</span> <span class="st">"COLA1_HUMAN"</span>, <span class="st">"uniprot_B"</span> <span class="op">=</span> <span class="st">"P02452,P08123"</span>, <span class="st">"gene_B"</span> <span class="op">=</span> <span class="st">"COL1A1,COL1A2"</span>, <span class="st">"type_B"</span> <span class="op">=</span> <span class="st">"L"</span>,</span>
-<span>  <span class="st">"annotation_strategy"</span> <span class="op">=</span> <span class="st">"manual"</span>, <span class="st">"source"</span> <span class="op">=</span> <span class="st">"manual"</span>, <span class="st">"database_name"</span> <span class="op">=</span> <span class="st">"manual"</span></span>
-<span><span class="op">)</span></span>
+<span><span class="va">col_int_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>int_pair <span class="op">=</span> <span class="st">"a11b1 complex &amp; COLA1_HUMAN"</span>, name_A <span class="op">=</span> <span class="st">"a11b1 complex"</span>,</span>
+<span>    uniprot_A <span class="op">=</span> <span class="st">"P05556,Q9UKX5"</span>, gene_A <span class="op">=</span> <span class="st">"ITB1,ITA11"</span>, type_A <span class="op">=</span> <span class="st">"R"</span>, name_B <span class="op">=</span> <span class="st">"COLA1_HUMAN"</span>,</span>
+<span>    uniprot_B <span class="op">=</span> <span class="st">"P02452,P08123"</span>, gene_B <span class="op">=</span> <span class="st">"COL1A1,COL1A2"</span>, type_B <span class="op">=</span> <span class="st">"L"</span>, annotation_strategy <span class="op">=</span> <span class="st">"manual"</span>,</span>
+<span>    source <span class="op">=</span> <span class="st">"manual"</span>, database_name <span class="op">=</span> <span class="st">"manual"</span><span class="op">)</span></span>
 <span><span class="va">rl_map_append</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">col_int_df</span>, <span class="va">rl_map</span><span class="op">)</span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">rl_map_append</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
-<col width="2%">
-<col width="15%">
-<col width="7%">
+<col width="1%">
+<col width="20%">
 <col width="7%">
 <col width="6%">
-<col width="3%">
-<col width="6%">
-<col width="7%">
-<col width="7%">
+<col width="5%">
 <col width="3%">
 <col width="11%">
-<col width="8%">
+<col width="6%">
+<col width="6%">
+<col width="3%">
 <col width="9%">
+<col width="8%">
+<col width="8%">
 </colgroup>
 <thead><tr class="header">
 <th align="left"></th>
@@ -528,78 +489,78 @@
 <td align="left">manual</td>
 </tr>
 <tr class="even">
-<td align="left">111</td>
-<td align="left">FGF4 &amp; FGFR1</td>
-<td align="left">FGF4</td>
-<td align="left">P08620</td>
-<td align="left">FGF4</td>
-<td align="left">L</td>
-<td align="left">FGFR1</td>
-<td align="left">P11362</td>
-<td align="left">FGFR1</td>
-<td align="left">R</td>
-<td align="left">I2D</td>
-<td align="left"></td>
-<td align="left">CellPhoneDB_v4.0</td>
-</tr>
-<tr class="odd">
-<td align="left">2</td>
-<td align="left">ADORA3 &amp; ENTPD1</td>
-<td align="left">ADORA3</td>
-<td align="left">P0DMS8</td>
-<td align="left">ADORA3</td>
-<td align="left">R</td>
-<td align="left">ENTPD1</td>
-<td align="left">P49961</td>
-<td align="left">ENTPD1</td>
-<td align="left">L</td>
-<td align="left">curated</td>
-<td align="left">uniprot</td>
-<td align="left">CellPhoneDB_v4.0</td>
-</tr>
-<tr class="even">
-<td align="left">3</td>
-<td align="left">EPHB3 &amp; EFNB1</td>
-<td align="left">EPHB3</td>
-<td align="left">P54753</td>
-<td align="left">EPHB3</td>
-<td align="left">R</td>
-<td align="left">EFNB1</td>
-<td align="left">P98172</td>
-<td align="left">EFNB1</td>
-<td align="left">L</td>
-<td align="left">curated</td>
-<td align="left">PMID: 15114347</td>
-<td align="left">CellPhoneDB_v4.0</td>
-</tr>
-<tr class="odd">
 <td align="left">4</td>
-<td align="left">TNFSF18 &amp; TNFRSF18</td>
-<td align="left">TNFSF18</td>
-<td align="left">Q9UNG2</td>
-<td align="left">TNFSF18</td>
-<td align="left">L</td>
-<td align="left">TNFRSF18</td>
-<td align="left">Q9Y5U5</td>
-<td align="left">TNFRSF18</td>
+<td align="left">RAreceptor_RXRG &amp; atRetinoicAcid_byALDH1A3</td>
+<td align="left">RAreceptor_RXRG</td>
+<td align="left">P48443,P29373</td>
+<td align="left">RXRG,CRABP2</td>
 <td align="left">R</td>
+<td align="left">atRetinoicAcid_byALDH1A3</td>
+<td align="left">P47895</td>
+<td align="left">ALDH1A3</td>
+<td align="left">L</td>
 <td align="left">curated</td>
-<td align="left">uniprot</td>
+<td align="left">uniprot;reactome</td>
+<td align="left">CellPhoneDB_v4.0</td>
+</tr>
+<tr class="odd">
+<td align="left">5</td>
+<td align="left">RAreceptor_RXRG &amp; atRetinoicAcid_byALDH1A2</td>
+<td align="left">RAreceptor_RXRG</td>
+<td align="left">P48443,P29373</td>
+<td align="left">RXRG,CRABP2</td>
+<td align="left">R</td>
+<td align="left">atRetinoicAcid_byALDH1A2</td>
+<td align="left">O94788</td>
+<td align="left">ALDH1A2</td>
+<td align="left">L</td>
+<td align="left">curated</td>
+<td align="left">uniprot;reactome</td>
 <td align="left">CellPhoneDB_v4.0</td>
 </tr>
 <tr class="even">
-<td align="left">5</td>
-<td align="left">EFNA1 &amp; EPHA1</td>
-<td align="left">EFNA1</td>
-<td align="left">P20827</td>
-<td align="left">EFNA1</td>
-<td align="left">L</td>
-<td align="left">EPHA1</td>
-<td align="left">P21709</td>
-<td align="left">EPHA1</td>
+<td align="left">6</td>
+<td align="left">RAreceptor_RXRG &amp; atRetinoicAcid_byALDH1A1</td>
+<td align="left">RAreceptor_RXRG</td>
+<td align="left">P48443,P29373</td>
+<td align="left">RXRG,CRABP2</td>
 <td align="left">R</td>
+<td align="left">atRetinoicAcid_byALDH1A1</td>
+<td align="left">P00352</td>
+<td align="left">ALDH1A1</td>
+<td align="left">L</td>
 <td align="left">curated</td>
-<td align="left">PMID: 15114347</td>
+<td align="left">uniprot;reactome</td>
+<td align="left">CellPhoneDB_v4.0</td>
+</tr>
+<tr class="odd">
+<td align="left">7</td>
+<td align="left">RAreceptor_RXRB &amp; atRetinoicAcid_byALDH1A3</td>
+<td align="left">RAreceptor_RXRB</td>
+<td align="left">P28702,P29373</td>
+<td align="left">RXRB,CRABP2</td>
+<td align="left">R</td>
+<td align="left">atRetinoicAcid_byALDH1A3</td>
+<td align="left">P47895</td>
+<td align="left">ALDH1A3</td>
+<td align="left">L</td>
+<td align="left">curated</td>
+<td align="left">uniprot;reactome</td>
+<td align="left">CellPhoneDB_v4.0</td>
+</tr>
+<tr class="even">
+<td align="left">8</td>
+<td align="left">RAreceptor_RXRB &amp; atRetinoicAcid_byALDH1A2</td>
+<td align="left">RAreceptor_RXRB</td>
+<td align="left">P28702,P29373</td>
+<td align="left">RXRB,CRABP2</td>
+<td align="left">R</td>
+<td align="left">atRetinoicAcid_byALDH1A2</td>
+<td align="left">O94788</td>
+<td align="left">ALDH1A2</td>
+<td align="left">L</td>
+<td align="left">curated</td>
+<td align="left">uniprot;reactome</td>
 <td align="left">CellPhoneDB_v4.0</td>
 </tr>
 </tbody>
@@ -639,37 +600,20 @@
 <p>At this point, the <code><a href="../reference/create_domino.html">create_domino()</a></code> function can be used to make the object. Parameters of note include “use_clusters” which is required to assess signaling between cell types rather than linkage of TFs and receptors broadly across the data set. “use_complexes” decides if receptors that function in heteromeric complexes will be considered in testing linkages between TFs and receptors. If TRUE, a receptor complex is only linked to a TF if a majority of the component genes meet the Spearman correlation threshold. “remove_rec_dropout” decides whether receptor values of 0 will be considered in correlation calculations; this measure is intended to reduce the effect of dropout on receptors with low expression.</p>
 <p>To run <code><a href="../reference/create_domino.html">create_domino()</a></code> with matrix and vector inputs:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">pbmc_dom</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_domino.html">create_domino</a></span><span class="op">(</span></span>
-<span>  rl_map <span class="op">=</span> <span class="va">rl_map</span>,</span>
-<span>  features <span class="op">=</span> <span class="va">auc_in</span>,</span>
-<span>  counts <span class="op">=</span> <span class="va">counts</span>,</span>
-<span>  z_scores <span class="op">=</span> <span class="va">z_scores</span>,</span>
-<span>  clusters <span class="op">=</span> <span class="va">clusters</span>,</span>
-<span>  tf_targets <span class="op">=</span> <span class="va">regulon_list</span>,</span>
-<span>  use_clusters <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  use_complexes <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  remove_rec_dropout <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co"># rl_map: receptor-ligand map data frame</span></span>
-<span><span class="co"># features: TF scores (AUC matrix)</span></span>
-<span><span class="co"># counts: counts matrix</span></span>
-<span><span class="co"># z_scores: scaled expression data</span></span>
-<span><span class="co"># clusters: named vector of cell cluster assignments</span></span>
-<span><span class="co"># tf_targets: list of TFs and their regulons</span></span>
-<span><span class="co"># use_clusters: assess receptor activation and ligand expression on a per-cluster basis</span></span>
-<span><span class="co"># use_complexes: include receptors and genes that function as a complex in results</span></span>
-<span><span class="co"># remove_rec_dropout: whether to remove zeroes from correlation calculations</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">pbmc_dom</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_domino.html">create_domino</a></span><span class="op">(</span>rl_map <span class="op">=</span> <span class="va">rl_map</span>, features <span class="op">=</span> <span class="va">auc_in</span>, counts <span class="op">=</span> <span class="va">counts</span>, z_scores <span class="op">=</span> <span class="va">z_scores</span>,</span>
+<span>    clusters <span class="op">=</span> <span class="va">clusters</span>, tf_targets <span class="op">=</span> <span class="va">regulon_list</span>, use_clusters <span class="op">=</span> <span class="cn">TRUE</span>, use_complexes <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    remove_rec_dropout <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="co"># rl_map: receptor-ligand map data frame features: TF scores (AUC matrix)</span></span>
+<span><span class="co"># counts: counts matrix z_scores: scaled expression data clusters: named vector</span></span>
+<span><span class="co"># of cell cluster assignments tf_targets: list of TFs and their regulons</span></span>
+<span><span class="co"># use_clusters: assess receptor activation and ligand expression on a</span></span>
+<span><span class="co"># per-cluster basis use_complexes: include receptors and genes that function as</span></span>
+<span><span class="co"># a complex in results remove_rec_dropout: whether to remove zeroes from</span></span>
+<span><span class="co"># correlation calculations</span></span></code></pre></div>
 <p>The above results will be equivalent to using the <a href="https://satijalab.org/seurat" class="external-link">Seurat</a> object directly. Note that inclusion of both the matrix inputs and the <a href="https://satijalab.org/seurat" class="external-link">Seurat</a> object will prioritize the <a href="https://satijalab.org/seurat" class="external-link">Seurat</a> object.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">pbmc_dom</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_domino.html">create_domino</a></span><span class="op">(</span></span>
-<span>  rl_map <span class="op">=</span> <span class="va">rl_map</span>,</span>
-<span>  features <span class="op">=</span> <span class="va">auc_in</span>,</span>
-<span>  ser <span class="op">=</span> <span class="va">pbmc</span>,</span>
-<span>  tf_targets <span class="op">=</span> <span class="va">regulon_list</span>,</span>
-<span>  use_clusters <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  use_complexes <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  remove_rec_dropout <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">pbmc_dom</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_domino.html">create_domino</a></span><span class="op">(</span>rl_map <span class="op">=</span> <span class="va">rl_map</span>, features <span class="op">=</span> <span class="va">auc_in</span>, ser <span class="op">=</span> <span class="va">pbmc</span>, tf_targets <span class="op">=</span> <span class="va">regulon_list</span>,</span>
+<span>    use_clusters <span class="op">=</span> <span class="cn">TRUE</span>, use_complexes <span class="op">=</span> <span class="cn">TRUE</span>, remove_rec_dropout <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p>For information on what is stored in a domino object and how to access it, please see our <a href="vignette(%22domino_object_vignette%22)">vignette on the structure of domino objects</a>.</p>
 </div>
 <div class="section level4">
@@ -678,27 +622,15 @@
 <p><code><a href="../reference/build_domino.html">build_domino()</a></code> finalizes the construction of the domino object by setting parameters for identifying TFs with differential activation between clusters, receptor linkage with TFs based on magnitude of positive correlation, and the minimum percentage of cells within a cluster that have expression of a receptor for the receptor to be called as active.</p>
 <p>There are also options for thresholds of the number of TFs that may be called active in a cluster and the number of receptors that may be linked to any one TF. For thresholds of <em>n</em> TFs and <em>m</em> receptors, the bottom <em>n</em> TFs by lowest p-values from the wilcoxon rank sum test and the top <em>m</em> receptors by Spearman correlation coefficient are chosen.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">pbmc_dom</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/build_domino.html">build_domino</a></span><span class="op">(</span></span>
-<span>  dom <span class="op">=</span> <span class="va">pbmc_dom</span>,</span>
-<span>  min_tf_pval <span class="op">=</span> <span class="fl">.001</span>,</span>
-<span>  max_tf_per_clust <span class="op">=</span> <span class="fl">25</span>,</span>
-<span>  max_rec_per_tf <span class="op">=</span> <span class="fl">25</span>,</span>
-<span>  rec_tf_cor_threshold <span class="op">=</span> <span class="fl">.25</span>,</span>
-<span>  min_rec_percentage <span class="op">=</span> <span class="fl">0.1</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co"># min_tf_pval: Threshold for p-value of DE for TFs</span></span>
-<span><span class="co"># rec_tf_cor_threshold: Minimum correlation between receptor and TF</span></span>
-<span><span class="co"># min_rec_percentage: Minimum percent of cells that must express receptor</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">pbmc_dom</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/build_domino.html">build_domino</a></span><span class="op">(</span>dom <span class="op">=</span> <span class="va">pbmc_dom</span>, min_tf_pval <span class="op">=</span> <span class="fl">0.001</span>, max_tf_per_clust <span class="op">=</span> <span class="fl">25</span>,</span>
+<span>    max_rec_per_tf <span class="op">=</span> <span class="fl">25</span>, rec_tf_cor_threshold <span class="op">=</span> <span class="fl">0.25</span>, min_rec_percentage <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span>
+<span><span class="co"># min_tf_pval: Threshold for p-value of DE for TFs rec_tf_cor_threshold:</span></span>
+<span><span class="co"># Minimum correlation between receptor and TF min_rec_percentage: Minimum</span></span>
+<span><span class="co"># percent of cells that must express receptor</span></span></code></pre></div>
 <p>Both of the thresholds for the number of receptors and TFs can be sent to infinity (Inf) to collect all receptors and TFs that meet statistical significance thresholds.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">pbmc_dom_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/build_domino.html">build_domino</a></span><span class="op">(</span></span>
-<span>  dom <span class="op">=</span> <span class="va">pbmc_dom</span>,</span>
-<span>  min_tf_pval <span class="op">=</span> <span class="fl">.001</span>,</span>
-<span>  max_tf_per_clust <span class="op">=</span> <span class="cn">Inf</span>,</span>
-<span>  max_rec_per_tf <span class="op">=</span> <span class="cn">Inf</span>,</span>
-<span>  rec_tf_cor_threshold <span class="op">=</span> <span class="fl">.25</span>,</span>
-<span>  min_rec_percentage <span class="op">=</span> <span class="fl">0.1</span>,</span>
-<span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">pbmc_dom_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/build_domino.html">build_domino</a></span><span class="op">(</span>dom <span class="op">=</span> <span class="va">pbmc_dom</span>, min_tf_pval <span class="op">=</span> <span class="fl">0.001</span>, max_tf_per_clust <span class="op">=</span> <span class="cn">Inf</span>,</span>
+<span>    max_rec_per_tf <span class="op">=</span> <span class="cn">Inf</span>, rec_tf_cor_threshold <span class="op">=</span> <span class="fl">0.25</span>, min_rec_percentage <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level3">
@@ -710,8 +642,8 @@
 </h4>
 <p>Enrichment of TF activities by cell types can be visualized by <code><a href="../reference/feat_heatmap.html">feat_heatmap()</a></code> which plots data set-wide TF activity scores as a heatmap.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/feat_heatmap.html">feat_heatmap</a></span><span class="op">(</span><span class="va">pbmc_dom</span>, norm <span class="op">=</span> <span class="cn">TRUE</span>, bool <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="domino2_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/feat_heatmap.html">feat_heatmap</a></span><span class="op">(</span><span class="va">pbmc_dom</span>, norm <span class="op">=</span> <span class="cn">TRUE</span>, bool <span class="op">=</span> <span class="cn">FALSE</span>, use_raster <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<p><img src="domino2_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
 </div>
 <div class="section level4">
 <h4 id="cumulative-signaling-between-cell-types">Cumulative signaling between cell types<a class="anchor" aria-label="anchor" href="#cumulative-signaling-between-cell-types"></a>
@@ -719,7 +651,7 @@
 <p>The cumulative degree of signaling between clusters is assessed as the sum of the scaled expression of ligands targeting active receptors on another cluster. This can be visualized in graph format using the <code><a href="../reference/signaling_network.html">signaling_network()</a></code> function. Nodes represent each cell cluster and edges scale with the magnitude of signaling between the clusters. The color of the edge corresponds to the sender cluster for that signal.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/signaling_network.html">signaling_network</a></span><span class="op">(</span><span class="va">pbmc_dom</span>, edge_weight <span class="op">=</span> <span class="fl">1</span>, max_thresh <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></code></pre></div>
-<p><img src="domino2_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
+<p><img src="domino2_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
 <p>Signaling networks can also be drawn with the edges only rendering the signals directed towards a given cell type or signals from one cell type directed to others. To see those options in use, as well as other plotting functions and their options, please see our <a href="vignette(%22plotting_vignette%22)">plotting vignette</a>.</p>
 </div>
 <div class="section level4">
@@ -728,22 +660,21 @@
 <p>Beyond the aggregated degree of signaling between cell types, the degrees of signaling through specific ligand-receptor interactions can be assessed. <code><a href="../reference/gene_network.html">gene_network()</a></code> provides a graph of linkages between active TFs in a cluster, the linked receptors in that cluster, and the possible ligands of these active receptors.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/gene_network.html">gene_network</a></span><span class="op">(</span><span class="va">pbmc_dom</span>, clust <span class="op">=</span> <span class="st">"dendritic_cell"</span>, layout <span class="op">=</span> <span class="st">"grid"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="domino2_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
+<p><img src="domino2_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
 <p>New to domino2, <code><a href="../reference/gene_network.html">gene_network()</a></code> can be used between two clusters to determine if any of the possible ligands for a given receptor are expressed by a putative outgoing signaling cluster.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/gene_network.html">gene_network</a></span><span class="op">(</span><span class="va">pbmc_dom</span>,</span>
-<span>  clust <span class="op">=</span> <span class="st">"dendritic_cell"</span>, OutgoingSignalingClust <span class="op">=</span> <span class="st">"CD14_monocyte"</span>,</span>
-<span>  layout <span class="op">=</span> <span class="st">"grid"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p><img src="domino2_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/gene_network.html">gene_network</a></span><span class="op">(</span><span class="va">pbmc_dom</span>, clust <span class="op">=</span> <span class="st">"dendritic_cell"</span>, OutgoingSignalingClust <span class="op">=</span> <span class="st">"CD14_monocyte"</span>,</span>
+<span>    layout <span class="op">=</span> <span class="st">"grid"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="domino2_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
 <p>A comprehensive assessment of ligand expression targeting active receptors on a given cluster can be assessed with <code><a href="../reference/incoming_signaling_heatmap.html">incoming_signaling_heatmap()</a></code>.</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/incoming_signaling_heatmap.html">incoming_signaling_heatmap</a></span><span class="op">(</span><span class="va">pbmc_dom</span>, rec_clust <span class="op">=</span> <span class="st">"dendritic_cell"</span>, max_thresh <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span></span></code></pre></div>
-<p><img src="domino2_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/incoming_signaling_heatmap.html">incoming_signaling_heatmap</a></span><span class="op">(</span><span class="va">pbmc_dom</span>, rec_clust <span class="op">=</span> <span class="st">"dendritic_cell"</span>, max_thresh <span class="op">=</span> <span class="fl">2.5</span>,</span>
+<span>    use_raster <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<p><img src="domino2_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
 <p>Another form of comprehensive ligand expression assessment is available for individual active receptors in the form of circos plots new to domino2. The outer arcs correspond to clusters in the domino object with inner arcs representing each possible ligand of the plotted receptor. Arcs are drawn between ligands on a cell type and the receptor if the ligand is expressed above the specified threshold. Arc widths correspond to the mean express of the ligand by the cluster with the widest arc width scaling to the maximum expression of the ligand within the data.</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/circos_ligand_receptor.html">circos_ligand_receptor</a></span><span class="op">(</span><span class="va">pbmc_dom</span>, receptor <span class="op">=</span> <span class="st">"CD74"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="domino2_files/figure-html/unnamed-chunk-12-1.png" width="700"></p>
+<p><img src="domino2_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
 </div>
 </div>
 <div class="section level3">
@@ -753,7 +684,7 @@
 <details><p><summary>Vignette Build Information</summary> Date last built and session information:</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "2023-11-13"</span></span>
+<span><span class="co">#&gt; [1] "2023-12-13"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; R version 4.2.1 (2022-06-23)</span></span>
 <span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu (64-bit)</span></span>
@@ -776,68 +707,67 @@
 <span><span class="co">#&gt; [8] base     </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; other attached packages:</span></span>
-<span><span class="co">#&gt;  [1] knitr_1.44            ComplexHeatmap_2.12.1 circlize_0.4.15      </span></span>
-<span><span class="co">#&gt;  [4] plyr_1.8.8            loomR_0.2.1.9000      hdf5r_1.3.8          </span></span>
-<span><span class="co">#&gt;  [7] R6_2.5.1              SeuratObject_5.0.0    Seurat_4.4.0         </span></span>
-<span><span class="co">#&gt; [10] domino2_0.2.2        </span></span>
+<span><span class="co">#&gt; [1] knitr_1.45            ComplexHeatmap_2.14.0 circlize_0.4.15      </span></span>
+<span><span class="co">#&gt; [4] plyr_1.8.9            Seurat_5.0.1          SeuratObject_5.0.1   </span></span>
+<span><span class="co">#&gt; [7] sp_2.1-1              domino2_0.2.2        </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
-<span><span class="co">#&gt;   [1] utf8_1.2.3             spatstat.explore_3.2-3 reticulate_1.32.0     </span></span>
-<span><span class="co">#&gt;   [4] R.utils_2.12.2         tidyselect_1.2.0       RSQLite_2.3.1         </span></span>
-<span><span class="co">#&gt;   [7] AnnotationDbi_1.58.0   htmlwidgets_1.6.2      Rtsne_0.16            </span></span>
-<span><span class="co">#&gt;  [10] munsell_0.5.0          codetools_0.2-19       ragg_1.2.5            </span></span>
-<span><span class="co">#&gt;  [13] ica_1.0-3              future_1.33.0          miniUI_0.1.1.1        </span></span>
-<span><span class="co">#&gt;  [16] spatstat.random_3.1-6  colorspace_2.1-0       progressr_0.14.0      </span></span>
-<span><span class="co">#&gt;  [19] Biobase_2.56.0         filelock_1.0.2         stats4_4.2.1          </span></span>
+<span><span class="co">#&gt;   [1] utf8_1.2.4             spatstat.explore_3.2-5 reticulate_1.34.0     </span></span>
+<span><span class="co">#&gt;   [4] tidyselect_1.2.0       RSQLite_2.3.3          AnnotationDbi_1.60.2  </span></span>
+<span><span class="co">#&gt;   [7] htmlwidgets_1.6.2      Rtsne_0.16             munsell_0.5.0         </span></span>
+<span><span class="co">#&gt;  [10] codetools_0.2-19       ragg_1.2.6             ica_1.0-3             </span></span>
+<span><span class="co">#&gt;  [13] future_1.33.0          miniUI_0.1.1.1         spatstat.random_3.2-1 </span></span>
+<span><span class="co">#&gt;  [16] colorspace_2.1-0       progressr_0.14.0       Biobase_2.58.0        </span></span>
+<span><span class="co">#&gt;  [19] filelock_1.0.2         highr_0.10             stats4_4.2.1          </span></span>
 <span><span class="co">#&gt;  [22] ROCR_1.0-11            tensor_1.5             ggsignif_0.6.4        </span></span>
-<span><span class="co">#&gt;  [25] listenv_0.9.0          GenomeInfoDbData_1.2.8 polyclip_1.10-4       </span></span>
-<span><span class="co">#&gt;  [28] bit64_4.0.5            rprojroot_2.0.3        parallelly_1.36.0     </span></span>
-<span><span class="co">#&gt;  [31] vctrs_0.6.3            generics_0.1.3         xfun_0.40             </span></span>
-<span><span class="co">#&gt;  [34] BiocFileCache_2.4.0    doParallel_1.0.17      GenomeInfoDb_1.32.4   </span></span>
-<span><span class="co">#&gt;  [37] clue_0.3-65            bitops_1.0-7           spatstat.utils_3.0-3  </span></span>
-<span><span class="co">#&gt;  [40] cachem_1.0.8           promises_1.2.1         scales_1.2.1          </span></span>
-<span><span class="co">#&gt;  [43] gtable_0.3.4           Cairo_1.6-1            globals_0.16.2        </span></span>
-<span><span class="co">#&gt;  [46] goftest_1.2-3          spam_2.9-1             rlang_1.1.1           </span></span>
-<span><span class="co">#&gt;  [49] systemfonts_1.0.4      GlobalOptions_0.1.2    splines_4.2.1         </span></span>
-<span><span class="co">#&gt;  [52] rstatix_0.7.2          lazyeval_0.2.2         spatstat.geom_3.2-5   </span></span>
-<span><span class="co">#&gt;  [55] broom_1.0.5            yaml_2.3.7             reshape2_1.4.4        </span></span>
-<span><span class="co">#&gt;  [58] abind_1.4-5            backports_1.4.1        httpuv_1.6.11         </span></span>
-<span><span class="co">#&gt;  [61] tools_4.2.1            ggplot2_3.4.4          ellipsis_0.3.2        </span></span>
-<span><span class="co">#&gt;  [64] jquerylib_0.1.4        RColorBrewer_1.1-3     BiocGenerics_0.42.0   </span></span>
-<span><span class="co">#&gt;  [67] ggridges_0.5.4         Rcpp_1.0.11            progress_1.2.2        </span></span>
-<span><span class="co">#&gt;  [70] zlibbioc_1.42.0        purrr_1.0.2            RCurl_1.98-1.12       </span></span>
-<span><span class="co">#&gt;  [73] prettyunits_1.2.0      deldir_1.0-9           ggpubr_0.6.0          </span></span>
-<span><span class="co">#&gt;  [76] pbapply_1.7-2          GetoptLong_1.0.5       cowplot_1.1.1         </span></span>
-<span><span class="co">#&gt;  [79] S4Vectors_0.34.0       zoo_1.8-12             ggrepel_0.9.3         </span></span>
-<span><span class="co">#&gt;  [82] cluster_2.1.4          fs_1.6.3               magrittr_2.0.3        </span></span>
-<span><span class="co">#&gt;  [85] magick_2.8.0           data.table_1.14.8      scattermore_1.2       </span></span>
-<span><span class="co">#&gt;  [88] lmtest_0.9-40          RANN_2.6.1             fitdistrplus_1.1-11   </span></span>
-<span><span class="co">#&gt;  [91] R.cache_0.16.0         matrixStats_1.0.0      hms_1.1.3             </span></span>
-<span><span class="co">#&gt;  [94] patchwork_1.1.3        mime_0.12              evaluate_0.21         </span></span>
-<span><span class="co">#&gt;  [97] xtable_1.8-4           XML_3.99-0.14          IRanges_2.30.1        </span></span>
-<span><span class="co">#&gt; [100] gridExtra_2.3          shape_1.4.6            compiler_4.2.1        </span></span>
-<span><span class="co">#&gt; [103] biomaRt_2.52.0         tibble_3.2.1           KernSmooth_2.23-22    </span></span>
-<span><span class="co">#&gt; [106] crayon_1.5.2           R.oo_1.25.0            htmltools_0.5.6       </span></span>
-<span><span class="co">#&gt; [109] later_1.3.1            tidyr_1.3.0            DBI_1.1.3             </span></span>
-<span><span class="co">#&gt; [112] dbplyr_2.3.3           MASS_7.3-60            rappdirs_0.3.3        </span></span>
-<span><span class="co">#&gt; [115] Matrix_1.6-1.1         car_3.1-2              cli_3.6.1             </span></span>
-<span><span class="co">#&gt; [118] R.methodsS3_1.8.2      parallel_4.2.1         dotCall64_1.0-2       </span></span>
-<span><span class="co">#&gt; [121] igraph_1.5.1           pkgconfig_2.0.3        pkgdown_2.0.7         </span></span>
-<span><span class="co">#&gt; [124] sp_2.0-0               plotly_4.10.2          spatstat.sparse_3.0-2 </span></span>
+<span><span class="co">#&gt;  [25] listenv_0.9.0          GenomeInfoDbData_1.2.9 polyclip_1.10-6       </span></span>
+<span><span class="co">#&gt;  [28] bit64_4.0.5            rprojroot_2.0.4        parallelly_1.36.0     </span></span>
+<span><span class="co">#&gt;  [31] vctrs_0.6.4            generics_0.1.3         xfun_0.41             </span></span>
+<span><span class="co">#&gt;  [34] BiocFileCache_2.6.1    R6_2.5.1               doParallel_1.0.17     </span></span>
+<span><span class="co">#&gt;  [37] GenomeInfoDb_1.34.9    clue_0.3-65            bitops_1.0-7          </span></span>
+<span><span class="co">#&gt;  [40] spatstat.utils_3.0-4   cachem_1.0.8           promises_1.2.1        </span></span>
+<span><span class="co">#&gt;  [43] scales_1.3.0           gtable_0.3.4           Cairo_1.6-1           </span></span>
+<span><span class="co">#&gt;  [46] globals_0.16.2         goftest_1.2-3          spam_2.10-0           </span></span>
+<span><span class="co">#&gt;  [49] rlang_1.1.2            systemfonts_1.0.5      GlobalOptions_0.1.2   </span></span>
+<span><span class="co">#&gt;  [52] splines_4.2.1          rstatix_0.7.2          lazyeval_0.2.2        </span></span>
+<span><span class="co">#&gt;  [55] spatstat.geom_3.2-7    broom_1.0.5            yaml_2.3.7            </span></span>
+<span><span class="co">#&gt;  [58] reshape2_1.4.4         abind_1.4-5            backports_1.4.1       </span></span>
+<span><span class="co">#&gt;  [61] httpuv_1.6.12          tools_4.2.1            ggplot2_3.4.4         </span></span>
+<span><span class="co">#&gt;  [64] ellipsis_0.3.2         jquerylib_0.1.4        RColorBrewer_1.1-3    </span></span>
+<span><span class="co">#&gt;  [67] BiocGenerics_0.44.0    ggridges_0.5.4         Rcpp_1.0.11           </span></span>
+<span><span class="co">#&gt;  [70] progress_1.2.2         zlibbioc_1.44.0        purrr_1.0.2           </span></span>
+<span><span class="co">#&gt;  [73] RCurl_1.98-1.13        prettyunits_1.2.0      deldir_1.0-9          </span></span>
+<span><span class="co">#&gt;  [76] ggpubr_0.6.0           pbapply_1.7-2          GetoptLong_1.0.5      </span></span>
+<span><span class="co">#&gt;  [79] cowplot_1.1.1          S4Vectors_0.36.2       zoo_1.8-12            </span></span>
+<span><span class="co">#&gt;  [82] ggrepel_0.9.4          cluster_2.1.4          fs_1.6.3              </span></span>
+<span><span class="co">#&gt;  [85] magrittr_2.0.3         magick_2.8.1           data.table_1.14.8     </span></span>
+<span><span class="co">#&gt;  [88] RSpectra_0.16-1        scattermore_1.2        lmtest_0.9-40         </span></span>
+<span><span class="co">#&gt;  [91] RANN_2.6.1             fitdistrplus_1.1-11    matrixStats_1.1.0     </span></span>
+<span><span class="co">#&gt;  [94] hms_1.1.3              patchwork_1.1.3        mime_0.12             </span></span>
+<span><span class="co">#&gt;  [97] evaluate_0.23          xtable_1.8-4           XML_3.99-0.16         </span></span>
+<span><span class="co">#&gt; [100] fastDummies_1.7.3      IRanges_2.32.0         gridExtra_2.3         </span></span>
+<span><span class="co">#&gt; [103] shape_1.4.6            compiler_4.2.1         biomaRt_2.54.1        </span></span>
+<span><span class="co">#&gt; [106] tibble_3.2.1           KernSmooth_2.23-22     crayon_1.5.2          </span></span>
+<span><span class="co">#&gt; [109] htmltools_0.5.7        later_1.3.1            tidyr_1.3.0           </span></span>
+<span><span class="co">#&gt; [112] DBI_1.1.3              formatR_1.14           dbplyr_2.4.0          </span></span>
+<span><span class="co">#&gt; [115] MASS_7.3-60            rappdirs_0.3.3         Matrix_1.6-3          </span></span>
+<span><span class="co">#&gt; [118] car_3.1-2              cli_3.6.1              parallel_4.2.1        </span></span>
+<span><span class="co">#&gt; [121] dotCall64_1.1-0        igraph_1.5.1           pkgconfig_2.0.3       </span></span>
+<span><span class="co">#&gt; [124] pkgdown_2.0.7          plotly_4.10.3          spatstat.sparse_3.0-3 </span></span>
 <span><span class="co">#&gt; [127] xml2_1.3.5             foreach_1.5.2          bslib_0.5.1           </span></span>
-<span><span class="co">#&gt; [130] XVector_0.36.0         stringr_1.5.0          digest_0.6.33         </span></span>
-<span><span class="co">#&gt; [133] sctransform_0.4.0      RcppAnnoy_0.0.21       spatstat.data_3.0-1   </span></span>
-<span><span class="co">#&gt; [136] Biostrings_2.64.1      rmarkdown_2.25         leiden_0.4.3          </span></span>
-<span><span class="co">#&gt; [139] uwot_0.1.16            curl_5.0.2             shiny_1.7.5           </span></span>
-<span><span class="co">#&gt; [142] rjson_0.2.21           nlme_3.1-163           lifecycle_1.0.3       </span></span>
+<span><span class="co">#&gt; [130] XVector_0.38.0         stringr_1.5.1          digest_0.6.33         </span></span>
+<span><span class="co">#&gt; [133] sctransform_0.4.1      RcppAnnoy_0.0.21       spatstat.data_3.0-3   </span></span>
+<span><span class="co">#&gt; [136] Biostrings_2.66.0      rmarkdown_2.25         leiden_0.4.3.1        </span></span>
+<span><span class="co">#&gt; [139] uwot_0.1.16            curl_5.1.0             shiny_1.8.0           </span></span>
+<span><span class="co">#&gt; [142] rjson_0.2.21           nlme_3.1-163           lifecycle_1.0.4       </span></span>
 <span><span class="co">#&gt; [145] jsonlite_1.8.7         carData_3.0-5          desc_1.4.2            </span></span>
-<span><span class="co">#&gt; [148] viridisLite_0.4.2      fansi_1.0.4            pillar_1.9.0          </span></span>
-<span><span class="co">#&gt; [151] lattice_0.21-8         KEGGREST_1.36.3        fastmap_1.1.1         </span></span>
+<span><span class="co">#&gt; [148] viridisLite_0.4.2      fansi_1.0.5            pillar_1.9.0          </span></span>
+<span><span class="co">#&gt; [151] lattice_0.22-5         KEGGREST_1.38.0        fastmap_1.1.1         </span></span>
 <span><span class="co">#&gt; [154] httr_1.4.7             survival_3.5-7         glue_1.6.2            </span></span>
 <span><span class="co">#&gt; [157] png_0.1-8              iterators_1.0.14       bit_4.0.5             </span></span>
-<span><span class="co">#&gt; [160] stringi_1.7.12         sass_0.4.7             blob_1.2.4            </span></span>
-<span><span class="co">#&gt; [163] textshaping_0.3.6      memoise_2.0.1          styler_1.10.2         </span></span>
-<span><span class="co">#&gt; [166] dplyr_1.1.3            irlba_2.3.5.1          future.apply_1.11.0</span></span></code></pre></div>
+<span><span class="co">#&gt; [160] stringi_1.8.2          sass_0.4.7             blob_1.2.4            </span></span>
+<span><span class="co">#&gt; [163] textshaping_0.3.7      RcppHNSW_0.5.0         memoise_2.0.1         </span></span>
+<span><span class="co">#&gt; [166] dplyr_1.1.4            irlba_2.3.5.1          future.apply_1.11.0</span></span></code></pre></div>
 </details>
 </div>
 </div>

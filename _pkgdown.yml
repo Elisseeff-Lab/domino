@@ -28,7 +28,6 @@ reference:
   contents:
   - domino-class
   - linkage_summary
-  - pbmc_dom
 - title: "Analysis Functions"
   desc: >
     Functions for performing cell-cell communication analysis
@@ -68,14 +67,13 @@ reference:
   - dom_de
   - dom_info
   - dom_linkages
+  - dom_network_items
   - dom_signaling
   - dom_tf_activation
   - dom_zscores
 - subtitle: "Misc. utility functions"
   contents:
   - add_rl_column
-  - collate_network_items
-  - convert_genes
   - count_linkage
   - mean_ligand_expression
   - rename_clusters

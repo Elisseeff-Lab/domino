@@ -24,3 +24,10 @@ A data frame of ligand expression targeting the specified receptor
 Creates a data frame of mean ligand expression for use in plotting a circos
 plot of ligand expression and saving tables of mean expression.
 }
+\examples{
+counts <- dom_counts(domino2:::pbmc_dom_built_tiny)
+mean_exp <- mean_ligand_expression(counts,
+ ligands = c("PTPRC", "FASLG"), cell_ident = "CD14_monocyte",
+ cell_barcodes = colnames(counts), destination = "FAS")
+
+}

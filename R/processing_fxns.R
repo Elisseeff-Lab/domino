@@ -1,9 +1,9 @@
 #' Calculate a signaling network for a domino object
-#' 
+#'
 #' This function calculates a signaling network. It requires a domino object
-#' preprocessed from create_domino and returns a domino object prepared for 
+#' preprocessed from create_domino and returns a domino object prepared for
 #' plotting with the various plotting functions in this package.
-#' 
+#'
 #' @param dom Domino object from create_domino.
 #' @param max_tf_per_clust Maximum number of transcription factors called active in a cluster.
 #' @param min_tf_pval Minimum p-value from differential feature score test to call a transcription factor active in a cluster.
@@ -11,16 +11,24 @@
 #' @param rec_tf_cor_threshold Minimum pearson correlation used to consider a receptor linked with a transcription factor. Increasing this will decrease the number of receptors linked to each transcription factor.
 #' @param min_rec_percentage Minimum percentage of cells in cluster expressing a receptor for the receptor to be linked to trancription factors in that cluster.
 #' @return A domino object with a signaling network built
-#' @export 
+#' @export
+#' @examples
+#' pbmc_dom_tiny_built <- build_domino(
+#'  dom = domino2:::pbmc_dom_tiny, min_tf_pval = .001, max_tf_per_clust = 25,
+#'  max_rec_per_tf = 25, rec_tf_cor_threshold = .25, min_rec_percentage = 0.1
+#' )
 #' 
-build_domino <- function(dom, max_tf_per_clust = 5, min_tf_pval = 0.01, max_rec_per_tf = 5, rec_tf_cor_threshold = 0.15,
-  min_rec_percentage = 0.1) {
+build_domino <- function(
+    dom, max_tf_per_clust = 5, min_tf_pval = 0.01, max_rec_per_tf = 5, rec_tf_cor_threshold = 0.15,
+    min_rec_percentage = 0.1) {
   if (dom@misc[["create"]] == FALSE) {
     stop("Please run domino_create to create the domino object.")
   }
   dom@misc[["build"]] <- TRUE
-  dom@misc[["build_vars"]] <- c(max_tf_per_clust = max_tf_per_clust, min_tf_pval = min_tf_pval,
-    max_rec_per_tf = max_rec_per_tf, rec_tf_cor_threshold = rec_tf_cor_threshold, min_rec_percentage = min_rec_percentage)
+  dom@misc[["build_vars"]] <- c(
+    max_tf_per_clust = max_tf_per_clust, min_tf_pval = min_tf_pval,
+    max_rec_per_tf = max_rec_per_tf, rec_tf_cor_threshold = rec_tf_cor_threshold, min_rec_percentage = min_rec_percentage
+  )
   if (length(dom@clusters)) {
     # Get transcription factors for each cluster
     clust_tf <- list()
@@ -31,8 +39,10 @@ build_domino <- function(dom, max_tf_per_clust = 5, min_tf_pval = 0.01, max_rec_
         zeros <- names(ordered)[which(ordered == 0)]
         fcs <- c()
         for (zero in zeros) {
-          fc <- mean(dom@features[zero, which(dom@clusters == clust)]) - mean(dom@features[zero,
-          which(dom@clusters != clust)])
+          fc <- mean(dom@features[zero, which(dom@clusters == clust)]) - mean(dom@features[
+            zero,
+            which(dom@clusters != clust)
+          ])
           fcs <- c(fcs, fc)
         }
         names(fcs) <- zeros
@@ -117,9 +127,9 @@ build_domino <- function(dom, max_tf_per_clust = 5, min_tf_pval = 0.01, max_rec_
         # if complexes were used
         inc_ligs_list <- lapply(inc_ligs, function(l) {
           if (l %in% names(dom@linkages$complexes)) {
-          return(dom@linkages$complexes[[l]])
+            return(dom@linkages$complexes[[l]])
           } else {
-          return(l)
+            return(l)
           }
         })
         names(inc_ligs_list) <- inc_ligs
@@ -151,12 +161,12 @@ build_domino <- function(dom, max_tf_per_clust = 5, min_tf_pval = 0.01, max_rec_
         # if complexes were used
         cl_sig_list <- lapply(seq_along(inc_ligs_list), function(x) {
           if (all(inc_ligs_list[[x]] %in% lig_genes)) {
-          # Some of the ligands in the list object may not be present in the data
-          if (length(inc_ligs_list[[x]]) > 1) {
-            return(colMeans(cl_sig_mat[inc_ligs_list[[x]], ]))
-          } else {
-            return(cl_sig_mat[inc_ligs_list[[x]], ])
-          }
+            # Some of the ligands in the list object may not be present in the data
+            if (length(inc_ligs_list[[x]]) > 1) {
+              return(colMeans(cl_sig_mat[inc_ligs_list[[x]], ]))
+            } else {
+              return(cl_sig_mat[inc_ligs_list[[x]], ])
+            }
           }
         })
         names(cl_sig_list) <- names(inc_ligs_list)
@@ -192,15 +202,16 @@ build_domino <- function(dom, max_tf_per_clust = 5, min_tf_pval = 0.01, max_rec_
   }
   return(dom)
 }
+
 #' Pulls all items from a list pooled into a single vector
-#' 
+#'
 #' Helper function to convert from a nested series of lists to a single vector.
-#' 
+#'
 #' @param list List to pull items from
 #' @param list_names Names of items in list to pool
 #' @return A vector contaning all items in the list by list_names
 #' @keywords internal
-#' 
+#'
 lc <- function(list, list_names) {
   vec <- c()
   for (name in list_names) {

@@ -34,3 +34,10 @@ This function calculates a signaling network. It requires a domino object
 preprocessed from create_domino and returns a domino object prepared for
 plotting with the various plotting functions in this package.
 }
+\examples{
+pbmc_dom_tiny_built <- build_domino(
+ dom = domino2:::pbmc_dom_tiny, min_tf_pval = .001, max_tf_per_clust = 25,
+ max_rec_per_tf = 25, rec_tf_cor_threshold = .25, min_rec_percentage = 0.1
+)
+
+}
