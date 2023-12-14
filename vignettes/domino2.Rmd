@@ -9,15 +9,15 @@ vignette: >
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  echo = TRUE,
-  message = FALSE,
-  warning = FALSE,
-  fig.cap = "",
-  tidy = TRUE
+    collapse = TRUE,
+    comment = "#>",
+    echo = TRUE,
+    message = FALSE,
+    warning = FALSE,
+    fig.cap = "",
+    tidy = TRUE
 )
-options(timeout=300)
+options(timeout = 300)
 ```
 
 ```{r libraries, include=FALSE}
@@ -35,37 +35,43 @@ set.seed(123)
 data_url <- "https://zenodo.org/records/10222767/files"
 temp_dir <- tempdir()
 
-#download the reduced pbmc files
+# download the reduced pbmc files
 pbmc_dir <- paste0(temp_dir, "/pbmc")
 if (!dir.exists(pbmc_dir)) {
-  dir.create(pbmc_dir)
+    dir.create(pbmc_dir)
 }
 
 # preprocessed PBMC 3K scRNAseq data set as a Seurat object
-download.file(url = paste0(data_url, "/pbmc_seurat.rds"),
-              destfile = paste0(pbmc_dir, "/pbmc_seurat.rds"))
+download.file(
+    url = paste0(data_url, "/pbmc_seurat.rds"),
+    destfile = paste0(pbmc_dir, "/pbmc_seurat.rds")
+)
 
-#download scenic results
+# download scenic results
 scenic_dir <- paste0(temp_dir, "/scenic")
 if (!dir.exists(scenic_dir)) {
-  dir.create(scenic_dir)
+    dir.create(scenic_dir)
 }
-download.file(url = paste0(data_url, "/scenic_auc_pbmc_3k.csv"),
-              destfile = paste0(scenic_dir, "/auc_pbmc_3k.csv"))
+download.file(
+    url = paste0(data_url, "/scenic_auc_pbmc_3k.csv"),
+    destfile = paste0(scenic_dir, "/auc_pbmc_3k.csv")
+)
 
-download.file(url = paste0(data_url, "/scenic_regulons_pbmc_3k.csv"),
-              destfile = paste0(scenic_dir, "/regulons_pbmc_3k.csv"))
+download.file(
+    url = paste0(data_url, "/scenic_regulons_pbmc_3k.csv"),
+    destfile = paste0(scenic_dir, "/regulons_pbmc_3k.csv")
+)
 
 # create directory for cellphoneDB files
 cellphone_dir <- paste0(temp_dir, "/cellphoneDB")
 if (!dir.exists(cellphone_dir)) {
-  dir.create(cellphone_dir)
+    dir.create(cellphone_dir)
 }
 
 # directory for created inputs to pySCENIC and domino2
 input_dir <- paste0(temp_dir, "/inputs")
 if (!dir.exists(input_dir)) {
-  dir.create(input_dir)
+    dir.create(input_dir)
 }
 ```
 
@@ -86,8 +92,9 @@ domino2 was designed to be compatible with `{Seurat}` objects in addition to acc
 
 ```{r Save Counts Matrix as tsv File, eval=FALSE}
 pbmc_counts <- GetAssayData(object = pbmc, slot = "counts")
-write.table(t(as.matrix(pbmc_counts)), paste0(input_dir, "/pbmc3k_counts.tsv"), 
-    sep = "\t", col.names = NA)
+write.table(t(as.matrix(pbmc_counts)), paste0(input_dir, "/pbmc3k_counts.tsv"),
+    sep = "\t", col.names = NA
+)
 ```
 
 tsv and csv files are very inefficient for storing large matrices. As an alternative, the counts matrix can be saved as a loom file and directly passed to [pySCENIC](https://pyscenic.readthedocs.io/en/latest/) in this format. Generating a loom file in R requires use of the [loomR](https://github.com/mojaveazure/loomR) package. The package automatically handles the transposition of the counts matrix to cell by gene orientation as well. We recommend this approach to passing a counts matrix to pySCENIC. However, users should be aware that [loomR](https://github.com/mojaveazure/loomR) is not hosted on CRAN or BioConductor at the time of this vignette's creation. 
@@ -97,8 +104,10 @@ library(loomR)
 
 # save loom counts matrix
 pbmc_counts <- GetAssayData(object = pbmc, slot = "counts")
-pbmc_loom <- loomR::create(filename = paste0(input_dir, "/pbmc3k_counts.loom"),
-                          data = pbmc_counts)
+pbmc_loom <- loomR::create(
+    filename = paste0(input_dir, "/pbmc3k_counts.loom"),
+    data = pbmc_counts
+)
 # connection to the loom file must be closed to complete file creation
 pbmc_loom$close_all()
 ```
@@ -150,7 +159,7 @@ curl "https://resources.aertslab.org/cistarget/motif2tf/motifs-v9-nr.hgnc-m0.001
 Database files from [CellPhoneDB v4.0.0](https://github.com/ventolab/cellphonedb-data/releases/tag/v4.0.0) for human scRNAseq data can be installed from a public Github repository from the Tiechmann Group that developed CellPhoneDB.
 
 ```{r download cellPhoneDB}
-# 
+#
 cellphone_url <- "https://github.com/ventolab/cellphonedb-data/archive/refs/tags/v4.0.0.tar.gz"
 
 # download compressed database
@@ -241,8 +250,8 @@ The TF activities are a required input for domino2, and the regulons learned by 
 ```{r Load SCENIC Results}
 regulons <- read.csv(paste0(scenic_dir, "/regulons_pbmc_3k.csv"))
 auc <- read.table(paste0(scenic_dir, "/auc_pbmc_3k.csv"),
-  header = TRUE, row.names = 1,
-  stringsAsFactors = FALSE, sep = ","
+    header = TRUE, row.names = 1,
+    stringsAsFactors = FALSE, sep = ","
 )
 ```
 
@@ -251,8 +260,8 @@ The initial regulons data frame read into R from the ctx function has 2 rows of 
 ```{r Create Regulon List}
 regulons <- regulons[-1:-2, ]
 colnames(regulons) <- c(
-  "TF", "MotifID", "AUC", "NES", "MotifSimilarityQvalue", "OrthologousIdentity",
-  "Annotation", "Context", "TargetGenes", "RankAtMax"
+    "TF", "MotifID", "AUC", "NES", "MotifSimilarityQvalue", "OrthologousIdentity",
+    "Annotation", "Context", "TargetGenes", "RankAtMax"
 )
 regulon_list <- create_regulon_list_scenic(regulons = regulons)
 ```
@@ -280,25 +289,41 @@ Additional annotation columns can be provided such as name\_A and name\_B for li
 To facilitate the use of this formatting with the CellPhoneDB database, we include a helper function, `create_rl_map_cellphonedb()`, that automatically parses files from the cellPhoneDB database to arrive at the rl\_map format.
 
 ```{r Load CellPhoneDB Database}
-complexes <- read.csv(paste0(cellphone_dir,
-                            "/cellphonedb-data-4.0.0/data/complex_input.csv"), 
-                      stringsAsFactors = FALSE)
-genes <- read.csv(paste0(cellphone_dir,
-                        "/cellphonedb-data-4.0.0/data/gene_input.csv"), 
-                  stringsAsFactors = FALSE)
-interactions <- read.csv(paste0(cellphone_dir,
-                                "/cellphonedb-data-4.0.0/data/interaction_input.csv"), 
-                        stringsAsFactors = FALSE)
-proteins <- read.csv(paste0(cellphone_dir,
-                            "/cellphonedb-data-4.0.0/data/protein_input.csv"), 
-                    stringsAsFactors = FALSE)
+complexes <- read.csv(
+    paste0(
+        cellphone_dir,
+        "/cellphonedb-data-4.0.0/data/complex_input.csv"
+    ),
+    stringsAsFactors = FALSE
+)
+genes <- read.csv(
+    paste0(
+        cellphone_dir,
+        "/cellphonedb-data-4.0.0/data/gene_input.csv"
+    ),
+    stringsAsFactors = FALSE
+)
+interactions <- read.csv(
+    paste0(
+        cellphone_dir,
+        "/cellphonedb-data-4.0.0/data/interaction_input.csv"
+    ),
+    stringsAsFactors = FALSE
+)
+proteins <- read.csv(
+    paste0(
+        cellphone_dir,
+        "/cellphonedb-data-4.0.0/data/protein_input.csv"
+    ),
+    stringsAsFactors = FALSE
+)
 
 rl_map <- create_rl_map_cellphonedb(
-  genes = genes,
-  proteins = proteins,
-  interactions = interactions,
-  complexes = complexes,
-  database_name = "CellPhoneDB_v4.0" # database version used
+    genes = genes,
+    proteins = proteins,
+    interactions = interactions,
+    complexes = complexes,
+    database_name = "CellPhoneDB_v4.0" # database version used
 )
 
 knitr::kable(head(rl_map))
@@ -313,10 +338,10 @@ The change to use rl\_map formatting also enables users to manually append inter
 # from the CellPhoneDB reference are edited or the interactions are manually added
 
 col_int_df <- data.frame(
-  "int_pair" = "a11b1 complex & COLA1_HUMAN",
-  "name_A" = "a11b1 complex", "uniprot_A" = "P05556,Q9UKX5", "gene_A" = "ITB1,ITA11", "type_A" = "R",
-  "name_B" = "COLA1_HUMAN", "uniprot_B" = "P02452,P08123", "gene_B" = "COL1A1,COL1A2", "type_B" = "L",
-  "annotation_strategy" = "manual", "source" = "manual", "database_name" = "manual"
+    "int_pair" = "a11b1 complex & COLA1_HUMAN",
+    "name_A" = "a11b1 complex", "uniprot_A" = "P05556,Q9UKX5", "gene_A" = "ITB1,ITA11", "type_A" = "R",
+    "name_B" = "COLA1_HUMAN", "uniprot_B" = "P02452,P08123", "gene_B" = "COL1A1,COL1A2", "type_B" = "L",
+    "annotation_strategy" = "manual", "source" = "manual", "database_name" = "manual"
 )
 rl_map_append <- rbind(col_int_df, rl_map)
 knitr::kable(head(rl_map_append))
@@ -328,17 +353,17 @@ domino2 analysis takes place in two steps.
 
 1. `create_domino()`
 
-  a. initializes the domino result object
+    a. initializes the domino result object
 
-  b. assesses differential TF activity across cell clusters by wilcoxon rank-sum test
+    b. assesses differential TF activity across cell clusters by wilcoxon rank-sum test
 
-  c. establishes TF-receptor linkages based on Spearman correlation of TF activities with receptor expression across the queried data set. 
+    c. establishes TF-receptor linkages based on Spearman correlation of TF activities with receptor expression across the queried data set. 
 
 2. `build_domino()`
-  
-  a. sets the parameters for which TFs and receptors are called as active within a cell cluster
-  
-  b. aggregates the scaled expression of ligands capable of interacting with the active receptors for assessment of ligand type and cellular source triggering activation of a receptor.
+
+    a. sets the parameters for which TFs and receptors are called as active within a cell cluster
+
+    b. aggregates the scaled expression of ligands capable of interacting with the active receptors for assessment of ligand type and cellular source triggering activation of a receptor.
 
 ### Required inputs from data set
 
@@ -359,15 +384,15 @@ At this point, the `create_domino()` function can be used to make the object. Pa
 To run `create_domino()` with matrix and vector inputs:
 ```{r Create Domino, results='hide', warning=FALSE}
 pbmc_dom <- create_domino(
-  rl_map = rl_map,
-  features = auc_in,
-  counts = counts,
-  z_scores = z_scores,
-  clusters = clusters,
-  tf_targets = regulon_list,
-  use_clusters = TRUE,
-  use_complexes = TRUE,
-  remove_rec_dropout = FALSE
+    rl_map = rl_map,
+    features = auc_in,
+    counts = counts,
+    z_scores = z_scores,
+    clusters = clusters,
+    tf_targets = regulon_list,
+    use_clusters = TRUE,
+    use_complexes = TRUE,
+    remove_rec_dropout = FALSE
 )
 # rl_map: receptor-ligand map data frame
 # features: TF scores (AUC matrix)
@@ -383,13 +408,13 @@ pbmc_dom <- create_domino(
 The above results will be equivalent to using the `{Seurat}` object directly. Note that inclusion of both the matrix inputs and the `{Seurat}` object will prioritize the `{Seurat}` object.
 ```{r Create Domino Seurat, results='hide', warning=FALSE, eval = FALSE}
 pbmc_dom <- create_domino(
-  rl_map = rl_map,
-  features = auc_in,
-  ser = pbmc,
-  tf_targets = regulon_list, 
-  use_clusters = TRUE,
-  use_complexes = TRUE,
-  remove_rec_dropout = FALSE
+    rl_map = rl_map,
+    features = auc_in,
+    ser = pbmc,
+    tf_targets = regulon_list,
+    use_clusters = TRUE,
+    use_complexes = TRUE,
+    remove_rec_dropout = FALSE
 )
 ```
 
@@ -403,12 +428,12 @@ There are also options for thresholds of the number of TFs that may be called ac
 
 ```{r Build Domino}
 pbmc_dom <- build_domino(
-  dom = pbmc_dom,
-  min_tf_pval = .001,
-  max_tf_per_clust = 25,
-  max_rec_per_tf = 25,
-  rec_tf_cor_threshold = .25,
-  min_rec_percentage = 0.1 
+    dom = pbmc_dom,
+    min_tf_pval = .001,
+    max_tf_per_clust = 25,
+    max_rec_per_tf = 25,
+    rec_tf_cor_threshold = .25,
+    min_rec_percentage = 0.1
 )
 # min_tf_pval: Threshold for p-value of DE for TFs
 # rec_tf_cor_threshold: Minimum correlation between receptor and TF
@@ -419,12 +444,12 @@ Both of the thresholds for the number of receptors and TFs can be sent to infini
 
 ```{r Build Domino All Significant Interactions, eval=FALSE}
 pbmc_dom_all <- build_domino(
-  dom = pbmc_dom,
-  min_tf_pval = .001,
-  max_tf_per_clust = Inf,
-  max_rec_per_tf = Inf,
-  rec_tf_cor_threshold = .25,
-  min_rec_percentage = 0.1
+    dom = pbmc_dom,
+    min_tf_pval = .001,
+    max_tf_per_clust = Inf,
+    max_rec_per_tf = Inf,
+    rec_tf_cor_threshold = .25,
+    min_rec_percentage = 0.1
 )
 ```
 
@@ -437,8 +462,10 @@ Multiple functions are available to visualize the intracellular networks between
 Enrichment of TF activities by cell types can be visualized by `feat_heatmap()` which plots data set-wide TF activity scores as a heatmap.
 
 ```{r}
-feat_heatmap(pbmc_dom, norm = TRUE, bool = FALSE, use_raster = FALSE,
-  row_names_gp = grid::gpar(fontsize = 4))
+feat_heatmap(pbmc_dom,
+    norm = TRUE, bool = FALSE, use_raster = FALSE,
+    row_names_gp = grid::gpar(fontsize = 4)
+)
 ```
 
 ### Cumulative signaling between cell types
@@ -463,15 +490,15 @@ New to domino2, `gene_network()` can be used between two clusters to determine i
 
 ```{r}
 gene_network(pbmc_dom,
-  clust = "dendritic_cell", OutgoingSignalingClust = "CD14_monocyte",
-  layout = "grid"
+    clust = "dendritic_cell", OutgoingSignalingClust = "CD14_monocyte",
+    layout = "grid"
 )
 ```
 
 A comprehensive assessment of ligand expression targeting active receptors on a given cluster can be assessed with `incoming_signaling_heatmap()`.
 
 ```{r, out.width = "95%"}
-incoming_signaling_heatmap(pbmc_dom, rec_clust = 'dendritic_cell', max_thresh = 2.5, use_raster = FALSE)
+incoming_signaling_heatmap(pbmc_dom, rec_clust = "dendritic_cell", max_thresh = 2.5, use_raster = FALSE)
 ```
 
 Another form of comprehensive ligand expression assessment is available for individual active receptors in the form of circos plots new to domino2. The outer arcs correspond to clusters in the domino object with inner arcs representing each possible ligand of the plotted receptor. Arcs are drawn between ligands on a cell type and the receptor if the ligand is expressed above the specified threshold. Arc widths correspond to the mean express of the ligand by the cluster with the widest arc width scaling to the maximum expression of the ligand within the data.

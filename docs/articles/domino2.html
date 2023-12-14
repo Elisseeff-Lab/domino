@@ -560,19 +560,21 @@
 </h3>
 <p>domino2 analysis takes place in two steps.</p>
 <ol style="list-style-type: decimal">
-<li><code><a href="../reference/create_domino.html">create_domino()</a></code></li>
-</ol>
+<li>
+<p><code><a href="../reference/create_domino.html">create_domino()</a></code></p>
 <ol style="list-style-type: lower-alpha">
 <li><p>initializes the domino result object</p></li>
 <li><p>assesses differential TF activity across cell clusters by wilcoxon rank-sum test</p></li>
 <li><p>establishes TF-receptor linkages based on Spearman correlation of TF activities with receptor expression across the queried data set.</p></li>
 </ol>
-<ol start="2" style="list-style-type: decimal">
-<li><code><a href="../reference/build_domino.html">build_domino()</a></code></li>
-</ol>
+</li>
+<li>
+<p><code><a href="../reference/build_domino.html">build_domino()</a></code></p>
 <ol style="list-style-type: lower-alpha">
 <li><p>sets the parameters for which TFs and receptors are called as active within a cell cluster</p></li>
 <li><p>aggregates the scaled expression of ligands capable of interacting with the active receptors for assessment of ligand type and cellular source triggering activation of a receptor.</p></li>
+</ol>
+</li>
 </ol>
 <div class="section level4">
 <h4 id="required-inputs-from-data-set">Required inputs from data set<a class="anchor" aria-label="anchor" href="#required-inputs-from-data-set"></a>

@@ -29,10 +29,10 @@ GitHub](https://github.com/Elisseeff-Lab/domino), and can be installed
 using the remotes package.
 
 ``` r
-if(!require(remotes)){
-    install.packages('remotes')
+if (!require(remotes)) {
+    install.packages("remotes")
 }
-remotes::install_github('FertigLab/domino2@v0.2.2')
+remotes::install_github("FertigLab/domino2@v0.2.2")
 ```
 
 ## Usage Overview

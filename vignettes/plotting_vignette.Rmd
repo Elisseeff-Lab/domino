@@ -9,16 +9,16 @@ vignette: >
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  echo = TRUE,
-  message = FALSE,
-  warning = FALSE,
-  fig.cap="",
-  tidy = TRUE,
-  global.device = TRUE
+    collapse = TRUE,
+    comment = "#>",
+    echo = TRUE,
+    message = FALSE,
+    warning = FALSE,
+    fig.cap = "",
+    tidy = TRUE,
+    global.device = TRUE
 )
-options(timeout=300)
+options(timeout = 300)
 ```
 
 ```{r setup, include = FALSE, eval = TRUE}
@@ -34,8 +34,10 @@ In addition to the numerous plotting options available in the original [Domino](
 data_url <- "https://zenodo.org/records/10222767/files"
 temp_dir <- tempdir()
 
-download.file(url = paste0(data_url, "/pbmc_domino_built.rds"),
-              destfile = paste0(temp_dir, "/pbmc_domino_built.rds"))
+download.file(
+    url = paste0(data_url, "/pbmc_domino_built.rds"),
+    destfile = paste0(temp_dir, "/pbmc_domino_built.rds")
+)
 dom <- readRDS(paste0(temp_dir, "/pbmc_domino_built.rds"))
 ```
 
@@ -68,9 +70,9 @@ The heatmap functions in domino2 are based on `ComplexHeatmap::Heatmap()` and wi
 
 ```{r corheatmap-ComplexHeatmap-args}
 cor_heatmap(
-  dom,
-  cluster_rows = FALSE, cluster_columns = FALSE,
-  column_title = "Heatmap Without Clustering", column_names_gp = grid::gpar(fontsize = 4)
+    dom,
+    cluster_rows = FALSE, cluster_columns = FALSE,
+    column_title = "Heatmap Without Clustering", column_names_gp = grid::gpar(fontsize = 4)
 )
 ```
 
@@ -85,8 +87,10 @@ feat_heatmap(dom, use_raster = FALSE, row_names_gp = grid::gpar(fontsize = 4))
 It functions similarly to `cor_heatmap()`, with arguments to select a specific vector of features, to use a boolean view with a threshold, and to pass other arguments to `ComplexHeatmap::Heatmap()`. Specific to this function though are arguments for setting the range of values to be visualized and one to choose whether or not to normalize the scores to the max value.
 
 ```{r featheatmap-options, fig.show="hold", out.width = "50%"}
-feat_heatmap(dom, min_thresh = 0.1, max_thresh = 0.6, 
-    norm = TRUE, bool = FALSE, use_raster = FALSE)
+feat_heatmap(dom,
+    min_thresh = 0.1, max_thresh = 0.6,
+    norm = TRUE, bool = FALSE, use_raster = FALSE
+)
 feat_heatmap(dom, bool = TRUE, use_raster = FALSE)
 ```
 
@@ -135,8 +139,8 @@ Options to modify this plot include adjusting scaling for the ligands and differ
 
 ```{r genenetwork-options}
 gene_network(dom,
-  clust = "CD16_monocyte", OutgoingSignalingClust = "CD14_monocyte",
-  lig_scale = 25, layout = "sphere"
+    clust = "CD16_monocyte", OutgoingSignalingClust = "CD14_monocyte",
+    lig_scale = 25, layout = "sphere"
 )
 ```
 
@@ -144,8 +148,8 @@ Additionally, colors can be given for select genes (for example, to highlight a 
 
 ```{r genenetwork-cols}
 gene_network(dom,
-  clust = "CD16_monocyte", OutgoingSignalingClust = "CD14_monocyte",
-  cols = c("CD1D" = "violet", "LILRB2" = "violet", "FOSB" = "violet"), lig_scale = 10
+    clust = "CD16_monocyte", OutgoingSignalingClust = "CD14_monocyte",
+    cols = c("CD1D" = "violet", "LILRB2" = "violet", "FOSB" = "violet"), lig_scale = 10
 )
 ```
 
@@ -161,8 +165,8 @@ In addition to changes such as scaling, thresholds, or layouts, this plot can be
 
 ```{r signalingnet-clusts}
 signaling_network(dom,
-  showOutgoingSignalingClusts = "CD14_monocyte", scale = "none",
-  norm = "none", layout = "fr", scale_by = "none", edge_weight = 2, vert_scale = 10
+    showOutgoingSignalingClusts = "CD14_monocyte", scale = "none",
+    norm = "none", layout = "fr", scale_by = "none", edge_weight = 2, vert_scale = 10
 )
 ```
 
@@ -179,8 +183,8 @@ This function can be given cluster colors to match other plots you may make with
 
 ```{r circos-opt, fig.asp = 0.6, out.width = "90%"}
 cols <- c(
-  "red", "orange", "green", "blue", "pink", "purple",
-  "slategrey", "firebrick", "hotpink"
+    "red", "orange", "green", "blue", "pink", "purple",
+    "slategrey", "firebrick", "hotpink"
 )
 names(cols) <- dom_clusters(dom, labels = FALSE)
 circos_ligand_receptor(dom, receptor = "CD74", cell_colors = cols)

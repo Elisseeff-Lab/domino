@@ -9,15 +9,15 @@ vignette: >
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  echo = TRUE,
-  message = FALSE,
-  warning = FALSE,
-  fig.cap = "",
-  tidy = "styler"
+    collapse = TRUE,
+    comment = "#>",
+    echo = TRUE,
+    message = FALSE,
+    warning = FALSE,
+    fig.cap = "",
+    tidy = "styler"
 )
-options(timeout=300)
+options(timeout = 300)
 ```
 
 ```{r setup, include = FALSE}
@@ -27,8 +27,10 @@ library(domino2)
 data_url <- "https://zenodo.org/records/10222767/files"
 temp_dir <- tempdir()
 
-download.file(url = paste0(data_url, "/pbmc_domino_built.rds"),
-              destfile = paste0(temp_dir, "/pbmc_domino_built.rds"))
+download.file(
+    url = paste0(data_url, "/pbmc_domino_built.rds"),
+    destfile = paste0(temp_dir, "/pbmc_domino_built.rds")
+)
 dom <- readRDS(paste0(temp_dir, "/pbmc_domino_built.rds"))
 ```
 
