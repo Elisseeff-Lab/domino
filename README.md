@@ -1,6 +1,6 @@
 # Introducing domino2: Improved Inference of Cell Signaling from Single Cell RNA Sequencing Data <a href="https://github.com/FertigLab/domino2/tree/v0.2.1"><img src="man/figures/logo.svg" align="right" height="138" alt="domino2 repository" /></a>
 
-domino2 is an updated version of the original [domino](https://github.com/Elisseeff-Lab/domino) R package published in Nature Biomedical Engineering in [Computational reconstruction of the signaling networks surrounding implanted biomaterials from single-cell transcriptomics](https://doi.org/10.1038/s41551-021-00770-5). domino2 is a tool for analysis of intra- and intercellular signaling in single cell RNA sequencing data based on transcription factor activation and receptor and ligand linkages.
+domino2 is an updated version of the original `Domino` R package published in Nature Biomedical Engineering in [Computational reconstruction of the signaling networks surrounding implanted biomaterials from single-cell transcriptomics](https://doi.org/10.1038/s41551-021-00770-5). domino2 is a tool for analysis of intra- and intercellular signaling in single cell RNA sequencing data based on transcription factor activation and receptor and ligand linkages.
 
 ## Installation
 
@@ -49,8 +49,8 @@ Some new features have been introduced:
 
 Lastly, the package is being updated to ensure it conforms to BioConductor standards.
 
-## The original `Domino` package
-Code used in the version of Domino published in 2021 has been uploaded to [Zenodo](https://zenodo.org/record/8277233) and is also released here as [v1.0.0](https://github.com/Elisseeff-Lab/domino/tree/v1.0.0). Again, please note that $\textcolor{orange}{\textsf{this repository is no longer being actively maintained.}}$ To ask questions, report issues, and access new features, please view the [domino2 repository](https://github.com/FertigLab/domino2).
+## Accessing the Original `Domino` Package
+Code used in the version of `Domino` published in 2021 has been uploaded to [Zenodo](https://zenodo.org/record/8277233) and is also released here as [v1.0.0](https://github.com/Elisseeff-Lab/domino/tree/v1.0.0). Again, please note that $\textcolor{orange}{\textsf{this repository is no longer being actively maintained.}}$ To ask questions, report issues, and access new features, please view the [domino2 repository](https://github.com/FertigLab/domino2).
 
 ## Citation
 
