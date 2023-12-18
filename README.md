@@ -56,8 +56,8 @@ If you use our package in your analysis, please cite us:
 > Cherry C, Maestas DR, Han J, Andorko JI, Cahan P, Fertig EJ, Garmire LX, Elisseeff JH. Computational reconstruction of the signalling networks surrounding implanted biomaterials from single-cell transcriptomics. Nat Biomed Eng. 2021 Oct;5(10):1228-1238. doi: 10.1038/s41551-021-00770-5. Epub 2021 Aug 2. PMID: 34341534; PMCID: PMC9894531.
 
 > Cherry C, Mitchell J, Nagaraj S, Krishnan K, Fertig E, Elisseeff J
-(2023). domino2: Cell Communication Analysis for Single Cell RNA
-Sequencing. R package version 0.2.1.
+(2023). *domino2: Cell Communication Analysis for Single Cell RNA
+Sequencing*. R package version 0.2.1.
 
 ## Contact Us
 If you find any bugs, have questions, or want to contribute, please let us know [here](https://github.com/FertigLab/domino_development/issues).
