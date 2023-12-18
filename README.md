@@ -6,7 +6,7 @@ domino2 is an updated version of the original [domino](https://github.com/Elisse
 
 domino2 is undergoing active development to improve analysis capabilities and interpretability, so the codebase is subject to change as new features and fixes are implemented. **v0.2.1** of domino2 serves as the current stable version during these active updates for reproducible usage.
 
-This version is currently hosted on the [FertigLab GitHub](https://github.com/FertigLab) as [branch v0.2.1](https://github.com/FertigLab/domino2/tree/v0.2.1) of the [domino2 repository](https://github.com/FertigLab/domino2) forked from this repository and can be installed using the remotes package.
+This version is currently hosted on the [FertigLab GitHub](https://github.com/FertigLab) as [branch v0.2.1](https://github.com/FertigLab/domino2/tree/v0.2.1) of the [domino2 repository](https://github.com/FertigLab/domino2) forked from this repository ($\textcolor{orange}{\textsf{which is no longer being maintained!}}$) and can be installed using the remotes package.
 
 ```r
 if(!require(remotes)){
@@ -48,6 +48,9 @@ Some new features have been introduced:
 - Plotting function for differential linkages
 
 Lastly, the package is being updated to ensure it conforms to BioConductor standards.
+
+## The original `Domino` package
+Code used in the version of Domino published in 2021 has been uploaded to [Zenodo](https://zenodo.org/record/8277233) and is also released here as [v1.0.0](https://github.com/Elisseeff-Lab/domino/tree/v1.0.0). Again, please note that $\textcolor{orange}{\textsf{this repository is no longer being actively maintained.}}$ To ask questions, report issues, and access new features, please view the [domino2 repository](https://github.com/FertigLab/domino2).
 
 ## Citation
 
