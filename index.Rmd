@@ -19,7 +19,7 @@ domino2 is an updated version of the original [domino](https://github.com/Elisse
 
 ## Installation
 
-domino2 is undergoing active development to improve analysis capabilities and interpretability, so the codebase is subject to change as new features and fixes are implemented. v0.3.0 of domino2 serves as the current stable version during these active updates for reproducible usage (see our [changelog](news/index.html) for more information on changes).
+domino2 is undergoing active development to improve analysis capabilities and interpretability, so the codebase is subject to change as new features and fixes are implemented. v0.2.2 of domino2 serves as the current stable version during these active updates for reproducible usage (see our [changelog](news/index.html) for more information on changes).
 
 This version is currently hosted on the [FertigLab GitHub](https://github.com/FertigLab) on the [domino2 repository](https://github.com/FertigLab/domino2) forked from the primary repository hosted on the [Elisseeff-Lab GitHub](https://github.com/Elisseeff-Lab/domino), and can be installed using the remotes package.
 

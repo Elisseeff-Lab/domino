@@ -1,4 +1,4 @@
-# domino2 v0.3.0
+# domino2 v0.2.2
 
 ## Linkage functions
 - Addition of new class to summarize linkages in objects
