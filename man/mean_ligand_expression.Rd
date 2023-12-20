@@ -7,20 +7,27 @@
 mean_ligand_expression(x, ligands, cell_ident, cell_barcodes, destination)
 }
 \arguments{
-\item{x}{gene by cell expression matrix}
+\item{x}{Gene by cell expression matrix}
 
-\item{ligands}{character vector of ligand genes to be quantified}
+\item{ligands}{Character vector of ligand genes to be quantified}
 
-\item{cell_ident}{vector of cell type (identity) names for which to calculate mean ligand gene expression}
+\item{cell_ident}{Vector of cell type (identity) names for which to calculate mean ligand gene expression}
 
-\item{cell_barcodes}{vector of cell barcodes (colnames of x) belonging to cell_ident to calculate mean expression across}
+\item{cell_barcodes}{Vector of cell barcodes (colnames of x) belonging to cell_ident to calculate mean expression across}
 
-\item{destination}{name of the receptor with which each ligand interacts}
+\item{destination}{Name of the receptor with which each ligand interacts}
 }
 \value{
-data frame of ligand expression targeting the specified receptor
+A data frame of ligand expression targeting the specified receptor
 }
 \description{
 Creates a data frame of mean ligand expression for use in plotting a circos
-plot of ligand exression and saving tables of mean expression.
+plot of ligand expression and saving tables of mean expression.
+}
+\examples{
+counts <- dom_counts(domino2:::pbmc_dom_built_tiny)
+mean_exp <- mean_ligand_expression(counts,
+ ligands = c("PTPRC", "FASLG"), cell_ident = "CD14_monocyte",
+ cell_barcodes = colnames(counts), destination = "FAS")
+
 }

@@ -7,7 +7,7 @@
 cor_scatter(dom, tf, rec, remove_rec_dropout = TRUE, ...)
 }
 \arguments{
-\item{dom}{A domino object with network built (build_domino)}
+\item{dom}{Domino object with network built (\code{\link[=build_domino]{build_domino()}})}
 
 \item{tf}{Target TF module for plotting with receptor}
 
@@ -17,6 +17,13 @@ cor_scatter(dom, tf, rec, remove_rec_dropout = TRUE, ...)
 
 \item{...}{Other parameters to pass to ggscatter.}
 }
+\value{
+a ggplot object
+}
 \description{
 Create a correlation plot between transcription factor activation score and receptor
+}
+\examples{
+cor_scatter(domino2:::pbmc_dom_built_tiny, "ATF4","CD22")
+
 }

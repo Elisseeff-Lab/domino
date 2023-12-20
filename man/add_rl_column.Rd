@@ -16,9 +16,15 @@ add_rl_column(map, map_ref, conv, new_name)
 \item{new_name}{Name of new column to be created in RL map}
 }
 \value{
-RL signaling data frame.
+An updated RL signaling data frame
 }
 \description{
-This function adds a column to the internal rl 'map' used to map all 
+This function adds a column to the internal rl 'map' used to map all
 receptor and receptor complexes to all ligand and ligand complexes.
+}
+\examples{
+lr_name <- data.frame("abbrev" = c("L", "R"), "full" = c("Ligand", "Receptor"))
+rl_map_expanded <- add_rl_column(map = domino2:::rl_map_tiny, map_ref = "type_A",
+ conv = lr_name, new_name = "type_A_full")
+
 }

@@ -7,7 +7,7 @@
 feat_heatmap(
   dom,
   feats = NULL,
-  bool = TRUE,
+  bool = FALSE,
   bool_thresh = 0.2,
   title = TRUE,
   norm = FALSE,
@@ -19,19 +19,19 @@ feat_heatmap(
 )
 }
 \arguments{
-\item{dom}{A domino object with network built (build_domino)}
+\item{dom}{Domino object with network built (\code{\link[=build_domino]{build_domino()}})}
 
 \item{feats}{Either a vector of features to include in the heatmap or 'all' for all features. If left NULL then the features selected for the signaling network will be shown.}
 
-\item{bool}{A boolean indicating whether the heatmap should be continuous or boolean. If boolean then bool_thresh will be used to determine how to define activity as positive or negative.}
+\item{bool}{Boolean indicating whether the heatmap should be continuous or boolean. If boolean then bool_thresh will be used to determine how to define activity as positive or negative.}
 
-\item{bool_thresh}{A numeric indicating the threshold separating 'on' or 'off' for feature activity if making a boolean heatmap.}
+\item{bool_thresh}{Numeric indicating the threshold separating 'on' or 'off' for feature activity if making a boolean heatmap.}
 
-\item{title}{Either a string to use as the title or a boolean describing whether to include a title. In order to pass the 'main' parameter to NMF::aheatmap you must set title to FALSE.}
+\item{title}{Either a string to use as the title or a boolean describing whether to include a title. In order to pass the 'main' parameter to  \code{\link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap()}}  you must set title to FALSE.}
 
 \item{norm}{Boolean indicating whether or not to normalize the transcrption factors to their max value.}
 
-\item{cols}{A named vector of colors to annotate cells by cluster color. Values are taken as colors and names as cluster. If left as NULL then default ggplot colors will be generated.}
+\item{cols}{Named vector of colors to annotate cells by cluster color. Values are taken as colors and names as cluster. If left as NULL then default ggplot colors will be generated.}
 
 \item{ann_cols}{Boolean indicating whether to include cell cluster as a column annotation. Colors can be defined with cols. If FALSE then custom annotations can be passed to NMF.}
 
@@ -39,9 +39,21 @@ feat_heatmap(
 
 \item{max_thresh}{Maximum threshold for color scaling if not a boolean heatmap}
 
-\item{...}{Other parameters to pass to NMF::aheatmap. Note that to use the 'main' parameter of NMF::aheatmap you must set title = FALSE and to use 'annCol' or 'annColors' ann_cols must be FALSE.}
+\item{...}{Other parameters to pass to  \code{\link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap()}} . Note that to use the 'main' parameter of  \code{\link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap()}}  you must set title = FALSE and to use 'annCol' or 'annColors' ann_cols must be FALSE.}
+}
+\value{
+a Heatmap rendered to the active graphics device
 }
 \description{
 Creates a heatmap of feature expression (typically transcription factor
 activation scores) by cells organized by cluster.
+}
+\examples{
+#basic usage
+feat_heatmap(domino2:::pbmc_dom_built_tiny)
+#using thresholds
+feat_heatmap(
+ domino2:::pbmc_dom_built_tiny, min_thresh = 0.1, 
+  max_thresh = 0.6, norm = TRUE, bool = FALSE)
+
 }

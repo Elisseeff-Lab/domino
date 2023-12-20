@@ -15,9 +15,9 @@ signaling_heatmap(
 )
 }
 \arguments{
-\item{dom}{A domino object with network built (build_domino)}
+\item{dom}{Domino object with network built (\code{\link[=build_domino]{build_domino()}})}
 
-\item{clusts}{A vector of clusters to be included. If NULL then all clusters are used.}
+\item{clusts}{Vector of clusters to be included. If NULL then all clusters are used.}
 
 \item{min_thresh}{Minimum signaling threshold for plotting. Defaults to -Inf for no threshold.}
 
@@ -27,9 +27,21 @@ signaling_heatmap(
 
 \item{normalize}{Options to normalize the matrix. Normalization is done after thresholding and scaling. Accepted inputs are 'none' for no normalization, 'rec_norm' to normalize to the maximum value with each receptor cluster, or 'lig_norm' to normalize to the maximum value within each ligand cluster}
 
-\item{...}{Other parameters to pass to NMF::aheatmap}
+\item{...}{Other parameters to pass to  \code{\link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap()}}}
+}
+\value{
+a Heatmap rendered to the active graphics device
 }
 \description{
-Creates a heatmap of the signaling network. Alternatively, the network 
+Creates a heatmap of the signaling network. Alternatively, the network
 matrix can be accessed directly in the signaling slot of a domino object.
+}
+\examples{
+#basic usage
+signaling_heatmap(domino2:::pbmc_dom_built_tiny)
+#scale
+signaling_heatmap(domino2:::pbmc_dom_built_tiny, scale = "sqrt")
+#normalize
+signaling_heatmap(domino2:::pbmc_dom_built_tiny, normalize = "rec_norm")
+
 }
