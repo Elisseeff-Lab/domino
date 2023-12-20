@@ -6,16 +6,16 @@ Domino2 is an updated version of the original [domino](https://github.com/Elisse
 
 ### Installation
 
-Domino2 is undergoing active development where aspects of how data is used, analyzed, and interpreted is subject to change as new features and fixes are implemented. **v0.2.1** of Domino2 serves as the first stable development version during these active updates for reproducible usage.
+Domino2 is undergoing active development where aspects of how data is used, analyzed, and interpreted is subject to change as new features and fixes are implemented. **v0.3.0** of Domino2 serves as the first stable development version during these active updates for reproducible usage.
 
-This version is currently hosted on the [FertigLab GitHub](https://github.com/FertigLab) as [branch v0.2.1](https://github.com/FertigLab/domino_development/tree/v0.2.1) of the [domino_development repository](https://github.com/FertigLab/domino_development) forked from the primary repository hosted on the [Elisseeff-Lab GitHub](https://github.com/Elisseeff-Lab/domino), and can be installed using the remotes package.
+This version is currently hosted on the [FertigLab GitHub](https://github.com/FertigLab) on the [domino2 repository](https://github.com/FertigLab/domino2) forked from the primary repository hosted on the [Elisseeff-Lab GitHub](https://github.com/Elisseeff-Lab/domino), and can be installed using the remotes package.
 
 
 ```r
 if(!require(remotes)){
     install.packages('remotes')
 }
-remotes::install_github('FertigLab/domino_development@v0.2.1')
+remotes::install_github('FertigLab/domino2')
 ```
 
 ### Usage Overview
@@ -35,6 +35,8 @@ Please see the our website for an example analysis that includes all of these st
 If you use our package in your analysis, please cite us:
 
 > Cherry C, Maestas DR, Han J, Andorko JI, Cahan P, Fertig EJ, Garmire LX, Elisseeff JH. Computational reconstruction of the signalling networks surrounding implanted biomaterials from single-cell transcriptomics. Nat Biomed Eng. 2021 Oct;5(10):1228-1238. doi: 10.1038/s41551-021-00770-5. Epub 2021 Aug 2. PMID: 34341534; PMCID: PMC9894531.
+
+> Cherry C, Mitchell J, Nagaraj S, Krishnan K, Lvovs D, Fertig E, Elisseeff J (2023). domino2: Cell Communication Analysis for Single Cell RNA Sequencing. R package version 0.2.1.
 
 ### Contact Us
 If you find any bugs or have questions, please let us know [here](https://github.com/FertigLab/domino_development/issues).

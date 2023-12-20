@@ -1,4 +1,7 @@
-url: ~
+url: https://FertigLab.github.io/domino2
+
+deploy:
+  install_metadata: true
 
 template:
   bootstrap: 5
@@ -108,10 +111,16 @@ footer:
 
 news:
   one_page: true
+  cran_dates: false
+  releases:
+  - text: "domino2 v0.2.1"
+    href: https://github.com/FertigLab/domino2/releases/tag/v0.2.1-alpha
+  - text: "domino2 v0.3.0"
+    href: https://github.com/FertigLab/domino2
 
 authors:
   footer:
     roles: aut
-    text: "Developed by"
+    text: "is developed by"
   sidebar:
     roles: [aut, ctb]
