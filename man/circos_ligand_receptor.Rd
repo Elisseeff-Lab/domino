@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_fxns.R
 \name{circos_ligand_receptor}
 \alias{circos_ligand_receptor}
-\title{Plot expression of a receptor's ligands by other cell types as a circos plot}
+\title{Plot expression of a receptor's ligands by other cell types as a chord plot}
 \usage{
 circos_ligand_receptor(
   dom,
@@ -13,17 +13,29 @@ circos_ligand_receptor(
 )
 }
 \arguments{
-\item{dom}{A domino object that has undergone network building with build_domino()}
+\item{dom}{Domino object that has undergone network building with \code{\link[=build_domino]{build_domino()}}}
 
 \item{receptor}{Name of a receptor active in at least one cell type in the domino object}
 
-\item{ligand_expression_threshold}{minimum mean expression value of a ligand by a cell type for a chord to be rendered between the cell type and the receptor}
+\item{ligand_expression_threshold}{Minimum mean expression value of a ligand by a cell type for a chord to be rendered between the cell type and the receptor}
 
-\item{cell_idents}{vector of cell types from cluster assignments in the domino object to be included in the circos plot.}
+\item{cell_idents}{Vector of cell types from cluster assignments in the domino object to be included in the plot.}
 
-\item{cell_colors}{a named vector of color names or hex codes where names correspond to the plotted cell types and the color values}
+\item{cell_colors}{Named vector of color names or hex codes where names correspond to the plotted cell types and the color values}
+}
+\value{
+renders a circos plot to the active graphics device
 }
 \description{
-Creates a circos plot of expression of ligands that can activate a specified
+Creates a chord plot of expression of ligands that can activate a specified
 receptor where chord widths correspond to mean ligand expression by the cluster.
+}
+\examples{
+#basic usage
+circos_ligand_receptor(domino2:::pbmc_dom_built_tiny, receptor = "FAS")
+#specify colors
+cols = c("red", "orange", "green", "blue", "pink", "purple", "slategrey", "firebrick", "hotpink")
+names(cols) = levels(domino2:::pbmc_dom_built_tiny@clusters)
+circos_ligand_receptor(domino2:::pbmc_dom_built_tiny, receptor = "FAS", cell_colors = cols)
+
 }

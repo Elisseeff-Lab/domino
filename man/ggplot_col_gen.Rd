@@ -15,3 +15,4 @@ A vector of colors according to ggplot color generation.
 \description{
 Accepts a number of colors to generate and generates a ggplot color spectrum.
 }
+\keyword{internal}

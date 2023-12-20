@@ -23,17 +23,17 @@ signaling_network(
 )
 }
 \arguments{
-\item{dom}{A domino object with network built (build_domino)}
+\item{dom}{Domino object with network built (\code{\link[=build_domino]{build_domino()}})}
 
-\item{cols}{A named vector indicating the colors for clusters. Values are colors and names must match clusters in the domino object. If left as NULL then ggplot colors are generated for the clusters.}
+\item{cols}{Named vector indicating the colors for clusters. Values are colors and names must match clusters in the domino object. If left as NULL then ggplot colors are generated for the clusters.}
 
 \item{edge_weight}{Weight for determining thickness of edges on plot. Signaling values are multiplied by this value.}
 
-\item{clusts}{A vector of clusters to be included in the network plot.}
+\item{clusts}{Vector of clusters to be included in the network plot.}
 
-\item{showOutgoingSignalingClusts}{A vector of clusters to plot the outgoing signaling from}
+\item{showOutgoingSignalingClusts}{Vector of clusters to plot the outgoing signaling from}
 
-\item{showIncomingSignalingClusts}{A vector of clusters to plot the incoming signaling on}
+\item{showIncomingSignalingClusts}{Vector of clusters to plot the incoming signaling on}
 
 \item{min_thresh}{Minimum signaling threshold. Values lower than the threshold will be set to the threshold. Defaults to -Inf for no threshold.}
 
@@ -49,10 +49,25 @@ signaling_network(
 
 \item{vert_scale}{Integer used to scale size of vertices with our without variable scaling from size_verts_by.}
 
-\item{...}{Other parameters to be passed to plot when used with an igraph object.}
+\item{plot_title}{Text for the plot's title.}
+
+\item{...}{Other parameters to be passed to plot when used with an \code{{igraph}} object.}
+}
+\value{
+an igraph rendered to the active graphics device
 }
 \description{
 Creates a network diagram of signaling between clusters. Nodes are clusters
 and directed edges indicate signaling from one cluster to another. Edges are
 colored based on the color scheme of the ligand expressing cluster.
+}
+\examples{
+#basic usage
+signaling_network(domino2:::pbmc_dom_built_tiny)
+# scaling, thresholds, layouts, selecting clusters
+signaling_network(
+ domino2:::pbmc_dom_built_tiny, showOutgoingSignalingClusts = "CD14_monocyte", 
+ scale = "none", norm = "none", layout = "fr", scale_by = "none", 
+ vert_scale = 5)
+
 }
