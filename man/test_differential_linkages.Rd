@@ -49,8 +49,10 @@ Statistical test for differential linkages across multiple domino results
 }
 \examples{
 \dontrun{
-test_differential_linkages(linkage_summary = linkage_ls, cluster = "CD8_T_cell", 
- group.by = "group", linkage = "rec_lig", test_name = "fishers.exact")
+test_differential_linkages(
+    linkage_summary = linkage_ls, cluster = "CD8_T_cell",
+    group.by = "group", linkage = "rec_lig", test_name = "fishers.exact"
+)
 }
 
 }
