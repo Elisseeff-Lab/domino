@@ -1,0 +1,8 @@
+name: Version Update from Domino2
+on:
+    repository_dispatch:
+jobs:
+    myEvent:
+    runs-on: ubuntu-latest
+    steps:
+        # Ideally update read me with newest version?

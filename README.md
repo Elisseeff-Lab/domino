@@ -1,18 +1,18 @@
-# Introducing domino2: Improved Inference of Cell Signaling from Single Cell RNA Sequencing Data <a href="https://github.com/FertigLab/domino2/tree/v0.2.1"><img src="man/figures/logo.svg" align="right" height="138" alt="domino2 repository" /></a>
+# Introducing domino2: Improved Inference of Cell Signaling from Single Cell RNA Sequencing Data <a href="https://fertiglab.github.io/domino2/"><img src="man/figures/logo.svg" align="right" height="138" alt="domino2 repository" /></a>
 
 domino2 is an updated version of the original `Domino` R package published in Nature Biomedical Engineering in [Computational reconstruction of the signaling networks surrounding implanted biomaterials from single-cell transcriptomics](https://doi.org/10.1038/s41551-021-00770-5). domino2 is a tool for analysis of intra- and intercellular signaling in single cell RNA sequencing data based on transcription factor activation and receptor and ligand linkages.
 
 ## Installation
 
-domino2 is undergoing active development to improve analysis capabilities and interpretability, so the codebase is subject to change as new features and fixes are implemented. **v0.2.1** of domino2 serves as the current stable version during these active updates for reproducible usage.
+domino2 is undergoing active development to improve analysis capabilities and interpretability, so the codebase is subject to change as new features and fixes are implemented. **v0.2.2** of domino2 serves as the current stable version during these active updates for reproducible usage.
 
-This version is currently hosted on the [FertigLab GitHub](https://github.com/FertigLab) as [branch v0.2.1](https://github.com/FertigLab/domino2/tree/v0.2.1) of the [domino2 repository](https://github.com/FertigLab/domino2) forked from this repository ($\textcolor{orange}{\textsf{which is no longer being maintained!}}$) and can be installed using the remotes package.
+This version is currently hosted on the [FertigLab domino2 repository](https://github.com/FertigLab/domino2) with release [v0.2.2](https://github.com/FertigLab/domino2/releases/tag/v0.2.2-alpha) availabe for installation. It was forked from this repository ($\textcolor{orange}{\textsf{which is no longer being maintained!}}$) and can be installed using the remotes package.
 
 ```r
 if(!require(remotes)){
     install.packages('remotes')
 }
-remotes::install_github('FertigLab/domino_development@v0.2.1')
+remotes::install_github('FertigLab/domino2')
 ```
 
 ## Usage Overview
@@ -25,7 +25,7 @@ Here is an overview of how domino2 might be used in analysis of a single cell RN
 4. Parameters such as the maximum number of transcription factors and receptors or the minimum correlation threshold (among others) are used to make a cell communication network
 5. Communication networks can be extracted from within the domino object or visualized using a variety of plotting functions
 
-Please see further documentation on the [domino2 repository](https://github.com/FertigLab/domino2) for additional information, such as an example analysis that includes all of these steps in detail, from downloading and running [pySCENIC](https://pyscenic.readthedocs.io/en/latest/) to building and visualizing domino results. Other articles include further details on plotting functions and the structure of the domino object.
+Please see [our website](https://fertiglab.github.io/domino2/) for an example analysis that includes all of these steps in detail, from downloading and running [pySCENIC](https://pyscenic.readthedocs.io/en/latest/) to building and visualizing domino results. Other articles include [further details on plotting functions](https://fertiglab.github.io/domino2/articles/plotting_vignette.html) and [the structure of the domino object](https://fertiglab.github.io/domino2/articles/domino_object_vignette.html).
 
 ## Improvements
 domino2 includes updates to domino object construction:
@@ -50,7 +50,7 @@ Some new features have been introduced:
 Lastly, the package is being updated to ensure it conforms to BioConductor standards.
 
 ## Accessing the Original `Domino` Package
-Code used in the version of `Domino` published in 2021 has been uploaded to [Zenodo](https://zenodo.org/record/8277233) and is also released here as [v1.0.0](https://github.com/Elisseeff-Lab/domino/tree/v1.0.0). Again, please note that $\textcolor{orange}{\textsf{this repository is no longer being actively maintained.}}$ To ask questions, report issues, and access new features, please view the [domino2 repository](https://github.com/FertigLab/domino2).
+Code used in the version of `Domino` published in 2021 has been uploaded to [Zenodo](https://zenodo.org/record/8277233) and is also released here as [domino v1.0.0](https://github.com/Elisseeff-Lab/domino/tree/v1.0.0). Again, $\textcolor{orange}{\textsf{please note that this repository is no longer being actively maintained.}}$ To ask questions, report issues, and access new features, please view the [domino2 repository](https://github.com/FertigLab/domino2).
 
 ## Citation
 
@@ -60,7 +60,7 @@ If you use our package in your analysis, please cite us:
 
 > Cherry C, Mitchell J, Nagaraj S, Krishnan K, Fertig E, Elisseeff J
 (2023). *domino2: Cell Communication Analysis for Single Cell RNA
-Sequencing*. R package version 0.2.1.
+Sequencing*. R package version 0.2.2.
 
 ## Contact Us
 If you find any bugs, have questions, or want to contribute, please let us know [here](https://github.com/FertigLab/domino_development/issues).
