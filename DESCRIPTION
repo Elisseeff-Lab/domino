@@ -6,7 +6,7 @@ Authors@R: c(
     person("Jennifer", "Elisseeff", role = "ctb", email = "jhe@jhu.edu", comment = c(ORCID = "YOUR-ORCID-ID"))
     )
 Description: domino is a package developed to analyze receptor ligand signaling MORE HERE 
-BugReports: https://github.com/chris-cherry/domino/issues
+BugReports: https://github.com/FertigLab/domino2/issues
 Depends:
     R(>= 3.6.2),
 Imports:
