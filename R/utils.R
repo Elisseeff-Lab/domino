@@ -11,7 +11,7 @@
 #' @examples
 #' database_name <- dom_database(domino2:::pbmc_dom_built_tiny)
 #' full_database <- dom_database(domino2:::pbmc_dom_built_tiny, name_only = FALSE)
-#'
+#' 
 dom_database <- function(dom, name_only = TRUE) {
     db <- slot(dom, "db_info")
     if (name_only) {
@@ -44,7 +44,7 @@ dom_zscores <- function(dom) {
 #' @export
 #' @examples
 #' counts <- dom_counts(domino2:::pbmc_dom_built_tiny)
-#'
+#' 
 dom_counts <- function(dom) {
     as.matrix(slot(dom, "counts"))
 }
@@ -60,7 +60,7 @@ dom_counts <- function(dom) {
 #' @examples
 #' cluster_names <- dom_clusters(domino2:::pbmc_dom_built_tiny)
 #' cell_cluster_label <- dom_clusters(domino2:::pbmc_dom_built_tiny, labels = TRUE)
-#'
+#' 
 dom_clusters <- function(dom, labels = FALSE) {
     clust <- slot(dom, "clusters")
     if (labels) {
@@ -79,7 +79,7 @@ dom_clusters <- function(dom, labels = FALSE) {
 #' @export
 #' @examples
 #' tf_activation <- dom_tf_activation(domino2:::pbmc_dom_built_tiny)
-#'
+#' 
 dom_tf_activation <- function(dom) {
     slot(dom, "features")
 }
@@ -93,7 +93,7 @@ dom_tf_activation <- function(dom) {
 #' @export
 #' @examples
 #' cor_matrix <- dom_correlations(domino2:::pbmc_dom_built_tiny)
-#'
+#' 
 dom_correlations <- function(dom) {
     slot(dom, "cor")
 }
@@ -112,18 +112,18 @@ dom_correlations <- function(dom) {
 #' @examples
 #' complexes <- dom_linkages(domino2:::pbmc_dom_built_tiny, "complexes")
 #' tf_rec_by_cluster <- dom_linkages(domino2:::pbmc_dom_built_tiny, "tf-receptor", TRUE)
-#'
+#' 
 dom_linkages <- function(dom, link_type = c(
-                             "complexes", "receptor-ligand",
-                             "tf-target", "tf-receptor", "receptor", "incoming-ligand"
-                         ), by_cluster = FALSE) {
+                            "complexes", "receptor-ligand",
+                            "tf-target", "tf-receptor", "receptor", "incoming-ligand"
+                        ), by_cluster = FALSE) {
     links <- slot(dom, "linkages")
     if (by_cluster) {
         if (link_type == "tf-receptor") {
             return(links$clust_tf)
-        } else if (link_type == "receptor") {
-            return(links$clust_rec)
-        } else if (link_type == "incoming-ligand") {
+        } else if(link_type == "receptor") {
+            return(links$clust_rec) 
+        } else if(link_type == "incoming-ligand") {
             return(links$clust_incoming_lig)
         } else {
             stop("This linkage type is not available")
@@ -154,7 +154,7 @@ dom_linkages <- function(dom, link_type = c(
 #' @export
 #' @examples
 #' monocyte_signaling <- dom_signaling(domino2:::pbmc_dom_built_tiny, cluster = "CD14_monocyte")
-#'
+#' 
 dom_signaling <- function(dom, cluster = NULL) {
     if (is.null(cluster)) {
         as.data.frame(slot(dom, "signaling"))
@@ -172,7 +172,7 @@ dom_signaling <- function(dom, cluster = NULL) {
 #' @export
 #' @examples
 #' de_mat <- dom_de(domino2:::pbmc_dom_built_tiny)
-#'
+#' 
 dom_de <- function(dom) {
     slot(dom, "clust_de")
 }
@@ -187,7 +187,7 @@ dom_de <- function(dom) {
 #' @export
 #' @examples
 #' build_details <- dom_info(domino2:::pbmc_dom_built_tiny)
-#'
+#' 
 dom_info <- function(dom) {
     info <- slot(dom, "misc")
     return(list(
@@ -211,10 +211,10 @@ dom_info <- function(dom) {
 #' @examples
 #' monocyte_receptors <- dom_network_items(domino2:::pbmc_dom_built_tiny, "CD14_monocyte", "receptors")
 #' all_tfs <- dom_network_items(domino2:::pbmc_dom_built_tiny, return = "features")
-#'
+#' 
 dom_network_items <- function(dom, clusters = NULL, return = NULL) {
     if (!dom@misc[["build"]]) {
-        stop("Please run domino_build prior to generate signaling network.")
+    stop("Please run domino_build prior to generate signaling network.")
     }
     if (is.null(clusters) & is.null(dom@clusters)) {
         stop("There are no clusters in this domino object. Please provide clusters.")
@@ -231,7 +231,7 @@ dom_network_items <- function(dom, clusters = NULL, return = NULL) {
         tfs <- names(dom@linkages$clust_tf_rec[[cl]])
         tf_wo_rec <- which(sapply(dom@linkages$clust_tf_rec[[cl]], length) == 0)
         if (length(tf_wo_rec > 0)) {
-            tfs <- tfs[-tf_wo_rec]
+        tfs <- tfs[-tf_wo_rec]
         }
         all_tfs <- c(all_tfs, tfs)
         all_ligs <- c(all_ligs, rownames(dom@cl_signaling_matrices[[cl]]))

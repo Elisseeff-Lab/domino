@@ -25,23 +25,23 @@ NULL
 #' @exportClass domino
 #'
 domino <- methods::setClass(
-    Class = "domino",
-    slots = c(
-        db_info = "list",
-        z_scores = "matrix",
-        counts = "dgCMatrix",
-        clusters = "factor",
-        features = "matrix",
-        cor = "matrix",
-        linkages = "list",
-        clust_de = "matrix",
-        misc = "list",
-        cl_signaling_matrices = "list",
-        signaling = "matrix"
-    ),
-    prototype = list(
-        misc = list("build" = FALSE)
-    )
+  Class = "domino",
+  slots = c(
+    db_info = "list",
+    z_scores = "matrix",
+    counts = "dgCMatrix",
+    clusters = "factor",
+    features = "matrix",
+    cor = "matrix",
+    linkages = "list",
+    clust_de = "matrix",
+    misc = "list",
+    cl_signaling_matrices = "list",
+    signaling = "matrix"
+  ),
+  prototype = list(
+    misc = list("build" = FALSE)
+  )
 )
 #' The domino linkage summary class
 #'
@@ -60,12 +60,12 @@ domino <- methods::setClass(
 #' @exportClass linkage_summary
 #'
 linkage_summary <- setClass(
-    Class = "linkage_summary",
-    slots = c(
-        subject_names = "factor",
-        subject_meta = "data.frame",
-        subject_linkages = "list"
-    )
+  Class = "linkage_summary",
+  slots = c(
+    subject_names = "factor",
+    subject_meta = "data.frame",
+    subject_linkages = "list"
+  )
 )
 
 #' Print domino object
@@ -77,23 +77,23 @@ linkage_summary <- setClass(
 #' @keywords internal
 #' @examples
 #' print(domino2:::pbmc_dom_built_tiny)
-#'
+#' 
 setMethod("print", "domino", function(x, ...) {
-    if (x@misc$build) {
-        message(
-            "A domino object of ", length(x@clusters), " cells
+  if (x@misc$build) {
+    message(
+      "A domino object of ", length(x@clusters), " cells
                 Contains signaling between",
-            length(levels(x@clusters)), "clusters
+      length(levels(x@clusters)), "clusters
                 Built with a maximum of", as.integer(x@misc$build_vars["max_tf_per_clust"]),
-            "TFs per cluster
+      "TFs per cluster
                 and a maximum of", as.integer(x@misc$build_vars["max_rec_per_tf"]),
-            "receptors per TF\n"
-        )
-    } else {
-        message(c("A domino object of ", length(x@clusters), " cells\n", "A signaling network has not been built\n"),
-            sep = ""
-        )
-    }
+      "receptors per TF\n"
+    )
+  } else {
+    message(c("A domino object of ", length(x@clusters), " cells\n", "A signaling network has not been built\n"),
+      sep = ""
+    )
+  }
 })
 #' Show domino object information
 #'
@@ -104,18 +104,18 @@ setMethod("print", "domino", function(x, ...) {
 #' @keywords internal
 #' @examples
 #' domino2:::pbmc_dom_built_tiny
-#'
+#' 
 #' show(domino2:::pbmc_dom_built_tiny)
-#'
+#' 
 setMethod("show", "domino", function(object) {
-    if (object@misc$build) {
-        cat(c(
-            "A domino object of ", length(object@clusters), " cells\n", "Built with signaling between ",
-            length(levels(object@clusters)), " clusters\n"
-        ), sep = "")
-    } else {
-        cat(c("A domino object of ", length(object@clusters), " cells\n", "A signaling network has not been built\n"),
-            sep = ""
-        )
-    }
+  if (object@misc$build) {
+    cat(c(
+      "A domino object of ", length(object@clusters), " cells\n", "Built with signaling between ",
+      length(levels(object@clusters)), " clusters\n"
+    ), sep = "")
+  } else {
+    cat(c("A domino object of ", length(object@clusters), " cells\n", "A signaling network has not been built\n"),
+      sep = ""
+    )
+  }
 })
