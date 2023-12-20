@@ -9,14 +9,14 @@ vignette: >
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
-    collapse = TRUE,
-    comment = "#>",
-    echo = TRUE,
-    message = FALSE,
-    warning = FALSE,
-    fig.cap = "",
-    tidy = TRUE,
-    global.device = TRUE
+  collapse = TRUE,
+  comment = "#>",
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  fig.cap = "",
+  tidy = TRUE,
+  global.device = TRUE
 )
 options(timeout = 300)
 ```

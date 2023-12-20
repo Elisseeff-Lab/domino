@@ -9,13 +9,13 @@ vignette: >
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
-    collapse = TRUE,
-    comment = "#>",
-    echo = TRUE,
-    message = FALSE,
-    warning = FALSE,
-    fig.cap = "",
-    tidy = "styler"
+  collapse = TRUE,
+  comment = "#>",
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  fig.cap = "",
+  tidy = TRUE
 )
 options(timeout = 300)
 ```
