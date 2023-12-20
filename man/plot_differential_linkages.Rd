@@ -32,9 +32,9 @@ Plot differential linkages among domino results ranked by a comparative statisti
 \examples{
 \dontrun{
 plot_differential_linkages(
- differential_linkages = diff_linkages_tiny,
- test_statistic = "p.value",
- stat_ranking = "ascending"
+    differential_linkages = diff_linkages_tiny,
+    test_statistic = "p.value",
+    stat_ranking = "ascending"
 )
 }
 

@@ -42,9 +42,11 @@ only ligands, receptors, and features associated with the receptor cluster
 will be included in the plot.
 }
 \examples{
-#basic usage
+# basic usage
 gene_network(
- domino2:::pbmc_dom_built_tiny, clust = "CD8_T_cell", 
- OutgoingSignalingClust = "CD14_monocyte")
+    domino2:::pbmc_dom_built_tiny,
+    clust = "CD8_T_cell",
+    OutgoingSignalingClust = "CD14_monocyte"
+)
 
 }

@@ -24,8 +24,9 @@ Creates a linkage_summary object storing the linkages learned in different domin
 meta_df <- data.frame("ID" = c("P1", "P2"), "group" = c("A", "B"))
 dom_ls <- list("P1" = dom1, "P2" = dom2)
 summarize_linkages(
- domino_results = dom_ls, subject_meta = meta_df, 
- subject_names = meta_df$ID)
+    domino_results = dom_ls, subject_meta = meta_df,
+    subject_names = meta_df$ID
+)
 }
 
 }
