@@ -1,4 +1,4 @@
-[![R build status](https://github.com/FertigLab/domino2/workflows/r-build-check/badge.svg)](https://github.com/FertigLab/domino2/actions?workflow=r-build-check)
+[![R build status](https://github.com/FertigLab/domino2/workflows/r-build-check/badge.svg?branch=master)](https://github.com/FertigLab/domino2/actions?workflow=r-build-check)
 
 ## Introducing domino2: Improved Inference of Cell Signaling from Single Cell RNA Sequencing Data <a href="https://fertiglab.github.io/domino2/"><img src="man/figures/logo.svg" align="right" height="138" alt="domino2 repository" /></a>
 
@@ -8,8 +8,7 @@ Domino2 is an updated version of the original [domino](https://github.com/Elisse
 
 Domino2 is undergoing active development where aspects of how data is used, analyzed, and interpreted is subject to change as new features and fixes are implemented. **v0.2.2** of Domino2 serves as the first stable development version during these active updates for reproducible usage.
 
-This version is currently hosted on the [FertigLab domino2 gitHub](https://github.com/FertigLab/domino2) which was forked from the primary repository hosted on the [Elisseeff-Lab GitHub](https://github.com/Elisseeff-Lab/domino), and it can be installed using the remotes package.
-
+The most current version of Domino2 for reproducible usage is on the [FertigLab GitHub](https://github.com/FertigLab). Domino2 is the continuation of Domino software hosted on the [Elisseeff-Lab GitHub](https://github.com/Elisseeff-Lab/domino). The most current stable branch of Domino2 can be installed using the remotes package.
 
 ```r
 if(!require(remotes)){
