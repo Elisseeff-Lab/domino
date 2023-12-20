@@ -10,3 +10,6 @@ R/.Rhistory
 scenic/*
 
 scratch/
+
+.github/workflows/doc_update.yml
+.github/workflows/pkgdown_update.yml
