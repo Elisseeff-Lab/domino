@@ -31,10 +31,8 @@ Count occurrences of linkages across multiple domino results from a linkage summ
 }
 \examples{
 \dontrun{
-count_linkage(
-    linkage_summary = linkage_ls, cluster = "CD8_T_cell",
-    group.by = "group", linkage = "rec_lig"
-)
+count_linkage(linkage_summary = linkage_ls, cluster = "CD8_T_cell", 
+ group.by = "group", linkage = "rec_lig")
 }
 
 }

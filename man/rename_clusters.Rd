@@ -24,10 +24,8 @@ domino object prepared for \code{\link[=build_domino]{build_domino()}}, which wi
 network.
 }
 \examples{
-new_clust <- c(
-    "CD8_T_cell" = "CD8+ T Cells",
-    "CD14_monocyte" = "CD14+ Monocytes", "B_cell" = "B Cells"
-)
+new_clust <- c("CD8_T_cell" = "CD8+ T Cells",
+ "CD14_monocyte" = "CD14+ Monocytes", "B_cell" = "B Cells")
 pbmc_dom_built_tiny <- rename_clusters(domino2:::pbmc_dom_built_tiny, new_clust)
 
 }

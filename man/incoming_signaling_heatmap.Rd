@@ -47,7 +47,7 @@ the cl_signaling_matrices slot of a domino option as an alternative to this
 plotting function.
 }
 \examples{
-# incoming signaling of the CD8  T cells
+#incoming signaling of the CD8  T cells
 incoming_signaling_heatmap(domino2:::pbmc_dom_built_tiny, "CD8_T_cell")
 
 }

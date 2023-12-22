@@ -20,8 +20,7 @@ and rows corresponding to the gene symbols themselves}
 Data frame of genes with original and corresponding converted symbols
 }
 \description{
-Takes a vector of gene inputs and a conversion table
-and returns a
+Takes a vector of gene inputs and a conversion table  and returns a
 converted gene table
 }
 \keyword{internal}
