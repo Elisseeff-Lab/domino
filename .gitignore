@@ -1,0 +1,14 @@
+.DS_Store
+*.Rproj
+.Rproj.user
+.Rhistory
+R/.Rhistory
+*.rds
+*.loom
+.vscode
+*.vscode
+scenic/*
+
+scratch/
+
+docs
