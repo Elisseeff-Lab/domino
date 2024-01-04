@@ -20,6 +20,9 @@ knitr::opts_chunk$set(
 options(timeout = 600)
 ```
 
+```{r libraries, include=FALSE}
+library(domino2)
+```
 
 ```{r setup, include = FALSE}
 bfc <- cache()
