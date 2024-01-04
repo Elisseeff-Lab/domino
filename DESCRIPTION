@@ -43,7 +43,8 @@ Suggests:
     rmarkdown,
     Seurat,
     testthat,
-    formatR
+    formatR,
+    BiocFileCache
 VignetteBuilder: knitr
 Language: en-US
 Roxygen: list(markdown = TRUE)

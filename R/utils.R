@@ -247,3 +247,13 @@ dom_network_items <- function(dom, clusters = NULL, return = NULL) {
         return(list_out[[return]])
     }
 }
+
+#' Specify the cache
+#' 
+#' @param path Path to tstore cache on
+#' 
+cache <- function(path = tools::R_user_dir(package = "domino2")) {
+  bfc <- BiocFileCache::BiocFileCache(path, ask = FALSE)
+
+  bfc
+}
