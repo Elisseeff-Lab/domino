@@ -9,6 +9,9 @@ cache(path = tools::R_user_dir(package = "domino2"))
 \arguments{
 \item{path}{Path to tstore cache on}
 }
+\value{
+BiocFileCache
+}
 \description{
 Specify the cache
 }
