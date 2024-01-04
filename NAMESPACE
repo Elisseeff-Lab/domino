@@ -2,6 +2,7 @@
 
 export(add_rl_column)
 export(build_domino)
+export(cache)
 export(circos_ligand_receptor)
 export(cor_heatmap)
 export(cor_scatter)
