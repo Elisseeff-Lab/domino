@@ -23,7 +23,7 @@ reference:
   desc: |
     An object class designed to store information used  and produced in Domino2 analysis
   contents:
-  - domino-class
+  - domino
   - linkage_summary
 - title: Analysis Functions
   desc: |
