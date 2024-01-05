@@ -1,0 +1,3 @@
+name: pkgdown-update
+on:
+    workflow_dispatch:

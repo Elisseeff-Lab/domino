@@ -1,0 +1,3 @@
+name: documentation-update
+on:
+    workflow_dispatch:
