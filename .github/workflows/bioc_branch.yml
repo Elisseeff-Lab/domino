@@ -1,0 +1,4 @@
+name: Update Bioconductor package files
+
+on:
+  workflow_dispatch:
