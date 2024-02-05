@@ -20,8 +20,9 @@ git config --global user.email 'action@github.com'
 git fetch
 # Checkout target branch                         
 git checkout $TARGET_BRANCH
-# Copy files in $FILES list from workflow test branch
-git checkout krishnan_workflow_test -- $FILES
+# copy files from the branch the action is being run upon
+SRC_BRANCH=$(git symbolic-ref --short HEAD)
+git checkout $SRC_BRANCH -- $FILES
 # Commit to the repository (ignore if no changes)
 git add -A
 git diff-index --quiet HEAD ||  git commit -am "update files"
