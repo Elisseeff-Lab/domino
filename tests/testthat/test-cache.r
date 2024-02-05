@@ -1,8 +1,14 @@
 test_that("can add to a new cache", {
-  tf <- tempfile(tmpdir = tempdir(check = TRUE))
-  file.create(tf)
-  bfc <- cache(path = tempdir())
+  bfc <- BiocFileCache::BiocFileCache(tempdir(), ask = FALSE)
   expect_equal(length(bfc), 0)
-  BiocFileCache::cleanbfc(bfc, ask = FALSE)
+
+  #from Bioc example
+  savepath <- BiocFileCache::bfcnew(bfc, "NewResource", ext = ".RData")
+  df <- data.frame(list("a"=c(1, 2), "b"=c(3, 4)))
+  save(df, file = savepath)
+
+  expect_equal(length(bfc), 1)
+
+  #cleanup
   BiocFileCache::removebfc(bfc, ask = FALSE)
 })

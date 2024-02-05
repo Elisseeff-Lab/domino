@@ -32,7 +32,7 @@ set.seed(123)
 ```
 
 ``` {r files, include=FALSE}
-bfc <- cache()
+bfc <- BiocFileCache::BiocFileCache(ask = FALSE)
 
 data_url <- "https://zenodo.org/records/10222767/files"
 
