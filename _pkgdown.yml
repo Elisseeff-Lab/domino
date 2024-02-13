@@ -5,6 +5,7 @@ template:
   bootstrap: 5
   theme: a11y-light
   bslib:
+    preset: bootstrap
     primary: '#457E78'
     secondary: '#1D132B'
     navbar-bg: '#7DDED2'
