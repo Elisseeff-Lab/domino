@@ -91,6 +91,7 @@ signaling_heatmap <- function(
 #'
 incoming_signaling_heatmap <- function(
     dom, rec_clust, clusts = NULL, min_thresh = -Inf, max_thresh = Inf,
+    display_top = NULL, display_method = "mean",
     scale = "none", normalize = "none", title = TRUE, ...) {
   if (!dom@misc[["build"]]) {
     stop("Please run domino_build prior to generate signaling network.")
@@ -126,12 +127,34 @@ incoming_signaling_heatmap <- function(
   } else if (normalize != "none") {
     stop("Do not recognize normalize input")
   }
+  # Attempt to get top genes and plot heatmap for only that
+  # Need to figure out color scale first in order for it to work I think.
+  # if (!is.null(display_top)) {
+  #   if (display_method == "mean") {
+  #     top_v <- unique(names(rev(sort(rowMeans(mat, na.rm = T)))[1:display_top]))
+  #   } else if (display_method == "median") {
+  #     top_v <- unique(names(rev(sort(apply(mat, 1, function(x) median(x, na.rm = T))))[1:display_top]))
+  #   } else if (display_method == "max") {
+  #     top_v <- unique(names(rev(sort(apply(mat, 1, function(x) max(x, na.rm = T))))[1:display_top]))
+  #   } else {
+  #     stop("display_method must be one of 'mean', 'median', or 'max'.\n")
+  #   }
+  #   if (length(top_v) < display_top*.5) warning("At least half of the top hits are the same. Consider adjusting min_thresh if you intend to subset ligands")
+  #   mat <- mat[rownames(mat) %in% top_v,]
+  #   #cols <- c("#0000FFFF", "white", "#FF0000FF")
+  #   cols <- colorRampPalette(brewer.pal(11, "RdBu"))(100)
+  #   cols <- determineBreaks(mat, cut_v = 3, verbose_v = F)$colors
+  # } else {
+  #   cols <- NULL
+  # }
+  cols <- NULL
   if (title == TRUE) {
     return(
       Heatmap(
         mat, 
         name = "expression",
         column_title = paste0("Expression of ligands targeting cluster ", rec_clust), 
+        col = cols,
         ...
       )
     )
@@ -140,6 +163,7 @@ incoming_signaling_heatmap <- function(
       Heatmap(
         mat, 
         name = "expression",
+        col = cols,
         ...
       )
     )
@@ -149,6 +173,7 @@ incoming_signaling_heatmap <- function(
         mat,
         name = "expression",
         column_title = title, 
+        col = cols,
         ...
       )
     )
@@ -169,12 +194,15 @@ incoming_signaling_heatmap <- function(
 #' @param showIncomingSignalingClusts Vector of clusters to plot the incoming signaling on
 #' @param min_thresh Minimum signaling threshold. Values lower than the threshold will be set to the threshold. Defaults to -Inf for no threshold.
 #' @param max_thresh Maximum signaling threshold for plotting. Values higher than the threshold will be set to the threshold. Defaults to Inf for no threshold.
+#' @param display_top Number of top receptor-ligand pairs to display in output (rather than all results)
+#' @param display_method How to determine top pairs. Options are 'mean' or 'median' of pair's expression across all incoming populations, or 'max' to take the top N invidivual expression values with no repeats
 #' @param normalize Options to normalize the signaling matrix. Accepted inputs are 'none' for no normalization, 'rec_norm' to normalize to the maximum value with each receptor cluster, or 'lig_norm' to normalize to the maximum value within each ligand cluster
 #' @param scale How to scale the values (after thresholding). Options are 'none', 'sqrt' for square root, 'log' for log10, or 'sq' for square.
 #' @param layout Type of layout to use. Options are 'random', 'sphere', 'circle', 'fr' for Fruchterman-Reingold force directed layout, and 'kk' for Kamada Kawai for directed layout.
 #' @param scale_by How to size vertices. Options are 'lig_sig' for summed outgoing signaling, 'rec_sig' for summed incoming signaling, and 'none'. In the former two cases the values are scaled with asinh after summing all incoming or outgoing signaling.
 #' @param vert_scale Integer used to scale size of vertices with our without variable scaling from size_verts_by.
 #' @param plot_title Text for the plot's title.
+#' @param offset_sides optional parameter to offset the side labels wihen layout is type 'circle'. Options are 'above' or 'below'
 #' @param ... Other parameters to be passed to plot when used with an `{igraph}` object.
 #' @return an igraph rendered to the active graphics device
 #' @export signaling_network
@@ -190,7 +218,7 @@ incoming_signaling_heatmap <- function(
 signaling_network <- function(
     dom, cols = NULL, edge_weight = 0.3, clusts = NULL, showOutgoingSignalingClusts = NULL,
     showIncomingSignalingClusts = NULL, min_thresh = -Inf, max_thresh = Inf, normalize = "none", scale = "sq",
-    layout = "circle", scale_by = "rec_sig", vert_scale = 3, plot_title = NULL, ...) {
+    layout = "circle", scale_by = "rec_sig", vert_scale = 3, plot_title = NULL, offset_sides = NULL, ...) {
   if (!length(dom@clusters)) {
     stop("This domino object was not built with clusters so there is no intercluster signaling.")
   }
@@ -253,7 +281,7 @@ signaling_network <- function(
   }
   graph <- igraph::graph(links)
   # Get vert colors and scale size if desired.
-  igraph::V(graph)$label.dist <- 1.5
+  igraph::V(graph)$label.dist <- 3.5
   igraph::V(graph)$label.color <- "black"
   v_cols <- cols[names(igraph::V(graph))]
   if (scale_by == "lig_sig" & all(gsub("L_", "", colnames(mat)) %in% names(igraph::V(graph)))) {
@@ -271,6 +299,19 @@ signaling_network <- function(
   if (layout == "circle") {
     v_angles <- 1:length(igraph::V(graph))
     v_angles <- -2 * pi * (v_angles - 1) / length(v_angles)
+    if (!is.null(offset_sides)) {
+      if (offset_sides == "above") {
+        first <- -0.3; middle <- 0.85
+      } else if (offset_sides == "below") {
+        first <- 0.3; middle <- 1.15
+      } else {
+        warning(sprintf("offset_sides argument not NULL, but not 'above' or 'below'. Will be ignored.\n"))
+        first <- v_angles[1]
+        middle <- 1
+      }
+      if (v_angles[1] == 0) v_angles[1] <- first
+      if (length(v_angles) %% 2 == 0) v_angles[(length(v_angles)/2)+1] <- v_angles[(length(v_angles)/2)+1] * middle
+    }
     igraph::V(graph)$label.degree <- v_angles
   }
   names(v_cols) <- c()
@@ -741,7 +782,7 @@ cor_scatter <- function(dom, tf, rec, remove_rec_dropout = TRUE, ...) {
 #' 
 circos_ligand_receptor <- function(
     dom, receptor, ligand_expression_threshold = 0.01, cell_idents = NULL,
-    cell_colors = NULL) {
+    cell_colors = NULL, title = paste0(receptor, " Signaling")) {
   ligands <- dom@linkages$rec_lig[[receptor]]
   signaling_df <- NULL
   if (is.null(cell_idents)) {
@@ -758,8 +799,8 @@ circos_ligand_receptor <- function(
     sig <- dom@cl_signaling_matrices[active_cell][[1]]
     cell_names <- gsub("^L_", "", colnames(sig))
     for (l in ligands) {
-      df <- data.frame(origin = paste0(cell_names, "-", l), destination = receptor, mean.expression = unname(sig[rownames(sig) ==
-        l, ]))
+      df <- data.frame(origin = paste0(cell_names, "-", l), destination = receptor, mean.expression = unname(sig[rownames(sig) == l, ]))
+      df <- df[grepl(paste0(cell_idents, collapse = "|"), df$origin),]
       signaling_df <- rbind(signaling_df, df)
     }
   } else {
@@ -799,12 +840,13 @@ circos_ligand_receptor <- function(
   }
   names(grid_col) <- c(receptor, signaling_df$origin)
   circlize::circos.clear()
-  circlize::circos.par(start.degree = 0)
+  circlize::circos.par(start.degree = 0, circle.margin = 0.5)
   circlize::chordDiagram(arc_df,
     group = group, grid.col = grid_col, link.visible = FALSE, annotationTrack = c("grid"),
     preAllocateTracks = list(track.height = circlize::mm_h(4), track.margin = c(circlize::mm_h(2), 0)), big.gap = 2
   )
-  for (send in signaling_df$origin) {
+  if (!is.null(title)) title(title)
+  for (send in signaling_df$origin[1:length(grid_col)-1]) {
     if (signaling_df[signaling_df$origin == send, ][["mean.expression"]] > ligand_expression_threshold) {
       if (max(signaling_df[["mean.expression"]]) > 1) {
         expr <- signaling_df[signaling_df$origin == send, ][["scaled.mean.expression"]]
