@@ -10,6 +10,8 @@ incoming_signaling_heatmap(
   clusts = NULL,
   min_thresh = -Inf,
   max_thresh = Inf,
+  display_top = NULL,
+  display_method = "mean",
   scale = "none",
   normalize = "none",
   title = TRUE,
