@@ -29,6 +29,10 @@ incoming_signaling_heatmap(
 
 \item{max_thresh}{Maximum signaling threshold for plotting. Defaults to Inf for no threshold.}
 
+\item{display_top}{Number of top receptor-ligand pairs to display in output (rather than all results)}
+
+\item{display_method}{How to determine top pairs. Options are 'mean' or 'median' of pair's expression across all incoming populations, or 'max' to take the top N invidivual expression values with no repeats}
+
 \item{scale}{How to scale the values (after thresholding). Options are 'none', 'sqrt' for square root, or 'log' for log10.}
 
 \item{normalize}{Options to normalize the matrix. Accepted inputs are 'none' for no normalization, 'rec_norm' to normalize to the maximum value with each receptor cluster, or 'lig_norm' to normalize to the maximum value within each ligand cluster}
