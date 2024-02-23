@@ -9,7 +9,8 @@ circos_ligand_receptor(
   receptor,
   ligand_expression_threshold = 0.01,
   cell_idents = NULL,
-  cell_colors = NULL
+  cell_colors = NULL,
+  title = paste0(receptor, " Signaling")
 )
 }
 \arguments{
