@@ -19,6 +19,7 @@ signaling_network(
   scale_by = "rec_sig",
   vert_scale = 3,
   plot_title = NULL,
+  offset_sides = NULL,
   ...
 )
 }
@@ -50,6 +51,8 @@ signaling_network(
 \item{vert_scale}{Integer used to scale size of vertices with our without variable scaling from size_verts_by.}
 
 \item{plot_title}{Text for the plot's title.}
+
+\item{offset_sides}{optional parameter to offset the side labels wihen layout is type 'circle'. Options are 'above' or 'below'}
 
 \item{...}{Other parameters to be passed to plot when used with an \code{{igraph}} object.}
 }
