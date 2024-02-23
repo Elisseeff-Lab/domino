@@ -79,6 +79,8 @@ signaling_heatmap <- function(
 #' @param clusts Vector of clusters to be included. If NULL then all clusters are used.
 #' @param min_thresh Minimum signaling threshold for plotting. Defaults to -Inf for no threshold.
 #' @param max_thresh Maximum signaling threshold for plotting. Defaults to Inf for no threshold.
+#' @param display_top Number of top receptor-ligand pairs to display in output (rather than all results)
+#' @param display_method How to determine top pairs. Options are 'mean' or 'median' of pair's expression across all incoming populations, or 'max' to take the top N invidivual expression values with no repeats
 #' @param scale How to scale the values (after thresholding). Options are 'none', 'sqrt' for square root, or 'log' for log10.
 #' @param normalize Options to normalize the matrix. Accepted inputs are 'none' for no normalization, 'rec_norm' to normalize to the maximum value with each receptor cluster, or 'lig_norm' to normalize to the maximum value within each ligand cluster 
 #' @param title Either a string to use as the title or a boolean describing whether to include a title. In order to pass the 'main' parameter to  [ComplexHeatmap::Heatmap()]  you must set title to FALSE.
@@ -194,8 +196,6 @@ incoming_signaling_heatmap <- function(
 #' @param showIncomingSignalingClusts Vector of clusters to plot the incoming signaling on
 #' @param min_thresh Minimum signaling threshold. Values lower than the threshold will be set to the threshold. Defaults to -Inf for no threshold.
 #' @param max_thresh Maximum signaling threshold for plotting. Values higher than the threshold will be set to the threshold. Defaults to Inf for no threshold.
-#' @param display_top Number of top receptor-ligand pairs to display in output (rather than all results)
-#' @param display_method How to determine top pairs. Options are 'mean' or 'median' of pair's expression across all incoming populations, or 'max' to take the top N invidivual expression values with no repeats
 #' @param normalize Options to normalize the signaling matrix. Accepted inputs are 'none' for no normalization, 'rec_norm' to normalize to the maximum value with each receptor cluster, or 'lig_norm' to normalize to the maximum value within each ligand cluster
 #' @param scale How to scale the values (after thresholding). Options are 'none', 'sqrt' for square root, 'log' for log10, or 'sq' for square.
 #' @param layout Type of layout to use. Options are 'random', 'sphere', 'circle', 'fr' for Fruchterman-Reingold force directed layout, and 'kk' for Kamada Kawai for directed layout.
@@ -516,6 +516,7 @@ gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL,
 #' @param title Either a string to use as the title or a boolean describing whether to include a title. In order to pass the 'main' parameter to  [ComplexHeatmap::Heatmap()]  you must set title to FALSE.
 #' @param norm Boolean indicating whether or not to normalize the transcrption factors to their max value.
 #' @param feats Either a vector of features to include in the heatmap or 'all' for all features. If left NULL then the features selected for the signaling network will be shown.
+#' @param clust A vector of clusters in the domino object that should be included in the output. NULL (default) will use all clusters.
 #' @param ann_cols Boolean indicating whether to include cell cluster as a column annotation. Colors can be defined with cols. If FALSE then custom annotations can be passed to NMF.
 #' @param cols Named vector of colors to annotate cells by cluster color. Values are taken as colors and names as cluster. If left as NULL then default ggplot colors will be generated.
 #' @param min_thresh Minimum threshold for color scaling if not a boolean heatmap
@@ -532,7 +533,7 @@ gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL,
 #'   max_thresh = 0.6, norm = TRUE, bool = FALSE)
 #' 
 feat_heatmap <- function(
-    dom, feats = NULL, bool = FALSE, bool_thresh = 0.2, title = TRUE, norm = FALSE,
+    dom, feats = NULL, clust = NULL, bool = FALSE, bool_thresh = 0.2, title = TRUE, norm = FALSE,
     cols = NULL, ann_cols = TRUE, min_thresh = NULL, max_thresh = NULL, ...) {
   if (!length(dom@clusters)) {
     warning("This domino object wasn't built with clusters. Cells will not be ordered.")
@@ -541,6 +542,13 @@ feat_heatmap <- function(
   mat <- dom@features
   cl <- dom@clusters
   cl <- sort(cl)
+  if (!is.null(clust)) {
+    lvls <- levels(cl)
+    cells <- which(as.character(cl) %in% clust)
+    mat <- mat[,cells]
+    cl <- cl[cells]
+    cl <- factor(as.character(cl), levels = intersect(lvls, clust))
+  }
   if (norm & (!is.null(min_thresh) | !is.null(max_thresh))) {
     warning("You are using norm with min_thresh and max_thresh. Note that values will be thresholded AFTER normalization.")
   }
@@ -565,6 +573,7 @@ feat_heatmap <- function(
   if (is.null(feats)) {
     feats <- c()
     links <- dom@linkages$clust_tf
+    if (!is.null(clust)) links <- links[clust]
     for (i in links) {
       feats <- c(feats, i)
     }
@@ -580,9 +589,9 @@ feat_heatmap <- function(
   } else if (feats == "all") {
     feats <- rownames(mat)
   }
-  if (length(cl)) {
-    mat <- mat[feats, names(cl)]
-  }
+  # if (length(cl)) {
+  #   mat <- mat[feats, names(cl)]
+  # }
   if (ann_cols) {
     ac <- list(Cluster = cl)
     names(ac[[1]]) <- c()
@@ -591,6 +600,13 @@ feat_heatmap <- function(
       names(cols) <- levels(cl)
     }
     # cols <- list(Cluster = cols)
+    missing_color <- setdiff(levels(cl), names(cols))
+    if (length(missing_color)) {
+      warning(sprintf("%s cluster level(s) missing in provided colors. Using randomly-generated colors for: \n%s\n",
+                      length(missing_color), paste0(missing_color, collapse = "\n ")))
+      new_color <- ggplot_col_gen(length(missing_color)); names(new_color) <- missing_color
+      cols <- c(cols, new_color)
+    }
     feat_anno <- columnAnnotation(
       Cluster = cl,
       col = list(Cluster = cols)
