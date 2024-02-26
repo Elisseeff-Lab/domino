@@ -219,3 +219,123 @@ lc <- function(list, list_names) {
   }
   return(vec)
 }
+
+#' Invert Receptor Ligand Data
+#' @description
+#' Reformat exisiting domino object to also record expression data/receptor mapping
+#' from the ligand-receptor direction rather than receptor-ligand
+#' @param dom domino object built by domino build
+#' @return domino object with updated `rec_signaling` slot and `cr_signaling_matrices` slot
+#' @export
+#' 
+invertRecLig <- function(dom) {
+  
+  ### Check
+  if (!dom@misc[["build"]]) {
+    stop("Must build a signaling network with domino_build prior to reformatting")
+  }
+  
+  ### Get map
+  rl_reading <- make_rl_reading(dom@db_info)
+  
+  ### Add linkages, if missing
+  if (!"lig_rec" %in% names(dom@linkages)) {
+    
+    lig_genes <- unique(unlist(strsplit(rl_reading[["L.gene"]], split = "\\,")))
+    lig_names <- rl_reading[["L.name"]]
+    
+    lig_rec_linkage <- list()
+    for (lig in lig_names) {
+      inter <- rl_reading[rl_reading[["L.name"]] == lig, ]
+      recs <- inter[["R.name"]]
+      lig_rec_linkage[[lig]] <- recs
+    } # for lig
+    
+    dom@linkages[["lig_rec"]] <- lig_rec_linkage
+    
+  } # fi
+  
+  ### Grab object stuff
+  clust_ligs <- dom@linkages$clust_incoming_lig
+  clust_recs <- dom@linkages$clust_rec
+  
+  # Build signaling matrices for each cluster (This is identical to lines 111-185 in processing_fxns.R/build_domino, just switch all receptor-ligand references)
+  cr_signaling_matrices <- list()
+  signaling <- matrix(0, ncol = length(levels(dom@clusters)), nrow = length(levels(dom@clusters)))
+  rownames(signaling) <- paste0("L_", levels(dom@clusters))
+  colnames(signaling) <- paste0("R_", levels(dom@clusters))
+  for (clust in levels(dom@clusters)) {
+    inc_recs <- clust_recs[[clust]]
+    rl_map <- dom@misc[["rl_map"]]
+    inc_recs <- sapply(inc_recs, function(r) {
+      int <- rl_map[rl_map$R.name == r, ][1, ]
+      if ((int$R.name != int$R.gene) & !grepl("\\,", int$R.gene)) {
+        int$R.gene
+      } else {
+        int$R.name
+      }
+    })
+    if (length(dom@linkages$complexes) > 0) {
+      # if complexes were used
+      inc_recs_list <- lapply(inc_recs, function(r) {
+        if (r %in% names(dom@linkages$complexes)) {
+          return(dom@linkages$complexes[[r]])
+        } else {
+          return(r)
+        }
+      })
+      names(inc_recs_list) <- inc_recs
+      inc_recs <- unlist(inc_recs_list)
+    }
+    rec_genes <- intersect(inc_recs, rownames(dom@z_scores))
+    if (length(rec_genes) %in% c(0, 1)) {
+      rec_genes <- numeric(0)
+    }
+    cr_sig_mat <- matrix(0, ncol = length(levels(dom@clusters)), nrow = length(rec_genes))
+    colnames(cr_sig_mat) <- colnames(signaling)
+    rownames(cr_sig_mat) <- rec_genes
+    for (c2 in levels(dom@clusters)) {
+      n_cell <- length(which(dom@clusters == c2))
+      if (n_cell > 1) {
+        expr <- matrix(dom@z_scores[rec_genes, which(dom@clusters == c2)], nrow = length(rec_genes))
+        sig <- rowMeans(expr)
+      } else if (n_cell == 1) {
+        sig <- dom@z_scores[rec_genes, which(dom@clusters == c2)]
+      } else {
+        sig <- rep(0, length(rec_genes))
+        names(sig) <- rec_genes
+      }
+      # mean scaled expression less than 0 is brought up to 0 as a floor
+      sig[which(sig < 0)] <- 0
+      cr_sig_mat[, paste0("R_", c2)] <- sig
+    }
+    if (length(dom@linkages$complexes) > 0) {
+      # if complexes were used
+      cr_sig_list <- lapply(seq_along(inc_recs_list), function(x) {
+        if (all(inc_recs_list[[x]] %in% rec_genes)) {
+          # Some of the ligands in the list object may not be present in the data
+          if (length(inc_recs_list[[x]]) > 1) {
+            return(colMeans(cr_sig_mat[inc_recs_list[[x]], ]))
+          } else {
+            return(cr_sig_mat[inc_recs_list[[x]], ])
+          }
+        }
+      })
+      names(cr_sig_list) <- names(inc_recs_list)
+      if (length(cr_sig_list) > 1) {
+        cr_sig_mat <- do.call(rbind, cr_sig_list)
+      }
+    }
+    cr_signaling_matrices[[clust]] <- cr_sig_mat
+    if (nrow(cr_sig_mat) > 1) {
+      signaling[paste0("L_", clust), ] <- colSums(cr_sig_mat)
+    } else {
+      signaling[paste0("L_", clust), ] <- 0
+    }
+  }
+  dom@cr_signaling_matrices <- cr_signaling_matrices
+  dom@rec_signaling <- signaling
+  
+  return(dom)
+  
+}
