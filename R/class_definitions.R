@@ -37,7 +37,9 @@ domino <- methods::setClass(
     clust_de = "matrix",
     misc = "list",
     cl_signaling_matrices = "list",
-    signaling = "matrix"
+    cr_signaling_matrices = "list",
+    signaling = "matrix",
+    rec_signaling = "matrix"
   ),
   prototype = list(
     misc = list("build" = FALSE)
