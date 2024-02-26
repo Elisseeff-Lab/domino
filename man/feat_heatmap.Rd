@@ -7,6 +7,7 @@
 feat_heatmap(
   dom,
   feats = NULL,
+  clust = NULL,
   bool = FALSE,
   bool_thresh = 0.2,
   title = TRUE,
@@ -22,6 +23,8 @@ feat_heatmap(
 \item{dom}{Domino object with network built (\code{\link[=build_domino]{build_domino()}})}
 
 \item{feats}{Either a vector of features to include in the heatmap or 'all' for all features. If left NULL then the features selected for the signaling network will be shown.}
+
+\item{clust}{A vector of clusters in the domino object that should be included in the output. NULL (default) will use all clusters.}
 
 \item{bool}{Boolean indicating whether the heatmap should be continuous or boolean. If boolean then bool_thresh will be used to determine how to define activity as positive or negative.}
 
