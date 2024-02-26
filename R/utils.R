@@ -114,7 +114,7 @@ dom_correlations <- function(dom) {
 #' tf_rec_by_cluster <- dom_linkages(domino2:::pbmc_dom_built_tiny, "tf-receptor", TRUE)
 #' 
 dom_linkages <- function(dom, link_type = c(
-                            "complexes", "receptor-ligand",
+                            "complexes", "receptor-ligand", "ligand-receptor",
                             "tf-target", "tf-receptor", "receptor", "incoming-ligand"
                         ), by_cluster = FALSE) {
     links <- slot(dom, "linkages")
@@ -137,6 +137,8 @@ dom_linkages <- function(dom, link_type = c(
             return(links$tf_targets)
         } else if (link_type == "tf-receptor") {
             return(links$tf_rec)
+	} else if (link_type == "ligand-receptor") {
+	    return(links$lig_rec)
         } else {
             stop("This linkage type is not available.")
         }
