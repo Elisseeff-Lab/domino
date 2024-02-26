@@ -6,8 +6,8 @@
 \usage{
 dom_linkages(
   dom,
-  link_type = c("complexes", "receptor-ligand", "tf-target", "tf-receptor", "receptor",
-    "incoming-ligand"),
+  link_type = c("complexes", "receptor-ligand", "ligand-receptor", "tf-target",
+    "tf-receptor", "receptor", "incoming-ligand"),
   by_cluster = FALSE
 )
 }
