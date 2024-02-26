@@ -395,31 +395,7 @@ create_domino <- function(
     rl_map <- rl_map[non_complex_index, ]
   }
   # Get genes for receptors
-  rl_reading <- NULL
-  for (i in 1:nrow(rl_map)) {
-    rl <- list()
-    inter <- rl_map[i, ]
-    p <- ifelse(inter[["type_A"]] == "R", "A", "B")
-    q <- ifelse(p == "A", "B", "A")
-    R.gene <- inter[[paste0("gene_", p)]]
-    L.gene <- inter[[paste0("gene_", q)]]
-    rl[["R.gene"]] <- R.gene
-    rl[["L.gene"]] <- L.gene
-    if (paste0("uniprot_", p) %in% names(inter)) {
-      rl[["R.uniprot"]] <- inter[[paste0("uniprot_", p)]]
-    }
-    if (paste0("uniprot_", q) %in% names(inter)) {
-      rl[["L.uniprot"]] <- inter[[paste0("uniprot_", q)]]
-    }
-    if (paste0("name_", p) %in% names(inter)) {
-      rl[["R.name"]] <- inter[[paste0("name_", p)]]
-    }
-    if (paste0("name_", q) %in% names(inter)) {
-      rl[["L.name"]] <- inter[[paste0("name_", q)]]
-    }
-    rl <- as.data.frame(rl)
-    rl_reading <- rbind(rl_reading, rl)
-  }
+  rl_reading <- make_rl_reading(rl_map)
   # save a list of complexes and their components
   dom@linkages$complexes <- NULL
   if (use_complexes) {
@@ -446,7 +422,14 @@ create_domino <- function(
     ligs <- inter[["L.name"]]
     rec_lig_linkage[[rec]] <- ligs
   }
+  lig_rec_linkage <- list()
+  for (lig in lig_names) {
+    inter <- rl_reading[rl_reading[["L.name"]] == lig, ]
+    recs <- inter[["R.name"]]
+    lig_rec_linkage[[lig]] <- recs
+  }
   dom@linkages[["rec_lig"]] <- rec_lig_linkage
+  dom@linkages[["lig_rec"]] <- lig_rec_linkage
   dom@misc[["rl_map"]] <- rl_reading
   # Get z-score and cluster info
   if (verbose) {

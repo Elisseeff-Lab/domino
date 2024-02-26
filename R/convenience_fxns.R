@@ -97,3 +97,34 @@ table_convert_genes <- function(genes, from, to, conversion_table) {
   genesV2 <- cbind(col1[which(col1 %in% genes)], col2[which(col1 %in% genes)])
   return(genesV2)
 }
+
+make_rl_reading <- function(rl_map) {
+  
+  rl_reading <- NULL
+  for (i in 1:nrow(rl_map)) {
+    rl <- list()
+    inter <- rl_map[i, ]
+    p <- ifelse(inter[["type_A"]] == "R", "A", "B")
+    q <- ifelse(p == "A", "B", "A")
+    R.gene <- inter[[paste0("gene_", p)]]
+    L.gene <- inter[[paste0("gene_", q)]]
+    rl[["R.gene"]] <- R.gene
+    rl[["L.gene"]] <- L.gene
+    if (paste0("uniprot_", p) %in% names(inter)) {
+      rl[["R.uniprot"]] <- inter[[paste0("uniprot_", p)]]
+    }
+    if (paste0("uniprot_", q) %in% names(inter)) {
+      rl[["L.uniprot"]] <- inter[[paste0("uniprot_", q)]]
+    }
+    if (paste0("name_", p) %in% names(inter)) {
+      rl[["R.name"]] <- inter[[paste0("name_", p)]]
+    }
+    if (paste0("name_", q) %in% names(inter)) {
+      rl[["L.name"]] <- inter[[paste0("name_", q)]]
+    }
+    rl <- as.data.frame(rl)
+    rl_reading <- rbind(rl_reading, rl)
+  }
+  return(rl_reading)
+} 
+
