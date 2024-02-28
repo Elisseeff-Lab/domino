@@ -97,3 +97,105 @@ table_convert_genes <- function(genes, from, to, conversion_table) {
   genesV2 <- cbind(col1[which(col1 %in% genes)], col2[which(col1 %in% genes)])
   return(genesV2)
 }
+
+#' Resolve Names
+#' @description
+#' Return gene names of ligands with non-standard names
+#' @param dom domino object
+#' @param genes vector of gene names to resolve
+#' @details Ligand names (which are stored in dom@linkages$rec_lig) do not always match the gene name
+#' Search all provided names and output the gene name if the ligand name is non-standard
+#' @return vector of length(genes) with applicable values replaced using dom@misc$rl_map information
+#' @export
+#' 
+resolve_names <- function(dom, genes, rec_lig = "lig") {
+  rl_map = dom@misc[["rl_map"]]
+  if (rec_lig == "lig") {
+    gene <- "L.gene"
+    name <- "L.name"
+  } else if (rec_lig == "rec") {
+    gene <- "R.gene"
+    name <- "R.name"
+  } else {
+    stop("rec_lig must be one of 'lig' or 'rec'.\n")
+  }
+  
+  genes_resolved <- sapply(genes, function(l){
+    int <- rl_map[rl_map[[name]] == l, ][1,] 
+    if((int[[name]] != int[[gene]]) & !grepl("\\,", int[[gene]])){
+      int[[gene]]
+    } else { 
+      int[[name]]
+    }
+  })
+  return(genes_resolved)
+} # resolve_names
+
+#' Resolve Complexes
+#' @description
+#' Expand any complex names into their component gene names
+#' @param dom domino object
+#' @param genes vector of complex names to resolve
+#' @details Ligand names (which are stored in dom@linkages$rec_lig) can refer to complexes that are
+#' detailed in dom@linkages$complexes. Search all provided names and if the name is a complex, output component genes, otherwise output the name
+#' @return list of length(genes), with names(list) == genes. List values are the same as the names if not in a complex and are the complex genes if they are in a complex.
+#' @export
+#' 
+resolve_complexes <- function(dom, genes) {
+  genes_list <- lapply(genes, function(l){
+    if(l %in% names(dom@linkages$complexes)){
+      return(dom@linkages$complexes[[l]])
+    } else {
+      return(l)
+    }
+  })
+  names(genes_list) <- genes
+  return(genes_list)
+}
+
+#' Get All Ligands
+#' @description
+#' Get all unique ligands present in dom@linkages$rec_lig
+#' @param dom domino object
+#' @param expressed_only logical indicating whether to subset ligands based on expression in dom@z_scores
+#' @details Get all unique ligands in a domino object, expanding all ligand complexes as well. Optionally subset by expression.
+#' @return vector of ligands if expressed_only = T, list if F
+get_all_reclig <- function(dom, expressed_only = T, rec_lig = "rec") {
+  
+  ### Vector of all ligands expressed
+  if (rec_lig == "rec") {
+    all <- unlist(dom@linkages$rec_lig)
+    resolve_rec_lig <- "lig"
+  } else if (rec_lig == "lig") {
+    if (!"lig_rec" %in% names(dom@linkages)) stop("Must run invert_rec_lig_linkages if rec_lig is set to 'lig'.\n")
+    all <- unlist(dom@linkages$lig_rec)
+    resolve_rec_lig <- "rec"
+  } else {
+    stop("lig_rec must be one of 'lig' or 'rec")
+  }
+  
+  all <- unique(all)
+  all <- all[!all == ""]
+  
+  ### Resolve non-standard ligand names
+  all_names_resolved <- resolve_names(dom, all, rec_lig = resolve_rec_lig)
+  all_names_resolved <- unique(all_names_resolved)
+  
+  ### Resolve complexes
+  if(length(dom@linkages$complexes) > 0){
+    all_complexes_resolved_list <- resolve_complexes(dom, all_names_resolved)
+    all_names_resolved <- unlist(all_complexes_resolved_list)
+  }
+  
+  if (expressed_only) {
+    ### Subset for ligands expressed in the data
+    genes <- intersect(all_names_resolved, rownames(dom@z_scores))
+  } else {
+    genes <- all_names_resolved
+    #genes <- all_complexes_resolved_list
+  } 
+  
+  out_ls <- list("genes" = genes, "complex" = all_complexes_resolved_list)
+  return(out_ls)
+  
+} # get_all_reclig
