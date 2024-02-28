@@ -8,7 +8,8 @@ outgoing_network(
   dom,
   outgoing_cluster = NULL,
   rec_clusters = NULL,
-  plot_ligands = NULL
+  plot_ligands = NULL,
+  verbose = T
 )
 }
 \arguments{

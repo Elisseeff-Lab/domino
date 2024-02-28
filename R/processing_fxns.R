@@ -447,7 +447,7 @@ avg_reclig_expr <- function(dom, cluster = NULL, genes, complexes) {
 #' @return table
 #' @export
 #' 
-outgoing_network <- function(dom, outgoing_cluster = NULL, rec_clusters = NULL, plot_ligands = NULL) {
+outgoing_network <- function(dom, outgoing_cluster = NULL, rec_clusters = NULL, plot_ligands = NULL, verbose = T) {
   
   # Get ligands and receptors
   lig_ls <- get_all_reclig(dom, rec_lig = "rec", expressed_only = T)
@@ -495,6 +495,7 @@ outgoing_network <- function(dom, outgoing_cluster = NULL, rec_clusters = NULL, 
   ### May be that this is entirely incorrect and I have to do this twice, once for 
   
   for(cl in rec_clusters) {
+    if (verbose) cat(sprintf("Building network for: %s\n", cl))
     for(tf in names(dom@linkages$clust_tf_rec[[cl]])) {
       recs = dom@linkages$clust_tf_rec[[cl]][[tf]]
       if(length(recs)){
