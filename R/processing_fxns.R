@@ -228,38 +228,22 @@ lc <- function(list, list_names) {
 #' @return domino object with updated `rec_signaling` slot and `cr_signaling_matrices` slot
 #' @export
 #' 
-invertRecLig <- function(dom) {
+invert_rec_lig_expr <- function(dom) {
   
   ### Check
   if (!dom@misc[["build"]]) {
     stop("Must build a signaling network with domino_build prior to reformatting")
   }
   
-  ### Get map
-  rl_reading <- make_rl_reading(dom@db_info)
-  
   ### Add linkages, if missing
-  if (!"lig_rec" %in% names(dom@linkages)) {
-    
-    lig_genes <- unique(unlist(strsplit(rl_reading[["L.gene"]], split = "\\,")))
-    lig_names <- rl_reading[["L.name"]]
-    
-    lig_rec_linkage <- list()
-    for (lig in lig_names) {
-      inter <- rl_reading[rl_reading[["L.name"]] == lig, ]
-      recs <- inter[["R.name"]]
-      lig_rec_linkage[[lig]] <- recs
-    } # for lig
-    
-    dom@linkages[["lig_rec"]] <- lig_rec_linkage
-    
-  } # fi
-  
+  if (!"lig_rec" %in% names(dom@linkages)) dom <- invert_rec_lig_linkages(dom)
+
   ### Grab object stuff
   clust_ligs <- dom@linkages$clust_incoming_lig
   clust_recs <- dom@linkages$clust_rec
   
-  # Build signaling matrices for each cluster (This is identical to lines 111-185 in processing_fxns.R/build_domino, just switch all receptor-ligand references)
+  # Build signaling matrices for each cluster 
+  #(This is identical to lines 111-185 in processing_fxns.R/build_domino, just switch all receptor-ligand references)
   cr_signaling_matrices <- list()
   signaling <- matrix(0, ncol = length(levels(dom@clusters)), nrow = length(levels(dom@clusters)))
   rownames(signaling) <- paste0("L_", levels(dom@clusters))
@@ -338,4 +322,201 @@ invertRecLig <- function(dom) {
   
   return(dom)
   
+} # invert_rec_lig_expr
+
+#' Invert Receptor Ligand Linkages
+#' @description
+#' Use dom@misc$rl_map to create inverted version of dom@linkages$rec_lig
+#' @param dom domino object built by domino build
+#' @return domino object with new entry in dom@linkages called `lig_rec`, which is a list
+#' with one element per ligand and the list values are all receptors mapped to that ligand by rl_map
+#' @export
+#' 
+invert_rec_lig_linkages <- function(dom) {
+  
+  ### Check
+  if (!dom@misc[["build"]]) {
+    stop("Must build a signaling network with domino_build prior to reformatting")
+  }
+  
+  rl_map <- dom@misc$rl_map
+  
+  ### Add linkages, if missing
+  if (!"lig_rec" %in% names(dom@linkages)) {
+    
+    lig_genes <- unique(unlist(strsplit(rl_map[["L.gene"]], split = "\\,")))
+    lig_names <- rl_map[["L.name"]]
+    
+    lig_rec_linkage <- list()
+    for (lig in lig_names) {
+      inter <- rl_map[rl_map[["L.name"]] == lig, ]
+      recs <- inter[["R.name"]]
+      lig_rec_linkage[[lig]] <- recs
+    } # for lig
+    
+    dom@linkages[["lig_rec"]] <- lig_rec_linkage
+    
+  } else {
+    message("dom@linkages$lig_rec already exists.\n")
+  } # fi
+  
+  return(dom)
+  
+} # invertRecLigLinkages
+
+#' Average Complex Expression
+#' @description
+#' Average complex expression
+#' @param exp_mat expression matrix of ligands that may or may not be in a complex
+#' @param complexes_list named list. names = ligands, elements = ligands and/or complex compononents
+#' @details Search each element of complexes_list and determine if actually part of a complex. 
+#' If it is, calculate colMeans for all ligands in the complex. If not, return the ligand expression.
+#' rewrite with purrr?
+#' @return list
+#' @export
+#' 
+avg_exp_for_complexes <- function(exp_mat, complexes_list) {
+  trim_list <- complexes_list %>% purrr::keep(~{all(.x %in% rownames(exp_mat))})
+  gene_exp_list <- lapply(seq_along(trim_list), function(x) {
+    if (length(trim_list[[x]]) > 1) {
+      return(colMeans(exp_mat[trim_list[[x]], ,drop=F]))
+    } else {
+      return(exp_mat[trim_list[[x]], ])
+    }
+  })
+  names(gene_exp_list) <- names(trim_list)
+  #if(length(gene_exp_list)>1){mat <- do.call(rbind, gene_exp_list)}
+  return(gene_exp_list)
 }
+
+avg_reclig_expr <- function(dom, cluster = NULL, genes, complexes) {
+  #' Average Receptor/Ligand Expression
+  #' @description
+  #' Create a matrix of average expression of cells in provided clsuters
+  #' @param dom domino object
+  #' @param cluster vector of clusters to include (NULL uses all)
+  #' @param genes genes to get averages of
+  #' @param complexes list of resolved complexes
+  #' @details
+  #' foo
+  #' @return foo
+  #' @export
+  #'
+  
+  if (is.null(cluster)) cluster <- levels(dom@clusters)
+  
+  cl_expr <- matrix(0, ncol = length(cluster), nrow = length(genes))
+  colnames(cl_expr) <- cluster
+  rownames(cl_expr) <- genes
+  
+  for(c2 in cluster){
+    n_cell = length(which(dom@clusters == c2))
+    if(n_cell > 1){
+      sig = rowMeans(dom@z_scores[genes, which(dom@clusters == c2)])
+    } else if(n_cell == 1){
+      sig = dom@z_scores[genes, which(dom@clusters == c2)]
+    } else {
+      sig = rep(0, length(genes))
+      names(sig) = genes
+    }
+    sig[which(sig < 0)] = 0
+    cl_expr[,c2] = sig
+  }
+  
+  if(length(dom@linkages$complexes) > 0){
+    cl_expr_coll_list <- avg_exp_for_complexes(cl_expr, complexes)
+    if(length(cl_expr_coll_list)>1){mat <- do.call(rbind, cl_expr_coll_list)}
+    cl_expr <- mat
+  }
+  
+  return(cl_expr)
+  
+} # avg_reclig_expr
+
+#' Create outgoing signaling network
+#' @description
+#' Create outgoing signaling network
+#' @param dom domino object
+#' @param outgoing_cluster vector of cluster names
+#' @param rec_cluster vector of cluster names
+#' @param plot_ligands vector of ligands to include
+#' @details Make a table
+#' @return table
+#' @export
+#' 
+outgoing_network <- function(dom, outgoing_cluster = NULL, rec_clusters = NULL, plot_ligands = NULL) {
+  
+  # Get ligands and receptors
+  lig_ls <- get_all_reclig(dom, rec_lig = "rec", expressed_only = T)
+  rec_ls <- get_all_reclig(dom, rec_lig = "lig", expressed_only = T)
+  
+  if (is.null(outgoing_cluster)) outgoing_cluster <- levels(dom@clusters)
+  if (is.null(rec_clusters)) rec_clusters <- levels(dom@clusters)
+  
+  #Create a matrix of all ligands expressed by the outgoing clusters 
+  # values are mean expression of all cells in a cluster
+  cl_ligands <- avg_reclig_expr(dom, cluster = outgoing_cluster, genes = lig_ls$genes, complexes = lig_ls$complex)
+  cl_receptors <- avg_reclig_expr(dom, cluster = rec_clusters, genes = rec_ls$genes, complexes = rec_ls$complex)
+  
+  # Melt and subset
+  cl_ligands_sub <- reshape2::melt(cl_ligands)
+  colnames(cl_ligands_sub) <- c("ligand", "cluster", "mean_z_score")
+  cl_ligands_sub <- cl_ligands_sub[cl_ligands_sub$mean_z_score > 0, ]
+  
+  cl_receptors_sub <- reshape2::melt(cl_receptors)
+  colnames(cl_receptors_sub) <- c("receptor", "cluster", "mean_z_score")
+  cl_receptors_sub <- cl_receptors_sub[cl_receptors_sub$mean_z_score > 0, ]
+  
+  #If a list of interesting genes provided - ignore for now
+  if(! is.null(plot_ligands)) {
+    cl_ligands_sub <- cl_ligands_sub[cl_ligands_sub$ligand %in% plot_ligands, ]
+  }
+  
+  if(is.null(rec_clusters)) {
+    rec_clusters <- levels(dom@clusters)
+  }
+  
+  
+  #Create a df of this type for the shortlisted ligands and specified recieving clusters.
+  #  ligand transcription.factor receptor ligand_exp receptor_exp sending           recv
+  #1 CXCL12            POU2F2...    CXCR4  0.4049881    1.1570554 Pericytes Mono and Mac
+  #2  ITGB1            POU2F2...   TYROBP  0.7428652    0.5838909 Pericytes Mono and Mac
+  #3 SEMA6D            POU2F2...   TYROBP  0.2379150    0.5838909 Pericytes Mono and Mac
+  #4 CXCL12            POU2F2...   LILRB2  0.4049881            0 Pericytes Mono and Mac
+  #5   CSF1            POU2F2...    CSF1R  0.2704230   1.66534274 Pericytes Mono and Mac
+  #6   IL34            POU2F2...    CSF1R  0.4082755   1.66534274 Pericytes Mono and Mac
+  
+  df <- data.frame()
+  
+  ### Can't figure out how to add the receptor expression.....
+  ### May be that this is entirely incorrect and I have to do this twice, once for 
+  
+  for(cl in rec_clusters) {
+    for(tf in names(dom@linkages$clust_tf_rec[[cl]])) {
+      recs = dom@linkages$clust_tf_rec[[cl]][[tf]]
+      if(length(recs)){
+        for(rec in recs) {
+          ligs <- dom@linkages$rec_lig[[rec]]
+          ligs <- resolve_names(dom, ligs)
+          if(length(ligs)) {
+            df.temp <- cl_ligands_sub[cl_ligands_sub$ligand %in% ligs, ]
+            df.temp2 <- cl_receptors_sub[cl_receptors_sub$receptor %in% rec,]
+            if(nrow(df.temp)) { #The df is non-empty
+              if (nrow(df.temp2) > 0) { rec_exp <- df.temp2$mean_z_score } else { rec_exp <- 0}
+              new.row <- data.frame(ligand = df.temp$ligand, 
+                                    transcription.factor = tf, 
+                                    receptor = rec, 
+                                    ligand_exp = df.temp$mean_z_score, 
+                                    receptor_exp = rep(rec_exp, nrow(df.temp)),
+                                    sending = df.temp$cluster,
+                                    recv = cl)
+              df <- rbind(df, new.row)  
+            } # fi nrow(df.temp)
+          } # fi length(ligs)
+        } # for rec
+      } # if length(recs)
+    } # for tf
+  } # for cl
+  return(df)
+} # outgoingNetwork
+
