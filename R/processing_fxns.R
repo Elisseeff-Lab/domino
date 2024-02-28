@@ -107,6 +107,9 @@ build_domino <- function(
       clust_ligs[[clust]] <- vec
     }
     dom@linkages[["clust_incoming_lig"]] <- clust_ligs
+    # In order to build: dom@linkages[["clust_lig"]]
+    # I have to get dom@linkages$clust_tf_lig to know which are expressed
+    # Doesn't matter for now, because I can subset the ligands in my plot.
     # Build signaling matrices for each cluster
     cl_signaling_matrices <- list()
     signaling <- matrix(0, ncol = length(levels(dom@clusters)), nrow = length(levels(dom@clusters)))
