@@ -448,6 +448,7 @@ create_domino <- function(
   }
   dom@linkages[["rec_lig"]] <- rec_lig_linkage
   dom@misc[["rl_map"]] <- rl_reading
+  dom <- invert_rec_lig_linkages(dom) # untested
   # Get z-score and cluster info
   if (verbose) {
     message("Getting z_scores, clusters, and counts")
