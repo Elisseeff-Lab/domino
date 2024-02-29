@@ -12,7 +12,8 @@ circos_ligand_receptor_general(
   cell_idents = NULL,
   cell_colors = NULL,
   title = "Signaling",
-  label_arcs = T
+  label_arcs = T,
+  multi_plot = NULL
 )
 }
 \arguments{
@@ -27,6 +28,12 @@ circos_ligand_receptor_general(
 \item{cell_idents}{Vector of cell types from cluster assignments in the domino object to be included in the plot.}
 
 \item{cell_colors}{Named vector of color names or hex codes where names correspond to the plotted cell types and the color values}
+
+\item{title}{if provided, final title will be paste0(receptor/ligand, " Signaling")}
+
+\item{label_arcs}{logical indicating if arc populations should be labeled}
+
+\item{multi_plot}{numeric vector that, if present indicates which plot in a list of plots this one is (for legend output)}
 }
 \value{
 renders a circos plot to the active graphics device

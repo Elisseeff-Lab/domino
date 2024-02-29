@@ -821,12 +821,15 @@ circos_ligand_receptor <- function(
 #' @param expression_threshold Minimum mean expression value of a ligand by a cell type for a chord to be rendered between the cell type and the receptor
 #' @param cell_idents Vector of cell types from cluster assignments in the domino object to be included in the plot.
 #' @param cell_colors Named vector of color names or hex codes where names correspond to the plotted cell types and the color values
+#' @param title if provided, final title will be paste0(receptor/ligand, " Signaling")
+#' @param label_arcs logical indicating if arc populations should be labeled
+#' @param multi_plot numeric vector that, if present indicates which plot in a list of plots this one is (for legend output)
 #' @return renders a circos plot to the active graphics device
 #' @export circos_ligand_receptor_general
 #' 
 circos_ligand_receptor_general <- function(
     dom, receptor = NULL, ligand = NULL, expression_threshold = 0.01, cell_idents = NULL,
-    cell_colors = NULL, title = "Signaling", label_arcs = T) {
+    cell_colors = NULL, title = "Signaling", label_arcs = T, multi_plot = NULL) {
   
   if (!is.null(receptor) & !is.null(ligand)) {
     stop("Both receptor and ligand are set. Must choose one or the other.\n")
@@ -979,8 +982,24 @@ circos_ligand_receptor_general <- function(
     ), c("#DDDDDD", "#DDDDDD")), legend_height = grid::unit(chord_width, "in"), title_position = "topleft",
     title = "ligand expression"
   )
-  lgd_list_vertical <- ComplexHeatmap::packLegend(lgd_cells, lgd_ligands, lgd_chord)
-  ComplexHeatmap::draw(lgd_list_vertical, x = grid::unit(0.02, "npc"), y = grid::unit(0.98, "npc"), just = c("left", "top"))
+  if (is.null(multi_plot)) {
+    lgd_list_vertical <- ComplexHeatmap::packLegend(lgd_cells, lgd_ligands, lgd_chord)
+    ComplexHeatmap::draw(lgd_list_vertical, x = grid::unit(0.02, "npc"), y = grid::unit(0.98, "npc"), just = c("left", "top"))
+  } else {
+    lgd_list_vertical <- ComplexHeatmap::packLegend(lgd_cells, lgd_ligands, lgd_chord)
+    #lgd_list_vertical <- lgd_chord
+    if (multi_plot %% 2 == 0) { 
+      ComplexHeatmap::draw(lgd_list_vertical, x = grid::unit(0.9, "npc"), y = grid::unit(0.98-(0.13*(multi_plot-2)), "npc"), just = c("left", "top"))
+    } else { 
+      ComplexHeatmap::draw(lgd_list_vertical, x = grid::unit(0.02, "npc"), y = grid::unit(0.98-(0.13*(multi_plot-1)), "npc"), just = c("left", "top"))
+      # if (multi_plot == 3) {
+      #   ComplexHeatmap::draw(lgd_list_vertical, x = grid::unit(0.02, "npc"), y = grid::unit(0.7, "npc"), just = c("left", "top"))
+      # } else {
+      #   ComplexHeatmap::draw(lgd_list_vertical, x = grid::unit(0.02, "npc"), y = grid::unit(0.7-(0.13*(multi_plot-2)), "npc"), just = c("left", "top"))
+      # }
+    }
+    
+  }
 } # circos_ligand_receptor_general
 
 #' Plot differential linkages among domino results ranked by a comparative statistic
