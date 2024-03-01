@@ -51,7 +51,7 @@ signaling_network(
 
 \item{plot_title}{Text for the plot's title.}
 
-\item{...}{Other parameters to be passed to plot when used with an \code{{igraph}} object.}
+\item{...}{Other parameters to be passed to plot when used with an igraph object.}
 }
 \value{
 an igraph rendered to the active graphics device
