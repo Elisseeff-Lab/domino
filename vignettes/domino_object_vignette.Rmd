@@ -1,8 +1,8 @@
 ---
-title: "Interacting with domino2 Objects"
+title: "Interacting with dominoSignal Objects"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Interacting with domino2 Objects}
+  %\VignetteIndexEntry{Interacting with dominoSignal Objects}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -20,7 +20,13 @@ knitr::opts_chunk$set(
 options(timeout = 300)
 ```
 
-```{r setup, include = FALSE}
+In order to better implement some of the changes that have been made in dominoSignal, the structure of the domino object has been modified. Here, we describe the data that is stored in the domino object, as well as how best to access this data.
+
+## Setup and data load
+
+In this tutorial, we will use the domino object we built on the [Getting Started](vigenttes("domino2")) page. If you have not yet built a domino object, you can do so by following the instructions on the [Getting Started](vignette("domino2")) page.
+
+```{r setup, include = TRUE}
 library(domino2)
 
 data_url <- "https://zenodo.org/records/10222767/files/pbmc_domino_built.rds"
@@ -32,7 +38,6 @@ if (!(file.exists(tmp_path) &&
 dom <- readRDS(tmp_path)
 ```
 
-In order to better implement some of the changes that have been made in domino2, the structure of the domino object has been modified. Here, we describe the data that is stored in the domino object, as well as how best to access this data.
 
 ## Object contents
 
@@ -182,7 +187,7 @@ dom_info(dom)
 
 ## Continued Development
 
-Since domino2 is a package still being developed, there are new functions and features that will be implemented in future versions. In the meantime, we have put together further information on [plotting](vignette("plotting_vignette")) and an example analysis can be viewed on our [Getting Started](vignette("domino2")) page. Additionally, if you find any bugs, have further questions, or want to share an idea, please let us know [here](https://github.com/FertigLab/domino_development/issues).
+Since dominoSignal is a package still being developed, there are new functions and features that will be implemented in future versions. In the meantime, we have put together further information on [plotting](vignette("plotting_vignette")) and an example analysis can be viewed on our [Getting Started](vignette("domino2")) page. Additionally, if you find any bugs, have further questions, or want to share an idea, please let us know [here](https://github.com/FertigLab/domino_development/issues).
 
 <details><summary>Vignette Build Information</summary>
 Date last built and session information:

@@ -1,14 +1,14 @@
 [![R build status](https://github.com/FertigLab/domino2/workflows/r-build-check/badge.svg?branch=master)](https://github.com/FertigLab/domino2/actions?workflow=r-build-check)
 
-## Introducing domino2: Improved Inference of Cell Signaling from Single Cell RNA Sequencing Data <a href="https://fertiglab.github.io/domino2/"><img src="man/figures/logo.svg" align="right" height="138" alt="domino2 repository" /></a>
+## Introducing dominoSignal: Improved Inference of Cell Signaling from Single Cell RNA Sequencing Data <a href="https://fertiglab.github.io/domino2/"><img src="man/figures/logo.svg" align="right" height="138" alt="dominoSignal logo" /></a>
 
-Domino2 is an updated version of the original [domino](https://github.com/Elisseeff-Lab/domino) R package published in Nature Biomedical Engineering in [Computational reconstruction of the signalling networks surrounding implanted biomaterials from single-cell transcriptomics](https://doi.org/10.1038/s41551-021-00770-5). Domino2 is a tool for analysis of intra- and intercellular signaling in single cell RNA sequencing data based on transcription factor activation and receptor and ligand linkages.
+dominoSignal is an updated version of the original [domino](https://github.com/Elisseeff-Lab/domino) R package published in Nature Biomedical Engineering in [Computational reconstruction of the signalling networks surrounding implanted biomaterials from single-cell transcriptomics](https://doi.org/10.1038/s41551-021-00770-5). dominoSignal is a tool for analysis of intra- and intercellular signaling in single cell RNA sequencing data based on transcription factor activation and receptor and ligand linkages.
 
 ### Installation
 
-Domino2 is undergoing active development where aspects of how data is used, analyzed, and interpreted is subject to change as new features and fixes are implemented. **v0.2.2** of Domino2 serves as the first stable development version during these active updates for reproducible usage.
+dominoSignal is undergoing active development where aspects of how data is used, analyzed, and interpreted is subject to change as new features and fixes are implemented. **v0.99.1** of dominoSignal serves as the first stable development version during these active updates for reproducible usage.
 
-The most current version of Domino2 for reproducible usage is on the [FertigLab GitHub](https://github.com/FertigLab). Domino2 is the continuation of Domino software hosted on the [Elisseeff-Lab GitHub](https://github.com/Elisseeff-Lab/domino). The most current stable branch of Domino2 can be installed using the remotes package.
+The most current version of dominoSignal for reproducible usage is on the [FertigLab GitHub](https://github.com/FertigLab). dominoSignal is the continuation of Domino software hosted on the [Elisseeff-Lab GitHub](https://github.com/Elisseeff-Lab/domino). The most current stable branch of dominoSignal can be installed using the remotes package.
 
 ```r
 if(!require(remotes)){
@@ -19,7 +19,7 @@ remotes::install_github('FertigLab/domino2')
 
 ### Usage Overview
 
-Here is an overview of how domino2 might be used in analysis of a single cell RNA sequencing data set:
+Here is an overview of how dominoSignal might be used in analysis of a single cell RNA sequencing data set:
 
 1. Transcription factor activation scores are calculated (we recommend using [pySCENIC](https://pyscenic.readthedocs.io/en/latest/), but other methods can be used as well)
 2. A ligand-receptor database is used to map linkages between ligands and receptors (we recommend using [CellphoneDB](https://www.cellphonedb.org/), but other methods can be used as well).
@@ -35,7 +35,7 @@ If you use our package in your analysis, please cite us:
 
 > Cherry C, Maestas DR, Han J, Andorko JI, Cahan P, Fertig EJ, Garmire LX, Elisseeff JH. Computational reconstruction of the signalling networks surrounding implanted biomaterials from single-cell transcriptomics. Nat Biomed Eng. 2021 Oct;5(10):1228-1238. doi: 10.1038/s41551-021-00770-5. Epub 2021 Aug 2. PMID: 34341534; PMCID: PMC9894531.
 
-> Cherry C, Mitchell J, Nagaraj S, Krishnan K, Lvovs D, Fertig E, Elisseeff J (2023). domino2: Cell Communication Analysis for Single Cell RNA Sequencing. R package version 0.2.2.
+> Cherry C, Mitchell J, Nagaraj S, Krishnan K, Lvovs D, Fertig E, Elisseeff J (2024). dominoSignal: Cell Communication Analysis for Single Cell RNA Sequencing. R package version 0.99.1.
 
 ### Contact Us
 If you find any bugs or have questions, please let us know [here](https://github.com/FertigLab/domino_development/issues).

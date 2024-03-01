@@ -1,13 +1,13 @@
 ---
-title: "Get Started with domino2"
+title: "Get Started with dominoSignal"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Get Started with domino2}
+  %\VignetteIndexEntry{Get Started with dominoSignal}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-domino2 is a tool for analysis of intra- and intercellular signaling in single cell RNA sequencing (scRNAseq) data based on transcription factor (TF) activation. Here, we show a basic example pipeline for generating communication networks as a domino object. This vignette will demonstrate how to use domino2 on the 10X Genomics Peripheral Blood Mononuclear Cells (PBMC) data set of 2,700 cells. The data can be downloaded [here](https://cf.10xgenomics.com/samples/cell/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz).
+dominoSignal is a tool for analysis of intra- and intercellular signaling in single cell RNA sequencing (scRNAseq) data based on transcription factor (TF) activation. Here, we show a basic example pipeline for generating communication networks as a domino object. This vignette will demonstrate how to use dominoSignal on the 10X Genomics Peripheral Blood Mononuclear Cells (PBMC) data set of 2,700 cells. The data can be downloaded [here](https://cf.10xgenomics.com/samples/cell/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz).
 
 ## Options and Setup:
 ```{r, include = FALSE}
@@ -36,7 +36,7 @@ set.seed(123)
 
 Data used in our vignettes can be downloaded from Zenodo:
 
-``` {r files}
+```{r files}
 data_url <- "https://zenodo.org/records/10222767/files"
 temp_dir <- tempdir()
 
@@ -84,7 +84,7 @@ download.file(url = cellphone_url, destfile = cellphone_tar)
 untar(tarfile = cellphone_tar, exdir = cellphone_dir)
 cellphone_data <- paste0(cellphone_dir, "/cellphonedb-data-4.0.0/data")
 
-# directory for created inputs to pySCENIC and domino2
+# directory for created inputs to pySCENIC and dominoSignal
 input_dir <- paste0(temp_dir, "/inputs")
 if (!dir.exists(input_dir)) {
     dir.create(input_dir)
@@ -93,14 +93,14 @@ if (!dir.exists(input_dir)) {
 
 ## Data preparation
 
-Analysis of cell-cell communication with domino2 often follows initial processing and annotation of scRNAseq data.  We used the [Satija Lab's Guided Clustering Tutorial](https://satijalab.org/seurat/articles/pbmc3k_tutorial) to prepare the data set for analysis with domino2. The [complete processing script](data-raw/example_data.R) is available in the data-raw directory of the domino2 package. The processed data can be downloaded from [Zenodo](https://zenodo.org/records/10222767).
+Analysis of cell-cell communication with dominoSignal often follows initial processing and annotation of scRNAseq data.  We used the [Satija Lab's Guided Clustering Tutorial](https://satijalab.org/seurat/articles/pbmc3k_tutorial) to prepare the data set for analysis with dominoSignal. The [complete processing script](data-raw/example_data.R) is available in the data-raw directory of the dominoSignal package. The processed data can be downloaded from [Zenodo](https://zenodo.org/records/10222767).
 
 ```{r}
 pbmc <- readRDS(paste0(pbmc_dir, "/pbmc_seurat.rds"))
 ```
 
 ### Preparing Preprocessed Data:
-domino2 was designed to be compatible with `{Seurat}` objects in addition to accepting matrices and vectors of the data set as function inputs. However, [pySCENIC](https://pyscenic.readthedocs.io/en/latest/) is used for TF activation inference, and it requires as input a cell by gene matrix. This is the opposite orientation of `{Seurat}` objects but is the default for Python based tools such as [scanpy](https://scanpy.readthedocs.io/en/stable/). The RNA counts matrix can be saved as a tab-seperated value (.tsv) or comma-sperated value (.csv) file after transposing the matrix to cell by gene orientation.
+dominoSignal was designed to be compatible with `{Seurat}` objects in addition to accepting matrices and vectors of the data set as function inputs. However, [pySCENIC](https://pyscenic.readthedocs.io/en/latest/) is used for TF activation inference, and it requires as input a cell by gene matrix. This is the opposite orientation of `{Seurat}` objects but is the default for Python based tools such as [scanpy](https://scanpy.readthedocs.io/en/stable/). The RNA counts matrix can be saved as a tab-seperated value (.tsv) or comma-sperated value (.csv) file after transposing the matrix to cell by gene orientation.
 
 ```{r Save Counts Matrix as tsv File, eval=FALSE}
 pbmc_counts <- GetAssayData(object = pbmc, slot = "counts")
@@ -126,20 +126,20 @@ pbmc_loom$close_all()
 
 ## Installation
 
-Installation of domino2 from Github can be achieved using the `{remotes}` package. The current stable version is v0.2.2, so we will install that version.
+Installation of dominoSignal from Github can be achieved using the `{remotes}` package. The current stable version is v0.2.2, so we will install that version.
 
 ```{r, eval = FALSE}
-# if(!require(remotes)){
-#   install.packages("remotes")
-# }
-# remotes::install_github("FertigLab/domino2@v0.2.2")
+if(!require(remotes)){
+    install.packages("remotes")
+}
+remotes::install_github("FertigLab/domino2@v0.2.2")
 ```
 
-## Building a Signaling Network with domino2
+## Building a Signaling Network with dominoSignal
 
 ### Loading SCENIC Results
 
-The TF activities are a required input for domino2, and the regulons learned by [SCENIC](https://scenic.aertslab.org/) are an important but optional input needed to annotate TF-target interactions and to prune TF-receptor linkages where the receptor is a target of the TF. This prevents the distinction of receptor expression driving TF activity or the TF inducing the receptor's expression.
+The TF activities are a required input for dominoSignal, and the regulons learned by [SCENIC](https://scenic.aertslab.org/) are an important but optional input needed to annotate TF-target interactions and to prune TF-receptor linkages where the receptor is a target of the TF. This prevents the distinction of receptor expression driving TF activity or the TF inducing the receptor's expression.
 
 ```{r Load SCENIC Results}
 regulons <- read.csv(paste0(scenic_dir, "/regulons_pbmc_3k.csv"))
@@ -149,7 +149,7 @@ auc <- read.table(paste0(scenic_dir, "/auc_pbmc_3k.csv"),
 )
 ```
 
-The initial regulons data frame read into R from the ctx function has 2 rows of column names that need to be replaced with one succinct description. domino2 has changed the input format for TF regulons to be a list storing vectors of target genes in each regulon, where the names of the list are the TF genes. This facilitates the use of alternative methods for TF activity quantification. We provide a helper function, `create_regulon_list_scenic()` for easy retrieval of TF regulons from the output of the [pySCENIC](https://pyscenic.readthedocs.io/en/latest/) ctx function.
+The initial regulons data frame read into R from the ctx function has 2 rows of column names that need to be replaced with one succinct description. dominoSignal has changed the input format for TF regulons to be a list storing vectors of target genes in each regulon, where the names of the list are the TF genes. This facilitates the use of alternative methods for TF activity quantification. We provide a helper function, `create_regulon_list_scenic()` for easy retrieval of TF regulons from the output of the [pySCENIC](https://pyscenic.readthedocs.io/en/latest/) ctx function.
 
 ```{r Create Regulon List}
 regulons <- regulons[-1:-2, ]
@@ -160,7 +160,7 @@ colnames(regulons) <- c(
 regulon_list <- create_regulon_list_scenic(regulons = regulons)
 ```
 
-Users should be aware that the AUC matrix from [SCENIC](https://scenic.aertslab.org/) is loaded in a cell x TF orientation and should be transposed to TF x cell orientation. pySCENIC also appends "(+)" to TF names that are converted to "..." upon loading into R. These characters can be included without affecting the results of domino2 analysis, but can be confusing when querying TF features in the data. We recommend comprehensive removal of the "..." characters using the `gsub()` function.
+Users should be aware that the AUC matrix from [SCENIC](https://scenic.aertslab.org/) is loaded in a cell x TF orientation and should be transposed to TF x cell orientation. pySCENIC also appends "(+)" to TF names that are converted to "..." upon loading into R. These characters can be included without affecting the results of dominoSignal analysis, but can be confusing when querying TF features in the data. We recommend comprehensive removal of the "..." characters using the `gsub()` function.
 
 ```{r Orient AUC Matrix}
 auc_in <- as.data.frame(t(auc))
@@ -170,7 +170,7 @@ rownames(auc_in) <- gsub("\\.\\.\\.$", "", rownames(auc_in))
 
 ### Load CellPhoneDB Database
 
-domino2 has been updated to read ligand-receptor data bases in a uniform data.frame format referred to as a receptor-ligand map (rl\_map) to enable the use of alternative or updated reference databases as opposed to a particular version of CellPhoneDB's database in older versions of Domino. Each row corresponds to a ligand-receptor interaction. Genes participating in an interaction are referred to as "partner A" and "partner B" without a requirement for fixed ordering of whether A or B is the ligand and vice versa. The minimum required columns of this data frame are:
+dominoSignal has been updated to read ligand-receptor data bases in a uniform data.frame format referred to as a receptor-ligand map (rl\_map) to enable the use of alternative or updated reference databases as opposed to a particular version of CellPhoneDB's database in older versions of Domino. Each row corresponds to a ligand-receptor interaction. Genes participating in an interaction are referred to as "partner A" and "partner B" without a requirement for fixed ordering of whether A or B is the ligand and vice versa. The minimum required columns of this data frame are:
 
 - int\_pair: the names of the interacting ligand and receptor separated by " & "
 - gene\_A: the gene or genes encoding partner A
@@ -243,7 +243,7 @@ knitr::kable(head(rl_map_append))
 
 ## Creating the Domino Object
 
-domino2 analysis takes place in two steps. 
+dominoSignal analysis takes place in two steps. 
 
 1. `create_domino()`
 
@@ -261,7 +261,7 @@ domino2 analysis takes place in two steps.
 
 ### Required inputs from data set
 
-domino2 infers active receipt of signals via receptors based on the correlation of the receptor's expression with TF activity across the data set and differential activity of the TF within a cell cluster. Correlations are conducted using scaled expression values rather than raw counts or normalized counts. For assessment of receptor activity on a per cell type basis, a named vector of cell cluster assignments, where the names are cell barcodes matching the expression matrix, are provided. Assessing signaling based on other categorical groupings of cells can be achieved by passing these groupings as "clusters" to `build_domino()` in place of cell types. domino2 accepts either a `{Seurat}` object with counts, scaled counts, and clusters included, or it requires a matrix of counts, a matrix of scaled counts, and a named vector of cell cluster labels as factors. Shown below is how to extract these elements from a `{Seurat}` object.
+dominoSignal infers active receipt of signals via receptors based on the correlation of the receptor's expression with TF activity across the data set and differential activity of the TF within a cell cluster. Correlations are conducted using scaled expression values rather than raw counts or normalized counts. For assessment of receptor activity on a per cell type basis, a named vector of cell cluster assignments, where the names are cell barcodes matching the expression matrix, are provided. Assessing signaling based on other categorical groupings of cells can be achieved by passing these groupings as "clusters" to `build_domino()` in place of cell types. dominoSignal accepts either a `{Seurat}` object with counts, scaled counts, and clusters included, or it requires a matrix of counts, a matrix of scaled counts, and a named vector of cell cluster labels as factors. Shown below is how to extract these elements from a `{Seurat}` object.
 
 ```{r load cell features}
 counts <- GetAssayData(object = pbmc, slot = "counts")
@@ -380,7 +380,7 @@ Beyond the aggregated degree of signaling between cell types, the degrees of sig
 gene_network(pbmc_dom, clust = "dendritic_cell", layout = "grid")
 ```
 
-New to domino2, `gene_network()` can be used between two clusters to determine if any of the possible ligands for a given receptor are expressed by a putative outgoing signaling cluster.
+New to dominoSignal, `gene_network()` can be used between two clusters to determine if any of the possible ligands for a given receptor are expressed by a putative outgoing signaling cluster.
 
 ```{r}
 gene_network(pbmc_dom,
@@ -395,7 +395,7 @@ A comprehensive assessment of ligand expression targeting active receptors on a 
 incoming_signaling_heatmap(pbmc_dom, rec_clust = "dendritic_cell", max_thresh = 2.5, use_raster = FALSE)
 ```
 
-Another form of comprehensive ligand expression assessment is available for individual active receptors in the form of circos plots new to domino2. The outer arcs correspond to clusters in the domino object with inner arcs representing each possible ligand of the plotted receptor. Arcs are drawn between ligands on a cell type and the receptor if the ligand is expressed above the specified threshold. Arc widths correspond to the mean express of the ligand by the cluster with the widest arc width scaling to the maximum expression of the ligand within the data.
+Another form of comprehensive ligand expression assessment is available for individual active receptors in the form of circos plots new to dominoSignal. The outer arcs correspond to clusters in the domino object with inner arcs representing each possible ligand of the plotted receptor. Arcs are drawn between ligands on a cell type and the receptor if the ligand is expressed above the specified threshold. Arc widths correspond to the mean express of the ligand by the cluster with the widest arc width scaling to the maximum expression of the ligand within the data.
 
 ```{r, fig.asp = 0.6, out.width = "90%"}
 circos_ligand_receptor(pbmc_dom, receptor = "CD74")
@@ -403,7 +403,7 @@ circos_ligand_receptor(pbmc_dom, receptor = "CD74")
 
 ## Continued Development
 
-Since domino2 is a package still being developed, there are new functions and features that will be implemented in future versions. In the meantime, we have put together further information on [plotting](vignette("plotting_vignette")) and the [domino object structure](vignette("domino_object_vignette")) if you would like to explore more of the package's functionality. Additionally, if you find any bugs, have further questions, or want to share an idea, please let us know [here](https://github.com/FertigLab/domino_development/issues).
+Since dominoSignal is a package still being developed, there are new functions and features that will be implemented in future versions. In the meantime, we have put together further information on [plotting](vignette("plotting_vignette")) and the [domino object structure](vignette("domino_object_vignette")) if you would like to explore more of the package's functionality. Additionally, if you find any bugs, have further questions, or want to share an idea, please let us know [here](https://github.com/FertigLab/domino_development/issues).
 
 <details><summary>Vignette Build Information</summary>
 Date last built and session information:

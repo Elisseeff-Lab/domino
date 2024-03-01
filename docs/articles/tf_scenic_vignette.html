@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="description" content="domino2">
-<title>Using SCENIC for Transcription Factor Activation Scoring • domino2</title>
+<title>SCENIC for TF Activation Scoring • domino2</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
@@ -15,10 +15,12 @@
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.2.2/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.2.2/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<script src="../deps/bootstrap-5.2.2/bootstrap.bundle.min.js"></script><link href="../deps/Montserrat-0.4.7/font.css" rel="stylesheet">
+<link href="../deps/Fira_Code-0.4.7/font.css" rel="stylesheet">
+<!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<script src="../extra.js"></script><meta property="og:title" content="Using SCENIC for Transcription Factor Activation Scoring">
+<script src="../extra.js"></script><meta property="og:title" content="SCENIC for TF Activation Scoring">
 <meta property="og:description" content="domino2">
 <meta property="og:image" content="https://FertigLab.github.io/domino2/logo.svg">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -49,9 +51,9 @@
 <li class="active nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/cellphonedb_vignette.html">Using the cellphoneDB Ligand-Receptor Database</a>
-    <a class="dropdown-item" href="../articles/tf_scenic_vignette.html">Using SCENIC for Transcription Factor Activation Scoring</a>
-    <a class="dropdown-item" href="../articles/domino_object_vignette.html">Interacting with domino2 Objects</a>
+    <a class="dropdown-item" href="../articles/cellphonedb_vignette.html">Using the cellphoneDB Database</a>
+    <a class="dropdown-item" href="../articles/tf_scenic_vignette.html">SCENIC for TF Activation Scoring</a>
+    <a class="dropdown-item" href="../articles/domino_object_vignette.html">Interacting with dominoSignal Objects</a>
     <a class="dropdown-item" href="../articles/plotting_vignette.html">Plotting Functions and Options</a>
   </div>
 </li>
@@ -91,7 +93,7 @@
 
 <script src="tf_scenic_vignette_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.svg" class="logo" alt=""><h1>Using SCENIC for Transcription Factor Activation Scoring</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>SCENIC for TF Activation Scoring</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/FertigLab/domino2/blob/HEAD/vignettes/articles/tf_scenic_vignette.Rmd" class="external-link"><code>vignettes/articles/tf_scenic_vignette.Rmd</code></a></small>
@@ -105,7 +107,7 @@
 <div class="section level2">
 <h2 id="file-downloads-for-scenic">File Downloads for SCENIC<a class="anchor" aria-label="anchor" href="#file-downloads-for-scenic"></a>
 </h2>
-<p>For this tutorial, <a href="https://pyscenic.readthedocs.io/en/latest/" class="external-link">pySCENIC</a> is used as the method for TF activity inference. This requires downloading some files prior to use. Here, we show how to download these files and the way we run pySCENIC to generate the necessary files for use in domino2 analyis.</p>
+<p>For this tutorial, <a href="https://pyscenic.readthedocs.io/en/latest/" class="external-link">pySCENIC</a> is used as the method for TF activity inference. This requires downloading some files prior to use. Here, we show how to download these files and the way we run pySCENIC to generate the necessary files for use in dominoSignal analyis.</p>
 <p>A singularity image of <a href="https://scenic.aertslab.org/" class="external-link">SCENIC</a> v0.12.1 can be installed from the DockerHub image as a source. <a href="https://scenic.aertslab.org/" class="external-link">SCENIC</a> requires a list of TFs, motif annotations, and cisTarget motifs which are all available from the authors of <a href="https://scenic.aertslab.org/" class="external-link">SCENIC</a> for human (HGNC), mouse (MGI), and fly. The following will download everything necessary for an analysis of a data set with HGNC gene labels for the hg38 genome.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1"></a><span class="va">SCENIC_DIR=</span><span class="st">"'temp_dir'/scenic"</span></span>
 <span id="cb2-2"><a href="#cb2-2"></a><span class="fu">mkdir</span> <span class="va">${SCENIC_DIR}</span></span>
@@ -133,7 +135,7 @@
 <h2 id="scenic-analysis">SCENIC Analysis<a class="anchor" aria-label="anchor" href="#scenic-analysis"></a>
 </h2>
 <p>SCENIC is our lab’s preferred software for TF activity scoring. We recommend using the Python implementation (<a href="https://pyscenic.readthedocs.io/en/latest/" class="external-link">pySCENIC</a>) as it is faster than the original R implementation. Be aware, the use of <a href="https://scenic.aertslab.org/" class="external-link">SCENIC</a> is often the slowest and most memory intensive step of this analysis pipeline. <a href="https://scenic.aertslab.org/" class="external-link">SCENIC</a> should be run on computing resources with access to multi-core processing and large amounts of memory.</p>
-<p>As described in the section on saving preprocessed data, <a href="https://scenic.aertslab.org/" class="external-link">SCENIC</a> requires RNA counts to be provided in a cell by gene matrix format. While this can be down with tsv and csv files, they are very inefficient for storing large matrices. As an alternative, the counts matrix can be saved as a loom file and directly passed to <a href="https://pyscenic.readthedocs.io/en/latest/" class="external-link">pySCENIC</a> in this format. Generating a loom file in R requires use of the <a href="https://github.com/mojaveazure/loomR" class="external-link">loomR</a> package. The package automatically handles the transposition of the counts matrix to cell by gene orientation as well. We recommend this approach to passing a counts matrix to pySCENIC. However, users should be aware that <a href="https://github.com/mojaveazure/loomR" class="external-link">loomR</a> is not hosted on CRAN or BioConductor at the time of this vignette’s creation.</p>
+<p><a href="https://scenic.aertslab.org/" class="external-link">SCENIC</a> requires RNA counts to be provided in a cell by gene matrix format. While this can be done with tsv and csv files, they are very inefficient for storing large matrices. As an alternative, the counts matrix can be saved as a loom file and directly passed to <a href="https://pyscenic.readthedocs.io/en/latest/" class="external-link">pySCENIC</a> in this format. Generating a loom file in R requires use of the <a href="https://github.com/mojaveazure/loomR" class="external-link">loomR</a> package. The package automatically handles the transposition of the counts matrix to cell by gene orientation as well. We recommend this approach to passing a counts matrix to pySCENIC. However, users should be aware that <a href="https://github.com/mojaveazure/loomR" class="external-link">loomR</a> is not hosted on CRAN or BioConductor at the time of this vignette’s creation.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mojaveazure/loomR" class="external-link">loomR</a></span><span class="op">)</span></span>
 <span></span>
@@ -142,7 +144,7 @@
 <span><span class="va">pbmc_loom</span> <span class="op">&lt;-</span> <span class="fu">loomR</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/loomR/man/create.html" class="external-link">create</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">input_dir</span>, <span class="st">"/pbmc3k_counts.loom"</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">pbmc_counts</span><span class="op">)</span></span>
 <span><span class="co"># connection to the loom file must be closed to complete file creation</span></span>
 <span><span class="va">pbmc_loom</span><span class="op">$</span><span class="fu">close_all</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p>We will demonstrate the use of the pbmc3k_counts.loom file in this stage of analysis.</p>
+<p>We will use the pbmc3k_counts.loom file in this tutorial.</p>
 <p><a href="https://pyscenic.readthedocs.io/en/latest/" class="external-link">pySCENIC</a> is initiated using bash scripting in the terminal. The analysis consists of 3 steps to score genes for TF motif enrichment, construct TF regulons consisting of genes targeted by the TFs, and arrive at AUC scores for enrichment of regulon gene transcription within each cell.</p>
 <div class="section level3">
 <h3 id="grn-construct-tf-modules">grn: construct TF-modules<a class="anchor" aria-label="anchor" href="#grn-construct-tf-modules"></a>
@@ -189,7 +191,7 @@
 <div class="section level3">
 <h3 id="aucell-calculate-tf-activity-scores">aucell: calculate TF activity scores<a class="anchor" aria-label="anchor" href="#aucell-calculate-tf-activity-scores"></a>
 </h3>
-<p>Enrichment of a regulon is measured as the Area Under the recovery Curve (AUC) of the genes that define this regulon.</p>
+<p>Enrichment of a regulon is measured as the <strong>A</strong>rea <strong>U</strong>nder the recovery <strong>C</strong>urve (AUC) of the genes that define this regulon.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1"></a><span class="ex">singularity</span> exec <span class="st">"</span><span class="va">${SCENIC_DIR}</span><span class="st">/aertslab-pyscenic-0.12.1.sif"</span> pyscenic aucell \</span>
 <span id="cb6-2"><a href="#cb6-2"></a>    <span class="st">"pbmc3k_counts.loom"</span> \</span>
 <span id="cb6-3"><a href="#cb6-3"></a>    <span class="st">"</span><span class="va">${SCENIC_DIR}</span><span class="st">/regulons_pbmc_3k.csv"</span> \</span>
@@ -199,7 +201,7 @@
 <span id="cb6-7"><a href="#cb6-7"></a>    <span class="co"># counts matrix loom file</span></span>
 <span id="cb6-8"><a href="#cb6-8"></a>    <span class="co"># regulon table output from ctx</span></span>
 <span id="cb6-9"><a href="#cb6-9"></a>    <span class="co"># cell x TF matrix of TF enrichment AUC values</span></span></code></pre></div>
-<p>The csv files created in this analysis can be used as the TF activation inputs in a domino2 analysis. Please see our <a href="vignette(%22domino2%22)">Getting Started</a> page for more information on how to perform an analysis with domino2. For a brief tutorial on the download of the necessary files for using cellphonedb, please see the <a href="vignette(%22articles/cellphonedb_vignette%22)">Using the cellphoneDB database</a> vignette.</p>
+<p>The csv files created in this analysis can be used as the TF activation inputs in a dominoSignal analysis. Please see our <a href="vignette(%22domino2%22)">Getting Started</a> page for more information on how to perform an analysis with dominoSignal. For a brief tutorial on the download of the necessary files for using cellphonedb, please see the <a href="vignette(%22cellphonedb_vignette%22)">Using the cellphoneDB database</a> vignette.</p>
 <details><p><summary>Vignette Build Information</summary> Date last built and session information:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span></span>

@@ -20,22 +20,25 @@ template:
     code-font-size: 95%
     code-bg: "#fefefe"
     link-color: "#8963BA"
-    border-color: "#DFD4EC"
-    dropdown-bg: "#F4F1F9"
+    border-color: "#f4f0fa"
+    base_font: { google: "Montserrat" }
+    heading_font: { google: "Montserrat" }
+    code_font: { google: "Fira Code" }
+    border-width: 2px
 
 
 reference:
 - title: "Domino Classes"
   desc: >
     An object class designed to store information used 
-    and produced in Domino2 analysis
+    and produced in dominoSignal analysis
   contents:
   - domino-class
   - linkage_summary
 - title: "Analysis Functions"
   desc: >
     Functions for performing cell-cell communication analysis
-    with the Domino2 package
+    with the dominoSignal package
   contents:
   - create_rl_map_cellphonedb
   - create_regulon_list_scenic
@@ -44,7 +47,7 @@ reference:
   - summarize_linkages
   - test_differential_linkages
 - title: "Plotting Functions"
-  desc: "Functions for visualizing Domino2 analysis results"
+  desc: "Functions for visualizing dominoSignal analysis results"
 - subtitle: "Heatmaps"
   contents:
   - cor_heatmap
@@ -61,7 +64,7 @@ reference:
   - cor_scatter
   - plot_differential_linkages
 - title: "Helper Functions"
-  desc: "Convenience functions for working with Domino2 objects"
+  desc: "Convenience functions for working with dominoSignal objects"
 - subtitle: "Access functions"
   contents:
   - dom_clusters
@@ -92,7 +95,7 @@ navbar:
 home:
   title: Cell Communication from Single Cell RNA Sequencing Data
   description: >
-    Domino2 uses transcription factor activation and ligand - receptor linkages to infer intra- and inter- cellular signaling from single cell RNA sequencing data.
+    dominoSignal uses transcription factor activation and ligand - receptor linkages to infer intra- and inter- cellular signaling from single cell RNA sequencing data.
   sidebar:
     structure: [toc, authors, labs, citation, license]
     components:

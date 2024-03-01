@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="description" content="domino2">
-<title>Get Started with domino2 • domino2</title>
+<title>Get Started with dominoSignal • domino2</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
@@ -15,10 +15,12 @@
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.2.2/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.2.2/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<script src="../deps/bootstrap-5.2.2/bootstrap.bundle.min.js"></script><link href="../deps/Montserrat-0.4.7/font.css" rel="stylesheet">
+<link href="../deps/Fira_Code-0.4.7/font.css" rel="stylesheet">
+<!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<script src="../extra.js"></script><meta property="og:title" content="Get Started with domino2">
+<script src="../extra.js"></script><meta property="og:title" content="Get Started with dominoSignal">
 <meta property="og:description" content="domino2">
 <meta property="og:image" content="https://FertigLab.github.io/domino2/logo.svg">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -49,9 +51,9 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/cellphonedb_vignette.html">Using the cellphoneDB Ligand-Receptor Database</a>
-    <a class="dropdown-item" href="../articles/tf_scenic_vignette.html">Using SCENIC for Transcription Factor Activation Scoring</a>
-    <a class="dropdown-item" href="../articles/domino_object_vignette.html">Interacting with domino2 Objects</a>
+    <a class="dropdown-item" href="../articles/cellphonedb_vignette.html">Using the cellphoneDB Database</a>
+    <a class="dropdown-item" href="../articles/tf_scenic_vignette.html">SCENIC for TF Activation Scoring</a>
+    <a class="dropdown-item" href="../articles/domino_object_vignette.html">Interacting with dominoSignal Objects</a>
     <a class="dropdown-item" href="../articles/plotting_vignette.html">Plotting Functions and Options</a>
   </div>
 </li>
@@ -91,7 +93,7 @@
 
 <script src="domino2_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.svg" class="logo" alt=""><h1>Get Started with domino2</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>Get Started with dominoSignal</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/FertigLab/domino2/blob/HEAD/vignettes/domino2.Rmd" class="external-link"><code>vignettes/domino2.Rmd</code></a></small>
@@ -100,7 +102,7 @@
 
     
     
-<p>domino2 is a tool for analysis of intra- and intercellular signaling in single cell RNA sequencing (scRNAseq) data based on transcription factor (TF) activation. Here, we show a basic example pipeline for generating communication networks as a domino object. This vignette will demonstrate how to use domino2 on the 10X Genomics Peripheral Blood Mononuclear Cells (PBMC) data set of 2,700 cells. The data can be downloaded <a href="https://cf.10xgenomics.com/samples/cell/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz" class="external-link">here</a>.</p>
+<p>dominoSignal is a tool for analysis of intra- and intercellular signaling in single cell RNA sequencing (scRNAseq) data based on transcription factor (TF) activation. Here, we show a basic example pipeline for generating communication networks as a domino object. This vignette will demonstrate how to use dominoSignal on the 10X Genomics Peripheral Blood Mononuclear Cells (PBMC) data set of 2,700 cells. The data can be downloaded <a href="https://cf.10xgenomics.com/samples/cell/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz" class="external-link">here</a>.</p>
 <div class="section level2">
 <h2 id="options-and-setup">Options and Setup:<a class="anchor" aria-label="anchor" href="#options-and-setup"></a>
 </h2>
@@ -156,7 +158,7 @@
 <span><span class="fu"><a href="https://rdrr.io/r/utils/untar.html" class="external-link">untar</a></span><span class="op">(</span>tarfile <span class="op">=</span> <span class="va">cellphone_tar</span>, exdir <span class="op">=</span> <span class="va">cellphone_dir</span><span class="op">)</span></span>
 <span><span class="va">cellphone_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">cellphone_dir</span>, <span class="st">"/cellphonedb-data-4.0.0/data"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># directory for created inputs to pySCENIC and domino2</span></span>
+<span><span class="co"># directory for created inputs to pySCENIC and dominoSignal</span></span>
 <span><span class="va">input_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">temp_dir</span>, <span class="st">"/inputs"</span><span class="op">)</span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.exists</a></span><span class="op">(</span><span class="va">input_dir</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">input_dir</span><span class="op">)</span></span>
@@ -165,13 +167,13 @@
 <div class="section level2">
 <h2 id="data-preparation">Data preparation<a class="anchor" aria-label="anchor" href="#data-preparation"></a>
 </h2>
-<p>Analysis of cell-cell communication with domino2 often follows initial processing and annotation of scRNAseq data. We used the <a href="https://satijalab.org/seurat/articles/pbmc3k_tutorial" class="external-link">Satija Lab’s Guided Clustering Tutorial</a> to prepare the data set for analysis with domino2. The <a href="data-raw/example_data.R">complete processing script</a> is available in the data-raw directory of the domino2 package. The processed data can be downloaded from <a href="https://zenodo.org/records/10222767" class="external-link">Zenodo</a>.</p>
+<p>Analysis of cell-cell communication with dominoSignal often follows initial processing and annotation of scRNAseq data. We used the <a href="https://satijalab.org/seurat/articles/pbmc3k_tutorial" class="external-link">Satija Lab’s Guided Clustering Tutorial</a> to prepare the data set for analysis with dominoSignal. The <a href="data-raw/example_data.R">complete processing script</a> is available in the data-raw directory of the dominoSignal package. The processed data can be downloaded from <a href="https://zenodo.org/records/10222767" class="external-link">Zenodo</a>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">pbmc_dir</span>, <span class="st">"/pbmc_seurat.rds"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="preparing-preprocessed-data">Preparing Preprocessed Data:<a class="anchor" aria-label="anchor" href="#preparing-preprocessed-data"></a>
 </h3>
-<p>domino2 was designed to be compatible with <a href="https://satijalab.org/seurat" class="external-link">Seurat</a> objects in addition to accepting matrices and vectors of the data set as function inputs. However, <a href="https://pyscenic.readthedocs.io/en/latest/" class="external-link">pySCENIC</a> is used for TF activation inference, and it requires as input a cell by gene matrix. This is the opposite orientation of <a href="https://satijalab.org/seurat" class="external-link">Seurat</a> objects but is the default for Python based tools such as <a href="https://scanpy.readthedocs.io/en/stable/" class="external-link">scanpy</a>. The RNA counts matrix can be saved as a tab-seperated value (.tsv) or comma-sperated value (.csv) file after transposing the matrix to cell by gene orientation.</p>
+<p>dominoSignal was designed to be compatible with <a href="https://satijalab.org/seurat" class="external-link">Seurat</a> objects in addition to accepting matrices and vectors of the data set as function inputs. However, <a href="https://pyscenic.readthedocs.io/en/latest/" class="external-link">pySCENIC</a> is used for TF activation inference, and it requires as input a cell by gene matrix. This is the opposite orientation of <a href="https://satijalab.org/seurat" class="external-link">Seurat</a> objects but is the default for Python based tools such as <a href="https://scanpy.readthedocs.io/en/stable/" class="external-link">scanpy</a>. The RNA counts matrix can be saved as a tab-seperated value (.tsv) or comma-sperated value (.csv) file after transposing the matrix to cell by gene orientation.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pbmc_counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SeuratObject/man/AssayData.html" class="external-link">GetAssayData</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pbmc</span>, slot <span class="op">=</span> <span class="st">"counts"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">pbmc_counts</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">input_dir</span>, <span class="st">"/pbmc3k_counts.tsv"</span><span class="op">)</span>, sep <span class="op">=</span> <span class="st">"\t"</span>,</span>
@@ -190,29 +192,31 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>Installation of domino2 from Github can be achieved using the <a href="https://remotes.r-lib.org" class="external-link">remotes</a> package. The current stable version is v0.2.2, so we will install that version.</p>
+<p>Installation of dominoSignal from Github can be achieved using the <a href="https://remotes.r-lib.org" class="external-link">remotes</a> package. The current stable version is v0.2.2, so we will install that version.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># if(!require(remotes)){ install.packages('remotes') }</span></span>
-<span><span class="co"># remotes::install_github('FertigLab/domino2@v0.2.2')</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://remotes.r-lib.org" class="external-link">remotes</a></span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"FertigLab/domino2@v0.2.2"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="building-a-signaling-network-with-domino2">Building a Signaling Network with domino2<a class="anchor" aria-label="anchor" href="#building-a-signaling-network-with-domino2"></a>
+<h2 id="building-a-signaling-network-with-dominosignal">Building a Signaling Network with dominoSignal<a class="anchor" aria-label="anchor" href="#building-a-signaling-network-with-dominosignal"></a>
 </h2>
 <div class="section level3">
 <h3 id="loading-scenic-results">Loading SCENIC Results<a class="anchor" aria-label="anchor" href="#loading-scenic-results"></a>
 </h3>
-<p>The TF activities are a required input for domino2, and the regulons learned by <a href="https://scenic.aertslab.org/" class="external-link">SCENIC</a> are an important but optional input needed to annotate TF-target interactions and to prune TF-receptor linkages where the receptor is a target of the TF. This prevents the distinction of receptor expression driving TF activity or the TF inducing the receptor’s expression.</p>
+<p>The TF activities are a required input for dominoSignal, and the regulons learned by <a href="https://scenic.aertslab.org/" class="external-link">SCENIC</a> are an important but optional input needed to annotate TF-target interactions and to prune TF-receptor linkages where the receptor is a target of the TF. This prevents the distinction of receptor expression driving TF activity or the TF inducing the receptor’s expression.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">regulons</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">scenic_dir</span>, <span class="st">"/regulons_pbmc_3k.csv"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">auc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">scenic_dir</span>, <span class="st">"/auc_pbmc_3k.csv"</span><span class="op">)</span>, header <span class="op">=</span> <span class="cn">TRUE</span>, row.names <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>    stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span>, sep <span class="op">=</span> <span class="st">","</span><span class="op">)</span></span></code></pre></div>
-<p>The initial regulons data frame read into R from the ctx function has 2 rows of column names that need to be replaced with one succinct description. domino2 has changed the input format for TF regulons to be a list storing vectors of target genes in each regulon, where the names of the list are the TF genes. This facilitates the use of alternative methods for TF activity quantification. We provide a helper function, <code><a href="../reference/create_regulon_list_scenic.html">create_regulon_list_scenic()</a></code> for easy retrieval of TF regulons from the output of the <a href="https://pyscenic.readthedocs.io/en/latest/" class="external-link">pySCENIC</a> ctx function.</p>
+<p>The initial regulons data frame read into R from the ctx function has 2 rows of column names that need to be replaced with one succinct description. dominoSignal has changed the input format for TF regulons to be a list storing vectors of target genes in each regulon, where the names of the list are the TF genes. This facilitates the use of alternative methods for TF activity quantification. We provide a helper function, <code><a href="../reference/create_regulon_list_scenic.html">create_regulon_list_scenic()</a></code> for easy retrieval of TF regulons from the output of the <a href="https://pyscenic.readthedocs.io/en/latest/" class="external-link">pySCENIC</a> ctx function.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">regulons</span> <span class="op">&lt;-</span> <span class="va">regulons</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">:</span><span class="op">-</span><span class="fl">2</span>, <span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">regulons</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TF"</span>, <span class="st">"MotifID"</span>, <span class="st">"AUC"</span>, <span class="st">"NES"</span>, <span class="st">"MotifSimilarityQvalue"</span>, <span class="st">"OrthologousIdentity"</span>,</span>
 <span>    <span class="st">"Annotation"</span>, <span class="st">"Context"</span>, <span class="st">"TargetGenes"</span>, <span class="st">"RankAtMax"</span><span class="op">)</span></span>
 <span><span class="va">regulon_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_regulon_list_scenic.html">create_regulon_list_scenic</a></span><span class="op">(</span>regulons <span class="op">=</span> <span class="va">regulons</span><span class="op">)</span></span></code></pre></div>
-<p>Users should be aware that the AUC matrix from <a href="https://scenic.aertslab.org/" class="external-link">SCENIC</a> is loaded in a cell x TF orientation and should be transposed to TF x cell orientation. pySCENIC also appends “(+)” to TF names that are converted to “…” upon loading into R. These characters can be included without affecting the results of domino2 analysis, but can be confusing when querying TF features in the data. We recommend comprehensive removal of the “…” characters using the <code><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub()</a></code> function.</p>
+<p>Users should be aware that the AUC matrix from <a href="https://scenic.aertslab.org/" class="external-link">SCENIC</a> is loaded in a cell x TF orientation and should be transposed to TF x cell orientation. pySCENIC also appends “(+)” to TF names that are converted to “…” upon loading into R. These characters can be included without affecting the results of dominoSignal analysis, but can be confusing when querying TF features in the data. We recommend comprehensive removal of the “…” characters using the <code><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub()</a></code> function.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">auc_in</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">auc</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co"># Remove pattern '...' from the end of all rownames:</span></span>
@@ -221,7 +225,7 @@
 <div class="section level3">
 <h3 id="load-cellphonedb-database">Load CellPhoneDB Database<a class="anchor" aria-label="anchor" href="#load-cellphonedb-database"></a>
 </h3>
-<p>domino2 has been updated to read ligand-receptor data bases in a uniform data.frame format referred to as a receptor-ligand map (rl_map) to enable the use of alternative or updated reference databases as opposed to a particular version of CellPhoneDB’s database in older versions of Domino. Each row corresponds to a ligand-receptor interaction. Genes participating in an interaction are referred to as “partner A” and “partner B” without a requirement for fixed ordering of whether A or B is the ligand and vice versa. The minimum required columns of this data frame are:</p>
+<p>dominoSignal has been updated to read ligand-receptor data bases in a uniform data.frame format referred to as a receptor-ligand map (rl_map) to enable the use of alternative or updated reference databases as opposed to a particular version of CellPhoneDB’s database in older versions of Domino. Each row corresponds to a ligand-receptor interaction. Genes participating in an interaction are referred to as “partner A” and “partner B” without a requirement for fixed ordering of whether A or B is the ligand and vice versa. The minimum required columns of this data frame are:</p>
 <ul>
 <li>int_pair: the names of the interacting ligand and receptor separated by " &amp; "</li>
 <li>gene_A: the gene or genes encoding partner A</li>
@@ -515,7 +519,7 @@
 <div class="section level2">
 <h2 id="creating-the-domino-object">Creating the Domino Object<a class="anchor" aria-label="anchor" href="#creating-the-domino-object"></a>
 </h2>
-<p>domino2 analysis takes place in two steps.</p>
+<p>dominoSignal analysis takes place in two steps.</p>
 <ol style="list-style-type: decimal">
 <li>
 <p><code><a href="../reference/create_domino.html">create_domino()</a></code></p>
@@ -536,7 +540,7 @@
 <div class="section level3">
 <h3 id="required-inputs-from-data-set">Required inputs from data set<a class="anchor" aria-label="anchor" href="#required-inputs-from-data-set"></a>
 </h3>
-<p>domino2 infers active receipt of signals via receptors based on the correlation of the receptor’s expression with TF activity across the data set and differential activity of the TF within a cell cluster. Correlations are conducted using scaled expression values rather than raw counts or normalized counts. For assessment of receptor activity on a per cell type basis, a named vector of cell cluster assignments, where the names are cell barcodes matching the expression matrix, are provided. Assessing signaling based on other categorical groupings of cells can be achieved by passing these groupings as “clusters” to <code><a href="../reference/build_domino.html">build_domino()</a></code> in place of cell types. domino2 accepts either a <a href="https://satijalab.org/seurat" class="external-link">Seurat</a> object with counts, scaled counts, and clusters included, or it requires a matrix of counts, a matrix of scaled counts, and a named vector of cell cluster labels as factors. Shown below is how to extract these elements from a <a href="https://satijalab.org/seurat" class="external-link">Seurat</a> object.</p>
+<p>dominoSignal infers active receipt of signals via receptors based on the correlation of the receptor’s expression with TF activity across the data set and differential activity of the TF within a cell cluster. Correlations are conducted using scaled expression values rather than raw counts or normalized counts. For assessment of receptor activity on a per cell type basis, a named vector of cell cluster assignments, where the names are cell barcodes matching the expression matrix, are provided. Assessing signaling based on other categorical groupings of cells can be achieved by passing these groupings as “clusters” to <code><a href="../reference/build_domino.html">build_domino()</a></code> in place of cell types. dominoSignal accepts either a <a href="https://satijalab.org/seurat" class="external-link">Seurat</a> object with counts, scaled counts, and clusters included, or it requires a matrix of counts, a matrix of scaled counts, and a named vector of cell cluster labels as factors. Shown below is how to extract these elements from a <a href="https://satijalab.org/seurat" class="external-link">Seurat</a> object.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SeuratObject/man/AssayData.html" class="external-link">GetAssayData</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pbmc</span>, slot <span class="op">=</span> <span class="st">"counts"</span><span class="op">)</span></span>
 <span><span class="va">z_scores</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SeuratObject/man/AssayData.html" class="external-link">GetAssayData</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pbmc</span>, slot <span class="op">=</span> <span class="st">"scale.data"</span><span class="op">)</span><span class="op">)</span></span>
@@ -610,7 +614,7 @@
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/gene_network.html">gene_network</a></span><span class="op">(</span><span class="va">pbmc_dom</span>, clust <span class="op">=</span> <span class="st">"dendritic_cell"</span>, layout <span class="op">=</span> <span class="st">"grid"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="domino2_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
-<p>New to domino2, <code><a href="../reference/gene_network.html">gene_network()</a></code> can be used between two clusters to determine if any of the possible ligands for a given receptor are expressed by a putative outgoing signaling cluster.</p>
+<p>New to dominoSignal, <code><a href="../reference/gene_network.html">gene_network()</a></code> can be used between two clusters to determine if any of the possible ligands for a given receptor are expressed by a putative outgoing signaling cluster.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/gene_network.html">gene_network</a></span><span class="op">(</span><span class="va">pbmc_dom</span>, clust <span class="op">=</span> <span class="st">"dendritic_cell"</span>, OutgoingSignalingClust <span class="op">=</span> <span class="st">"CD14_monocyte"</span>,</span>
 <span>    layout <span class="op">=</span> <span class="st">"grid"</span><span class="op">)</span></span></code></pre></div>
@@ -620,7 +624,7 @@
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/incoming_signaling_heatmap.html">incoming_signaling_heatmap</a></span><span class="op">(</span><span class="va">pbmc_dom</span>, rec_clust <span class="op">=</span> <span class="st">"dendritic_cell"</span>, max_thresh <span class="op">=</span> <span class="fl">2.5</span>,</span>
 <span>    use_raster <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="domino2_files/figure-html/unnamed-chunk-8-1.png" width="95%"></p>
-<p>Another form of comprehensive ligand expression assessment is available for individual active receptors in the form of circos plots new to domino2. The outer arcs correspond to clusters in the domino object with inner arcs representing each possible ligand of the plotted receptor. Arcs are drawn between ligands on a cell type and the receptor if the ligand is expressed above the specified threshold. Arc widths correspond to the mean express of the ligand by the cluster with the widest arc width scaling to the maximum expression of the ligand within the data.</p>
+<p>Another form of comprehensive ligand expression assessment is available for individual active receptors in the form of circos plots new to dominoSignal. The outer arcs correspond to clusters in the domino object with inner arcs representing each possible ligand of the plotted receptor. Arcs are drawn between ligands on a cell type and the receptor if the ligand is expressed above the specified threshold. Arc widths correspond to the mean express of the ligand by the cluster with the widest arc width scaling to the maximum expression of the ligand within the data.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/circos_ligand_receptor.html">circos_ligand_receptor</a></span><span class="op">(</span><span class="va">pbmc_dom</span>, receptor <span class="op">=</span> <span class="st">"CD74"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="domino2_files/figure-html/unnamed-chunk-9-1.png" width="90%"></p>
@@ -629,7 +633,7 @@
 <div class="section level2">
 <h2 id="continued-development">Continued Development<a class="anchor" aria-label="anchor" href="#continued-development"></a>
 </h2>
-<p>Since domino2 is a package still being developed, there are new functions and features that will be implemented in future versions. In the meantime, we have put together further information on <a href="vignette(%22plotting_vignette%22)">plotting</a> and the <a href="vignette(%22domino_object_vignette%22)">domino object structure</a> if you would like to explore more of the package’s functionality. Additionally, if you find any bugs, have further questions, or want to share an idea, please let us know <a href="https://github.com/FertigLab/domino_development/issues" class="external-link">here</a>.</p>
+<p>Since dominoSignal is a package still being developed, there are new functions and features that will be implemented in future versions. In the meantime, we have put together further information on <a href="vignette(%22plotting_vignette%22)">plotting</a> and the <a href="vignette(%22domino_object_vignette%22)">domino object structure</a> if you would like to explore more of the package’s functionality. Additionally, if you find any bugs, have further questions, or want to share an idea, please let us know <a href="https://github.com/FertigLab/domino_development/issues" class="external-link">here</a>.</p>
 <details><p><summary>Vignette Build Information</summary> Date last built and session information:</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span></span>

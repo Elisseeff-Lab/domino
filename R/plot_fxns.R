@@ -175,7 +175,7 @@ incoming_signaling_heatmap <- function(
 #' @param scale_by How to size vertices. Options are 'lig_sig' for summed outgoing signaling, 'rec_sig' for summed incoming signaling, and 'none'. In the former two cases the values are scaled with asinh after summing all incoming or outgoing signaling.
 #' @param vert_scale Integer used to scale size of vertices with our without variable scaling from size_verts_by.
 #' @param plot_title Text for the plot's title.
-#' @param ... Other parameters to be passed to plot when used with an `{igraph}` object.
+#' @param ... Other parameters to be passed to plot when used with an igraph object.
 #' @return an igraph rendered to the active graphics device
 #' @export signaling_network
 #' @examples 
