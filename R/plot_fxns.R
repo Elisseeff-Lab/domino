@@ -369,7 +369,8 @@ signaling_network <- function(
 #'
 gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL, 
     class_cols = c(lig = "#FF685F",rec = "#47a7ff", feat = "#39C740"),
-    cols = NULL, lig_scale = 1, layout = "grid", ...) {
+    cols = NULL, lig_scale = 1, layout = "grid", 
+    out_name = NULL, in_name = NULL, ...) {
   if (!dom@misc[["build"]]) {
     warning("Please build a signaling network with domino_build prior to plotting.")
   }
@@ -424,7 +425,13 @@ gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL,
     allowed_ligs <- c()
     for (cl in cl_with_signaling) {
       if (!is.null(OutgoingSignalingClust)) {
-        OutgoingSignalingClust <- paste0("L_", OutgoingSignalingClust)
+        OutgoingSignalingClust <- paste0("L_", gsub("^L_", "", OutgoingSignalingClust))
+        temp <- dom@cl_signaling_matrices[[cl]]
+        missing_clust <- setdiff(OutgoingSignalingClust, colnames(temp))
+        if (length(missing_clust)) {
+          warning(sprintf("No signaling for %s", paste0(missing_clust, collapse = "; ")))
+          OutgoingSignalingClust <- intersect(OutgoingSignalingClust, colnames(mat))
+        }
         mat <- dom@cl_signaling_matrices[[cl]][, OutgoingSignalingClust]
         if (is.null(dim(mat))) {
           allowed_ligs <- names(mat[mat > 0])
@@ -471,7 +478,7 @@ gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL,
     all_sums <- all_sums[names(all_sums) %in% names(v_size)]
     v_size[names(all_sums)] <- 0.5 * all_sums * lig_scale
   }
-  names(v_size) <- c()
+  names(v_size) <- c() # ? I guess need them for the lig_scale mapping, but can't have them in graph?
   igraph::V(graph)$size <- v_size
   igraph::V(graph)$label.degree <- pi
   igraph::V(graph)$label.offset <- 2
@@ -501,7 +508,17 @@ gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL,
   } else if (layout == "kk") {
     l <- igraph::layout_with_kk(graph)
   }
-  plot(graph, layout = l, main = paste0("Signaling ", OutgoingSignalingClust, " to ", clust), ...)
+  if (!is.null(out_name)) {
+    main <- paste0("Signaling from ", out_name)
+  } else {
+    main <- paste0("Signaling")
+  }
+  if (!is.null(in_name)) {
+    main <- paste0(main, " to ", in_name)
+  } else {
+    main <- paste0(main, " to ", clust)
+  }
+  plot(graph, layout = l, main = main, ...)
   return(invisible(list(graph = graph, layout = l)))
 }
 

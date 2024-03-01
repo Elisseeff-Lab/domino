@@ -12,6 +12,8 @@ gene_network(
   cols = NULL,
   lig_scale = 1,
   layout = "grid",
+  out_name = NULL,
+  in_name = NULL,
   ...
 )
 }
