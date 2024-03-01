@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Introducing domino2 <a href="https://fertiglab.github.io/domino2/"><img src="man/figures/logo.svg" align="right" height="138" alt="domino2 repository" /></a>
+## Introducing domino2 <a href="https://fertiglab.github.io/domino2/"><img src="man/figures/logo.svg" align="right" height="200" style="float:right; height:200px;" alt="domino2 repository" /></a>
 
 domino2 is an updated version of the original [domino](https://github.com/Elisseeff-Lab/domino) R package published in Nature Biomedical Engineering in [Computational reconstruction of the signalling networks surrounding implanted biomaterials from single-cell transcriptomics](https://doi.org/10.1038/s41551-021-00770-5). domino2 is a tool for analysis of intra- and intercellular signaling in single cell RNA sequencing data based on transcription factor activation and receptor and ligand linkages.
 
@@ -34,10 +34,10 @@ remotes::install_github("FertigLab/domino2")
 
 Here is an overview of how domino2 might be used in analysis of a single cell RNA sequencing data set:
 
-1. Transcription factor activation scores are calculated (we recommend using [pySCENIC](https://pyscenic.readthedocs.io/en/latest/), but other methods can be used as well)
-2. A ligand-receptor database is used to map linkages between ligands and receptors (we recommend using [cellphoneDB](https://www.cellphonedb.org/), but other methods can be used as well).
+1. Transcription factor activation scores are calculated (we recommend using [pySCENIC](https://pyscenic.readthedocs.io/en/latest/), but other methods can be used as well). For more information on how to use SCENIC, please see our [Using SCENIC for TF Activation](vignette("articles/scenic_vignette")) page.
+2. A ligand-receptor database is used to map linkages between ligands and receptors (we recommend using [cellphoneDB](https://www.cellphonedb.org/), but other methods can be used as well). For information on downloading the necessary files for cellphoneDB, please see our [Using the cellphoneDB Database](vignette("articles/cellphonedb_vignette")) page.
 3. A domino object is created using counts, z-scored counts, clustering information, and the data from steps 1 and 2.
 4. Parameters such as the maximum number of transcription factors and receptors or the minimum correlation threshold (among others) are used to make a cell communication network
 5. Communication networks can be extracted from within the domino object or visualized using a variety of plotting functions
 
-Please see the [Getting Started](vignette("domino2")) page for an example analysis that includes all of these steps in detail, from downloading and running [pySCENIC](https://pyscenic.readthedocs.io/en/latest/) to building a domino object and visualizing domino results. Other articles include further details on [plotting functions](vignette("plotting_vignette")) and the structure of the [domino object](vignette("domino_object_vignette")).
+Please see the [Getting Started](vignette("domino2")) page for an example analysis that includes all of these steps in a domino2 analysis in detail, from creating a domino object to parameters for building the network to visualizing domino results. Other articles include further details on [plotting functions](vignette("plotting_vignette")) and the structure of the [domino object](vignette("domino_object_vignette")).

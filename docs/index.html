@@ -51,6 +51,8 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="articles/cellphonedb_vignette.html">Using the cellphoneDB Database</a>
+    <a class="dropdown-item" href="articles/tf_scenic_vignette.html">SCENIC for TF Activation Scoring</a>
     <a class="dropdown-item" href="articles/domino_object_vignette.html">Interacting with domino2 Objects</a>
     <a class="dropdown-item" href="articles/plotting_vignette.html">Plotting Functions and Options</a>
   </div>
@@ -88,7 +90,8 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level2">
-<h2 id="introducing-domino2">Introducing domino2<a class="anchor" aria-label="anchor" href="#introducing-domino2"></a>
+<h2 id="introducing-domino2-">Introducing domino2 <a href="https://fertiglab.github.io/domino2/" class="external-link"><img src="reference/figures/logo.svg" align="right" height="200" style="float:right; height:200px;" alt="domino2 repository"></a>
+<a class="anchor" aria-label="anchor" href="#introducing-domino2-"></a>
 </h2>
 <p>domino2 is an updated version of the original <a href="https://github.com/Elisseeff-Lab/domino" class="external-link">domino</a> R package published in Nature Biomedical Engineering in <a href="https://doi.org/10.1038/s41551-021-00770-5" class="external-link">Computational reconstruction of the signalling networks surrounding implanted biomaterials from single-cell transcriptomics</a>. domino2 is a tool for analysis of intra- and intercellular signaling in single cell RNA sequencing data based on transcription factor activation and receptor and ligand linkages.</p>
 </div>
@@ -108,13 +111,13 @@
 </h2>
 <p>Here is an overview of how domino2 might be used in analysis of a single cell RNA sequencing data set:</p>
 <ol style="list-style-type: decimal">
-<li>Transcription factor activation scores are calculated (we recommend using <a href="https://pyscenic.readthedocs.io/en/latest/" class="external-link">pySCENIC</a>, but other methods can be used as well)</li>
-<li>A ligand-receptor database is used to map linkages between ligands and receptors (we recommend using <a href="https://www.cellphonedb.org/" class="external-link">cellphoneDB</a>, but other methods can be used as well).</li>
+<li>Transcription factor activation scores are calculated (we recommend using <a href="https://pyscenic.readthedocs.io/en/latest/" class="external-link">pySCENIC</a>, but other methods can be used as well). For more information on how to use SCENIC, please see our <a href="vignette(%22articles/scenic_vignette%22)">Using SCENIC for TF Activation</a> page.</li>
+<li>A ligand-receptor database is used to map linkages between ligands and receptors (we recommend using <a href="https://www.cellphonedb.org/" class="external-link">cellphoneDB</a>, but other methods can be used as well). For information on downloading the necessary files for cellphoneDB, please see our <a href="vignette(%22articles/cellphonedb_vignette%22)">Using the cellphoneDB Database</a> page.</li>
 <li>A domino object is created using counts, z-scored counts, clustering information, and the data from steps 1 and 2.</li>
 <li>Parameters such as the maximum number of transcription factors and receptors or the minimum correlation threshold (among others) are used to make a cell communication network</li>
 <li>Communication networks can be extracted from within the domino object or visualized using a variety of plotting functions</li>
 </ol>
-<p>Please see the <a href="vignette(%22domino2%22)">Getting Started</a> page for an example analysis that includes all of these steps in detail, from downloading and running <a href="https://pyscenic.readthedocs.io/en/latest/" class="external-link">pySCENIC</a> to building a domino object and visualizing domino results. Other articles include further details on <a href="vignette(%22plotting_vignette%22)">plotting functions</a> and the structure of the <a href="vignette(%22domino_object_vignette%22)">domino object</a>.</p>
+<p>Please see the <a href="vignette(%22domino2%22)">Getting Started</a> page for an example analysis that includes all of these steps in a domino2 analysis in detail, from creating a domino object to parameters for building the network to visualizing domino results. Other articles include further details on <a href="vignette(%22plotting_vignette%22)">plotting functions</a> and the structure of the <a href="vignette(%22domino_object_vignette%22)">domino object</a>.</p>
 </div>
 
   </main><aside class="col-md-3"><div class="table-of-contents">

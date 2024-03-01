@@ -1,0 +1,144 @@
+---
+title: "SCENIC for TF Activation Scoring"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>",
+    echo = TRUE,
+    message = FALSE,
+    warning = FALSE,
+    fig.cap = "",
+    tidy = TRUE
+)
+options(timeout = 300)
+```
+
+```{r setup, eval = F}
+temp_dir <- tempdir()
+```
+
+## File Downloads for SCENIC
+For this tutorial, [pySCENIC](https://pyscenic.readthedocs.io/en/latest/) is used as the method for TF activity inference. This requires downloading some files prior to use. Here, we show how to download these files and the way we run pySCENIC to generate the necessary files for use in domino2 analyis.
+
+A singularity image of [SCENIC](https://scenic.aertslab.org/) v0.12.1 can be installed from the DockerHub image as a source. [SCENIC](https://scenic.aertslab.org/) requires a list of TFs, motif annotations, and cisTarget motifs which are all available from the authors of [SCENIC](https://scenic.aertslab.org/) for human (HGNC), mouse (MGI), and fly. The following will download everything necessary for an analysis of a data set with HGNC gene labels for the hg38 genome.
+
+```{bash, eval=FALSE}
+SCENIC_DIR="'temp_dir'/scenic"
+mkdir ${SCENIC_DIR}
+
+# Build singularity image
+singularity build "${SCENIC_DIR}/aertslab-pyscenic-0.12.1.sif" docker://aertslab/pyscenic:0.12.1
+
+# Matrix containing motifs as rows and genes as columns and ranking position for each gene and motif (based on CRM scores) as values. URLs provided link to v2 feather files required for the 0.12.1 version of pySENIC.
+
+curl "https://resources.aertslab.org/cistarget/databases/homo_sapiens/hg38/refseq_r80/mc_v10_clust/gene_based/hg38_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather" \
+  -o "${SCENIC_DIR}/hg38_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather"
+
+curl "https://resources.aertslab.org/cistarget/databases/homo_sapiens/hg38/refseq_r80/mc_v10_clust/gene_based/hg38_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather" \
+  -o "${SCENIC_DIR}/hg38_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather"
+
+# List of genes encoding TFs in the HG38 reference genome
+curl "https://resources.aertslab.org/cistarget/tf_lists/allTFs_hg38.txt" \
+  -o "${SCENIC_DIR}/allTFs_hg38.txt"
+
+# Motif annotations based on the 2017 cisTarget motif collection. Use these files if you are using the mc9nr databases.
+curl "https://resources.aertslab.org/cistarget/motif2tf/motifs-v9-nr.hgnc-m0.001-o0.0.tbl" \
+  -o "${SCENIC_DIR}/motifs-v9-nr.hgnc-m0.001-o0.0.tbl"
+```
+
+## SCENIC Analysis
+
+SCENIC is our lab's preferred software for TF activity scoring. We recommend using the Python implementation ([pySCENIC](https://pyscenic.readthedocs.io/en/latest/)) as it is faster than the original R implementation. Be aware, the use of [SCENIC](https://scenic.aertslab.org/) is often the slowest and most memory intensive step of this analysis pipeline. [SCENIC](https://scenic.aertslab.org/) should be run on computing resources with access to multi-core processing and large amounts of memory.
+
+As described in the section on saving preprocessed data, [SCENIC](https://scenic.aertslab.org/) requires RNA counts to be provided in a cell by gene matrix format. While this can be down with tsv and csv files, they are very inefficient for storing large matrices. As an alternative, the counts matrix can be saved as a loom file and directly passed to [pySCENIC](https://pyscenic.readthedocs.io/en/latest/) in this format. Generating a loom file in R requires use of the [loomR](https://github.com/mojaveazure/loomR) package. The package automatically handles the transposition of the counts matrix to cell by gene orientation as well. We recommend this approach to passing a counts matrix to pySCENIC. However, users should be aware that [loomR](https://github.com/mojaveazure/loomR) is not hosted on CRAN or BioConductor at the time of this vignette's creation. 
+
+```{r Save Counts as loomR, eval = FALSE}
+library(loomR)
+
+# save loom counts matrix
+pbmc_counts <- GetAssayData(object = pbmc, slot = "counts")
+pbmc_loom <- loomR::create(
+    filename = paste0(input_dir, "/pbmc3k_counts.loom"),
+    data = pbmc_counts
+)
+# connection to the loom file must be closed to complete file creation
+pbmc_loom$close_all()
+```
+
+We will demonstrate the use of the pbmc3k\_counts.loom file in this stage of analysis.
+
+[pySCENIC](https://pyscenic.readthedocs.io/en/latest/) is initiated using bash scripting in the terminal. The analysis consists of 3 steps to score genes for TF motif enrichment, construct TF regulons consisting of genes targeted by the TFs, and arrive at AUC scores for enrichment of regulon gene transcription within each cell.
+
+### grn: construct TF-modules
+
+Co-expression modules are used to quantify gene-TF adjacencies.
+
+```{bash GRN, eval=FALSE}
+singularity exec "${SCENIC_DIR}/aertslab-pyscenic-0.12.1.sif" pyscenic grn \
+    "pbmc3k_counts.loom" \
+    "${SCENIC_DIR}/allTFs_hg38.txt" \
+    -o "${SCENIC_DIR}/pbmc_adj_3k.tsv" \
+    --num_workers 6 \
+    --seed 123
+
+# Arguments:
+    # path to the loom file
+    # list of TFs
+    # output directory for the adjacency matrix
+    # number of CPUs to use if multi-core processing is available
+    # specify a random seed for reproducibility
+```
+
+### ctx: construct TF regulons with pruning based on TF motif enrichment
+
+The rankings of genes based on enrichment of TF motifs to the transcription start site (TSS) are considered in the construction of regulons, where target genes in the TF-modules are removed if they lack motifs proximal to the TSS where the TF may bind.
+
+```{bash CTX, eval=FALSE}
+singularity exec "${SCENIC_DIR}/aertslab-pyscenic-0.12.1.sif" pyscenic ctx \
+    "${SCENIC_DIR}/pbmc_adj.tsv" \
+    "${SCENIC_DIR}/hg38_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather" \
+    "${SCENIC_DIR}/hg38_500bp_up_100bp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather" \
+    --annotations_fname "${SCENIC_DIR}/motifs-v9-nr.hgnc-m0.001-o0.0.tbl" \
+    --expression_mtx_fname "pbmc3k_counts.loom" \
+    --mode "dask_multiprocessing" \
+    --output "${SCENIC_DIR}/regulons_pbmc_3k.csv" \
+    --num_workers 1                                                          
+
+# Arguments:
+    # adjacency matrix output from grn
+    # target rankings of motif enrichment within 10 kb of TSS
+    # target rankings of motif enrichment within 500 bp upstream and 100 bp downstream of TSS
+    # TF motif features
+    # counts matrix loom file
+    # enable multi-core processing
+    # output file of learned TF regulons
+    # number of CPU cores
+```
+
+### aucell: calculate TF activity scores
+
+Enrichment of a regulon is measured as the Area Under the recovery Curve (AUC) of the genes that define this regulon.
+
+```{bash AUCELL, eval=FALSE}
+singularity exec "${SCENIC_DIR}/aertslab-pyscenic-0.12.1.sif" pyscenic aucell \
+    "pbmc3k_counts.loom" \
+    "${SCENIC_DIR}/regulons_pbmc_3k.csv" \
+    -o "${SCENIC_DIR}/auc_pbmc_3k.csv"
+    
+# Arguments:
+    # counts matrix loom file
+    # regulon table output from ctx
+    # cell x TF matrix of TF enrichment AUC values
+```
+
+The csv files created in this analysis can be used as the TF activation inputs in a domino2 analysis. Please see our [Getting Started](vignette("domino2")) page for more information on how to perform an analysis with domino2. For a brief tutorial on the download of the necessary files for using cellphonedb, please see the [Using the cellphoneDB database](vignette("cellphonedb_vignette")) vignette.
+
+<details><summary>Vignette Build Information</summary>
+Date last built and session information:
+```{r}
+Sys.Date()
+sessionInfo()
+```
+</details>

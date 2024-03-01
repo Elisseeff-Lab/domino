@@ -18,3 +18,4 @@
 ^old\.README\.md$
 ^readme_images$
 ^scenic_bash$
+^vignettes/articles$

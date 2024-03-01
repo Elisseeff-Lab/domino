@@ -49,6 +49,8 @@
 <li class="active nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/cellphonedb_vignette.html">Using the cellphoneDB Ligand-Receptor Database</a>
+    <a class="dropdown-item" href="../articles/tf_scenic_vignette.html">Using SCENIC for Transcription Factor Activation Scoring</a>
     <a class="dropdown-item" href="../articles/domino_object_vignette.html">Interacting with domino2 Objects</a>
     <a class="dropdown-item" href="../articles/plotting_vignette.html">Plotting Functions and Options</a>
   </div>
@@ -518,7 +520,7 @@
 <span><span class="co">#&gt; [21] "CTLA4"        "CD28"</span></span></code></pre></div>
 <p>If, for some reason, you find yourself in need of the entire linkage structure (not recommended), it can be accessed through its slot name; domino objects are S4 objects.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">all_linkages</span> <span class="op">&lt;-</span> <span class="fu">slot</span><span class="op">(</span><span class="va">dom</span>, <span class="st">"linkages"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">all_linkages</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/methods/slot.html" class="external-link">slot</a></span><span class="op">(</span><span class="va">dom</span>, <span class="st">"linkages"</span><span class="op">)</span></span>
 <span><span class="co"># Names of all sub-structures:</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">all_linkages</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "complexes"          "rec_lig"            "tf_targets"        </span></span>
