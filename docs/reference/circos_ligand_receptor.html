@@ -12,7 +12,7 @@ receptor where chord widths correspond to mean ligand expression by the cluster.
     
     <a class="navbar-brand me-2" href="../index.html">domino2</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -111,17 +111,16 @@ receptor where chord widths correspond to mean ligand expression by the cluster.
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># basic usage</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">#basic usage</span></span></span>
 <span class="r-in"><span><span class="fu">circos_ligand_receptor</span><span class="op">(</span><span class="fu">domino2</span><span class="fu">:::</span><span class="va">pbmc_dom_built_tiny</span>, receptor <span class="op">=</span> <span class="st">"FAS"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> There are more than one numeric columns in the data frame. Take the</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> first two numeric columns and draw the link ends with unequal width.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Type `circos.par$message = FALSE` to suppress the message.</span>
 <span class="r-plt img"><img src="circos_ligand_receptor-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># specify colors</span></span></span>
-<span class="r-in"><span><span class="va">cols</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red"</span>, <span class="st">"orange"</span>, <span class="st">"green"</span>, <span class="st">"blue"</span>, <span class="st">"pink"</span>, <span class="st">"purple"</span>, <span class="st">"slategrey"</span>, <span class="st">"firebrick"</span>, <span class="st">"hotpink"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">cols</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="fu">domino2</span><span class="fu">:::</span><span class="va">pbmc_dom_built_tiny</span><span class="op">@</span><span class="va">clusters</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co">#specify colors</span></span></span>
+<span class="r-in"><span><span class="va">cols</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red"</span>, <span class="st">"orange"</span>, <span class="st">"green"</span>, <span class="st">"blue"</span>, <span class="st">"pink"</span>, <span class="st">"purple"</span>, <span class="st">"slategrey"</span>, <span class="st">"firebrick"</span>, <span class="st">"hotpink"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">cols</span><span class="op">)</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/levels.html" class="external-link">levels</a></span><span class="op">(</span><span class="fu">domino2</span><span class="fu">:::</span><span class="va">pbmc_dom_built_tiny</span><span class="op">@</span><span class="va">clusters</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">circos_ligand_receptor</span><span class="op">(</span><span class="fu">domino2</span><span class="fu">:::</span><span class="va">pbmc_dom_built_tiny</span>, receptor <span class="op">=</span> <span class="st">"FAS"</span>, cell_colors <span class="op">=</span> <span class="va">cols</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> There are more than one numeric columns in the data frame. Take the</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> first two numeric columns and draw the link ends with unequal width.</span>
