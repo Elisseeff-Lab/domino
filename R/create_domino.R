@@ -3,7 +3,7 @@
 parse_rl_map_genes <- function(rl_map) {
   rl_list <- apply(
     rl_map, MARGIN = 1,
-    FUN = function(inter) {
+    FUN = function(x) {
       rl <- c()
       p <- ifelse(x[["type_A"]] == "R", "A", "B")
       q <- ifelse(p == "A", "B", "A")
