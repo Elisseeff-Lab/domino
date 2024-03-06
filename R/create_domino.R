@@ -1,6 +1,6 @@
 # internal scripts for the create_domino() function
 
-parse_rl_map_genes <- function(rl_map) {
+read_rl_map_genes <- function(rl_map) {
   rl_list <- apply(
     rl_map, MARGIN = 1,
     FUN = function(x) {
@@ -23,7 +23,7 @@ parse_rl_map_genes <- function(rl_map) {
       if (paste0("name_", q) %in% names(x)) {
         rl[["L.name"]] <- x[[paste0("name_", q)]]
       }
-      return(rl)
+      return(as.data.frame(rl))
     }
   )
   rl_df <- as.data.frame(do.call(rbind, rl_list))
