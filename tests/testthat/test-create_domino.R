@@ -1,7 +1,7 @@
-# unit tests for read_rl_map
+## unit tests use internal data stored in R/create_domino.R
 
 test_that(
-  "read_rl_map_genes: ", {
+  "read_rl_map_genes: Convert rl_map to columns stored in dom@misc$rl_map", {
     rl_map_tiny <- data.frame(
       gene_A = c("GENEA", "GENEA"),
       protein_A = c("simpleA", "simpleA"),
