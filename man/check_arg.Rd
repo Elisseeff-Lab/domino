@@ -4,7 +4,12 @@
 \alias{check_arg}
 \title{Check input arguments}
 \usage{
-check_arg(arg, allow_class = c("character"), allow_len = NULL)
+check_arg(
+  arg,
+  allow_class = c("character"),
+  allow_len = NULL,
+  require_vars = c(NULL)
+)
 }
 \arguments{
 \item{arg}{The argument to check}
@@ -12,6 +17,8 @@ check_arg(arg, allow_class = c("character"), allow_len = NULL)
 \item{allow_class}{Vector of allowed classes}
 
 \item{allow_len}{Vector of allowed lengths}
+
+\item{require_vars}{Vector of required variables}
 }
 \description{
 Accepts an object and rules for checking, stops if rules not met.

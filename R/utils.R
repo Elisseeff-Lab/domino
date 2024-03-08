@@ -255,7 +255,8 @@ dom_network_items <- function(dom, clusters = NULL, return = NULL) {
 #' @param arg The argument to check
 #' @param allow_class Vector of allowed classes
 #' @param allow_len Vector of allowed lengths
-check_arg <- function(arg, allow_class = c("character"), allow_len = NULL, 
+#' @param require_vars Vector of required variables
+check_arg <- function(arg, allow_class = c("character"), allow_len = NULL,
                       require_vars = c(NULL)) {
   argname <- deparse(substitute(arg))
   classes <- paste(allow_class, collapse = ",")
