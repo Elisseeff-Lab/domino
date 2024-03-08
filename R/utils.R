@@ -255,7 +255,8 @@ dom_network_items <- function(dom, clusters = NULL, return = NULL) {
 #' @param arg The argument to check
 #' @param allow_class Vector of allowed classes
 #' @param allow_len Vector of allowed lengths
-check_arg <- function(arg, allow_class = c("character"), allow_len = NULL) {
+check_arg <- function(arg, allow_class = c("character"), allow_len = NULL, 
+                      require_vars = c(NULL)) {
   argname <- deparse(substitute(arg))
   classes <- paste(allow_class, collapse = ",")
   lengths <- paste(allow_len, collapse = ",")
@@ -267,6 +268,12 @@ check_arg <- function(arg, allow_class = c("character"), allow_len = NULL) {
   if (!is.null(allow_len)) {
     if (!(length(arg) %in% allow_len)) {
       stop(sprintf("Length of %s must be one of: %s", argname, lengths))
+    }
+  }
+
+  if (!is.null(require_vars)) {
+    if (!all(require_vars %in% names(arg))) {
+      stop(sprintf("Required variables not found in %s", argname))
     }
   }
 }
