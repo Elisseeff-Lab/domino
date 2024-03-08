@@ -138,4 +138,15 @@ test_that("create_rl_map_cellphonedb fails on wrong input arg type.", {
                              z_scores = RNA_zscore_tiny,
                              clusters = clusters_tiny),
   "features must be either a file path or a named matrix with cells as columns and features as rows")
+
+  #seurat or counts, zscores and clusters
+  expect_error(create_domino(rl_map_tiny,
+                             auc_tiny),
+  "Either a Seurat object OR counts, z scores, and clusters must be provided")
+
+  expect_error(create_domino(rl_map_tiny,
+                             auc_tiny,
+                             counts = RNA_count_tiny,
+                             z_scores = RNA_zscore_tiny),
+  "Either a Seurat object OR counts, z scores, and clusters must be provided")
 })
