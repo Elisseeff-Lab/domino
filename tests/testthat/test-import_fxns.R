@@ -121,8 +121,6 @@ test_that("create_rl_map_cellphonedb fails on wrong input arg type.", {
                              clusters = clusters_tiny),
   "rl_map must be a data.frame with column names gene_A, gene_B, type_A, and type_B")
 
-
-  #bad rl map 2
   bad_rl_map <- rl_map_tiny
   colnames(bad_rl_map) <- paste(colnames(bad_rl_map), "qq")
   expect_error(create_domino(bad_rl_map,
@@ -132,4 +130,12 @@ test_that("create_rl_map_cellphonedb fails on wrong input arg type.", {
                              clusters = clusters_tiny),
   "rl_map must be a data.frame with column names gene_A, gene_B, type_A, and type_B")
 
+  #bad features
+  bad_features <- matrix()
+  expect_error(create_domino(rl_map_tiny,
+                             bad_features,
+                             counts = RNA_count_tiny,
+                             z_scores = RNA_zscore_tiny,
+                             clusters = clusters_tiny),
+  "features must be either a file path or a named matrix with cells as columns and features as rows")
 })
