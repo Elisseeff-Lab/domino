@@ -257,8 +257,9 @@ dom_network_items <- function(dom, clusters = NULL, return = NULL) {
 #' @param allow_len Vector of allowed lengths
 #' @param require_vars Vector of required variables
 check_arg <- function(arg, allow_class = NULL, allow_len = NULL,
-                      allow_range = NULL, need_vars = c(NULL),
-                      need_colnames = FALSE, need_rownames = FALSE) {
+                      allow_range = NULL, allow_values = NULL,
+                      need_vars = c(NULL), need_colnames = FALSE,
+                      need_rownames = FALSE, need_names = FALSE) {
   argname <- deparse(substitute(arg))
   classes <- paste(allow_class, collapse = ",")
   lengths <- paste(allow_len, collapse = ",")
@@ -294,10 +295,23 @@ check_arg <- function(arg, allow_class = NULL, allow_len = NULL,
     }
   }
 
+  if (need_names) {
+    if (is.null(names(arg))) {
+      stop(sprintf("No names found in %s", argname))
+    }
+  }
+
   if (!is.null(allow_range)) {
     if (all(arg < allow_range[1]) || all(arg > allow_range[2])) {
       stop(sprintf("All values in %s must be between %s and %s",
                    argname, allow_range[1], allow_range[2]))
+    }
+  }
+
+  if (!is.null(allow_values)) {
+    if (!all(arg %in% allow_values)) {
+      stop(sprintf("All values in %s must be one of: %s",
+                   argname, paste(allow_values, collapse = ", ")))
     }
   }
 
