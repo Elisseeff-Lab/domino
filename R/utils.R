@@ -256,15 +256,17 @@ dom_network_items <- function(dom, clusters = NULL, return = NULL) {
 #' @param allow_class Vector of allowed classes
 #' @param allow_len Vector of allowed lengths
 #' @param require_vars Vector of required variables
-check_arg <- function(arg, allow_class = c("character"), allow_len = NULL,
+check_arg <- function(arg, allow_class = NULL, allow_len = NULL,
                       allow_range = NULL, need_vars = c(NULL),
                       need_colnames = FALSE, need_rownames = FALSE) {
   argname <- deparse(substitute(arg))
   classes <- paste(allow_class, collapse = ",")
   lengths <- paste(allow_len, collapse = ",")
 
-  if (!(class(arg) %in% allow_class)) {
-    stop(sprintf("Class of %s must be one of: %s", argname, classes))
+  if (!is.null(allow_class)) {
+    if (!any((class(arg) %in% allow_class))) {
+      stop(sprintf("Class of %s must be one of: %s", argname, classes))
+    }
   }
 
   if (!is.null(allow_len)) {
