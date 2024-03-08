@@ -149,4 +149,23 @@ test_that("create_rl_map_cellphonedb fails on wrong input arg type.", {
                              counts = RNA_count_tiny,
                              z_scores = RNA_zscore_tiny),
   "Either a Seurat object OR counts, z scores, and clusters must be provided")
+
+  #bad rec_min threshold
+  expect_error(create_domino(rl_map_tiny,
+                             auc_tiny,
+                             counts = RNA_count_tiny,
+                             z_scores = RNA_zscore_tiny,
+                             clusters = clusters_tiny,
+                             rec_min_thresh = 20
+                             ),
+  "rec_min_thresh must be a number between 0 and 1")
+
+  expect_error(create_domino(rl_map_tiny,
+                             auc_tiny,
+                             counts = RNA_count_tiny,
+                             z_scores = RNA_zscore_tiny,
+                             clusters = clusters_tiny,
+                             rec_min_thresh = -20
+                             ),
+  "rec_min_thresh must be a number between 0 and 1")
 })
