@@ -32,3 +32,12 @@ test_that("range checker works", {
                "All values in 1 must be between 2 and 5")
   expect_silent(check_arg(3, allow_class = "numeric", allow_range = c(2, 5)))
 })
+
+test_that("check_arg works for class", {
+  expect_error(check_arg(1, allow_class = "data.frame"),
+               "Class of 1 must be one of: data.frame")
+  expect_silent(check_arg(data.frame(a = c(1, 2), b = c(3, 4)),
+                          allow_class = "data.frame"))
+  expect_silent(check_arg(data.frame(a = c(1, 2), b = c(3, 4)),
+                          allow_class = c("data.frame", "matrix")))
+})

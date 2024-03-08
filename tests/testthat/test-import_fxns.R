@@ -119,7 +119,7 @@ test_that("create_rl_map_cellphonedb fails on wrong input arg type.", {
                              counts = RNA_count_tiny,
                              z_scores = RNA_zscore_tiny,
                              clusters = clusters_tiny),
-  "rl_map must be a data.frame with column names gene_A, gene_B, type_A, and type_B")
+  "Class of rl_map must be one of: data.frame")
 
   bad_rl_map <- rl_map_tiny
   colnames(bad_rl_map) <- paste(colnames(bad_rl_map), "qq")
@@ -128,7 +128,7 @@ test_that("create_rl_map_cellphonedb fails on wrong input arg type.", {
                              counts = RNA_count_tiny,
                              z_scores = RNA_zscore_tiny,
                              clusters = clusters_tiny),
-  "rl_map must be a data.frame with column names gene_A, gene_B, type_A, and type_B")
+  "Required variables gene_A, gene_B, type_A, type_B not found in rl_map")
 
   #bad features
   bad_features <- matrix()
@@ -137,18 +137,18 @@ test_that("create_rl_map_cellphonedb fails on wrong input arg type.", {
                              counts = RNA_count_tiny,
                              z_scores = RNA_zscore_tiny,
                              clusters = clusters_tiny),
-  "features must be either a file path or a named matrix with cells as columns and features as rows")
+  "No rownames found in features")
 
   #seurat or counts, zscores and clusters
   expect_error(create_domino(rl_map_tiny,
                              auc_tiny),
-  "Either a Seurat object OR counts, z scores, and clusters must be provided")
+  "Class of counts must be one of: matrix,data.frame")
 
   expect_error(create_domino(rl_map_tiny,
                              auc_tiny,
                              counts = RNA_count_tiny,
                              z_scores = RNA_zscore_tiny),
-  "Either a Seurat object OR counts, z scores, and clusters must be provided")
+  "Class of clusters must be one of: factor")
 
   #bad rec_min threshold
   expect_error(create_domino(rl_map_tiny,
@@ -158,7 +158,7 @@ test_that("create_rl_map_cellphonedb fails on wrong input arg type.", {
                              clusters = clusters_tiny,
                              rec_min_thresh = 20
                              ),
-  "rec_min_thresh must be a number between 0 and 1")
+  "All values in rec_min_thresh must be between 0 and 1")
 
   expect_error(create_domino(rl_map_tiny,
                              auc_tiny,
@@ -167,7 +167,7 @@ test_that("create_rl_map_cellphonedb fails on wrong input arg type.", {
                              clusters = clusters_tiny,
                              rec_min_thresh = -20
                              ),
-  "rec_min_thresh must be a number between 0 and 1")
+  "All values in rec_min_thresh must be between 0 and 1")
 
   expect_error(create_domino(rl_map_tiny,
                              auc_tiny,
@@ -176,5 +176,5 @@ test_that("create_rl_map_cellphonedb fails on wrong input arg type.", {
                              clusters = clusters_tiny,
                              tf_selection_method = "non-existent"
                              ),
-  "tf_selection_method must be one of all, clusters, or variable")
+  "All values in tf_selection_method must be one of: clusters, variable, all")
 })
