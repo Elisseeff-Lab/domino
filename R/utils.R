@@ -257,7 +257,8 @@ dom_network_items <- function(dom, clusters = NULL, return = NULL) {
 #' @param allow_len Vector of allowed lengths
 #' @param require_vars Vector of required variables
 check_arg <- function(arg, allow_class = c("character"), allow_len = NULL,
-                      require_vars = c(NULL)) {
+                      allow_range = NULL, need_vars = c(NULL),
+                      need_colnames = FALSE, need_rownames = FALSE) {
   argname <- deparse(substitute(arg))
   classes <- paste(allow_class, collapse = ",")
   lengths <- paste(allow_len, collapse = ",")
@@ -272,11 +273,32 @@ check_arg <- function(arg, allow_class = c("character"), allow_len = NULL,
     }
   }
 
-  if (!is.null(require_vars)) {
-    if (!all(require_vars %in% names(arg))) {
-      stop(sprintf("Required variables not found in %s", argname))
+  if (!is.null(need_vars)) {
+    if (!all(need_vars %in% names(arg))) {
+      stop(sprintf("Required variables %s not found in %s",
+                   paste0(need_vars, collapse = ", "), argname))
     }
   }
+
+  if (need_rownames) {
+    if (is.null(rownames(arg))) {
+      stop(sprintf("No rownames found in %s", argname))
+    }
+  }
+
+  if (need_colnames) {
+    if (is.null(colnames(arg))) {
+      stop(sprintf("No colnames found in %s", argname))
+    }
+  }
+
+  if (!is.null(allow_range)) {
+    if (all(arg < allow_range[1]) || all(arg > allow_range[2])) {
+      stop(sprintf("All values in %s must be between %s and %s",
+                   argname, allow_range[1], allow_range[2]))
+    }
+  }
+
 }
 
 #' Read in data if an object looks like path to it.

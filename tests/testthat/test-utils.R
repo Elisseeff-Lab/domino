@@ -21,8 +21,14 @@ test_that("read if char tries to read a file", {
 test_that("mandatory field absence yields error, presence does not", {
   expect_error(check_arg(arg = data.frame(a = c(1, 2), b = c(3, 4)),
                          allow_class = "data.frame",
-                         require_vars = c("c")))
+                         need_vars = c("c")))
   expect_silent(check_arg(arg = data.frame(a = c(1, 2), b = c(3, 4)),
                           allow_class = "data.frame",
-                          require_vars = c("a", "b")))
+                          need_vars = c("a", "b")))
+})
+
+test_that("range checker works", {
+  expect_error(check_arg(1, allow_class = "numeric", allow_range = c(2, 5)),
+               "All values in 1 must be between 2 and 5")
+  expect_silent(check_arg(3, allow_class = "numeric", allow_range = c(2, 5)))
 })
