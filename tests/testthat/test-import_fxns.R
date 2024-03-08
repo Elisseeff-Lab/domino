@@ -110,3 +110,26 @@ test_that("create_rl_map_cellphonedb fails on wrong input arg type.", {
     database_name = c("length", ">1")
   ))
 })
+
+test_that("create_rl_map_cellphonedb fails on wrong input arg type.", {
+  #bad rl map
+  bad_rl_map <- "rl_map"
+  expect_error(create_domino(bad_rl_map,
+                             features_tiny,
+                             counts = RNA_count_tiny,
+                             z_scores = RNA_zscore_tiny,
+                             clusters = clusters_tiny),
+  "rl_map must be a data.frame with column names gene_A, gene_B, type_A, and type_B")
+
+
+  #bad rl map 2
+  bad_rl_map <- rl_map_tiny
+  colnames(bad_rl_map) <- paste(colnames(bad_rl_map), "qq")
+  expect_error(create_domino(bad_rl_map,
+                             features_tiny,
+                             counts = RNA_count_tiny,
+                             z_scores = RNA_zscore_tiny,
+                             clusters = clusters_tiny),
+  "rl_map must be a data.frame with column names gene_A, gene_B, type_A, and type_B")
+
+})
