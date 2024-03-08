@@ -4,7 +4,12 @@
 \alias{check_arg}
 \title{Check input arguments}
 \usage{
-check_arg(arg, allow_class = c("character"), allow_len = NULL)
+check_arg(
+  arg,
+  allow_class = c("character"),
+  allow_len = NULL,
+  require_vars = c(NULL)
+)
 }
 \arguments{
 \item{arg}{The argument to check}
