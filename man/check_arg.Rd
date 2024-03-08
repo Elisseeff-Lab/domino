@@ -6,9 +6,14 @@
 \usage{
 check_arg(
   arg,
-  allow_class = c("character"),
+  allow_class = NULL,
   allow_len = NULL,
-  require_vars = c(NULL)
+  allow_range = NULL,
+  allow_values = NULL,
+  need_vars = c(NULL),
+  need_colnames = FALSE,
+  need_rownames = FALSE,
+  need_names = FALSE
 )
 }
 \arguments{
@@ -18,7 +23,17 @@ check_arg(
 
 \item{allow_len}{Vector of allowed lengths}
 
-\item{require_vars}{Vector of required variables}
+\item{allow_range}{range of minimum and maximum values i.e. c(1, 5)}
+
+\item{allow_values}{Vector of allowed values}
+
+\item{need_vars}{Vector of required variables}
+
+\item{need_colnames}{Logical for whether colnames are required}
+
+\item{need_rownames}{Logical for whether rownames are required}
+
+\item{need_names}{Logical for whether names are required}
 }
 \description{
 Accepts an object and rules for checking, stops if rules not met.

@@ -255,7 +255,12 @@ dom_network_items <- function(dom, clusters = NULL, return = NULL) {
 #' @param arg The argument to check
 #' @param allow_class Vector of allowed classes
 #' @param allow_len Vector of allowed lengths
-#' @param require_vars Vector of required variables
+#' @param allow_range range of minimum and maximum values i.e. c(1, 5)
+#' @param allow_values Vector of allowed values
+#' @param need_vars Vector of required variables
+#' @param need_colnames Logical for whether colnames are required
+#' @param need_rownames Logical for whether rownames are required
+#' @param need_names Logical for whether names are required
 check_arg <- function(arg, allow_class = NULL, allow_len = NULL,
                       allow_range = NULL, allow_values = NULL,
                       need_vars = c(NULL), need_colnames = FALSE,
