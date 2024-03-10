@@ -89,3 +89,33 @@ test_that(
     expect_true(sum(rec_tf_cor["REC4",] > 0.1) == 0)
   }
 )
+
+test_that(
+  "filter_tf_regulon_receptors: set correlation statistic to 0 for receptors in regulon", { 
+    cor_tiny <- diag(3) 
+    dimnames(cor_tiny) <- list(
+      c("REC1", "REC2", "REC3"),
+      c("TF1", "TF2", "TF3")
+    )
+    tf_regulons_tiny <- list(
+      "TF1" = c("REC1", "GENEA"),
+      "TF2" = c("REC1", "GENEB"),
+      "TF3" = c("REC3", "GENEC")
+    )
+    expected_cor <- matrix(
+      c(
+        0, 0, 0,
+        0, 1, 0,
+        0, 0, 0
+      ),
+      nrow = 3, ncol = 3, dimnames = list(
+        c("REC1", "REC2", "REC3"),
+        c("TF1", "TF2", "TF3")
+      )
+    )
+    expect_equal(
+      test_pruned_cor <- filter_tf_regulon_receptors(cor_mat = cor_tiny, tf_targets = tf_regulons_tiny), 
+      expected_cor
+    )
+  } 
+)
