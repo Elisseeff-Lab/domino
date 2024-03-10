@@ -8,26 +8,26 @@ test_tfs_rec_linkage <- function(
   tfs <- colnames(feature_de)
   names(tfs) <- tfs
   n_tfs <- length(tfs)
-  
   rec_z_scores <- z_scores[rownames(z_scores) %in% receptors,]
   rec_counts <- counts[rownames(counts) %in% receptors,]
   confirmed_recs <- rownames(rec_z_scores)
-  
   if(verbose) {message("Calculating feature-receptor linkages")}
   cl_link_list <- lapply(
     tfs,
     function(tf) {
       a <- which(tf == tfs)
-      tf_scores <- features[tf,]
-      
       if(verbose) {message(paste0(a, " of ", n_tfs))}
+      tf_scores <- features[tf,]
       linkage_score_ls <- lapply(
         confirmed_recs,
         function(r) {
           r_exp <- rec_z_scores[r,]
           if(method == "spearman.correlation") {
-            test_res <- stats::cor.test(rexp, tf_scores, method = "spearman", alternative = "greater")
-            return(test_res[["estimate"]])
+            # warnings supressed for cases where exact p-values cannot be calculated with ties
+            test_res <- suppressWarnings(stats::cor.test(r_exp, tf_scores, method = "spearman", alternative = "greater"))
+            est <- test_res[["estimate"]]
+            names(est) <- r
+            return(est)
           }
         }
       )
