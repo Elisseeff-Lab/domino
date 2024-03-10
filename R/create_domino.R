@@ -41,6 +41,20 @@ test_tfs_rec_linkage <- function(
 }
 
 filter_tf_regulon_receptors <- function(cor_mat, tf_targets) {
-  
+  tfs <- names(tf_targets)
+  recs <- rownames(cor_mat)
+  cor_prune_ls <- lapply(
+    tfs, FUN = function(tf) {
+      regulon <- tf_targets[[tf]]
+      tf_col <- cor_mat[,tf]
+      recs <- names(tf_col)
+      regulon_logic <- recs %in% regulon
+      tf_col[regulon_logic] <- 0
+      return(tf_col)
+    }
+  )
+  cor_prune <- do.call(cbind, cor_prune_ls)
+  colnames(cor_prune) <- tfs
+  return(cor_prune)
 }
 
