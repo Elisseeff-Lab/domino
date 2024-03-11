@@ -1,5 +1,6 @@
 # internal scripts for the create_domino() function
 
+
 calc_rec_percentage <- function(counts, clusters, receptor_genes) {
   cluster_lvls <- levels(clusters)
   names(receptor_genes) <- receptor_genes
@@ -19,6 +20,46 @@ calc_rec_percentage <- function(counts, clusters, receptor_genes) {
   )
   cluster_percent <- do.call(rbind, cluster_percent_ls)
   return(cluster_percent)
+ }
+
+assess_complex_receptor_cor <- function(receptors, complexes_list, cor_mat, method = "median") {
+  valid_methods <- c("median")
+  if(!(method %in% valid_methods)){
+    stop("Invalid method supplied")
+  }
+  names(receptors) <- receptors
+  complexes <- names(complexes_list)
+  complex_cor_ls <- lapply(
+    receptors, FUN = function(r) {
+      if(r %in% complexes) {
+        r_comp <- complexes_list[[r]]
+        # determine if all components are present
+        r_comp_logic <- r_comp %in% rownames(cor_mat)
+        if(sum(r_comp_logic) == length(r_comp_logic)) {
+          gene_cor <- cor_mat[rownames(cor_mat) %in% r_comp, ]
+          if(method == "median") {
+            cor_aggr <- apply(gene_cor, 2, function(x) {
+              median(x)
+            })
+          }
+          return(cor_aggr)
+        } else {
+          return()
+        }
+      } else {
+        # obtain rows of correlation matrix for non-complex receptors
+        if(r %in% rownames(cor_mat)) {
+          r_cor <- cor_mat[r,]
+          return(r_cor)
+        } else {
+          return()
+        }
+      }
+    }
+  )
+  complex_cor <- do.call(rbind, complex_cor_ls)
+  colnames(complex_cor) <- colnames(cor_mat)
+  return(complex_cor)
 }
 
 test_tfs_rec_linkage <- function(
