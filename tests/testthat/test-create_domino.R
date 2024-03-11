@@ -1,6 +1,57 @@
 ## unit tests use internal data stored in R/create_domino.R
 
 test_that(
+  "assess_complex_receptor_cor: aggregate correlations in complex as median", {
+    complexes_list_tiny <- list(
+      "complexA" = c("GENEA1", "GENEA2", "GENEA3"),
+      "complexB" = c("GENEB1", "GENEB2", "GENEB3")
+    )
+    receptors_tiny <- c("complexA", "complexB", "GENEC", "GENED")
+    cor_mat_tiny <- t(matrix(
+      c(
+        0.0, 0.2, 0.2,
+        0.0, 0.5, 0.2,
+        0.0, 0.8, 0.2,
+        0.5, 0.1, 0.1,
+        0.5, 0.1, 0.1,
+        0.7, 0.3, 0.3
+      ),
+      nrow = 3, ncol = 6,
+      dimnames = list(
+        c("TF1", "TF2", "TF3"),
+        c("GENEA1", "GENEA2", "GENEA3", "GENEB1", "GENEB2", "GENEC")
+      )
+    ))
+    cor_aggr_test <- assess_complex_receptor_cor(
+      receptors = receptors_tiny, complexes_list = complexes_list_tiny, 
+      cor_mat = cor_mat_tiny, method = "median"
+    )
+    
+    expect_equal(
+      cor_aggr_test,
+      t(matrix(
+        c(
+          0.0, 0.5, 0.2,
+          0.7, 0.3, 0.3
+        ),
+        nrow = 3, ncol = 2,
+        dimnames = list(
+          c("TF1", "TF2", "TF3"),
+          c("complexA", "GENEC")
+        )
+      ))
+    )
+    
+    expect_error(
+      receptors = receptors_tiny, complexes_list = complexes_list_tiny, 
+      cor_mat = cor_mat_tiny, method = "invalid method name"
+    )
+  }
+)
+
+
+
+test_that(
   "test_tfs_rec_linkage: identify correlated TFs and receptors dataset-wide", {
     set.seed(123)
     cell_ids <- paste("cell", seq(300), sep = "_")
