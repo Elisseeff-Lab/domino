@@ -1,6 +1,42 @@
 ## unit tests use internal data stored in R/create_domino.R
 
 test_that(
+  "calc_rec_percentage: accurate percentage of receptor expressing cells", {
+    clusters_tiny <- factor(c(rep("A", 100), rep("B", 100)))
+    receptors_tiny <- c("REC1", "REC2")
+    REC1 <- c(
+      rep(1, 30), rep(0, 70),
+      rep(1, 50), rep(0, 50)
+    )
+    REC2 <- c(
+      rep(1, 100), rep(0, 0),
+      rep(1, 10), rep(0, 90)
+    )
+    counts_tiny <- do.call(rbind, list(REC1, REC2))
+    dimnames(counts_tiny) <- list(
+      receptors_tiny,
+      clusters_tiny
+    )
+    test_rec_percent <- calc_rec_percentage(counts = counts_tiny, clusters = clusters_tiny, receptor_genes = receptors_tiny)
+    
+    expect_equal(
+      test_rec_percent,
+      t(matrix(
+        c(
+          0.15, 0.25,
+          0.50, 0.05
+        ),
+        nrow = 2, ncol = 2,
+        dimnames = list(
+          levels(clusters_tiny),
+          receptors_tiny
+        )
+      ))
+    )
+  }
+)
+
+test_that(
   "assess_complex_receptor_cor: aggregate correlations in complex as median", {
     complexes_list_tiny <- list(
       "complexA" = c("GENEA1", "GENEA2", "GENEA3"),

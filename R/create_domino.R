@@ -1,5 +1,27 @@
 # internal scripts for the create_domino() function
 
+
+calc_rec_percentage <- function(counts, clusters, receptor_genes) {
+  cluster_lvls <- levels(clusters)
+  names(receptor_genes) <- receptor_genes
+  cluster_percent_ls <- lapply(
+    receptor_genes, FUN = function(r) {
+      r_row_logic <- rownames(counts) == r
+      rec_percent <- vapply(
+        cluster_lvls, FUN = function(cl) {
+          cell_in_cl <- clusters == cl
+          expressing_cells <- sum(counts[r_row_logic, cell_in_cl] > 0)
+          rec_prop <- expressing_cells / length(cell_in_cl) 
+          return(rec_prop)
+      }, 
+      FUN.VALUE = numeric(length(1))
+      )
+    }
+  )
+  cluster_percent <- do.call(rbind, cluster_percent_ls)
+  return(cluster_percent)
+ }
+
 assess_complex_receptor_cor <- function(receptors, complexes_list, cor_mat, method = "median") {
   valid_methods <- c("median")
   if(!(method %in% valid_methods)){
