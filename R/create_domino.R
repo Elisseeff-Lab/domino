@@ -1,5 +1,63 @@
 # internal scripts for the create_domino() function
 
+test_tfs_rec_linkage <- function(
+    features, z_scores, counts, 
+    feature_de,
+    receptors, 
+    method = "spearman.correlation", verbose = TRUE) {
+  tfs <- colnames(feature_de)
+  names(tfs) <- tfs
+  n_tfs <- length(tfs)
+  rec_z_scores <- z_scores[rownames(z_scores) %in% receptors,]
+  rec_counts <- counts[rownames(counts) %in% receptors,]
+  confirmed_recs <- rownames(rec_z_scores)
+  if(verbose) {message("Calculating feature-receptor linkages")}
+  cl_link_list <- lapply(
+    tfs,
+    function(tf) {
+      a <- which(tf == tfs)
+      if(verbose) {message(paste0(a, " of ", n_tfs))}
+      tf_scores <- features[tf,]
+      linkage_score_ls <- lapply(
+        confirmed_recs,
+        function(r) {
+          r_exp <- rec_z_scores[r,]
+          if(method == "spearman.correlation") {
+            # warnings supressed for cases where exact p-values cannot be calculated with ties
+            test_res <- suppressWarnings(stats::cor.test(r_exp, tf_scores, method = "spearman", alternative = "greater"))
+            est <- test_res[["estimate"]]
+            names(est) <- r
+            return(est)
+          }
+        }
+      )
+      linkage_score <- unlist(linkage_score_ls)
+      return(linkage_score)
+    }
+  )
+  linkage_score_mat <- do.call(cbind, cl_link_list)
+  colnames(linkage_score_mat) <- tfs
+  return(linkage_score_mat)
+}
+
+filter_tf_regulon_receptors <- function(cor_mat, tf_targets) {
+  tfs <- names(tf_targets)
+  recs <- rownames(cor_mat)
+  cor_prune_ls <- lapply(
+    tfs, FUN = function(tf) {
+      regulon <- tf_targets[[tf]]
+      tf_col <- cor_mat[,tf]
+      recs <- names(tf_col)
+      regulon_logic <- recs %in% regulon
+      tf_col[regulon_logic] <- 0
+      return(tf_col)
+    }
+  )
+  cor_prune <- do.call(cbind, cor_prune_ls)
+  colnames(cor_prune) <- tfs
+  return(cor_prune)
+}
+
 select_cluster_tf <- function(features, clusters, verbose = TRUE, method = "one.sided.wilcox") {
   cluster_lvls <- levels(clusters)
   n_lvls <- length(cluster_lvls)
