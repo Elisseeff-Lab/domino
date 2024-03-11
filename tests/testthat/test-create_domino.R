@@ -49,8 +49,6 @@ test_that(
   }
 )
 
-
-
 test_that(
   "test_tfs_rec_linkage: identify correlated TFs and receptors dataset-wide", {
     set.seed(123)
