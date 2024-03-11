@@ -1,6 +1,42 @@
 ## unit tests use internal data stored in R/create_domino.R
 
 test_that(
+  "calc_rec_percentage: accurate percentage of receptor expressing cells", {
+    clusters_tiny <- factor(c(rep("A", 100), rep("B", 100)))
+    receptors_tiny <- c("REC1", "REC2")
+    REC1 <- c(
+      rep(1, 30), rep(0, 70),
+      rep(1, 50), rep(0, 50)
+    )
+    REC2 <- c(
+      rep(1, 100), rep(0, 0),
+      rep(1, 10), rep(0, 90)
+    )
+    counts_tiny <- do.call(rbind, list(REC1, REC2))
+    dimnames(counts_tiny) <- list(
+      receptors_tiny,
+      clusters_tiny
+    )
+    test_rec_percent <- calc_rec_percentage(counts = counts_tiny, clusters = clusters_tiny, receptor_genes = receptors_tiny)
+    
+    expect_equal(
+      test_rec_percent,
+      t(matrix(
+        c(
+          0.15, 0.25,
+          0.50, 0.05
+        ),
+        nrow = 2, ncol = 2,
+        dimnames = list(
+          levels(clusters_tiny),
+          receptors_tiny
+        )
+      ))
+    )
+  }
+)
+
+test_that(
   "test_tfs_rec_linkage: identify correlated TFs and receptors dataset-wide", {
     set.seed(123)
     cell_ids <- paste("cell", seq(300), sep = "_")
