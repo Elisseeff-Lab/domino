@@ -248,3 +248,102 @@ dom_network_items <- function(dom, clusters = NULL, return = NULL) {
     }
 }
 
+#' Check input arguments
+#'
+#' Accepts an object and rules for checking, stops if rules not met.
+#'
+#' @param arg The argument to check
+#' @param allow_class Vector of allowed classes
+#' @param allow_len Vector of allowed lengths
+#' @param allow_range range of minimum and maximum values i.e. c(1, 5)
+#' @param allow_values Vector of allowed values
+#' @param need_vars Vector of required variables
+#' @param need_colnames Logical for whether colnames are required
+#' @param need_rownames Logical for whether rownames are required
+#' @param need_names Logical for whether names are required
+check_arg <- function(arg, allow_class = NULL, allow_len = NULL,
+                      allow_range = NULL, allow_values = NULL,
+                      need_vars = c(NULL), need_colnames = FALSE,
+                      need_rownames = FALSE, need_names = FALSE) {
+  argname <- deparse(substitute(arg))
+  classes <- paste(allow_class, collapse = ",")
+  lengths <- paste(allow_len, collapse = ",")
+
+  if (!is.null(allow_class)) {
+    if (!any((class(arg) %in% allow_class))) {
+      stop(sprintf("Class of %s must be one of: %s", argname, classes))
+    }
+  }
+
+  if (!is.null(allow_len)) {
+    if (!(length(arg) %in% allow_len)) {
+      stop(sprintf("Length of %s must be one of: %s", argname, lengths))
+    }
+  }
+
+  if (!is.null(need_vars)) {
+    if (!all(need_vars %in% names(arg))) {
+      stop(sprintf("Required variables %s not found in %s",
+                   paste0(need_vars, collapse = ", "), argname))
+    }
+  }
+
+  if (need_rownames) {
+    if (is.null(rownames(arg))) {
+      stop(sprintf("No rownames found in %s", argname))
+    }
+  }
+
+  if (need_colnames) {
+    if (is.null(colnames(arg))) {
+      stop(sprintf("No colnames found in %s", argname))
+    }
+  }
+
+  if (need_names) {
+    if (is.null(names(arg))) {
+      stop(sprintf("No names found in %s", argname))
+    }
+  }
+
+  if (!is.null(allow_range)) {
+    if (all(arg < allow_range[1]) || all(arg > allow_range[2])) {
+      stop(sprintf("All values in %s must be between %s and %s",
+                   argname, allow_range[1], allow_range[2]))
+    }
+  }
+
+  if (!is.null(allow_values)) {
+    if (!all(arg %in% allow_values)) {
+      stop(sprintf("All values in %s must be one of: %s",
+                   argname, paste(allow_values, collapse = ", ")))
+    }
+  }
+
+}
+
+#' Read in data if an object looks like path to it.
+#'
+#' @param obj Object to read if not already object
+#' @return obj Object itself in case its not a character
+read_if_char <- function(obj) {
+  if (is(obj, "character")) {
+    obj <- read.csv(obj, stringsAsFactors = FALSE)
+  }
+  return(obj)
+}
+
+#' Change cases of True/False syntax from Python to TRUE/FALSE R syntax
+#'
+#' @param obj Object that will be converted
+#' @return obj The converted object
+conv_py_bools <- function(obj) {
+  for (x in colnames(obj)) {
+    bools <- sort(unique(obj[[x]]))
+    if (identical(bools, c("False", "True"))) {
+      obj[[x]] <- ifelse(obj[[x]] == "True", TRUE, FALSE)
+    }
+  }
+  return(obj)
+}
+
