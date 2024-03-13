@@ -112,7 +112,7 @@ test_that("create_rl_map_cellphonedb fails on wrong input arg type.", {
 })
 
 
-test_that("create_rl_map_cellphonedb fails on wrong input arg type.", {
+test_that("create_domino fails on wrong input arg type.", {
   #bad rl map
   bad_rl_map <- "rl_map"
   expect_error(create_domino(bad_rl_map,
