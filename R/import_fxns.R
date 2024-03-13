@@ -52,41 +52,13 @@ create_rl_map_cellphonedb <- function(
     "integrin", "other"
   )
   proteins[proteins$receptor == "", colnames(proteins) %in% gene_features] <- "False"
+
   # change cases of True/False syntax from Python to TRUE/FALSE R syntax
-  for (x in colnames(genes)) {
-    if (identical(unique(genes[[x]]), c("True", "False")) | identical(unique(genes[[x]]), c(
-      "False",
-      "True"
-    ))) {
-      genes[[x]] <- ifelse(genes[[x]] == "True", TRUE, FALSE)
-    }
-  }
-  for (x in colnames(proteins)) {
-    if (identical(unique(proteins[[x]]), c("True", "False")) | identical(
-      unique(proteins[[x]]),
-      c("False", "True")
-    )) {
-      proteins[[x]] <- ifelse(proteins[[x]] == "True", TRUE, FALSE)
-    }
-  }
-  for (x in colnames(interactions)) {
-    if (identical(unique(interactions[[x]]), c("True", "False")) | identical(
-      unique(interactions[[x]]),
-      c("False", "True")
-    )) {
-      interactions[[x]] <- ifelse(interactions[[x]] == "True", TRUE, FALSE)
-    }
-  }
-  if (!is.null(complexes)) {
-    for (x in colnames(complexes)) {
-      if (identical(unique(complexes[[x]]), c("True", "False")) | identical(
-        unique(complexes[[x]]),
-        c("False", "True")
-      )) {
-        complexes[[x]] <- ifelse(complexes[[x]] == "True", TRUE, FALSE)
-      }
-    }
-  }
+  genes <-  conv_py_bools(genes)
+  proteins <- conv_py_bools(proteins)
+  interactions <- conv_py_bools(interactions)
+  complexes <- conv_py_bools(complexes)
+
   # gene conversions
   if (!is.null(gene_conv) & !identical(gene_conv[1], gene_conv[2])) {
     # obtain conversion dictionary
