@@ -40,18 +40,11 @@ create_rl_map_cellphonedb <- function(
   check_arg(gene_conv_host, c("character"), allow_len = c(1))
 
   # Read in files if needed:
-  if (is(genes, "character")) {
-    genes <- read.csv(genes, stringsAsFactors = FALSE)
-  }
-  if (is(proteins, "character")) {
-    proteins <- read.csv(proteins, stringsAsFactors = FALSE)
-  }
-  if (is(interactions, "character")) {
-    interactions <- read.csv(interactions, stringsAsFactors = FALSE)
-  }
-  if (is(complexes, "character")) {
-    complexes <- read.csv(complexes, stringsAsFactors = FALSE)
-  }
+  genes <- read_if_char(genes)
+  proteins <- read_if_char(proteins)
+  interactions <- read_if_char(interactions)
+  complexes <- read_if_char(complexes)
+
   # replace empty cells in columns annotating gene properties with 'False' There are some
   # unannotated genes in database v2.0 that seem to have been fixed in v4.0
   gene_features <- c(
