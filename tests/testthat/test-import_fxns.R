@@ -75,3 +75,38 @@ test_that("building a domino object under set parameters", {
   expect_equal(pbmc_dom_built@signaling,
                pbmc_dom_built_tiny@signaling)
 })
+
+test_that("create_rl_map_cellphonedb fails on wrong input arg type.", {
+
+  expect_error(create_rl_map_cellphonedb(
+    genes = list(), proteins = proteins_tiny,
+    interactions = interactions_tiny, complexes = complexes_tiny
+  ))
+
+  expect_error(create_rl_map_cellphonedb(
+    genes = genes_tiny, proteins = list(),
+    interactions = interactions_tiny, complexes = complexes_tiny
+  ))
+
+  expect_error(create_rl_map_cellphonedb(
+    genes = genes_tiny, proteins = proteins_tiny,
+    interactions = list(), complexes = complexes_tiny
+  ))
+
+  expect_error(create_rl_map_cellphonedb(
+    genes = genes_tiny, proteins = proteins_tiny,
+    interactions = interactions_tiny, complexes = list()
+  ))
+
+  expect_error(create_rl_map_cellphonedb(
+    genes = genes_tiny, proteins = proteins_tiny,
+    interactions = interactions_tiny, complexes = complexes_tiny,
+    database_name = list()
+  ))
+
+  expect_error(create_rl_map_cellphonedb(
+    genes = genes_tiny, proteins = proteins_tiny,
+    interactions = interactions_tiny, complexes = complexes_tiny,
+    database_name = c("length", ">1")
+  ))
+})
