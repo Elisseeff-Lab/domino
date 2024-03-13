@@ -110,3 +110,72 @@ test_that("create_rl_map_cellphonedb fails on wrong input arg type.", {
     database_name = c("length", ">1")
   ))
 })
+
+
+test_that("create_rl_map_cellphonedb fails on wrong input arg type.", {
+  #bad rl map
+  bad_rl_map <- "rl_map"
+  expect_error(create_domino(bad_rl_map,
+                             features_tiny,
+                             counts = RNA_count_tiny,
+                             z_scores = RNA_zscore_tiny,
+                             clusters = clusters_tiny),
+  "Class of rl_map must be one of: data.frame")
+
+  bad_rl_map <- rl_map_tiny
+  colnames(bad_rl_map) <- paste(colnames(bad_rl_map), "qq")
+  expect_error(create_domino(bad_rl_map,
+                             features_tiny,
+                             counts = RNA_count_tiny,
+                             z_scores = RNA_zscore_tiny,
+                             clusters = clusters_tiny),
+  "Required variables gene_A, gene_B, type_A, type_B not found in rl_map")
+
+  #bad features
+  bad_features <- matrix()
+  expect_error(create_domino(rl_map_tiny,
+                             bad_features,
+                             counts = RNA_count_tiny,
+                             z_scores = RNA_zscore_tiny,
+                             clusters = clusters_tiny),
+  "No rownames found in features")
+
+  #seurat or counts, zscores and clusters
+  expect_error(create_domino(rl_map_tiny,
+                             auc_tiny),
+  "Class of counts must be one of: matrix,data.frame")
+
+  expect_error(create_domino(rl_map_tiny,
+                             auc_tiny,
+                             counts = RNA_count_tiny,
+                             z_scores = RNA_zscore_tiny),
+  "Class of clusters must be one of: factor")
+
+  #bad rec_min threshold
+  expect_error(create_domino(rl_map_tiny,
+                             auc_tiny,
+                             counts = RNA_count_tiny,
+                             z_scores = RNA_zscore_tiny,
+                             clusters = clusters_tiny,
+                             rec_min_thresh = 20
+                             ),
+  "All values in rec_min_thresh must be between 0 and 1")
+
+  expect_error(create_domino(rl_map_tiny,
+                             auc_tiny,
+                             counts = RNA_count_tiny,
+                             z_scores = RNA_zscore_tiny,
+                             clusters = clusters_tiny,
+                             rec_min_thresh = -20
+                             ),
+  "All values in rec_min_thresh must be between 0 and 1")
+
+  expect_error(create_domino(rl_map_tiny,
+                             auc_tiny,
+                             counts = RNA_count_tiny,
+                             z_scores = RNA_zscore_tiny,
+                             clusters = clusters_tiny,
+                             tf_selection_method = "non-existent"
+                             ),
+  "All values in tf_selection_method must be one of: clusters, variable, all")
+})
