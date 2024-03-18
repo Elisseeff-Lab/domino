@@ -29,48 +29,22 @@ NULL
 create_rl_map_cellphonedb <- function(
     genes, proteins, interactions, complexes = NULL, database_name = "CellPhoneDB",
     gene_conv = NULL, gene_conv_host = "https://www.ensembl.org", alternate_convert = FALSE, alternate_convert_table = NULL) {
+
   # Check input structures:
-  stopifnot(`genes argument must be file path or dataframe` = (is(genes, "data.frame") | is(
-    genes,
-    "character"
-  )))
-  stopifnot(`proteins argument must be file path or dataframe` = (is(proteins, "data.frame") | is(
-    proteins,
-    "character"
-  )))
-  stopifnot(`interactions argument must be file path or dataframe` = (is(interactions, "data.frame") |
-    is(interactions, "character")))
-  stopifnot(`complexes argument must be NULL, file path or dataframe` = (is.null(complexes) | is(
-    complexes,
-    "data.frame"
-  ) | is(complexes, "character")))
-  stopifnot(`Database name must be a string` = is(database_name, "character") & length(database_name) ==
-    1)
-  stopifnot(`Gene conversion must be NULL or a character vector with 2 items` = (is.null(gene_conv) |
-    (is(gene_conv, "character") & length(gene_conv) == 2)))
-  stopifnot(`Gene conversion host must be a string` = is(gene_conv_host, "character") & length(gene_conv_host) ==
-    1)
-  stopifnot(`Alternate conversion argument (not recommended) must be TRUE or FALSE` = is(
-    alternate_convert,
-    "logical"
-  ))
-  if (alternate_convert & is.null(alternate_convert_table)) {
-    stop("If using alternate conversion table (not recommended), a table must be provided")
-  }
+  check_arg(genes, c("character", "data.frame"))
+  check_arg(proteins, c("character", "data.frame"))
+  check_arg(interactions, c("character", "data.frame"))
+  check_arg(complexes, c("character", "data.frame", "NULL"))
+  check_arg(database_name, c("character"), allow_len = c(1))
+  check_arg(gene_conv, c("NULL", "character"), allow_len = c(0, 2))
+  check_arg(gene_conv_host, c("character"), allow_len = c(1))
 
   # Read in files if needed:
-  if (is(genes, "character")) {
-    genes <- read.csv(genes, stringsAsFactors = FALSE)
-  }
-  if (is(proteins, "character")) {
-    proteins <- read.csv(proteins, stringsAsFactors = FALSE)
-  }
-  if (is(interactions, "character")) {
-    interactions <- read.csv(interactions, stringsAsFactors = FALSE)
-  }
-  if (is(complexes, "character")) {
-    complexes <- read.csv(complexes, stringsAsFactors = FALSE)
-  }
+  genes <- read_if_char(genes)
+  proteins <- read_if_char(proteins)
+  interactions <- read_if_char(interactions)
+  complexes <- read_if_char(complexes)
+
   # replace empty cells in columns annotating gene properties with 'False' There are some
   # unannotated genes in database v2.0 that seem to have been fixed in v4.0
   gene_features <- c(
@@ -78,41 +52,13 @@ create_rl_map_cellphonedb <- function(
     "integrin", "other"
   )
   proteins[proteins$receptor == "", colnames(proteins) %in% gene_features] <- "False"
+
   # change cases of True/False syntax from Python to TRUE/FALSE R syntax
-  for (x in colnames(genes)) {
-    if (identical(unique(genes[[x]]), c("True", "False")) | identical(unique(genes[[x]]), c(
-      "False",
-      "True"
-    ))) {
-      genes[[x]] <- ifelse(genes[[x]] == "True", TRUE, FALSE)
-    }
-  }
-  for (x in colnames(proteins)) {
-    if (identical(unique(proteins[[x]]), c("True", "False")) | identical(
-      unique(proteins[[x]]),
-      c("False", "True")
-    )) {
-      proteins[[x]] <- ifelse(proteins[[x]] == "True", TRUE, FALSE)
-    }
-  }
-  for (x in colnames(interactions)) {
-    if (identical(unique(interactions[[x]]), c("True", "False")) | identical(
-      unique(interactions[[x]]),
-      c("False", "True")
-    )) {
-      interactions[[x]] <- ifelse(interactions[[x]] == "True", TRUE, FALSE)
-    }
-  }
-  if (!is.null(complexes)) {
-    for (x in colnames(complexes)) {
-      if (identical(unique(complexes[[x]]), c("True", "False")) | identical(
-        unique(complexes[[x]]),
-        c("False", "True")
-      )) {
-        complexes[[x]] <- ifelse(complexes[[x]] == "True", TRUE, FALSE)
-      }
-    }
-  }
+  genes <-  conv_py_bools(genes)
+  proteins <- conv_py_bools(proteins)
+  interactions <- conv_py_bools(interactions)
+  complexes <- conv_py_bools(complexes)
+
   # gene conversions
   if (!is.null(gene_conv) & !identical(gene_conv[1], gene_conv[2])) {
     # obtain conversion dictionary

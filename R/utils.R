@@ -328,6 +328,7 @@ check_arg <- function(arg, allow_class = NULL, allow_len = NULL,
 #' @return obj Object itself in case its not a character
 read_if_char <- function(obj) {
   if (is(obj, "character")) {
+    check_arg(obj, allow_class = "character", allow_len = 1)
     obj <- read.csv(obj, stringsAsFactors = FALSE)
   }
   return(obj)

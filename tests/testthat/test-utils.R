@@ -16,6 +16,7 @@ test_that("bool conversion function works",{
 test_that("read if char tries to read a file", {
   expect_error(read_if_char("./file_that_not_exists.csv",
                             "cannot open the connection"))
+  expect_error(read_if_char(c('a', 'b')), "Length of obj must be one of: 1")
 })
 
 test_that("mandatory field absence yields error, presence does not", {
