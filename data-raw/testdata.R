@@ -1,7 +1,7 @@
 # generate objects for comparison in testing scripts
 
-library(Seurat)
-library(domino2, lib = "../domino_libraries/libraries/v0_2_1/")
+library(SingleCellExperiment)
+library(dominoSignal)
 
 # load data for generation of test results from zenodo repository
 # Zenodo host of outputs from SCENIC analysis
@@ -12,10 +12,10 @@ pbmc_dir <- paste0(temp_dir, "/pbmc")
 if (!dir.exists(pbmc_dir)) {
   dir.create(pbmc_dir)
 }
-# Seurat object of preprocessed PBMC3K data
-download.file(url = paste0(data_url, "/pbmc_seurat.rds"),
-              destfile = paste0(pbmc_dir, "/pbmc_seurat.rds"))
-pbmc <- readRDS(paste0(pbmc_dir, "/pbmc_seurat.rds"))
+# SingleCellExperiment object of preprocessed PBMC3K data
+download.file(url = paste0(data_url, "/pbmc_sce.rds"),
+              destfile = paste0(pbmc_dir, "/pbmc_sce.rds"))
+pbmc <- readRDS(paste0(pbmc_dir, "/pbmc_sce.rds"))
 
 # SCENIC input files
 scenic_dir <- paste0(temp_dir, "/scenic")
