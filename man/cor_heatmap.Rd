@@ -41,10 +41,10 @@ factors either with boolean threshold or with continuous values displayed
 }
 \examples{
 #basic usage
-cor_heatmap(domino2:::pbmc_dom_built_tiny, title = "PBMC R-TF Correlations")
+cor_heatmap(dominoSignal:::pbmc_dom_built_tiny, title = "PBMC R-TF Correlations")
 #show correlations above a specific value
-cor_heatmap(domino2:::pbmc_dom_built_tiny, bool = TRUE, bool_thresh = 0.25)
+cor_heatmap(dominoSignal:::pbmc_dom_built_tiny, bool = TRUE, bool_thresh = 0.25)
 #identify combinations that are connected
-cor_heatmap(domino2:::pbmc_dom_built_tiny, bool = FALSE, mark_connections = TRUE)
+cor_heatmap(dominoSignal:::pbmc_dom_built_tiny, bool = FALSE, mark_connections = TRUE)
  
 }
