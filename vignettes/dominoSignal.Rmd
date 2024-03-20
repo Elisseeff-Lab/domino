@@ -24,7 +24,7 @@ options(timeout = 300)
 ```
 
 ```{r libraries}
-library(domino2)
+library(dominoSignal)
 library(SingleCellExperiment)
 library(plyr)
 library(circlize)
@@ -126,13 +126,13 @@ pbmc_loom$close_all()
 
 ## Installation
 
-Installation of dominoSignal from Github can be achieved using the `{remotes}` package. The current stable version is v0.2.2, so we will install that version.
+Installation of dominoSignal from Github can be achieved using the `{remotes}` package.
 
 ```{r, eval = FALSE}
 if(!require(remotes)){
     install.packages("remotes")
 }
-remotes::install_github("FertigLab/domino2@v0.2.2")
+remotes::install_github("FertigLab/dominoSignal")
 ```
 
 ## Building a Signaling Network with dominoSignal
