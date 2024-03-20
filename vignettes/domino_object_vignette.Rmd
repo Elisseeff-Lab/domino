@@ -24,10 +24,10 @@ In order to better implement some of the changes that have been made in dominoSi
 
 ## Setup and data load
 
-In this tutorial, we will use the domino object we built on the [Getting Started](vigenttes("domino2")) page. If you have not yet built a domino object, you can do so by following the instructions on the [Getting Started](vignette("domino2")) page.
+In this tutorial, we will use the domino object we built on the [Getting Started](vigenttes("dominoSignal")) page. If you have not yet built a domino object, you can do so by following the instructions on the [Getting Started](vignette("dominoSignal")) page.
 
 ```{r setup, include = TRUE}
-library(domino2)
+library(dominoSignal)
 
 data_url <- "https://zenodo.org/records/10222767/files/pbmc_domino_built.rds"
 tmp_path <- paste0(tempdir(), "/pbmc_domino_built.rds")
@@ -63,7 +63,7 @@ print(dom)
 In order to facilitate access to the information stored in the domino object, we have provided a collection of functions to retrieve specific items. These functions begin with "dom_" and can be listed using `ls()`.
 
 ```{r list-functions}
-ls("package:domino2", pattern = "^dom_")
+ls("package:dominoSignal", pattern = "^dom_")
 ```
 
 ### Input data
@@ -187,7 +187,7 @@ dom_info(dom)
 
 ## Continued Development
 
-Since dominoSignal is a package still being developed, there are new functions and features that will be implemented in future versions. In the meantime, we have put together further information on [plotting](vignette("plotting_vignette")) and an example analysis can be viewed on our [Getting Started](vignette("domino2")) page. Additionally, if you find any bugs, have further questions, or want to share an idea, please let us know [here](https://github.com/FertigLab/domino_development/issues).
+Since dominoSignal is a package still being developed, there are new functions and features that will be implemented in future versions. In the meantime, we have put together further information on [plotting](vignette("plotting_vignette")) and an example analysis can be viewed on our [Getting Started](vignette("dominoSignal")) page. Additionally, if you find any bugs, have further questions, or want to share an idea, please let us know [here](https://github.com/FertigLab/domino_development/issues).
 
 <details><summary>Vignette Build Information</summary>
 Date last built and session information:

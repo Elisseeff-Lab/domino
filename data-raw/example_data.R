@@ -4,7 +4,7 @@ library(DropletUtils)
 library(EnsDb.Hsapiens.v86)
 library(scater)
 library(scran)
-library(domino2)
+library(dominoSignal)
 
 temp_dir <- tempdir()
 

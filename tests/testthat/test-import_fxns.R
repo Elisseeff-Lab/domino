@@ -1,4 +1,4 @@
-context("domino2")
+context("dominoSignal")
 
 ## unit tests use internal data stored in R/sysdata.R
 

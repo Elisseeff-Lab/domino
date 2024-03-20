@@ -25,11 +25,11 @@ In addition to the numerous plotting options available in the original [Domino](
 
 ## Setup and Data Load
 ```{r setup, eval = TRUE}
-library(domino2)
+library(dominoSignal)
 library(patchwork)
 ```
 
-In this tutorial, we will use the domino object we built on the [Getting Started](vigenttes("domino2")) page. If you have not yet built a domino object, you can do so by following the instructions on the [Getting Started](vignette("domino2")) page.
+In this tutorial, we will use the domino object we built on the [Getting Started](vigenttes("dominoSignal")) page. If you have not yet built a domino object, you can do so by following the instructions on the [Getting Started](vignette("dominoSignal")) page.
 
 ```{r load data}
 data_url <- "https://zenodo.org/records/10222767/files"
@@ -203,7 +203,7 @@ Do keep in mind that there is an argument for `remove_rec_dropout` that should m
 
 ## Continued Development
 
-Since dominoSignal is a package still being developed, there are new functions and features that will be implemented in future versions. In the meantime, to view an example analysis, see our [Getting Started](vignette("domino2")) page, or see our [domino object structure](vignette("domino_object_vignette")) page to get familiar with the object structure. Additionally, if you find any bugs, have further questions, or want to share an idea, please let us know [here](https://github.com/FertigLab/domino_development/issues).
+Since dominoSignal is a package still being developed, there are new functions and features that will be implemented in future versions. In the meantime, to view an example analysis, see our [Getting Started](vignette("dominoSignal")) page, or see our [domino object structure](vignette("domino_object_vignette")) page to get familiar with the object structure. Additionally, if you find any bugs, have further questions, or want to share an idea, please let us know [here](https://github.com/FertigLab/domino_development/issues).
 
 <details><summary>Vignette Build Information</summary>
 Date last built and session information:

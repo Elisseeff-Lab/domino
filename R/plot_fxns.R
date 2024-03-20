@@ -23,11 +23,11 @@ NULL
 #' @export signaling_heatmap
 #' @examples
 #' #basic usage
-#' signaling_heatmap(domino2:::pbmc_dom_built_tiny)
+#' signaling_heatmap(dominoSignal:::pbmc_dom_built_tiny)
 #' #scale
-#' signaling_heatmap(domino2:::pbmc_dom_built_tiny, scale = "sqrt")
+#' signaling_heatmap(dominoSignal:::pbmc_dom_built_tiny, scale = "sqrt")
 #' #normalize
-#' signaling_heatmap(domino2:::pbmc_dom_built_tiny, normalize = "rec_norm")
+#' signaling_heatmap(dominoSignal:::pbmc_dom_built_tiny, normalize = "rec_norm")
 #'
 signaling_heatmap <- function(
     dom, clusts = NULL, min_thresh = -Inf, max_thresh = Inf, scale = "none",
@@ -87,7 +87,7 @@ signaling_heatmap <- function(
 #' @export incoming_signaling_heatmap
 #' @examples
 #' #incoming signaling of the CD8  T cells
-#' incoming_signaling_heatmap(domino2:::pbmc_dom_built_tiny, "CD8_T_cell")
+#' incoming_signaling_heatmap(dominoSignal:::pbmc_dom_built_tiny, "CD8_T_cell")
 #'
 incoming_signaling_heatmap <- function(
     dom, rec_clust, clusts = NULL, min_thresh = -Inf, max_thresh = Inf,
@@ -180,10 +180,10 @@ incoming_signaling_heatmap <- function(
 #' @export signaling_network
 #' @examples 
 #' #basic usage
-#' signaling_network(domino2:::pbmc_dom_built_tiny)
+#' signaling_network(dominoSignal:::pbmc_dom_built_tiny)
 #' # scaling, thresholds, layouts, selecting clusters
 #' signaling_network(
-#'  domino2:::pbmc_dom_built_tiny, showOutgoingSignalingClusts = "CD14_monocyte", 
+#'  dominoSignal:::pbmc_dom_built_tiny, showOutgoingSignalingClusts = "CD14_monocyte", 
 #'  scale = "none", norm = "none", layout = "fr", scale_by = "none", 
 #'  vert_scale = 5)
 #' 
@@ -323,7 +323,7 @@ signaling_network <- function(
 #' @examples
 #' #basic usage
 #' gene_network(
-#'  domino2:::pbmc_dom_built_tiny, clust = "CD8_T_cell", 
+#'  dominoSignal:::pbmc_dom_built_tiny, clust = "CD8_T_cell", 
 #'  OutgoingSignalingClust = "CD14_monocyte")
 #'
 gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL, 
@@ -484,10 +484,10 @@ gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL,
 #' @export feat_heatmap
 #' @examples 
 #' #basic usage
-#' feat_heatmap(domino2:::pbmc_dom_built_tiny)
+#' feat_heatmap(dominoSignal:::pbmc_dom_built_tiny)
 #' #using thresholds
 #' feat_heatmap(
-#'  domino2:::pbmc_dom_built_tiny, min_thresh = 0.1, 
+#'  dominoSignal:::pbmc_dom_built_tiny, min_thresh = 0.1, 
 #'   max_thresh = 0.6, norm = TRUE, bool = FALSE)
 #' 
 feat_heatmap <- function(
@@ -608,11 +608,11 @@ feat_heatmap <- function(
 #' @export cor_heatmap
 #' @examples 
 #' #basic usage
-#' cor_heatmap(domino2:::pbmc_dom_built_tiny, title = "PBMC R-TF Correlations")
+#' cor_heatmap(dominoSignal:::pbmc_dom_built_tiny, title = "PBMC R-TF Correlations")
 #' #show correlations above a specific value
-#' cor_heatmap(domino2:::pbmc_dom_built_tiny, bool = TRUE, bool_thresh = 0.25)
+#' cor_heatmap(dominoSignal:::pbmc_dom_built_tiny, bool = TRUE, bool_thresh = 0.25)
 #' #identify combinations that are connected
-#' cor_heatmap(domino2:::pbmc_dom_built_tiny, bool = FALSE, mark_connections = TRUE)
+#' cor_heatmap(dominoSignal:::pbmc_dom_built_tiny, bool = FALSE, mark_connections = TRUE)
 #'  
 cor_heatmap <- function(
     dom, bool = FALSE, bool_thresh = 0.15, title = TRUE, feats = NULL, recs = NULL,
@@ -703,7 +703,7 @@ cor_heatmap <- function(
 #' @return a ggplot object
 #' @export cor_scatter
 #' @examples
-#' cor_scatter(domino2:::pbmc_dom_built_tiny, "ATF4","CD22")
+#' cor_scatter(dominoSignal:::pbmc_dom_built_tiny, "ATF4","CD22")
 #'
 cor_scatter <- function(dom, tf, rec, remove_rec_dropout = TRUE, ...) {
   if (remove_rec_dropout) {
@@ -733,11 +733,11 @@ cor_scatter <- function(dom, tf, rec, remove_rec_dropout = TRUE, ...) {
 #' @export circos_ligand_receptor
 #' @examples 
 #' #basic usage
-#' circos_ligand_receptor(domino2:::pbmc_dom_built_tiny, receptor = "FAS")
+#' circos_ligand_receptor(dominoSignal:::pbmc_dom_built_tiny, receptor = "FAS")
 #' #specify colors
 #' cols = c("red", "orange", "green", "blue", "pink", "purple", "slategrey", "firebrick", "hotpink")
-#' names(cols) = levels(domino2:::pbmc_dom_built_tiny@clusters)
-#' circos_ligand_receptor(domino2:::pbmc_dom_built_tiny, receptor = "FAS", cell_colors = cols)
+#' names(cols) = levels(dominoSignal:::pbmc_dom_built_tiny@clusters)
+#' circos_ligand_receptor(dominoSignal:::pbmc_dom_built_tiny, receptor = "FAS", cell_colors = cols)
 #' 
 circos_ligand_receptor <- function(
     dom, receptor, ligand_expression_threshold = 0.01, cell_idents = NULL,

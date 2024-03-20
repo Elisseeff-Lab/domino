@@ -22,9 +22,9 @@ NULL
 #' @return Data frame where each row describes a possible receptor-ligand interaction
 #' @export create_rl_map_cellphonedb
 #' @examples
-#' rl_map_tiny <- create_rl_map_cellphonedb(genes = domino2:::genes_tiny, 
-#'  proteins = domino2:::proteins_tiny, interactions = domino2:::interactions_tiny, 
-#'  complexes = domino2:::complexes_tiny)
+#' rl_map_tiny <- create_rl_map_cellphonedb(genes = dominoSignal:::genes_tiny, 
+#'  proteins = dominoSignal:::proteins_tiny, interactions = dominoSignal:::interactions_tiny, 
+#'  complexes = dominoSignal:::complexes_tiny)
 #' 
 create_rl_map_cellphonedb <- function(
     genes, proteins, interactions, complexes = NULL, database_name = "CellPhoneDB",
@@ -272,7 +272,7 @@ create_rl_map_cellphonedb <- function(
 #' @return A list where names are transcription factors and the stored values are character vectors of genes in the inferred regulons
 #' @export create_regulon_list_scenic
 #' @examples
-#' regulon_list_tiny <- create_regulon_list_scenic(regulons = domino2:::regulons_tiny)
+#' regulon_list_tiny <- create_regulon_list_scenic(regulons = dominoSignal:::regulons_tiny)
 #'
 create_regulon_list_scenic <- function(regulons) {
   if (is(regulons, "character")) {
@@ -325,17 +325,17 @@ create_regulon_list_scenic <- function(regulons) {
 #' @export create_domino
 #' @examples 
 #' pbmc_dom_tiny_all <- pbmc_dom_tiny <- create_domino(
-#'  rl_map = domino2:::rl_map_tiny, features = domino2:::auc_tiny, 
-#'  counts = domino2:::RNA_count_tiny, z_scores = domino2:::RNA_zscore_tiny,
-#'  clusters = domino2:::clusters_tiny, tf_targets = domino2:::regulon_list_tiny, 
+#'  rl_map = dominoSignal:::rl_map_tiny, features = dominoSignal:::auc_tiny, 
+#'  counts = dominoSignal:::RNA_count_tiny, z_scores = dominoSignal:::RNA_zscore_tiny,
+#'  clusters = dominoSignal:::clusters_tiny, tf_targets = dominoSignal:::regulon_list_tiny, 
 #'  use_clusters = FALSE, use_complexes = FALSE, 
 #'  rec_min_thresh = 0.1, remove_rec_dropout = TRUE,
 #'  tf_selection_method = "all")
 #' 
 #' pbmc_dom_tiny_clustered <- create_domino(
-#'  rl_map = domino2:::rl_map_tiny, features = domino2:::auc_tiny, 
-#'  counts = domino2:::RNA_count_tiny, z_scores = domino2:::RNA_zscore_tiny,
-#'  clusters = domino2:::clusters_tiny, tf_targets = domino2:::regulon_list_tiny,
+#'  rl_map = dominoSignal:::rl_map_tiny, features = dominoSignal:::auc_tiny, 
+#'  counts = dominoSignal:::RNA_count_tiny, z_scores = dominoSignal:::RNA_zscore_tiny,
+#'  clusters = dominoSignal:::clusters_tiny, tf_targets = dominoSignal:::regulon_list_tiny,
 #'  use_clusters = TRUE, use_complexes = TRUE, remove_rec_dropout = FALSE)
 #' 
 create_domino <- function(
@@ -674,7 +674,7 @@ convert_genes <- function(
 #' @export
 #' @examples 
 #' lr_name <- data.frame("abbrev" = c("L", "R"), "full" = c("Ligand", "Receptor"))
-#' rl_map_expanded <- add_rl_column(map = domino2:::rl_map_tiny, map_ref = "type_A",
+#' rl_map_expanded <- add_rl_column(map = dominoSignal:::rl_map_tiny, map_ref = "type_A",
 #'  conv = lr_name, new_name = "type_A_full")
 #' 
 add_rl_column <- function(map, map_ref, conv, new_name) {
@@ -715,7 +715,7 @@ add_rl_column <- function(map, map_ref, conv, new_name) {
 #' @return A data frame of ligand expression targeting the specified receptor
 #' @export
 #' @examples
-#' counts <- dom_counts(domino2:::pbmc_dom_built_tiny)
+#' counts <- dom_counts(dominoSignal:::pbmc_dom_built_tiny)
 #' mean_exp <- mean_ligand_expression(counts,
 #'  ligands = c("PTPRC", "FASLG"), cell_ident = "CD14_monocyte",
 #'  cell_barcodes = colnames(counts), destination = "FAS")
