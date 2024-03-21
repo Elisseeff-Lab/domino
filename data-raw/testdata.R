@@ -1,29 +1,19 @@
 # generate objects for comparison in testing scripts
 
-<<<<<<< HEAD
-library(Seurat)
-library(dominoSignal)
-
-#set larger timeout
-options(timeout = 1200)
-=======
 library(SingleCellExperiment)
 library(dominoSignal)
->>>>>>> 02a5f6053fcc77fe906fc16ee3305d7821e90e22
 
 # load data for generation of test results from zenodo repository
 # Zenodo host of outputs from SCENIC analysis
 data_url <- "https://zenodo.org/records/10849605/files"
-temp_dir <- tempdir()
 
-pbmc_dir <- paste0(temp_dir, "/pbmc")
-if (!dir.exists(pbmc_dir)) {
-  dir.create(pbmc_dir)
-}
 # SingleCellExperiment object of preprocessed PBMC3K data
-download.file(url = paste0(data_url, "/pbmc_sce.rds"),
-              destfile = paste0(pbmc_dir, "/pbmc_sce.rds"))
-pbmc <- readRDS(paste0(pbmc_dir, "/pbmc_sce.rds"))
+download.file(url = paste0(data_url, "/pbmc_3k_sce.rds"),
+              destfile = paste0(pbmc_dir, "/pbmc_3k_sce.rds"))
+pbmc <- readRDS(paste0(pbmc_dir, "/pbmc_3k_sce.rds"))
+
+#delete me before commit
+pbmc <- readRDS('~/Downloads/pbmc_3k_sce.rds')
 
 # SCENIC input files
 scenic_dir <- paste0(temp_dir, "/scenic")
@@ -77,17 +67,16 @@ for(i in seq_along(cell_types_dwn)){
   cell_list[[cell]] <- dwn_barcodes
 }
 barcodes_dwn <- unlist(cell_list)
-cluster_dwn <- factor(
-    pbmc$cell_type[barcodes_dwn],
-    levels = cell_types_dwn
-)
-clusters_tiny <- cluster_dwn
-RNA_count_tiny <- pbmc@assays$RNA@counts[
-  rownames(pbmc@assays$RNA@counts) %in% RNA_features, 
-  colnames(pbmc@assays$RNA@counts) %in% barcodes_dwn]
-RNA_zscore_tiny <- pbmc@assays$RNA@scale.data[
-  rownames(pbmc@assays$RNA@scale.data) %in% RNA_features, 
-  colnames(pbmc@assays$RNA@scale.data) %in% barcodes_dwn]
+clusters_tiny <- factor(rep(names(cell_list), lengths(cell_list)))
+names(clusters_tiny) <- clusters_tiny
+
+counts <- assay(pbmc, "counts")
+z_scores <-  t(scale(t(assay(pbmc, "logcounts"))))
+
+RNA_count_tiny <- counts[rownames(assay(pbmc, "counts")) %in% RNA_features,
+                         colnames(assay(pbmc, "counts")) %in% barcodes_dwn]
+RNA_zscore_tiny <- z_scores[rownames(assay(pbmc, "logcounts")) %in% RNA_features,
+                            colnames(assay(pbmc, "logcounts")) %in% barcodes_dwn]
 
 # subset CellPhoneDB inputs
 complexes_tiny <- complexes[complexes$complex_name %in% name_features,]
