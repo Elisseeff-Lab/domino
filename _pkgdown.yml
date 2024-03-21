@@ -1,4 +1,4 @@
-url: https://FertigLab.github.io/domino2
+url: https://FertigLab.github.io/dominoSignal
 
 deploy:
   install_metadata: true
@@ -117,10 +117,10 @@ news:
   one_page: true
   cran_dates: false
   releases:
-  - text: "domino2 v0.2.1"
-    href: https://github.com/FertigLab/domino2/releases/tag/v0.2.1-alpha
-  - text: "domino2 v0.2.2"
-    href: https://github.com/FertigLab/domino2/releases/tag/v0.2.2-alpha
+  - text: "dominoSignal v0.2.1"
+    href: https://github.com/FertigLab/dominoSignal/releases/tag/v0.2.1-alpha
+  - text: "dominoSignal v0.2.2"
+    href: https://github.com/FertigLab/dominoSignal/releases/tag/v0.2.2-alpha
 
 authors:
   footer:

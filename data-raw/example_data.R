@@ -1,43 +1,79 @@
-# Code for preparing example objects for use in vignettes
-# Accessible to users for exploration as well
-library(Seurat)
-library(domino2)
+# Preparing example data from 10x PBMC3k dataset for use in vignettes
 
-# Zenodo host of outputs from SCENIC analysis
-data_url <- "https://zenodo.org/records/10222767/files"
+library(DropletUtils)
+library(EnsDb.Hsapiens.v86)
+library(scater)
+library(scran)
+library(dominoSignal)
+
 temp_dir <- tempdir()
 
-# install 10X Genomics PBMC3K data
+# Preparing SCE object for use in vignettes
+# Data
 pbmc_url <- "https://cf.10xgenomics.com/samples/cell/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz"
 pbmc_tar <- paste0(temp_dir, "/pbmc3k_filtered_gene_bc_matrices.tar.gz")
 download.file(url = pbmc_url, destfile = pbmc_tar)
 pbmc_dir <- paste0(temp_dir, "/pbmc3k_filtered_gene_bc_matrices")
 untar(tarfile = pbmc_tar, exdir = pbmc_dir)
-pbmc.data <- Read10X(data.dir = paste0(pbmc_dir, "/filtered_gene_bc_matrices/hg19"))
+fname <- file.path(pbmc_dir, "/filtered_gene_bc_matrices/hg19")
 
-pbmc <- CreateSeuratObject(counts = pbmc.data, project = "pbmc3k", min.cells = 3, min.features = 200)
-pbmc <- NormalizeData(pbmc, normalization.method = "LogNormalize", scale.factor = 10000)
-pbmc <- FindVariableFeatures(pbmc, selection.method = "vst", nfeatures = 2000)
-pbmc <- ScaleData(pbmc, features = rownames(pbmc))
-pbmc <- RunPCA(pbmc, features = VariableFeatures(object = pbmc))
-pbmc <- FindNeighbors(pbmc, dims = 1:10)
-pbmc <- FindClusters(pbmc, resolution = 0.5)
+sce <- read10xCounts(fname, col.names = TRUE)
+rownames(sce) <- uniquifyFeatureNames(rowData(sce)$ID, rowData(sce)$Symbol)
+location <- mapIds(EnsDb.Hsapiens.v86, keys=rowData(sce)$ID, column="SEQNAME", keytype="GENEID")
 
-# Annotate clusters with cell phenotypes
-cell_dict <- data.frame(
-    cluster = c(0:8),
-    cell_type = c("naive_CD4_T_cell", "CD14_monocyte", "memory_CD4_T_cell", "B_cell", "CD8_T_cell", "CD16_monocyte", "NK_cell", "dendritic_cell", "platelet")
+# QC
+stats <- perCellQCMetrics(sce, subsets=list(Mito=which(location=="MT")))
+high.mito <- isOutlier(stats$subsets_Mito_percent, type="higher")
+
+colData(sce) <- cbind(colData(sce), stats)
+sce$discard <- high.mito
+sce <- sce[,!high.mito]
+
+# Normalization
+set.seed(1000)
+clusters <- quickCluster(sce)
+sce <- computeSumFactors(sce, cluster=clusters)
+sce <- logNormCounts(sce)
+
+# Variance modeling
+set.seed(1001)
+dec <- modelGeneVarByPoisson(sce)
+top <- getTopHVGs(dec, prop=0.1)
+
+# Dimensionality reduction
+set.seed(10000)
+sce <- denoisePCA(sce, subset.row=top, technical=dec)
+
+set.seed(100000)
+sce <- runTSNE(sce, dimred="PCA")
+
+set.seed(1000000)
+sce <- runUMAP(sce, dimred="PCA")
+
+# Clustering
+g <- buildSNNGraph(sce, k=10, use.dimred = 'PCA')
+clust <- igraph::cluster_walktrap(g)$membership
+colLabels(sce) <- factor(clust)
+
+#Cell type annotation
+annot <- c(
+  "3" = "naive_CD4_T_cell",
+  "2" = "memory_CD4_T_cell",
+  "1" = "CD8_T_cell",
+  "7" = "CD8_T_cell",
+  "5" = "CD14_monocyte",
+  "6" = "CD14_monocyte",
+  "8" = "B_cell",
+  "4" = "CD16_monocyte",
+  "10" = "NK_cell",
+  "9" = "dendritic_cell",
+  "12" = "Platelet",
+  "11" = "CD8_T_cell"
 )
 
-pbmc$cell_type <- 
-    plyr::mapvalues(
-    pbmc$seurat_clusters,
-    from = cell_dict$cluster,
-    to = cell_dict$cell_type
-    )
+sce$cell_type <- annot[as.character(sce$label)]
 
-# Save Seurat object for generating test data
-saveRDS(pbmc, "inst/extdata/pbmc_seurat.rds")
+saveRDS(sce, paste0(temp_dir, "pbmc_sce.rds"))
 
 # Load SCENIC outputs
 scenic_dir <- paste0(temp_dir, "/scenic")
@@ -85,10 +121,10 @@ rl_map <- create_rl_map_cellphonedb(
     database_name = "CellPhoneDB_v4.0" # database version used
 )
 
-# Prepare pbmc data
-counts <- pbmc@assays$RNA@counts
-z_scores <- as.matrix(pbmc@assays$RNA@scale.data)
-clusters <- as.factor(pbmc$cell_type)
+# Prepare inputs for pbmc object:
+counts = assay(sce, "counts")
+z_scores = t(scale(t(assays(sce, "logcounts"))))
+clusters = sce$cell_type
 
 # Create domino object
 pbmc_dom <- create_domino(
@@ -114,4 +150,4 @@ pbmc_dom <- build_domino(
 )
 
 # Save domino object for generating test data
-saveRDS(pbmc_dom, "inst/extdata/pbmc_domino_built.rds")
+saveRDS(pbmc_dom, paste0(temp_dir, "pbmc_domino_built.rds"))

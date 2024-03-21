@@ -133,7 +133,7 @@ singularity exec "${SCENIC_DIR}/aertslab-pyscenic-0.12.1.sif" pyscenic aucell \
     # cell x TF matrix of TF enrichment AUC values
 ```
 
-The csv files created in this analysis can be used as the TF activation inputs in a dominoSignal analysis. Please see our [Getting Started](vignette("domino2")) page for more information on how to perform an analysis with dominoSignal. For a brief tutorial on the download of the necessary files for using cellphonedb, please see the [Using the cellphoneDB database](vignette("cellphonedb_vignette")) vignette.
+The csv files created in this analysis can be used as the TF activation inputs in a dominoSignal analysis. Please see our [Getting Started](vignette("dominoSignal")) page for more information on how to perform an analysis with dominoSignal. For a brief tutorial on the download of the necessary files for using cellphonedb, please see the [Using the cellphoneDB database](vignette("cellphonedb_vignette")) vignette.
 
 <details><summary>Vignette Build Information</summary>
 Date last built and session information:
