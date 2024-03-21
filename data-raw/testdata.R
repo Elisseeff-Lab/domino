@@ -5,15 +5,18 @@ library(dominoSignal)
 
 # load data for generation of test results from zenodo repository
 # Zenodo host of outputs from SCENIC analysis
-data_url <- "https://zenodo.org/records/10849605/files"
+data_url <- "https://zenodo.org/records/10850479/files"
+temp_dir <- tempdir()
+
+pbmc_dir <- paste0(temp_dir, "/pbmc")
+if (!dir.exists(pbmc_dir)) {
+  dir.create(pbmc_dir)
+}
 
 # SingleCellExperiment object of preprocessed PBMC3K data
 download.file(url = paste0(data_url, "/pbmc_3k_sce.rds"),
               destfile = paste0(pbmc_dir, "/pbmc_3k_sce.rds"))
 pbmc <- readRDS(paste0(pbmc_dir, "/pbmc_3k_sce.rds"))
-
-#delete me before commit
-pbmc <- readRDS('~/Downloads/pbmc_3k_sce.rds')
 
 # SCENIC input files
 scenic_dir <- paste0(temp_dir, "/scenic")
