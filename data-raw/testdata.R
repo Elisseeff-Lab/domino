@@ -1,7 +1,10 @@
 # generate objects for comparison in testing scripts
 
 library(Seurat)
-library(domino2, lib = "../domino_libraries/libraries/v0_2_1/")
+library(dominoSignal)
+
+#set larger timeout
+options(timeout = 1200)
 
 # load data for generation of test results from zenodo repository
 # Zenodo host of outputs from SCENIC analysis
@@ -100,7 +103,7 @@ colnames(regulons) <- c("TF", "MotifID", "AUC", "NES", "MotifSimilarityQvalue", 
 regulons_tiny <- regulons[regulons$TF %in% TF_features,]
 
 # Make rl_map
-rl_map_tiny <- domino2::create_rl_map_cellphonedb(
+rl_map_tiny <- dominoSignal::create_rl_map_cellphonedb(
   genes = genes_tiny,
   proteins = proteins_tiny,
   interactions = interactions_tiny,
@@ -108,7 +111,7 @@ rl_map_tiny <- domino2::create_rl_map_cellphonedb(
 )
 
 # Get regulon list
-regulon_list_tiny <- domino2::create_regulon_list_scenic(
+regulon_list_tiny <- dominoSignal::create_regulon_list_scenic(
   regulons = regulons_tiny
 )
 
