@@ -15,14 +15,21 @@ knitr::opts_chunk$set(
 options(timeout = 300)
 ```
 
-```{r setup, eval = F}
-temp_dir <- tempdir()
-```
+SCENIC is our lab's preferred software for TF activity scoring. We recommend using the Python implementation ([pySCENIC](https://pyscenic.readthedocs.io/en/latest/)) as it is faster than the original R implementation. Be aware, the use of [SCENIC](https://scenic.aertslab.org/) is often the slowest and most memory intensive step of this analysis pipeline. [SCENIC](https://scenic.aertslab.org/) should be run on computing resources with access to multi-core processing and large amounts of memory.
 
 ## File Downloads for SCENIC
 For this tutorial, [pySCENIC](https://pyscenic.readthedocs.io/en/latest/) is used as the method for TF activity inference. This requires downloading some files prior to use. Here, we show how to download these files and the way we run pySCENIC to generate the necessary files for use in dominoSignal analyis.
 
 A singularity image of [SCENIC](https://scenic.aertslab.org/) v0.12.1 can be installed from the DockerHub image as a source. [SCENIC](https://scenic.aertslab.org/) requires a list of TFs, motif annotations, and cisTarget motifs which are all available from the authors of [SCENIC](https://scenic.aertslab.org/) for human (HGNC), mouse (MGI), and fly. The following will download everything necessary for an analysis of a data set with HGNC gene labels for the hg38 genome.
+
+
+### Reference files
+First we set up a temporary directory to store the files.
+```{r setup, eval = F}
+temp_dir <- tempdir()
+```
+
+Then we build the singularity image and download reference files to the temporary directory.
 
 ```{bash, eval=FALSE}
 SCENIC_DIR="'temp_dir'/scenic"
@@ -48,17 +55,23 @@ curl "https://resources.aertslab.org/cistarget/motif2tf/motifs-v9-nr.hgnc-m0.001
   -o "${SCENIC_DIR}/motifs-v9-nr.hgnc-m0.001-o0.0.tbl"
 ```
 
-## SCENIC Analysis
+### Preparing Preprocessed Data:
+dominoSignal was designed to be compatible with single cell workflows, accepting gene by cell matrices for counts and scaled counts. However, [pySCENIC](https://pyscenic.readthedocs.io/en/latest/) is used for TF activation inference, and it requires as input a cell by gene matrix. This is the opposite orientation of many R based single cell packages (such as `{Seurat}` or `{SingleCellExperiment}`) but is the default for Python based tools such as [scanpy](https://scanpy.readthedocs.io/en/stable/). The RNA counts matrix can be saved as a tab-seperated value (.tsv) or comma-sperated value (.csv) file after transposing the matrix to cell by gene orientation. Below is an example of extracting the counts from a `{SingleCellExperiment}` object and saving it as a .tsv file.
 
-SCENIC is our lab's preferred software for TF activity scoring. We recommend using the Python implementation ([pySCENIC](https://pyscenic.readthedocs.io/en/latest/)) as it is faster than the original R implementation. Be aware, the use of [SCENIC](https://scenic.aertslab.org/) is often the slowest and most memory intensive step of this analysis pipeline. [SCENIC](https://scenic.aertslab.org/) should be run on computing resources with access to multi-core processing and large amounts of memory.
+```{r Save Counts Matrix as tsv File, eval=FALSE}
+pbmc_counts <- assay(pbmc, "counts")
+write.table(t(as.matrix(pbmc_counts)), paste0(input_dir, "/pbmc3k_counts.tsv"),
+    sep = "\t", col.names = NA
+)
+```
 
-[SCENIC](https://scenic.aertslab.org/) requires RNA counts to be provided in a cell by gene matrix format. While this can be done with tsv and csv files, they are very inefficient for storing large matrices. As an alternative, the counts matrix can be saved as a loom file and directly passed to [pySCENIC](https://pyscenic.readthedocs.io/en/latest/) in this format. Generating a loom file in R requires use of the [loomR](https://github.com/mojaveazure/loomR) package. The package automatically handles the transposition of the counts matrix to cell by gene orientation as well. We recommend this approach to passing a counts matrix to pySCENIC. However, users should be aware that [loomR](https://github.com/mojaveazure/loomR) is not hosted on CRAN or BioConductor at the time of this vignette's creation. 
+tsv and csv files are very inefficient for storing large matrices. As an alternative, the counts matrix can be saved as a loom file and directly passed to [pySCENIC](https://pyscenic.readthedocs.io/en/latest/) in this format. Generating a loom file in R requires use of the [loomR](https://github.com/mojaveazure/loomR) package. The package automatically handles the transposition of the counts matrix to cell by gene orientation as well. We recommend this approach to passing a counts matrix to pySCENIC. However, users should be aware that [loomR](https://github.com/mojaveazure/loomR) is not hosted on CRAN or BioConductor at the time of this vignette's creation. 
 
 ```{r Save Counts as loomR, eval = FALSE}
 library(loomR)
 
 # save loom counts matrix
-pbmc_counts <- GetAssayData(object = pbmc, slot = "counts")
+pbmc_counts <- assay(pbmc, "counts")
 pbmc_loom <- loomR::create(
     filename = paste0(input_dir, "/pbmc3k_counts.loom"),
     data = pbmc_counts
@@ -67,7 +80,9 @@ pbmc_loom <- loomR::create(
 pbmc_loom$close_all()
 ```
 
-We will use the pbmc3k\_counts.loom file in this tutorial.
+We will use the `pbmc3k\_counts.loom` file in this tutorial.
+
+## Running SCENIC
 
 [pySCENIC](https://pyscenic.readthedocs.io/en/latest/) is initiated using bash scripting in the terminal. The analysis consists of 3 steps to score genes for TF motif enrichment, construct TF regulons consisting of genes targeted by the TFs, and arrive at AUC scores for enrichment of regulon gene transcription within each cell.
 

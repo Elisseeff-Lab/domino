@@ -23,6 +23,8 @@ knitr::opts_chunk$set(
 options(timeout = 300)
 ```
 
+<details><summary>Required libraries</summary>
+
 ```{r libraries}
 library(dominoSignal)
 library(SingleCellExperiment)
@@ -33,11 +35,12 @@ library(knitr)
 
 set.seed(123)
 ```
+</details>
 
-Data used in our vignettes can be downloaded from Zenodo:
+<details><summary>Data used in our vignettes can be downloaded from Zenodo</summary>
 
 ```{r files}
-data_url <- "https://zenodo.org/records/10222767/files"
+data_url <- "https://zenodo.org/records/10850479/files"
 temp_dir <- tempdir()
 
 # download the reduced pbmc files
@@ -48,10 +51,10 @@ if (!dir.exists(pbmc_dir)) {
 
 # preprocessed PBMC 3K scRNAseq data set as a SingleCellExperiment object
 
-fname <- paste0(pbmc_dir, "/pbmc_sce.rds")
+fname <- paste0(pbmc_dir, "/pbmc_3k_sce.rds")
 if (!(file.exists(fname)
-      && tools::md5sum(fname) == "0cd3bf26708be10ae4a32f378c94a2b2")) {
-  download.file(url = paste0(data_url, "/pbmc_sce.rds"),
+      && tools::md5sum(fname) == "cde772188f953c35094f5a0417c04e34")) {
+  download.file(url = paste0(data_url, "/pbmc_3k_sce.rds"),
                 destfile = fname)
 }
 
@@ -91,37 +94,14 @@ if (!dir.exists(input_dir)) {
 }
 ```
 
+</details>
+
 ## Data preparation
 
-Analysis of cell-cell communication with dominoSignal often follows initial processing and annotation of scRNAseq data.  We used the [OSCA workflow](https://bioconductor.org/books/3.18/OSCA.workflows/unfiltered-human-pbmcs-10x-genomics.html) to prepare the data set for analysis with dominoSignal. The [complete processing script](data-raw/example_data.R) is available in the data-raw directory of the dominoSignal package. The processed data can be downloaded from [Zenodo](https://zenodo.org/records/10222767).
+Analysis of cell-cell communication with dominoSignal often follows initial processing and annotation of scRNAseq data.  We used the [OSCA workflow](https://bioconductor.org/books/3.18/OSCA.workflows/unfiltered-human-pbmcs-10x-genomics.html) to prepare the data set for analysis with dominoSignal. The [complete processing script](data-raw/example_data.R) is available in the data-raw directory of the dominoSignal package. The processed data can be downloaded from [Zenodo](https://zenodo.org/records/10850479).
 
 ```{r}
-pbmc <- readRDS(paste0(pbmc_dir, "/pbmc_sce.rds"))
-```
-
-### Preparing Preprocessed Data:
-dominoSignal was designed to be compatible with single cell workflows, accepting gene by cell matrices for counts and scaled counts. However, [pySCENIC](https://pyscenic.readthedocs.io/en/latest/) is used for TF activation inference, and it requires as input a cell by gene matrix. This is the opposite orientation of many R based single cell packages (such as `{Seurat}` or `{SingleCellExperiment}`) but is the default for Python based tools such as [scanpy](https://scanpy.readthedocs.io/en/stable/). The RNA counts matrix can be saved as a tab-seperated value (.tsv) or comma-sperated value (.csv) file after transposing the matrix to cell by gene orientation.
-
-```{r Save Counts Matrix as tsv File, eval=FALSE}
-pbmc_counts <- GetAssayData(object = pbmc, slot = "counts")
-write.table(t(as.matrix(pbmc_counts)), paste0(input_dir, "/pbmc3k_counts.tsv"),
-    sep = "\t", col.names = NA
-)
-```
-
-tsv and csv files are very inefficient for storing large matrices. As an alternative, the counts matrix can be saved as a loom file and directly passed to [pySCENIC](https://pyscenic.readthedocs.io/en/latest/) in this format. Generating a loom file in R requires use of the [loomR](https://github.com/mojaveazure/loomR) package. The package automatically handles the transposition of the counts matrix to cell by gene orientation as well. We recommend this approach to passing a counts matrix to pySCENIC. However, users should be aware that [loomR](https://github.com/mojaveazure/loomR) is not hosted on CRAN or BioConductor at the time of this vignette's creation. 
-
-```{r Save Counts as loomR, eval = FALSE}
-library(loomR)
-
-# save loom counts matrix
-pbmc_counts <- GetAssayData(object = pbmc, slot = "counts")
-pbmc_loom <- loomR::create(
-    filename = paste0(input_dir, "/pbmc3k_counts.loom"),
-    data = pbmc_counts
-)
-# connection to the loom file must be closed to complete file creation
-pbmc_loom$close_all()
+pbmc <- readRDS(paste0(pbmc_dir, "/pbmc_3k_sce.rds"))
 ```
 
 ## Installation
@@ -135,7 +115,7 @@ if(!require(remotes)){
 remotes::install_github("FertigLab/dominoSignal")
 ```
 
-## Building a Signaling Network with dominoSignal
+## Loading TF and R-L data
 
 ### Loading SCENIC Results
 
@@ -241,7 +221,7 @@ rl_map_append <- rbind(col_int_df, rl_map)
 knitr::kable(head(rl_map_append))
 ```
 
-## Creating the Domino Object
+## Analysis with Domino object
 
 dominoSignal analysis takes place in two steps. 
 
@@ -261,12 +241,15 @@ dominoSignal analysis takes place in two steps.
 
 ### Required inputs from data set
 
-dominoSignal infers active receipt of signals via receptors based on the correlation of the receptor's expression with TF activity across the data set and differential activity of the TF within a cell cluster. Correlations are conducted using scaled expression values rather than raw counts or normalized counts. For assessment of receptor activity on a per cell type basis, a named vector of cell cluster assignments, where the names are cell barcodes matching the expression matrix, are provided. Assessing signaling based on other categorical groupings of cells can be achieved by passing these groupings as "clusters" to `build_domino()` in place of cell types. dominoSignal accepts a matrix of counts, a matrix of scaled counts, and a named vector of cell cluster labels as factors. Shown below is how to extract these elements from a `{SingleCellExperiment}` object.
+dominoSignal infers active receipt of signals via receptors based on the correlation of the receptor's expression with TF activity across the data set and differential activity of the TF within a cell cluster. Correlations are conducted using scaled expression values rather than raw counts or normalized counts. For assessment of receptor activity on a per cell type basis, a named vector of cell cluster assignments, where the names are cell barcodes matching the expression matrix, are provided. Assessing signaling based on other categorical groupings of cells can be achieved by passing these groupings as "clusters" to `build_domino()` in place of cell types. dominoSignal accepts a matrix of counts, a matrix of scaled counts, and a $\text{\underline{named}}$ vector of cell cluster labels as factors. Shown below is how to extract these elements from a `{SingleCellExperiment}` object. Note that since the data is scaled by gene, genes with no expression in any cell need to be removed.
 
 ```{r load cell features}
 counts = assay(pbmc, "counts")
-z_scores = t(scale(t(assays(pbmc, "logcounts"))))
-clusters = pbmc$cell_type
+logcounts = assay(pbmc, "logcounts")
+logcounts = logcounts[rowSums(logcounts) > 0, ]
+z_scores = t(scale(t(logcounts)))
+clusters = factor(pbmc$cell_type)
+names(clusters) = colnames(pbmc)
 ```
 
 Note: Ligand and receptor expression can only be assessed for genes included in the z\_scores matrix. Many scRNAseq analysis pipelines recommend storing only genes with high variance in scaled expression slots for these data objects, thereby missing many genes encoding ligands and receptors. **Ensure that all your genes of interest are included in the rows of your z\_scores matrix.** Scaled expression was calculated for all genes in this PBMC data set after removal of genes expressed in less than 3 cells. 
@@ -301,7 +284,7 @@ pbmc_dom <- create_domino(
 
 For information on what is stored in a domino object and how to access it, please see our [vignette on the structure of domino objects](vignette("domino_object_vignette")).
 
-### Build Domino
+### Build Domino network
 
 `build_domino()` finalizes the construction of the domino object by setting parameters for identifying TFs with differential activation between clusters, receptor linkage with TFs based on magnitude of positive correlation, and the minimum percentage of cells within a cluster that have expression of a receptor for the receptor to be called as active.
 

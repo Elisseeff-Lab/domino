@@ -29,7 +29,7 @@ In this tutorial, we will use the domino object we built on the [Getting Started
 ```{r setup, include = TRUE}
 library(dominoSignal)
 
-data_url <- "https://zenodo.org/records/10222767/files/pbmc_domino_built.rds"
+data_url <- "https://zenodo.org/records/10850479/files/pbmc_domino_built.rds"
 tmp_path <- paste0(tempdir(), "/pbmc_domino_built.rds")
 if (!(file.exists(tmp_path) &&
         tools::md5sum(tmp_path) == "c1ba759a11b61dd36618f71c84f0aa13")) {
@@ -41,12 +41,33 @@ dom <- readRDS(tmp_path)
 
 ## Object contents
 
-The contents of the [domino object class](`domino-class`) include a few broad groups: 
-- input data, such as the L-R database used, counts, and z-scores
-- calculations, such as correlations or differential expression results
-- linkages, which show connections between TFs, receptors, and ligands across the data set and within clusters
-- signaling matrices, which show expression of ligands signaling to active receptors in clusters (or a summary of overall signaling)
-- build information, which includes the parameters used to build the object in the `build_domino()` functions
+There is a great deal of information stored with the [domino object class](`domino-class`):
+- Input Data
+  - Information about the database used to construct the rl\_map
+  - Inputted counts matrix
+  - Inputted z-scored counts matrix
+  - Inputted cluster labels
+  - Inputted transcription factor activation scores
+- Calculated values
+  - Differential expression p-values of transcription factors in each cluster
+  - Correlation values between ligands and receptors
+  - Median correlation between components of receptor complexes
+- Linkages
+  - Complexes show the component genes of any complexes in the rl map
+  - Receptor ligand linkages as determined from the rl map
+  - Transcription factor target linkages as determined from the SCENIC analysis (or other regulon inference method)
+  - Transcription factors that are differentially expressed in each cluster
+  - Transcription factors that are correlated with receptors
+  - Transcription factors that are correlated with receptors in each cluster
+  - Receptors which are active in each cluster
+  - Ligands that may activate a receptor in a given cluster (so-called incoming ligands; these may include ligands from outside the data set)
+- Signaling matrices
+  - For each cluster, incoming ligands and the clusters within the data set that they are coming from
+  - A summary of signaling between all clusters
+- Miscellaneous Information
+  - Build information, which includes the parameters used to build the object in the `build_domino()` functions
+  - The pared down receptor ligand map information used in building the object
+  - The percent expression of receptors within each cluster
 
 For commonly accessed information (the number of cells, clusters, and some build information), the show and print methods for domino objects can be used.
 
@@ -121,7 +142,7 @@ de_matrix <- dom_de(dom)
 knitr::kable(de_matrix[1:5, 1:5])
 ```
 
-Linkage between receptors and transcription factors is assessed by Spearman correlation between transcription factor activity scores and scaled expression of receptor-encoding genes across all cells in the data set. Spearman coefficients can be accessed with the `dom_correlations()` function.
+Linkage between receptors and transcription factors is assessed by Spearman correlation between transcription factor activity scores and scaled expression of receptor-encoding genes across all cells in the data set. Spearman coefficients can be accessed with the `dom_correlations()` function. Setting `type` to "complex" will return the median correlation between components of receptor complexes; the default ("rl") will return receptor-ligand correlations.
 
 ```{r correlations}
 cor_matrix <- dom_correlations(dom)

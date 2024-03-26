@@ -35,3 +35,11 @@ cellphone_data <- paste0(cellphone_dir, "/cellphonedb-data-4.0.0/data")
 ```
 
 To facilitate the use of these files in the format used in dominoSignal, we include a helper function, `create_rl_map_cellphonedb()`, that automatically parses files from the cellPhoneDB database to arrive at the rl\_map format. For more information on how to use these files in the dominoSignal pipeline, please see our [Getting Started](vignettes("dominoSignal")) page. To learn how to use SCENIC for TF activation scoring, please see our [SCENIC for TF Activation Scoring](vignettes("tf_scenic_vignette")) tutorial.
+
+<details><summary>Vignette Build Information</summary>
+Date last built and session information:
+```{r}
+Sys.Date()
+sessionInfo()
+```
+</details>

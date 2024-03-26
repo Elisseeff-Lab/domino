@@ -31,8 +31,10 @@ library(patchwork)
 
 In this tutorial, we will use the domino object we built on the [Getting Started](vigenttes("dominoSignal")) page. If you have not yet built a domino object, you can do so by following the instructions on the [Getting Started](vignette("dominoSignal")) page.
 
+<details><summary>Instructions to load data</summary>
+
 ```{r load data}
-data_url <- "https://zenodo.org/records/10222767/files"
+data_url <- "https://zenodo.org/records/10850479/files"
 temp_dir <- tempdir()
 
 download.file(
@@ -41,6 +43,7 @@ download.file(
 )
 dom <- readRDS(paste0(temp_dir, "/pbmc_domino_built.rds"))
 ```
+</details>
 
 ## Heatmaps
 
