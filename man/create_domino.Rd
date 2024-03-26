@@ -27,9 +27,9 @@ create_domino(
 
 \item{counts}{Counts matrix for the data. This is only used to threshold receptors on dropout.}
 
-\item{z_scores}{Matrix containing z-scored expression data for all cells with cells as columns and features as rows. Either z_scores and clusters must be provided OR a ser object. If ser is present z_scores and clusters will be ignored.}
+\item{z_scores}{Matrix containing z-scored expression data for all cells with cells as columns and features as rows.}
 
-\item{clusters}{Named factor containing cell cluster with names as cells. Either clusters and z_scores OR ser must be provided. If ser is present z_scores and clusters will be ignored.}
+\item{clusters}{Named factor containing cell cluster with names as cells.}
 
 \item{use_clusters}{Boolean indicating whether to use clusters.}
 
