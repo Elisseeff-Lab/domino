@@ -21,8 +21,6 @@ template:
     code-bg: "#fefefe"
     link-color: "#8963BA"
     border-color: "#f4f0fa"
-    base_font: { google: "Montserrat" }
-    heading_font: { google: "Montserrat" }
     code_font: { google: "Fira Code" }
     border-width: 2px
 
@@ -91,6 +89,18 @@ navbar:
   structure:
     left:  [intro, articles, reference, news]
     right: [search, github]
+    components:
+      articles:
+        text: Tutorials
+        menu:
+        - text: SCENIC for TF Scoring
+          href: vignettes/articles/tf_scenic_vignette.html
+        - text: Using CellphoneDB
+          href: vignettes/articles/cellphonedb_vignette.html
+        - text: Domino Object Structure
+          href: vignettes/domino_object_vignette.html
+        - text: Plotting and Visualization
+          href: vignettes/plotting_vignette.html
 
 home:
   title: Cell Communication from Single Cell RNA Sequencing Data
