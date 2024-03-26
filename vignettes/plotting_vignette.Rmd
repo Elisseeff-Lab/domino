@@ -34,7 +34,7 @@ In this tutorial, we will use the domino object we built on the [Getting Started
 <details><summary>Instructions to load data</summary>
 
 ```{r load data}
-data_url <- "https://zenodo.org/records/10850479/files"
+data_url <- "https://zenodo.org/records/10884027/files"
 temp_dir <- tempdir()
 
 download.file(

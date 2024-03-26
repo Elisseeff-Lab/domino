@@ -29,7 +29,7 @@ In this tutorial, we will use the domino object we built on the [Getting Started
 ```{r setup, include = TRUE}
 library(dominoSignal)
 
-data_url <- "https://zenodo.org/records/10850479/files/pbmc_domino_built.rds"
+data_url <- "https://zenodo.org/records/10884027/files/pbmc_domino_built.rds"
 tmp_path <- paste0(tempdir(), "/pbmc_domino_built.rds")
 if (!(file.exists(tmp_path) &&
         tools::md5sum(tmp_path) == "c1ba759a11b61dd36618f71c84f0aa13")) {
