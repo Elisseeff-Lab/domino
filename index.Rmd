@@ -19,7 +19,7 @@ dominoSignal is an updated version of the original [domino](https://github.com/E
 
 ## Installation
 
-dominoSignal is undergoing active development to improve analysis capabilities and interpretability, so the codebase is subject to change as new features and fixes are implemented. v0.2.2 of dominoSignal serves as the current stable version during these active updates for reproducible usage (see our [changelog](news/index.html) for more information on changes).
+dominoSignal is undergoing active development to improve analysis capabilities and interpretability, so the codebase is subject to change as new features and fixes are implemented. v0.99.1 of dominoSignal serves as the current stable version during these active updates for reproducible usage (see our [changelog](news/index.html) for more information on changes).
 
 This version is currently hosted on the [FertigLab GitHub](https://github.com/FertigLab) on the [dominoSignal repository](https://github.com/FertigLab/dominoSignal) forked from the primary repository hosted on the [Elisseeff-Lab GitHub](https://github.com/Elisseeff-Lab/domino), and can be installed using the remotes package.
 
