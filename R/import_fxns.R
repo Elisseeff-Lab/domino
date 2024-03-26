@@ -311,9 +311,9 @@ create_regulon_list_scenic <- function(regulons) {
 #' @param rl_map Data frame where each row describes a receptor-ligand interaction with required columns gene_A & gene_B including the gene names for the receptor and ligand and type_A & type_B annotating if genes A and B are a ligand (L) or receptor (R)
 #' @param features Either a path to a csv containing cell level features of interest (ie. the auc matrix from pySCENIC) or named matrix with cells as columns and features as rows.
 #' @param counts Counts matrix for the data. This is only used to threshold receptors on dropout.
-#' @param z_scores Matrix containing z-scored expression data for all cells with cells as columns and features as rows. Either z_scores and clusters must be provided OR a ser object. If ser is present z_scores and clusters will be ignored.
-#' @param clusters Named factor containing cell cluster with names as cells. Either clusters and z_scores OR ser must be provided. If ser is present z_scores and clusters will be ignored.
-#' @param use_clusters Boolean indicating whether to use clusters. 
+#' @param z_scores Matrix containing z-scored expression data for all cells with cells as columns and features as rows.
+#' @param clusters Named factor containing cell cluster with names as cells.
+#' @param use_clusters Boolean indicating whether to use clusters.
 #' @param tf_targets Optional. A list where names are transcription factors and the stored values are character vectors of genes in the transcription factor's regulon.
 #' @param verbose Boolean indicating whether or not to print progress during computation.
 #' @param use_complexes Boolean indicating whether you wish to use receptor/ligand complexes in the receptor ligand signaling database. If FALSE, receptor/ligand pairs where either functions as a protein complex will not be considered when constructing the signaling network.
@@ -353,12 +353,6 @@ create_domino <- function(
   ) & length(features) == 1) | (is(features, "matrix") & !is.null(rownames(features)) &
     !is.null(colnames(features))) | (is(features, "data.frame") & !is.null(rownames(features)) &
     !is.null(colnames(features)))))
-  stopifnot(`Either a Seurat object OR counts, z scores, and clusters must be provided` = (is(ser, "Seurat") |
-    (!is.null(counts) & !is.null(rownames(counts)) & !is.null(colnames(counts)) &
-      is(z_scores, "matrix") & !is.null(rownames(z_scores)) & !is.null(colnames(z_scores)) & is(
-      clusters,
-      "factor"
-    ) & !is.null(names(clusters)))))
   stopifnot(`rec_min_thresh must be a number between 0 and 1` = (is(rec_min_thresh, "numeric") &
     rec_min_thresh <= 1 & rec_min_thresh >= 0))
   # Create object
@@ -366,11 +360,8 @@ create_domino <- function(
   dom@misc[["create"]] <- TRUE
   dom@misc[["build"]] <- FALSE
   dom@misc[["build_vars"]] <- NULL
-  if (!is.null(ser) & (!is.null(clusters) | !is.null(z_scores) | !is.null(counts))) {
-    warning("Ser and z_score, clusters, or counts provided. Defaulting to ser.")
-  }
-  if (is.null(ser) & (is.null(clusters) | is.null(z_scores) | is.null(counts))) {
-    stop("Either ser or clusters and z_scores must be provided")
+  if ((is.null(clusters) | is.null(z_scores) | is.null(counts))) {
+    stop("clusters, counts, and z_scores must be provided")
   }
   if (!(tf_selection_method %in% c("all", "clusters", "variable"))) {
     stop("tf_selection_method must be one of all, clusters, or variable")
@@ -450,13 +441,6 @@ create_domino <- function(
   # Get z-score and cluster info
   if (verbose) {
     message("Getting z_scores, clusters, and counts")
-  }
-  if (!is.null(ser)) {
-    z_scores <- ser@assays$RNA@scale.data
-    if (use_clusters) {
-      clusters <- ser@active.ident
-    }
-    counts <- ser@assays$RNA@counts
   }
   dom@z_scores <- z_scores
   if (!is.null(clusters)) {

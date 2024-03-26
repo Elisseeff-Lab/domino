@@ -89,13 +89,22 @@ dom_tf_activation <- function(dom) {
 #' A function to pull receptor-transcription factor correlations from a domino object
 #'
 #' @param dom A domino object that has been created with [create_domino()]
+#' @param type Either "rl" or "complex", to select between the receptor-ligand or complex correlation matrix
 #' @return  A matrix containing the correlation values for each receptor (row) by transcription factor (column)
 #' @export
 #' @examples
-#' cor_matrix <- dom_correlations(dominoSignal:::pbmc_dom_built_tiny)
+#' cor_matrix <- dom_correlations(dominoSignal:::pbmc_dom_built_tiny, "rl")
 #' 
-dom_correlations <- function(dom) {
-    slot(dom, "cor")
+dom_correlations <- function(dom, type = "rl") {
+    if (type == "complex") {
+        corrs = slot(dom, "cor")
+    } else if (type == "rl") {
+        misc = slot(dom, "misc")
+        corrs = misc$rec_cor
+    } else {
+        stop("Type must be either 'rl' or 'complex'")
+    }
+    return(corrs)
 }
 
 #' Access linkages
