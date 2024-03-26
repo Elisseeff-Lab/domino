@@ -4,11 +4,11 @@ pkgdown_sha: ~
 articles:
   cellphonedb_vignette: cellphonedb_vignette.html
   tf_scenic_vignette: tf_scenic_vignette.html
-  domino2: domino2.html
+  dominoSignal: dominoSignal.html
   domino_object_vignette: domino_object_vignette.html
   plotting_vignette: plotting_vignette.html
-last_built: 2024-03-01T22:21Z
+last_built: 2024-03-26T19:27Z
 urls:
-  reference: https://FertigLab.github.io/domino2/reference
-  article: https://FertigLab.github.io/domino2/articles
+  reference: https://FertigLab.github.io/dominoSignal/reference
+  article: https://FertigLab.github.io/dominoSignal/articles
 
