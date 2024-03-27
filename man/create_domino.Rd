@@ -7,6 +7,7 @@
 create_domino(
   rl_map,
   features,
+  ser = NULL,
   counts = NULL,
   z_scores = NULL,
   clusters = NULL,
