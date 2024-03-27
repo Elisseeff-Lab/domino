@@ -299,24 +299,18 @@ create_domino <- function(
     check_arg(features, need_rownames = TRUE, need_colnames = TRUE)
   }
 
-  if (!is.null(ser)) {
-    check_arg(ser, allow_class = "Seurat")
-  } else {
-    check_arg(counts, allow_class = c("matrix", "data.frame", "Matrix", "dgCMatrix"),
+
+  check_arg(counts, allow_class = c("matrix", "data.frame", "Matrix", "dgCMatrix"),
               need_rownames = TRUE, need_colnames = TRUE)
-    check_arg(z_scores, allow_class = "matrix", need_rownames = TRUE,
+  check_arg(z_scores, allow_class = "matrix", need_rownames = TRUE,
               need_colnames = TRUE)
-    check_arg(clusters, allow_class = "factor", need_names = TRUE)
-  }
+  check_arg(clusters, allow_class = "factor", need_names = TRUE)
+  
 
   check_arg(rec_min_thresh, allow_class = c("numeric"), allow_range = c(0, 1))
 
   check_arg(tf_selection_method,
             allow_values = c("clusters", "variable", "all"))
-
-  if (!is.null(ser) & (!is.null(clusters) | !is.null(z_scores) | !is.null(counts))) {
-    warning("Ser and z_score, clusters, or counts provided. Defaulting to ser.")
-  }
 
   # Create object
   dom <- domino()
