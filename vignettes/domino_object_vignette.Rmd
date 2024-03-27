@@ -26,7 +26,7 @@ library(domino2)
 
 ```{r setup, include = FALSE}
 bfc <- BiocFileCache::BiocFileCache(ask = FALSE)
-data_url <- "https://zenodo.org/records/10222767/files/pbmc_domino_built.rds"
+data_url <- "https://zenodo.org/records/10884027/files/pbmc_domino_built.rds"
 tmp_path <- BiocFileCache::bfcrpath(bfc, data_url)
 dom <- readRDS(tmp_path)
 ```
