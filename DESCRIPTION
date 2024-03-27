@@ -45,7 +45,8 @@ Suggests:
     Seurat,
     testthat,
     formatR,
-    BiocFileCache
+    BiocFileCache,
+    SingleCellExperiment
 VignetteBuilder: knitr
 Language: en-US
 Roxygen: list(markdown = TRUE)

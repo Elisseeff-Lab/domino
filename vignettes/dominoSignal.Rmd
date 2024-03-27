@@ -40,7 +40,8 @@ set.seed(123)
 <details><summary>Data used in our vignettes can be downloaded from Zenodo</summary>
 
 ```{r files}
-bfc <- BiocFileCache::BiocFileCache(ask = FALSE)
+cache = rappdirs::user_cache_dir(appname = "dominoSignal")
+bfc <- BiocFileCache::BiocFileCache(cache, ask = FALSE)
 
 data_url <- "https://zenodo.org/records/10884027/files"
 

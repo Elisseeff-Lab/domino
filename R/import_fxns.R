@@ -285,7 +285,7 @@ create_regulon_list_scenic <- function(regulons) {
 #'  use_clusters = TRUE, use_complexes = TRUE, remove_rec_dropout = FALSE)
 #' 
 create_domino <- function(
-    rl_map, features, ser = NULL, counts = NULL, z_scores = NULL,
+    rl_map, features, counts = NULL, z_scores = NULL,
     clusters = NULL, use_clusters = TRUE, tf_targets = NULL, verbose = TRUE,
     use_complexes = TRUE, rec_min_thresh = 0.025, remove_rec_dropout = TRUE,
     tf_selection_method = "clusters", tf_variance_quantile = 0.5) {
