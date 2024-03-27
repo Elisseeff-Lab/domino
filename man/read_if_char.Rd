@@ -15,3 +15,4 @@ obj Object itself in case its not a character
 \description{
 Read in data if an object looks like path to it.
 }
+\keyword{internal}

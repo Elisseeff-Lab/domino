@@ -38,3 +38,4 @@ check_arg(
 \description{
 Accepts an object and rules for checking, stops if rules not met.
 }
+\keyword{internal}

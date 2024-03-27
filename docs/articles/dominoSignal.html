@@ -103,7 +103,7 @@
     
 <p>dominoSignal is a tool for analysis of intra- and intercellular signaling in single cell RNA sequencing (scRNAseq) data based on transcription factor (TF) activation. Here, we show a basic example pipeline for generating communication networks as a domino object. This vignette will demonstrate how to use dominoSignal on the 10X Genomics Peripheral Blood Mononuclear Cells (PBMC) data set of 2,700 cells. The data can be downloaded <a href="https://cf.10xgenomics.com/samples/cell/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz" class="external-link">here</a>.</p>
 <div class="section level2">
-<h2 id="options-and-setup">Options and Setup:<a class="anchor" aria-label="anchor" href="#options-and-setup"></a>
+<h2 id="options-and-setup">Options and Setup<a class="anchor" aria-label="anchor" href="#options-and-setup"></a>
 </h2>
 <details><p><summary>Required libraries</summary></p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
@@ -117,49 +117,33 @@
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span></code></pre></div>
 </details><details><p><summary>Data used in our vignettes can be downloaded from Zenodo</summary></p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">data_url</span> <span class="op">&lt;-</span> <span class="st">"https://zenodo.org/records/10850479/files"</span></span>
-<span><span class="va">temp_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">cache</span> <span class="op">=</span> <span class="fu">rappdirs</span><span class="fu">::</span><span class="fu"><a href="https://rappdirs.r-lib.org/reference/user_cache_dir.html" class="external-link">user_cache_dir</a></span><span class="op">(</span>appname <span class="op">=</span> <span class="st">"dominoSignal"</span><span class="op">)</span></span>
+<span><span class="va">bfc</span> <span class="op">&lt;-</span> <span class="fu">BiocFileCache</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocFileCache/man/BiocFileCache-class.html" class="external-link">BiocFileCache</a></span><span class="op">(</span><span class="va">cache</span>, ask <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># download the reduced pbmc files</span></span>
-<span><span class="va">pbmc_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">temp_dir</span>, <span class="st">"/pbmc"</span><span class="op">)</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.exists</a></span><span class="op">(</span><span class="va">pbmc_dir</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">pbmc_dir</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
+<span><span class="va">data_url</span> <span class="op">&lt;-</span> <span class="st">"https://zenodo.org/records/10884027/files"</span></span>
 <span></span>
-<span><span class="co"># preprocessed PBMC 3K scRNAseq data set as a SingleCellExperiment object</span></span>
-<span></span>
-<span><span class="va">fname</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">pbmc_dir</span>, <span class="st">"/pbmc_3k_sce.rds"</span><span class="op">)</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.exists</a></span><span class="op">(</span><span class="va">fname</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu">tools</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/tools/md5sum.html" class="external-link">md5sum</a></span><span class="op">(</span><span class="va">fname</span><span class="op">)</span> <span class="op">==</span> <span class="st">"cde772188f953c35094f5a0417c04e34"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/utils/download.file.html" class="external-link">download.file</a></span><span class="op">(</span>url <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">data_url</span>, <span class="st">"/pbmc_3k_sce.rds"</span><span class="op">)</span>, destfile <span class="op">=</span> <span class="va">fname</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span></span>
+<span><span class="co"># download the reduced pbmc files preprocessed PBMC 3K scRNAseq data set as a</span></span>
+<span><span class="co"># Seurat object</span></span>
+<span><span class="va">pbmc_url</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">data_url</span>, <span class="st">"/pbmc_3k_sce.rds"</span><span class="op">)</span></span>
+<span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu">BiocFileCache</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocFileCache/man/BiocFileCache-class.html" class="external-link">bfcrpath</a></span><span class="op">(</span><span class="va">bfc</span>, <span class="va">pbmc_url</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># download scenic results</span></span>
-<span><span class="va">scenic_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">temp_dir</span>, <span class="st">"/scenic"</span><span class="op">)</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.exists</a></span><span class="op">(</span><span class="va">scenic_dir</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">scenic_dir</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/download.file.html" class="external-link">download.file</a></span><span class="op">(</span>url <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">data_url</span>, <span class="st">"/scenic_auc_pbmc_3k.csv"</span><span class="op">)</span>, destfile <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">scenic_dir</span>,</span>
-<span>    <span class="st">"/auc_pbmc_3k.csv"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">scenic_auc_url</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">data_url</span>, <span class="st">"/scenic_auc_pbmc_3k.csv"</span><span class="op">)</span></span>
+<span><span class="va">scenic_auc</span> <span class="op">&lt;-</span> <span class="fu">BiocFileCache</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocFileCache/man/BiocFileCache-class.html" class="external-link">bfcrpath</a></span><span class="op">(</span><span class="va">bfc</span>, <span class="va">scenic_auc_url</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/download.file.html" class="external-link">download.file</a></span><span class="op">(</span>url <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">data_url</span>, <span class="st">"/scenic_regulons_pbmc_3k.csv"</span><span class="op">)</span>, destfile <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">scenic_dir</span>,</span>
-<span>    <span class="st">"/regulons_pbmc_3k.csv"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">scenic_regulon_url</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">data_url</span>, <span class="st">"/scenic_regulons_pbmc_3k.csv"</span><span class="op">)</span></span>
+<span><span class="va">scenic_regulon</span> <span class="op">&lt;-</span> <span class="fu">BiocFileCache</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocFileCache/man/BiocFileCache-class.html" class="external-link">bfcrpath</a></span><span class="op">(</span><span class="va">bfc</span>, <span class="va">scenic_regulon_url</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># create directory for cellphoneDB files</span></span>
-<span><span class="va">cellphone_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">temp_dir</span>, <span class="st">"/cellphoneDB"</span><span class="op">)</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.exists</a></span><span class="op">(</span><span class="va">cellphone_dir</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">cellphone_dir</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="co"># Download cellphoneDB files</span></span>
+<span><span class="co"># download cellphoneDB files</span></span>
 <span><span class="va">cellphone_url</span> <span class="op">&lt;-</span> <span class="st">"https://github.com/ventolab/cellphonedb-data/archive/refs/tags/v4.0.0.tar.gz"</span></span>
-<span><span class="va">cellphone_tar</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">temp_dir</span>, <span class="st">"/cellphoneDB_v4.tar.gz"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/download.file.html" class="external-link">download.file</a></span><span class="op">(</span>url <span class="op">=</span> <span class="va">cellphone_url</span>, destfile <span class="op">=</span> <span class="va">cellphone_tar</span><span class="op">)</span></span>
+<span><span class="va">cellphone_tar</span> <span class="op">&lt;-</span> <span class="fu">BiocFileCache</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocFileCache/man/BiocFileCache-class.html" class="external-link">bfcrpath</a></span><span class="op">(</span><span class="va">bfc</span>, <span class="va">cellphone_url</span><span class="op">)</span></span>
+<span><span class="va">cellphone_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"/cellphone"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/untar.html" class="external-link">untar</a></span><span class="op">(</span>tarfile <span class="op">=</span> <span class="va">cellphone_tar</span>, exdir <span class="op">=</span> <span class="va">cellphone_dir</span><span class="op">)</span></span>
 <span><span class="va">cellphone_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">cellphone_dir</span>, <span class="st">"/cellphonedb-data-4.0.0/data"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># directory for created inputs to pySCENIC and dominoSignal</span></span>
-<span><span class="va">input_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">temp_dir</span>, <span class="st">"/inputs"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># directory for created inputs to pySCENIC and domino2</span></span>
+<span><span class="va">input_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"/inputs"</span><span class="op">)</span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.exists</a></span><span class="op">(</span><span class="va">input_dir</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">input_dir</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
@@ -168,9 +152,9 @@
 <div class="section level2">
 <h2 id="data-preparation">Data preparation<a class="anchor" aria-label="anchor" href="#data-preparation"></a>
 </h2>
-<p>Analysis of cell-cell communication with dominoSignal often follows initial processing and annotation of scRNAseq data. We used the <a href="https://bioconductor.org/books/3.18/OSCA.workflows/unfiltered-human-pbmcs-10x-genomics.html" class="external-link">OSCA workflow</a> to prepare the data set for analysis with dominoSignal. The <a href="data-raw/example_data.R">complete processing script</a> is available in the data-raw directory of the dominoSignal package. The processed data can be downloaded from <a href="https://zenodo.org/records/10850479" class="external-link">Zenodo</a>.</p>
+<p>Analysis of cell-cell communication with dominoSignal often follows initial processing and annotation of scRNAseq data. We used the <a href="https://bioconductor.org/books/3.18/OSCA.workflows/unfiltered-human-pbmcs-10x-genomics.html" class="external-link">OSCA workflow</a> to prepare the data set for analysis with dominoSignal. The <a href="data-raw/example_data.R">complete processing script</a> is available in the data-raw directory of the dominoSignal package. The processed data can be downloaded from <a href="https://zenodo.org/records/10884027" class="external-link">Zenodo</a>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">pbmc_dir</span>, <span class="st">"/pbmc_3k_sce.rds"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">pbmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="va">pbmc</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -190,9 +174,9 @@
 </h3>
 <p>The TF activities are a required input for dominoSignal, and the regulons learned by <a href="https://scenic.aertslab.org/" class="external-link">SCENIC</a> are an important but optional input needed to annotate TF-target interactions and to prune TF-receptor linkages where the receptor is a target of the TF. This prevents the distinction of receptor expression driving TF activity or the TF inducing the receptor’s expression.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">regulons</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">scenic_dir</span>, <span class="st">"/regulons_pbmc_3k.csv"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">auc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">scenic_dir</span>, <span class="st">"/auc_pbmc_3k.csv"</span><span class="op">)</span>, header <span class="op">=</span> <span class="cn">TRUE</span>, row.names <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>    stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span>, sep <span class="op">=</span> <span class="st">","</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">regulons</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="va">scenic_regulon</span><span class="op">)</span></span>
+<span><span class="va">auc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></span><span class="op">(</span><span class="va">scenic_auc</span>, header <span class="op">=</span> <span class="cn">TRUE</span>, row.names <span class="op">=</span> <span class="fl">1</span>, stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    sep <span class="op">=</span> <span class="st">","</span><span class="op">)</span></span></code></pre></div>
 <p>The initial regulons data frame read into R from the ctx function has 2 rows of column names that need to be replaced with one succinct description. dominoSignal has changed the input format for TF regulons to be a list storing vectors of target genes in each regulon, where the names of the list are the TF genes. This facilitates the use of alternative methods for TF activity quantification. We provide a helper function, <code><a href="../reference/create_regulon_list_scenic.html">create_regulon_list_scenic()</a></code> for easy retrieval of TF regulons from the output of the <a href="https://pyscenic.readthedocs.io/en/latest/" class="external-link">pySCENIC</a> ctx function.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">regulons</span> <span class="op">&lt;-</span> <span class="va">regulons</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">:</span><span class="op">-</span><span class="fl">2</span>, <span class="op">]</span></span>
@@ -219,14 +203,10 @@
 <p>Additional annotation columns can be provided such as name_A and name_B for ligands or receptors whose name in the interaction database does not match the names of their encoding genes. This formatting also allows for the consideration of ligand and receptor complexes comprised of a heteromeric combination of multiple proteins that must be co-expressed to function. In these cases, the “name_*” column shows the name of the protein complex, and the “gene_*” column shows the names of the genes encoding the components of the complex separated by commas “,”. When plotting results from the build domino object, the names of the interacting ligands and receptors will be used based on combinatorial expression of the complex components.</p>
 <p>To facilitate the use of this formatting with the CellPhoneDB database, we include a helper function, <code><a href="../reference/create_rl_map_cellphonedb.html">create_rl_map_cellphonedb()</a></code>, that automatically parses files from the cellPhoneDB database to arrive at the rl_map format.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">complexes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">cellphone_dir</span>, <span class="st">"/cellphonedb-data-4.0.0/data/complex_input.csv"</span><span class="op">)</span>,</span>
-<span>    stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="va">genes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">cellphone_dir</span>, <span class="st">"/cellphonedb-data-4.0.0/data/gene_input.csv"</span><span class="op">)</span>,</span>
-<span>    stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="va">interactions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">cellphone_dir</span>, <span class="st">"/cellphonedb-data-4.0.0/data/interaction_input.csv"</span><span class="op">)</span>,</span>
-<span>    stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="va">proteins</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">cellphone_dir</span>, <span class="st">"/cellphonedb-data-4.0.0/data/protein_input.csv"</span><span class="op">)</span>,</span>
-<span>    stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">complexes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">cellphone_data</span>, <span class="st">"/complex_input.csv"</span><span class="op">)</span>, stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">genes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">cellphone_data</span>, <span class="st">"/gene_input.csv"</span><span class="op">)</span>, stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">interactions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">cellphone_data</span>, <span class="st">"/interaction_input.csv"</span><span class="op">)</span>, stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">proteins</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">cellphone_data</span>, <span class="st">"/protein_input.csv"</span><span class="op">)</span>, stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">rl_map</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_rl_map_cellphonedb.html">create_rl_map_cellphonedb</a></span><span class="op">(</span>genes <span class="op">=</span> <span class="va">genes</span>, proteins <span class="op">=</span> <span class="va">proteins</span>, interactions <span class="op">=</span> <span class="va">interactions</span>,</span>
 <span>    complexes <span class="op">=</span> <span class="va">complexes</span>, database_name <span class="op">=</span> <span class="st">"CellPhoneDB_v4.0"</span>  <span class="co"># database version used</span></span>
@@ -552,7 +532,7 @@
 <p>For information on what is stored in a domino object and how to access it, please see our <a href="vignette(%22domino_object_vignette%22)">vignette on the structure of domino objects</a>.</p>
 </div>
 <div class="section level3">
-<h3 id="build-domino-network">Build Domino network<a class="anchor" aria-label="anchor" href="#build-domino-network"></a>
+<h3 id="build-domino-network">Build Domino Network<a class="anchor" aria-label="anchor" href="#build-domino-network"></a>
 </h3>
 <p><code><a href="../reference/build_domino.html">build_domino()</a></code> finalizes the construction of the domino object by setting parameters for identifying TFs with differential activation between clusters, receptor linkage with TFs based on magnitude of positive correlation, and the minimum percentage of cells within a cluster that have expression of a receptor for the receptor to be called as active.</p>
 <p>There are also options for thresholds of the number of TFs that may be called active in a cluster and the number of receptors that may be linked to any one TF. For thresholds of <em>n</em> TFs and <em>m</em> receptors, the bottom <em>n</em> TFs by lowest p-values from the wilcoxon rank sum test and the top <em>m</em> receptors by Spearman correlation coefficient are chosen.</p>
@@ -619,7 +599,7 @@
 <details><p><summary>Vignette Build Information</summary> Date last built and session information:</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "2024-03-26"</span></span>
+<span><span class="co">#&gt; [1] "2024-03-27"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; R version 4.2.1 (2022-06-23)</span></span>
 <span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu (64-bit)</span></span>
@@ -657,35 +637,35 @@
 <span><span class="co">#&gt;   [7] progress_1.2.3         httr_1.4.7             backports_1.4.1       </span></span>
 <span><span class="co">#&gt;  [10] tools_4.2.1            bslib_0.6.1            utf8_1.2.4            </span></span>
 <span><span class="co">#&gt;  [13] R6_2.5.1               DBI_1.2.2              colorspace_2.1-0      </span></span>
-<span><span class="co">#&gt;  [16] GetoptLong_1.0.5       tidyselect_1.2.1       prettyunits_1.2.0     </span></span>
-<span><span class="co">#&gt;  [19] bit_4.0.5              curl_5.2.1             compiler_4.2.1        </span></span>
-<span><span class="co">#&gt;  [22] textshaping_0.3.7      cli_3.6.2              formatR_1.14          </span></span>
-<span><span class="co">#&gt;  [25] Cairo_1.6-2            xml2_1.3.6             DelayedArray_0.24.0   </span></span>
-<span><span class="co">#&gt;  [28] desc_1.4.3             sass_0.4.8             scales_1.3.0          </span></span>
-<span><span class="co">#&gt;  [31] rappdirs_0.3.3         pkgdown_2.0.7          systemfonts_1.0.6     </span></span>
-<span><span class="co">#&gt;  [34] stringr_1.5.1          digest_0.6.35          rmarkdown_2.26        </span></span>
-<span><span class="co">#&gt;  [37] XVector_0.38.0         pkgconfig_2.0.3        htmltools_0.5.7       </span></span>
-<span><span class="co">#&gt;  [40] highr_0.10             dbplyr_2.4.0           fastmap_1.1.1         </span></span>
-<span><span class="co">#&gt;  [43] rlang_1.1.3            GlobalOptions_0.1.2    RSQLite_2.3.5         </span></span>
-<span><span class="co">#&gt;  [46] shape_1.4.6.1          jquerylib_0.1.4        generics_0.1.3        </span></span>
-<span><span class="co">#&gt;  [49] jsonlite_1.8.8         car_3.1-2              dplyr_1.1.4           </span></span>
-<span><span class="co">#&gt;  [52] RCurl_1.98-1.14        magrittr_2.0.3         GenomeInfoDbData_1.2.9</span></span>
-<span><span class="co">#&gt;  [55] Matrix_1.6-5           munsell_0.5.0          Rcpp_1.0.12           </span></span>
-<span><span class="co">#&gt;  [58] fansi_1.0.6            abind_1.4-5            lifecycle_1.0.4       </span></span>
-<span><span class="co">#&gt;  [61] stringi_1.8.3          yaml_2.3.8             carData_3.0-5         </span></span>
-<span><span class="co">#&gt;  [64] zlibbioc_1.44.0        BiocFileCache_2.6.1    blob_1.2.4            </span></span>
-<span><span class="co">#&gt;  [67] parallel_4.2.1         crayon_1.5.2           lattice_0.22-5        </span></span>
-<span><span class="co">#&gt;  [70] Biostrings_2.66.0      hms_1.1.3              KEGGREST_1.38.0       </span></span>
-<span><span class="co">#&gt;  [73] magick_2.8.3           pillar_1.9.0           igraph_2.0.3          </span></span>
-<span><span class="co">#&gt;  [76] ggpubr_0.6.0           rjson_0.2.21           ggsignif_0.6.4        </span></span>
-<span><span class="co">#&gt;  [79] codetools_0.2-19       biomaRt_2.54.1         XML_3.99-0.16.1       </span></span>
-<span><span class="co">#&gt;  [82] glue_1.7.0             evaluate_0.23          png_0.1-8             </span></span>
-<span><span class="co">#&gt;  [85] vctrs_0.6.5            foreach_1.5.2          tidyr_1.3.1           </span></span>
-<span><span class="co">#&gt;  [88] gtable_0.3.4           purrr_1.0.2            clue_0.3-65           </span></span>
-<span><span class="co">#&gt;  [91] ggplot2_3.5.0          cachem_1.0.8           xfun_0.42             </span></span>
-<span><span class="co">#&gt;  [94] broom_1.0.5            rstatix_0.7.2          ragg_1.3.0            </span></span>
-<span><span class="co">#&gt;  [97] tibble_3.2.1           iterators_1.0.14       AnnotationDbi_1.60.2  </span></span>
-<span><span class="co">#&gt; [100] memoise_2.0.1          cluster_2.1.6</span></span></code></pre></div>
+<span><span class="co">#&gt;  [16] GetoptLong_1.0.5       withr_3.0.0            tidyselect_1.2.1      </span></span>
+<span><span class="co">#&gt;  [19] prettyunits_1.2.0      bit_4.0.5              curl_5.2.1            </span></span>
+<span><span class="co">#&gt;  [22] compiler_4.2.1         textshaping_0.3.7      cli_3.6.2             </span></span>
+<span><span class="co">#&gt;  [25] formatR_1.14           Cairo_1.6-2            xml2_1.3.6            </span></span>
+<span><span class="co">#&gt;  [28] DelayedArray_0.24.0    desc_1.4.3             sass_0.4.8            </span></span>
+<span><span class="co">#&gt;  [31] scales_1.3.0           rappdirs_0.3.3         pkgdown_2.0.7         </span></span>
+<span><span class="co">#&gt;  [34] systemfonts_1.0.6      stringr_1.5.1          digest_0.6.35         </span></span>
+<span><span class="co">#&gt;  [37] rmarkdown_2.26         XVector_0.38.0         pkgconfig_2.0.3       </span></span>
+<span><span class="co">#&gt;  [40] htmltools_0.5.7        highr_0.10             dbplyr_2.5.0          </span></span>
+<span><span class="co">#&gt;  [43] fastmap_1.1.1          rlang_1.1.3            GlobalOptions_0.1.2   </span></span>
+<span><span class="co">#&gt;  [46] RSQLite_2.3.5          shape_1.4.6.1          jquerylib_0.1.4       </span></span>
+<span><span class="co">#&gt;  [49] generics_0.1.3         jsonlite_1.8.8         car_3.1-2             </span></span>
+<span><span class="co">#&gt;  [52] dplyr_1.1.4            RCurl_1.98-1.14        magrittr_2.0.3        </span></span>
+<span><span class="co">#&gt;  [55] GenomeInfoDbData_1.2.9 Matrix_1.6-5           munsell_0.5.0         </span></span>
+<span><span class="co">#&gt;  [58] Rcpp_1.0.12            fansi_1.0.6            abind_1.4-5           </span></span>
+<span><span class="co">#&gt;  [61] lifecycle_1.0.4        stringi_1.8.3          yaml_2.3.8            </span></span>
+<span><span class="co">#&gt;  [64] carData_3.0-5          zlibbioc_1.44.0        BiocFileCache_2.11.2  </span></span>
+<span><span class="co">#&gt;  [67] blob_1.2.4             parallel_4.2.1         crayon_1.5.2          </span></span>
+<span><span class="co">#&gt;  [70] lattice_0.22-5         Biostrings_2.66.0      hms_1.1.3             </span></span>
+<span><span class="co">#&gt;  [73] KEGGREST_1.38.0        magick_2.8.3           pillar_1.9.0          </span></span>
+<span><span class="co">#&gt;  [76] igraph_2.0.3           ggpubr_0.6.0           rjson_0.2.21          </span></span>
+<span><span class="co">#&gt;  [79] ggsignif_0.6.4         codetools_0.2-19       biomaRt_2.54.1        </span></span>
+<span><span class="co">#&gt;  [82] XML_3.99-0.16.1        glue_1.7.0             evaluate_0.23         </span></span>
+<span><span class="co">#&gt;  [85] png_0.1-8              vctrs_0.6.5            foreach_1.5.2         </span></span>
+<span><span class="co">#&gt;  [88] tidyr_1.3.1            gtable_0.3.4           purrr_1.0.2           </span></span>
+<span><span class="co">#&gt;  [91] clue_0.3-65            ggplot2_3.5.0          cachem_1.0.8          </span></span>
+<span><span class="co">#&gt;  [94] xfun_0.42              broom_1.0.5            rstatix_0.7.2         </span></span>
+<span><span class="co">#&gt;  [97] ragg_1.3.0             tibble_3.2.1           iterators_1.0.14      </span></span>
+<span><span class="co">#&gt; [100] AnnotationDbi_1.60.2   memoise_2.0.1          cluster_2.1.6</span></span></code></pre></div>
 </details>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

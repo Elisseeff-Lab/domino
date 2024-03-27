@@ -7,6 +7,12 @@
     <loc>https://FertigLab.github.io/dominoSignal/LICENSE-text.html</loc>
   </url>
   <url>
+    <loc>https://FertigLab.github.io/dominoSignal/articles/articles/cellphonedb_vignette.html</loc>
+  </url>
+  <url>
+    <loc>https://FertigLab.github.io/dominoSignal/articles/articles/tf_scenic_vignette.html</loc>
+  </url>
+  <url>
     <loc>https://FertigLab.github.io/dominoSignal/articles/cellphonedb_vignette.html</loc>
   </url>
   <url>
@@ -40,7 +46,13 @@
     <loc>https://FertigLab.github.io/dominoSignal/reference/build_domino.html</loc>
   </url>
   <url>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/check_arg.html</loc>
+  </url>
+  <url>
     <loc>https://FertigLab.github.io/dominoSignal/reference/circos_ligand_receptor.html</loc>
+  </url>
+  <url>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/conv_py_bools.html</loc>
   </url>
   <url>
     <loc>https://FertigLab.github.io/dominoSignal/reference/convert_genes.html</loc>
@@ -131,6 +143,9 @@
   </url>
   <url>
     <loc>https://FertigLab.github.io/dominoSignal/reference/print-domino-method.html</loc>
+  </url>
+  <url>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/read_if_char.html</loc>
   </url>
   <url>
     <loc>https://FertigLab.github.io/dominoSignal/reference/rename_clusters.html</loc>
