@@ -225,7 +225,7 @@ dom_network_items <- function(dom, clusters = NULL, return = NULL) {
     if (!dom@misc[["build"]]) {
     stop("Please run domino_build prior to generate signaling network.")
     }
-    if (is.null(clusters) && is.null(dom@clusters)) {
+    if (is.null(clusters) & is.null(dom@clusters)) {
         stop("There are no clusters in this domino object. Please provide clusters.")
     }
     if (is.null(clusters)) {

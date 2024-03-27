@@ -40,55 +40,32 @@ set.seed(123)
 <details><summary>Data used in our vignettes can be downloaded from Zenodo</summary>
 
 ```{r files}
+bfc <- BiocFileCache::BiocFileCache(ask = FALSE)
+
 data_url <- "https://zenodo.org/records/10884027/files"
-temp_dir <- tempdir()
 
 # download the reduced pbmc files
-pbmc_dir <- paste0(temp_dir, "/pbmc")
-if (!dir.exists(pbmc_dir)) {
-    dir.create(pbmc_dir)
-}
-
-# preprocessed PBMC 3K scRNAseq data set as a SingleCellExperiment object
-
-fname <- paste0(pbmc_dir, "/pbmc_3k_sce.rds")
-if (!(file.exists(fname)
-      && tools::md5sum(fname) == "cde772188f953c35094f5a0417c04e34")) {
-  download.file(url = paste0(data_url, "/pbmc_3k_sce.rds"),
-                destfile = fname)
-}
-
+# preprocessed PBMC 3K scRNAseq data set as a Seurat object
+pbmc_url <- paste0(data_url, "/pbmc_3k_sce.rds")
+pbmc <- BiocFileCache::bfcrpath(bfc, pbmc_url)
 
 # download scenic results
-scenic_dir <- paste0(temp_dir, "/scenic")
-if (!dir.exists(scenic_dir)) {
-    dir.create(scenic_dir)
-}
-download.file(
-    url = paste0(data_url, "/scenic_auc_pbmc_3k.csv"),
-    destfile = paste0(scenic_dir, "/auc_pbmc_3k.csv")
-)
+scenic_auc_url <- paste0(data_url, "/scenic_auc_pbmc_3k.csv")
+scenic_auc <- BiocFileCache::bfcrpath(bfc, scenic_auc_url)
 
-download.file(
-    url = paste0(data_url, "/scenic_regulons_pbmc_3k.csv"),
-    destfile = paste0(scenic_dir, "/regulons_pbmc_3k.csv")
-)
+scenic_regulon_url <- paste0(data_url, "/scenic_regulons_pbmc_3k.csv")
+scenic_regulon <- BiocFileCache::bfcrpath(bfc, scenic_regulon_url)
 
-# create directory for cellphoneDB files
-cellphone_dir <- paste0(temp_dir, "/cellphoneDB")
-if (!dir.exists(cellphone_dir)) {
-    dir.create(cellphone_dir)
-}
-
-# Download cellphoneDB files
+# download cellphoneDB files
 cellphone_url <- "https://github.com/ventolab/cellphonedb-data/archive/refs/tags/v4.0.0.tar.gz"
-cellphone_tar <- paste0(temp_dir, "/cellphoneDB_v4.tar.gz")
-download.file(url = cellphone_url, destfile = cellphone_tar)
+cellphone_tar <- BiocFileCache::bfcrpath(bfc, cellphone_url)
+cellphone_dir <- paste0(tempdir(), "/cellphone")
 untar(tarfile = cellphone_tar, exdir = cellphone_dir)
 cellphone_data <- paste0(cellphone_dir, "/cellphonedb-data-4.0.0/data")
 
-# directory for created inputs to pySCENIC and dominoSignal
-input_dir <- paste0(temp_dir, "/inputs")
+
+# directory for created inputs to pySCENIC and domino2
+input_dir <- paste0(tempdir(), "/inputs")
 if (!dir.exists(input_dir)) {
     dir.create(input_dir)
 }
@@ -101,7 +78,7 @@ if (!dir.exists(input_dir)) {
 Analysis of cell-cell communication with dominoSignal often follows initial processing and annotation of scRNAseq data.  We used the [OSCA workflow](https://bioconductor.org/books/3.18/OSCA.workflows/unfiltered-human-pbmcs-10x-genomics.html) to prepare the data set for analysis with dominoSignal. The [complete processing script](data-raw/example_data.R) is available in the data-raw directory of the dominoSignal package. The processed data can be downloaded from [Zenodo](https://zenodo.org/records/10884027).
 
 ```{r}
-pbmc <- readRDS(paste0(pbmc_dir, "/pbmc_3k_sce.rds"))
+pbmc <- readRDS(pbmc)
 ```
 
 ## Installation
@@ -122,8 +99,8 @@ remotes::install_github("FertigLab/dominoSignal")
 The TF activities are a required input for dominoSignal, and the regulons learned by [SCENIC](https://scenic.aertslab.org/) are an important but optional input needed to annotate TF-target interactions and to prune TF-receptor linkages where the receptor is a target of the TF. This prevents the distinction of receptor expression driving TF activity or the TF inducing the receptor's expression.
 
 ```{r Load SCENIC Results}
-regulons <- read.csv(paste0(scenic_dir, "/regulons_pbmc_3k.csv"))
-auc <- read.table(paste0(scenic_dir, "/auc_pbmc_3k.csv"),
+regulons <- read.csv(scenic_regulon)
+auc <- read.table(scenic_auc,
     header = TRUE, row.names = 1,
     stringsAsFactors = FALSE, sep = ","
 )
@@ -165,29 +142,25 @@ To facilitate the use of this formatting with the CellPhoneDB database, we inclu
 ```{r Load CellPhoneDB Database}
 complexes <- read.csv(
     paste0(
-        cellphone_dir,
-        "/cellphonedb-data-4.0.0/data/complex_input.csv"
+        cellphone_data, "/complex_input.csv"
     ),
     stringsAsFactors = FALSE
 )
 genes <- read.csv(
     paste0(
-        cellphone_dir,
-        "/cellphonedb-data-4.0.0/data/gene_input.csv"
+        cellphone_data, "/gene_input.csv"
     ),
     stringsAsFactors = FALSE
 )
 interactions <- read.csv(
     paste0(
-        cellphone_dir,
-        "/cellphonedb-data-4.0.0/data/interaction_input.csv"
+        cellphone_data, "/interaction_input.csv"
     ),
     stringsAsFactors = FALSE
 )
 proteins <- read.csv(
     paste0(
-        cellphone_dir,
-        "/cellphonedb-data-4.0.0/data/protein_input.csv"
+        cellphone_data, "/protein_input.csv"
     ),
     stringsAsFactors = FALSE
 )
@@ -284,7 +257,7 @@ pbmc_dom <- create_domino(
 
 For information on what is stored in a domino object and how to access it, please see our [vignette on the structure of domino objects](vignette("domino_object_vignette")).
 
-### Build Domino network
+### Build Domino Network
 
 `build_domino()` finalizes the construction of the domino object by setting parameters for identifying TFs with differential activation between clusters, receptor linkage with TFs based on magnitude of positive correlation, and the minimum percentage of cells within a cluster that have expression of a receptor for the receptor to be called as active.
 

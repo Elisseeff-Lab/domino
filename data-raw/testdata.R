@@ -71,7 +71,7 @@ for(i in seq_along(cell_types_dwn)){
 }
 barcodes_dwn <- unlist(cell_list)
 clusters_tiny <- factor(rep(names(cell_list), lengths(cell_list)))
-names(clusters_tiny) <- clusters_tiny
+names(clusters_tiny) <- barcodes_dwn
 
 counts <- assay(pbmc, "counts")
 z_scores <-  t(scale(t(assay(pbmc, "logcounts"))))
