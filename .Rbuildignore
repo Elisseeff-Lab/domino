@@ -19,3 +19,5 @@
 ^readme_images$
 ^scenic_bash$
 ^vignettes/articles$
+.nojekyll$
+
