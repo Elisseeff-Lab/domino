@@ -29,48 +29,22 @@ NULL
 create_rl_map_cellphonedb <- function(
     genes, proteins, interactions, complexes = NULL, database_name = "CellPhoneDB",
     gene_conv = NULL, gene_conv_host = "https://www.ensembl.org", alternate_convert = FALSE, alternate_convert_table = NULL) {
+
   # Check input structures:
-  stopifnot(`genes argument must be file path or dataframe` = (is(genes, "data.frame") | is(
-    genes,
-    "character"
-  )))
-  stopifnot(`proteins argument must be file path or dataframe` = (is(proteins, "data.frame") | is(
-    proteins,
-    "character"
-  )))
-  stopifnot(`interactions argument must be file path or dataframe` = (is(interactions, "data.frame") |
-    is(interactions, "character")))
-  stopifnot(`complexes argument must be NULL, file path or dataframe` = (is.null(complexes) | is(
-    complexes,
-    "data.frame"
-  ) | is(complexes, "character")))
-  stopifnot(`Database name must be a string` = is(database_name, "character") & length(database_name) ==
-    1)
-  stopifnot(`Gene conversion must be NULL or a character vector with 2 items` = (is.null(gene_conv) |
-    (is(gene_conv, "character") & length(gene_conv) == 2)))
-  stopifnot(`Gene conversion host must be a string` = is(gene_conv_host, "character") & length(gene_conv_host) ==
-    1)
-  stopifnot(`Alternate conversion argument (not recommended) must be TRUE or FALSE` = is(
-    alternate_convert,
-    "logical"
-  ))
-  if (alternate_convert & is.null(alternate_convert_table)) {
-    stop("If using alternate conversion table (not recommended), a table must be provided")
-  }
+  check_arg(genes, c("character", "data.frame"))
+  check_arg(proteins, c("character", "data.frame"))
+  check_arg(interactions, c("character", "data.frame"))
+  check_arg(complexes, c("character", "data.frame", "NULL"))
+  check_arg(database_name, c("character"), allow_len = c(1))
+  check_arg(gene_conv, c("NULL", "character"), allow_len = c(0, 2))
+  check_arg(gene_conv_host, c("character"), allow_len = c(1))
 
   # Read in files if needed:
-  if (is(genes, "character")) {
-    genes <- read.csv(genes, stringsAsFactors = FALSE)
-  }
-  if (is(proteins, "character")) {
-    proteins <- read.csv(proteins, stringsAsFactors = FALSE)
-  }
-  if (is(interactions, "character")) {
-    interactions <- read.csv(interactions, stringsAsFactors = FALSE)
-  }
-  if (is(complexes, "character")) {
-    complexes <- read.csv(complexes, stringsAsFactors = FALSE)
-  }
+  genes <- read_if_char(genes)
+  proteins <- read_if_char(proteins)
+  interactions <- read_if_char(interactions)
+  complexes <- read_if_char(complexes)
+
   # replace empty cells in columns annotating gene properties with 'False' There are some
   # unannotated genes in database v2.0 that seem to have been fixed in v4.0
   gene_features <- c(
@@ -78,41 +52,13 @@ create_rl_map_cellphonedb <- function(
     "integrin", "other"
   )
   proteins[proteins$receptor == "", colnames(proteins) %in% gene_features] <- "False"
+
   # change cases of True/False syntax from Python to TRUE/FALSE R syntax
-  for (x in colnames(genes)) {
-    if (identical(unique(genes[[x]]), c("True", "False")) | identical(unique(genes[[x]]), c(
-      "False",
-      "True"
-    ))) {
-      genes[[x]] <- ifelse(genes[[x]] == "True", TRUE, FALSE)
-    }
-  }
-  for (x in colnames(proteins)) {
-    if (identical(unique(proteins[[x]]), c("True", "False")) | identical(
-      unique(proteins[[x]]),
-      c("False", "True")
-    )) {
-      proteins[[x]] <- ifelse(proteins[[x]] == "True", TRUE, FALSE)
-    }
-  }
-  for (x in colnames(interactions)) {
-    if (identical(unique(interactions[[x]]), c("True", "False")) | identical(
-      unique(interactions[[x]]),
-      c("False", "True")
-    )) {
-      interactions[[x]] <- ifelse(interactions[[x]] == "True", TRUE, FALSE)
-    }
-  }
-  if (!is.null(complexes)) {
-    for (x in colnames(complexes)) {
-      if (identical(unique(complexes[[x]]), c("True", "False")) | identical(
-        unique(complexes[[x]]),
-        c("False", "True")
-      )) {
-        complexes[[x]] <- ifelse(complexes[[x]] == "True", TRUE, FALSE)
-      }
-    }
-  }
+  genes <-  conv_py_bools(genes)
+  proteins <- conv_py_bools(proteins)
+  interactions <- conv_py_bools(interactions)
+  complexes <- conv_py_bools(complexes)
+
   # gene conversions
   if (!is.null(gene_conv) & !identical(gene_conv[1], gene_conv[2])) {
     # obtain conversion dictionary
@@ -339,33 +285,45 @@ create_regulon_list_scenic <- function(regulons) {
 #'  use_clusters = TRUE, use_complexes = TRUE, remove_rec_dropout = FALSE)
 #' 
 create_domino <- function(
-    rl_map, features, counts = NULL, z_scores = NULL, clusters = NULL,
-    use_clusters = TRUE, tf_targets = NULL, verbose = TRUE, use_complexes = TRUE, rec_min_thresh = 0.025,
-    remove_rec_dropout = TRUE, tf_selection_method = "clusters", tf_variance_quantile = 0.5) {
+    rl_map, features, ser = NULL, counts = NULL, z_scores = NULL,
+    clusters = NULL, use_clusters = TRUE, tf_targets = NULL, verbose = TRUE,
+    use_complexes = TRUE, rec_min_thresh = 0.025, remove_rec_dropout = TRUE,
+    tf_selection_method = "clusters", tf_variance_quantile = 0.5) {
+
   # Check inputs:
-  stopifnot(`rl_map must be a data.frame with column names gene_A, gene_B, type_A, and type_B` = (is(
-    rl_map,
-    "data.frame"
-  ) & c("gene_A", "gene_B", "type_A", "type_B") %in% colnames(rl_map)))
-  stopifnot(`features must be either a file path or a named matrix with cells as columns and features as rows` = ((is(
-    features,
-    "character"
-  ) & length(features) == 1) | (is(features, "matrix") & !is.null(rownames(features)) &
-    !is.null(colnames(features))) | (is(features, "data.frame") & !is.null(rownames(features)) &
-    !is.null(colnames(features)))))
-  stopifnot(`rec_min_thresh must be a number between 0 and 1` = (is(rec_min_thresh, "numeric") &
-    rec_min_thresh <= 1 & rec_min_thresh >= 0))
+  check_arg(rl_map, allow_class = "data.frame",
+            need_vars = c("gene_A", "gene_B", "type_A", "type_B"))
+
+  check_arg(features, allow_class = c("data.frame", "character", "matrix"))
+  if (any(class(features) %in% c("data.frame", "matrix"))) {
+    check_arg(features, need_rownames = TRUE, need_colnames = TRUE)
+  }
+
+  if (!is.null(ser)) {
+    check_arg(ser, allow_class = "Seurat")
+  } else {
+    check_arg(counts, allow_class = c("matrix", "data.frame", "Matrix", "dgCMatrix"),
+              need_rownames = TRUE, need_colnames = TRUE)
+    check_arg(z_scores, allow_class = "matrix", need_rownames = TRUE,
+              need_colnames = TRUE)
+    check_arg(clusters, allow_class = "factor", need_names = TRUE)
+  }
+
+  check_arg(rec_min_thresh, allow_class = c("numeric"), allow_range = c(0, 1))
+
+  check_arg(tf_selection_method,
+            allow_values = c("clusters", "variable", "all"))
+
+  if (!is.null(ser) & (!is.null(clusters) | !is.null(z_scores) | !is.null(counts))) {
+    warning("Ser and z_score, clusters, or counts provided. Defaulting to ser.")
+  }
+
   # Create object
   dom <- domino()
   dom@misc[["create"]] <- TRUE
   dom@misc[["build"]] <- FALSE
   dom@misc[["build_vars"]] <- NULL
-  if ((is.null(clusters) | is.null(z_scores) | is.null(counts))) {
-    stop("clusters, counts, and z_scores must be provided")
-  }
-  if (!(tf_selection_method %in% c("all", "clusters", "variable"))) {
-    stop("tf_selection_method must be one of all, clusters, or variable")
-  }
+
   # Read in lr db info
   if (verbose) {
     message("Reading in and processing signaling database")

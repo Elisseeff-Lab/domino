@@ -17,26 +17,20 @@ knitr::opts_chunk$set(
   fig.cap = "",
   tidy = TRUE
 )
-options(timeout = 300)
+options(timeout = 600)
 ```
 
-In order to better implement some of the changes that have been made in dominoSignal, the structure of the domino object has been modified. Here, we describe the data that is stored in the domino object, as well as how best to access this data.
+```{r libraries, include=FALSE}
+library(domino2)
+```
 
-## Setup and data load
-
-In this tutorial, we will use the domino object we built on the [Getting Started](vigenttes("dominoSignal")) page. If you have not yet built a domino object, you can do so by following the instructions on the [Getting Started](vignette("dominoSignal")) page.
-
-```{r setup, include = TRUE}
-library(dominoSignal)
-
-data_url <- "https://zenodo.org/records/10884027/files/pbmc_domino_built.rds"
-tmp_path <- paste0(tempdir(), "/pbmc_domino_built.rds")
-if (!(file.exists(tmp_path) &&
-        tools::md5sum(tmp_path) == "c1ba759a11b61dd36618f71c84f0aa13")) {
-  download.file(url = data_url, destfile = tmp_path)
-}
+```{r setup, include = FALSE}
+bfc <- BiocFileCache::BiocFileCache(ask = FALSE)
+data_url <- "https://zenodo.org/records/10222767/files/pbmc_domino_built.rds"
+tmp_path <- BiocFileCache::bfcrpath(bfc, data_url)
 dom <- readRDS(tmp_path)
 ```
+
 
 
 ## Object contents

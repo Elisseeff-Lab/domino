@@ -33,15 +33,11 @@ In this tutorial, we will use the domino object we built on the [Getting Started
 
 <details><summary>Instructions to load data</summary>
 
-```{r load data}
-data_url <- "https://zenodo.org/records/10884027/files"
-temp_dir <- tempdir()
-
-download.file(
-    url = paste0(data_url, "/pbmc_domino_built.rds"),
-    destfile = paste0(temp_dir, "/pbmc_domino_built.rds")
-)
-dom <- readRDS(paste0(temp_dir, "/pbmc_domino_built.rds"))
+```{r load data, include = FALSE}
+bfc <- BiocFileCache::BiocFileCache(ask = FALSE)
+data_url <- "https://zenodo.org/records/10222767/files/pbmc_domino_built.rds"
+tmp_path <- BiocFileCache::bfcrpath(bfc, data_url)
+dom <- readRDS(tmp_path)
 ```
 </details>
 
