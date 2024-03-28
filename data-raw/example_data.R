@@ -126,7 +126,7 @@ rl_map <- create_rl_map_cellphonedb(
 # Prepare inputs for pbmc object:
 counts = assay(sce, "counts")
 z_scores = t(scale(t(assay(sce, "logcounts"))))
-clusters = sce$cell_type
+clusters = factor(sce$cell_type)
 
 # Create domino object
 pbmc_dom <- create_domino(
@@ -152,4 +152,4 @@ pbmc_dom <- build_domino(
 )
 
 # Save domino object for generating test data
-saveRDS(pbmc_dom, paste0(temp_dir, "pbmc_domino_built.rds"))
+saveRDS(pbmc_dom, file="pbmc_domino_built.rds")
