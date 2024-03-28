@@ -1,9 +1,7 @@
 name: r-build-check
 on:
-    push:
-        branches: ['v0.2.2_development']
     pull_request:
-        branches: ['master', 'v0.2.2']
+        branches: ['master', 'dev']
     workflow_dispatch:
 
 jobs:
