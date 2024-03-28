@@ -1,4 +1,4 @@
-# domino2 v0.2.2
+# dominoSignal v0.2.2
 
 ## Linkage functions
 - Addition of new class to summarize linkages in objects
@@ -8,7 +8,7 @@
 ## Package structure
 - Adjustments made to meet BioConductor standards
 
-# domino2 v0.2.1
+# dominoSignal v0.2.1
 
 ## Updates to domino object construction
 - Uniform formats for inputs of receptor-ligand interaction databases, transcription factor activity features, and regulon gene lists for operability with alternative databases and transcription factor activation inference methods

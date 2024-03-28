@@ -51,7 +51,7 @@ signaling_network(
 
 \item{plot_title}{Text for the plot's title.}
 
-\item{...}{Other parameters to be passed to plot when used with an \code{{igraph}} object.}
+\item{...}{Other parameters to be passed to plot when used with an igraph object.}
 }
 \value{
 an igraph rendered to the active graphics device
@@ -63,10 +63,10 @@ colored based on the color scheme of the ligand expressing cluster.
 }
 \examples{
 #basic usage
-signaling_network(domino2:::pbmc_dom_built_tiny)
+signaling_network(dominoSignal:::pbmc_dom_built_tiny)
 # scaling, thresholds, layouts, selecting clusters
 signaling_network(
- domino2:::pbmc_dom_built_tiny, showOutgoingSignalingClusts = "CD14_monocyte", 
+ dominoSignal:::pbmc_dom_built_tiny, showOutgoingSignalingClusts = "CD14_monocyte", 
  scale = "none", norm = "none", layout = "fr", scale_by = "none", 
  vert_scale = 5)
 

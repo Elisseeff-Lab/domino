@@ -9,8 +9,8 @@
 #'          a data frame that includes the database information used in the domino object creation
 #' @export
 #' @examples
-#' database_name <- dom_database(domino2:::pbmc_dom_built_tiny)
-#' full_database <- dom_database(domino2:::pbmc_dom_built_tiny, name_only = FALSE)
+#' database_name <- dom_database(dominoSignal:::pbmc_dom_built_tiny)
+#' full_database <- dom_database(dominoSignal:::pbmc_dom_built_tiny, name_only = FALSE)
 #' 
 dom_database <- function(dom, name_only = TRUE) {
     db <- slot(dom, "db_info")
@@ -29,7 +29,7 @@ dom_database <- function(dom, name_only = TRUE) {
 #' @return  A matrix containing the z-scored gene expression values for each gene (row) by cell (column)
 #' @export
 #' @examples
-#' zscores <- dom_zscores(domino2:::pbmc_dom_built_tiny)
+#' zscores <- dom_zscores(dominoSignal:::pbmc_dom_built_tiny)
 #'
 dom_zscores <- function(dom) {
     slot(dom, "z_scores")
@@ -43,7 +43,7 @@ dom_zscores <- function(dom) {
 #' @return  A matrix containing the gene expression values for each gene (row) by cell (column)
 #' @export
 #' @examples
-#' counts <- dom_counts(domino2:::pbmc_dom_built_tiny)
+#' counts <- dom_counts(dominoSignal:::pbmc_dom_built_tiny)
 #' 
 dom_counts <- function(dom) {
     as.matrix(slot(dom, "counts"))
@@ -58,8 +58,8 @@ dom_counts <- function(dom) {
 #' @return  A vector containing either the names of the clusters used OR factors of the cluster label for each individual cell
 #' @export
 #' @examples
-#' cluster_names <- dom_clusters(domino2:::pbmc_dom_built_tiny)
-#' cell_cluster_label <- dom_clusters(domino2:::pbmc_dom_built_tiny, labels = TRUE)
+#' cluster_names <- dom_clusters(dominoSignal:::pbmc_dom_built_tiny)
+#' cell_cluster_label <- dom_clusters(dominoSignal:::pbmc_dom_built_tiny, labels = TRUE)
 #' 
 dom_clusters <- function(dom, labels = FALSE) {
     clust <- slot(dom, "clusters")
@@ -78,7 +78,7 @@ dom_clusters <- function(dom, labels = FALSE) {
 #' @return  A matrix containing the transcription factor activation scores for each feature (row) by cell (column)
 #' @export
 #' @examples
-#' tf_activation <- dom_tf_activation(domino2:::pbmc_dom_built_tiny)
+#' tf_activation <- dom_tf_activation(dominoSignal:::pbmc_dom_built_tiny)
 #' 
 dom_tf_activation <- function(dom) {
     slot(dom, "features")
@@ -89,13 +89,22 @@ dom_tf_activation <- function(dom) {
 #' A function to pull receptor-transcription factor correlations from a domino object
 #'
 #' @param dom A domino object that has been created with [create_domino()]
+#' @param type Either "rl" or "complex", to select between the receptor-ligand or complex correlation matrix
 #' @return  A matrix containing the correlation values for each receptor (row) by transcription factor (column)
 #' @export
 #' @examples
-#' cor_matrix <- dom_correlations(domino2:::pbmc_dom_built_tiny)
+#' cor_matrix <- dom_correlations(dominoSignal:::pbmc_dom_built_tiny, "rl")
 #' 
-dom_correlations <- function(dom) {
-    slot(dom, "cor")
+dom_correlations <- function(dom, type = "rl") {
+    if (type == "complex") {
+        corrs = slot(dom, "cor")
+    } else if (type == "rl") {
+        misc = slot(dom, "misc")
+        corrs = misc$rec_cor
+    } else {
+        stop("Type must be either 'rl' or 'complex'")
+    }
+    return(corrs)
 }
 
 #' Access linkages
@@ -110,8 +119,8 @@ dom_correlations <- function(dom) {
 #' @return  A list containing linkages between some combination of receptors, ligands, transcription factors, and clusters
 #' @export
 #' @examples
-#' complexes <- dom_linkages(domino2:::pbmc_dom_built_tiny, "complexes")
-#' tf_rec_by_cluster <- dom_linkages(domino2:::pbmc_dom_built_tiny, "tf-receptor", TRUE)
+#' complexes <- dom_linkages(dominoSignal:::pbmc_dom_built_tiny, "complexes")
+#' tf_rec_by_cluster <- dom_linkages(dominoSignal:::pbmc_dom_built_tiny, "tf-receptor", TRUE)
 #' 
 dom_linkages <- function(dom, link_type = c(
                             "complexes", "receptor-ligand",
@@ -153,7 +162,7 @@ dom_linkages <- function(dom, link_type = c(
 #'          a data.frame containing the global summed signaling scores between receptors (rows) and ligands (columns) of each cluster
 #' @export
 #' @examples
-#' monocyte_signaling <- dom_signaling(domino2:::pbmc_dom_built_tiny, cluster = "CD14_monocyte")
+#' monocyte_signaling <- dom_signaling(dominoSignal:::pbmc_dom_built_tiny, cluster = "CD14_monocyte")
 #' 
 dom_signaling <- function(dom, cluster = NULL) {
     if (is.null(cluster)) {
@@ -171,7 +180,7 @@ dom_signaling <- function(dom, cluster = NULL) {
 #' @return  A matrix containing the p values for differential expression of transcription factors (rows) in each cluster (columns)
 #' @export
 #' @examples
-#' de_mat <- dom_de(domino2:::pbmc_dom_built_tiny)
+#' de_mat <- dom_de(dominoSignal:::pbmc_dom_built_tiny)
 #' 
 dom_de <- function(dom) {
     slot(dom, "clust_de")
@@ -186,7 +195,7 @@ dom_de <- function(dom) {
 #'          build parameters that were used in [build_domino()] to infer the signaling network
 #' @export
 #' @examples
-#' build_details <- dom_info(domino2:::pbmc_dom_built_tiny)
+#' build_details <- dom_info(dominoSignal:::pbmc_dom_built_tiny)
 #' 
 dom_info <- function(dom) {
     info <- slot(dom, "misc")
@@ -209,8 +218,8 @@ dom_info <- function(dom) {
 #' @return A vector containing all features, receptors, or ligands in the data set or a list containing all three.
 #' @export
 #' @examples
-#' monocyte_receptors <- dom_network_items(domino2:::pbmc_dom_built_tiny, "CD14_monocyte", "receptors")
-#' all_tfs <- dom_network_items(domino2:::pbmc_dom_built_tiny, return = "features")
+#' monocyte_receptors <- dom_network_items(dominoSignal:::pbmc_dom_built_tiny, "CD14_monocyte", "receptors")
+#' all_tfs <- dom_network_items(dominoSignal:::pbmc_dom_built_tiny, return = "features")
 #' 
 dom_network_items <- function(dom, clusters = NULL, return = NULL) {
     if (!dom@misc[["build"]]) {
@@ -261,6 +270,7 @@ dom_network_items <- function(dom, clusters = NULL, return = NULL) {
 #' @param need_colnames Logical for whether colnames are required
 #' @param need_rownames Logical for whether rownames are required
 #' @param need_names Logical for whether names are required
+#' @keywords internal
 check_arg <- function(arg, allow_class = NULL, allow_len = NULL,
                       allow_range = NULL, allow_values = NULL,
                       need_vars = c(NULL), need_colnames = FALSE,
@@ -326,6 +336,7 @@ check_arg <- function(arg, allow_class = NULL, allow_len = NULL,
 #'
 #' @param obj Object to read if not already object
 #' @return obj Object itself in case its not a character
+#' @keywords internal
 read_if_char <- function(obj) {
   if (is(obj, "character")) {
     check_arg(obj, allow_class = "character", allow_len = 1)
@@ -338,6 +349,7 @@ read_if_char <- function(obj) {
 #'
 #' @param obj Object that will be converted
 #' @return obj The converted object
+#' @keywords internal
 conv_py_bools <- function(obj) {
   for (x in colnames(obj)) {
     bools <- sort(unique(obj[[x]]))

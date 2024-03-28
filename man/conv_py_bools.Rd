@@ -15,3 +15,4 @@ obj The converted object
 \description{
 Change cases of True/False syntax from Python to TRUE/FALSE R syntax
 }
+\keyword{internal}

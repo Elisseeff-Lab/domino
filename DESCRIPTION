@@ -1,4 +1,4 @@
-Package: domino2
+Package: dominoSignal
 Title: Cell Communication Analysis for Single Cell RNA Sequencing
 Version: 0.99.1
 Authors@R: c(
@@ -11,8 +11,8 @@ Authors@R: c(
     person("Jennifer", "Elisseeff", role = "ctb", email = "jhe@jhu.edu", comment = c(ORCID = "0000-0002-5066-1996"))
     )
 Description: 
-    Domino2 is a package developed to analyze cell signaling through ligand - receptor - transcription factor networks in scRNAseq data. It takes as input information transcriptomic data, requiring counts, z-scored counts, and cluster labels, as well as information on transcription factor activation (such as from SCENIC) and a database of ligand and receptor pairings (such as from cellphoneDB). This package creates an object storing ligand - receptor - transcription factor linkages by cluster and provides several methods for exploring, summarizing, and visualizing the analysis.
-BugReports: https://github.com/FertigLab/domino2/issues
+    dominoSignal is a package developed to analyze cell signaling through ligand - receptor - transcription factor networks in scRNAseq data. It takes as input information transcriptomic data, requiring counts, z-scored counts, and cluster labels, as well as information on transcription factor activation (such as from SCENIC) and a database of ligand and receptor pairings (such as from cellphoneDB). This package creates an object storing ligand - receptor - transcription factor linkages by cluster and provides several methods for exploring, summarizing, and visualizing the analysis.
+BugReports: https://github.com/FertigLab/dominoSignal/issues
 Depends:
     R(>= 4.2.0),
 Imports:
@@ -26,6 +26,7 @@ Imports:
     Matrix,
     methods,
     plyr,
+    SingleCellExperiment,
     stats,
     utils
 License: GPL-3 | file LICENSE
@@ -44,7 +45,9 @@ Suggests:
     Seurat,
     testthat,
     formatR,
-    BiocFileCache
+    BiocFileCache,
+    SingleCellExperiment
 VignetteBuilder: knitr
 Language: en-US
 Roxygen: list(markdown = TRUE)
+URL: https://fertiglab.github.io/dominoSignal/

@@ -1,21 +1,22 @@
 # generate objects for comparison in testing scripts
 
-library(Seurat)
-library(domino2, lib = "../domino_libraries/libraries/v0_2_1/")
+library(SingleCellExperiment)
+library(dominoSignal)
 
 # load data for generation of test results from zenodo repository
 # Zenodo host of outputs from SCENIC analysis
-data_url <- "https://zenodo.org/records/10222767/files"
+data_url <- "https://zenodo.org/records/10884027/files"
 temp_dir <- tempdir()
 
 pbmc_dir <- paste0(temp_dir, "/pbmc")
 if (!dir.exists(pbmc_dir)) {
   dir.create(pbmc_dir)
 }
-# Seurat object of preprocessed PBMC3K data
-download.file(url = paste0(data_url, "/pbmc_seurat.rds"),
-              destfile = paste0(pbmc_dir, "/pbmc_seurat.rds"))
-pbmc <- readRDS(paste0(pbmc_dir, "/pbmc_seurat.rds"))
+
+# SingleCellExperiment object of preprocessed PBMC3K data
+download.file(url = paste0(data_url, "/pbmc_3k_sce.rds"),
+              destfile = paste0(pbmc_dir, "/pbmc_3k_sce.rds"))
+pbmc <- readRDS(paste0(pbmc_dir, "/pbmc_3k_sce.rds"))
 
 # SCENIC input files
 scenic_dir <- paste0(temp_dir, "/scenic")
@@ -69,17 +70,16 @@ for(i in seq_along(cell_types_dwn)){
   cell_list[[cell]] <- dwn_barcodes
 }
 barcodes_dwn <- unlist(cell_list)
-cluster_dwn <- factor(
-    pbmc$cell_type[barcodes_dwn],
-    levels = cell_types_dwn
-)
-clusters_tiny <- cluster_dwn
-RNA_count_tiny <- pbmc@assays$RNA@counts[
-  rownames(pbmc@assays$RNA@counts) %in% RNA_features, 
-  colnames(pbmc@assays$RNA@counts) %in% barcodes_dwn]
-RNA_zscore_tiny <- pbmc@assays$RNA@scale.data[
-  rownames(pbmc@assays$RNA@scale.data) %in% RNA_features, 
-  colnames(pbmc@assays$RNA@scale.data) %in% barcodes_dwn]
+clusters_tiny <- factor(rep(names(cell_list), lengths(cell_list)))
+names(clusters_tiny) <- barcodes_dwn
+
+counts <- assay(pbmc, "counts")
+z_scores <-  t(scale(t(assay(pbmc, "logcounts"))))
+
+RNA_count_tiny <- counts[rownames(assay(pbmc, "counts")) %in% RNA_features,
+                         colnames(assay(pbmc, "counts")) %in% barcodes_dwn]
+RNA_zscore_tiny <- z_scores[rownames(assay(pbmc, "logcounts")) %in% RNA_features,
+                            colnames(assay(pbmc, "logcounts")) %in% barcodes_dwn]
 
 # subset CellPhoneDB inputs
 complexes_tiny <- complexes[complexes$complex_name %in% name_features,]
@@ -100,7 +100,7 @@ colnames(regulons) <- c("TF", "MotifID", "AUC", "NES", "MotifSimilarityQvalue", 
 regulons_tiny <- regulons[regulons$TF %in% TF_features,]
 
 # Make rl_map
-rl_map_tiny <- domino2::create_rl_map_cellphonedb(
+rl_map_tiny <- dominoSignal::create_rl_map_cellphonedb(
   genes = genes_tiny,
   proteins = proteins_tiny,
   interactions = interactions_tiny,
@@ -108,7 +108,7 @@ rl_map_tiny <- domino2::create_rl_map_cellphonedb(
 )
 
 # Get regulon list
-regulon_list_tiny <- domino2::create_regulon_list_scenic(
+regulon_list_tiny <- dominoSignal::create_regulon_list_scenic(
   regulons = regulons_tiny
 )
 

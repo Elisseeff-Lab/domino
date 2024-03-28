@@ -22,9 +22,9 @@ NULL
 #' @return Data frame where each row describes a possible receptor-ligand interaction
 #' @export create_rl_map_cellphonedb
 #' @examples
-#' rl_map_tiny <- create_rl_map_cellphonedb(genes = domino2:::genes_tiny, 
-#'  proteins = domino2:::proteins_tiny, interactions = domino2:::interactions_tiny, 
-#'  complexes = domino2:::complexes_tiny)
+#' rl_map_tiny <- create_rl_map_cellphonedb(genes = dominoSignal:::genes_tiny, 
+#'  proteins = dominoSignal:::proteins_tiny, interactions = dominoSignal:::interactions_tiny, 
+#'  complexes = dominoSignal:::complexes_tiny)
 #' 
 create_rl_map_cellphonedb <- function(
     genes, proteins, interactions, complexes = NULL, database_name = "CellPhoneDB",
@@ -218,7 +218,7 @@ create_rl_map_cellphonedb <- function(
 #' @return A list where names are transcription factors and the stored values are character vectors of genes in the inferred regulons
 #' @export create_regulon_list_scenic
 #' @examples
-#' regulon_list_tiny <- create_regulon_list_scenic(regulons = domino2:::regulons_tiny)
+#' regulon_list_tiny <- create_regulon_list_scenic(regulons = dominoSignal:::regulons_tiny)
 #'
 create_regulon_list_scenic <- function(regulons) {
   if (is(regulons, "character")) {
@@ -256,11 +256,10 @@ create_regulon_list_scenic <- function(regulons) {
 #'
 #' @param rl_map Data frame where each row describes a receptor-ligand interaction with required columns gene_A & gene_B including the gene names for the receptor and ligand and type_A & type_B annotating if genes A and B are a ligand (L) or receptor (R)
 #' @param features Either a path to a csv containing cell level features of interest (ie. the auc matrix from pySCENIC) or named matrix with cells as columns and features as rows.
-#' @param ser Seurat object containing scaled RNA expression data in the RNA assay slot and cluster identity. Either a ser object OR z_scores and clusters must be provided. If ser is present z_scores and clusters will be ignored.
-#' @param counts Counts matrix for the data. If a Seurat object is provided this will be ignored. This is only used to threshold receptors on dropout.
-#' @param z_scores Matrix containing z-scored expression data for all cells with cells as columns and features as rows. Either z_scores and clusters must be provided OR a ser object. If ser is present z_scores and clusters will be ignored.
-#' @param clusters Named factor containing cell cluster with names as cells. Either clusters and z_scores OR ser must be provided. If ser is present z_scores and clusters will be ignored.
-#' @param use_clusters Boolean indicating whether to use the clusters from a Seurat object. If a Seurat object is not provided then this parameter is ignored.
+#' @param counts Counts matrix for the data. This is only used to threshold receptors on dropout.
+#' @param z_scores Matrix containing z-scored expression data for all cells with cells as columns and features as rows.
+#' @param clusters Named factor containing cell cluster with names as cells.
+#' @param use_clusters Boolean indicating whether to use clusters.
 #' @param tf_targets Optional. A list where names are transcription factors and the stored values are character vectors of genes in the transcription factor's regulon.
 #' @param verbose Boolean indicating whether or not to print progress during computation.
 #' @param use_complexes Boolean indicating whether you wish to use receptor/ligand complexes in the receptor ligand signaling database. If FALSE, receptor/ligand pairs where either functions as a protein complex will not be considered when constructing the signaling network.
@@ -272,21 +271,21 @@ create_regulon_list_scenic <- function(regulons) {
 #' @export create_domino
 #' @examples 
 #' pbmc_dom_tiny_all <- pbmc_dom_tiny <- create_domino(
-#'  rl_map = domino2:::rl_map_tiny, features = domino2:::auc_tiny, 
-#'  counts = domino2:::RNA_count_tiny, z_scores = domino2:::RNA_zscore_tiny,
-#'  clusters = domino2:::clusters_tiny, tf_targets = domino2:::regulon_list_tiny, 
+#'  rl_map = dominoSignal:::rl_map_tiny, features = dominoSignal:::auc_tiny, 
+#'  counts = dominoSignal:::RNA_count_tiny, z_scores = dominoSignal:::RNA_zscore_tiny,
+#'  clusters = dominoSignal:::clusters_tiny, tf_targets = dominoSignal:::regulon_list_tiny, 
 #'  use_clusters = FALSE, use_complexes = FALSE, 
 #'  rec_min_thresh = 0.1, remove_rec_dropout = TRUE,
 #'  tf_selection_method = "all")
 #' 
 #' pbmc_dom_tiny_clustered <- create_domino(
-#'  rl_map = domino2:::rl_map_tiny, features = domino2:::auc_tiny, 
-#'  counts = domino2:::RNA_count_tiny, z_scores = domino2:::RNA_zscore_tiny,
-#'  clusters = domino2:::clusters_tiny, tf_targets = domino2:::regulon_list_tiny,
+#'  rl_map = dominoSignal:::rl_map_tiny, features = dominoSignal:::auc_tiny, 
+#'  counts = dominoSignal:::RNA_count_tiny, z_scores = dominoSignal:::RNA_zscore_tiny,
+#'  clusters = dominoSignal:::clusters_tiny, tf_targets = dominoSignal:::regulon_list_tiny,
 #'  use_clusters = TRUE, use_complexes = TRUE, remove_rec_dropout = FALSE)
 #' 
 create_domino <- function(
-    rl_map, features, ser = NULL, counts = NULL, z_scores = NULL,
+    rl_map, features, counts = NULL, z_scores = NULL,
     clusters = NULL, use_clusters = TRUE, tf_targets = NULL, verbose = TRUE,
     use_complexes = TRUE, rec_min_thresh = 0.025, remove_rec_dropout = TRUE,
     tf_selection_method = "clusters", tf_variance_quantile = 0.5) {
@@ -300,24 +299,18 @@ create_domino <- function(
     check_arg(features, need_rownames = TRUE, need_colnames = TRUE)
   }
 
-  if (!is.null(ser)) {
-    check_arg(ser, allow_class = "Seurat")
-  } else {
-    check_arg(counts, allow_class = c("matrix", "data.frame", "Matrix", "dgCMatrix"),
+
+  check_arg(counts, allow_class = c("matrix", "data.frame", "Matrix", "dgCMatrix"),
               need_rownames = TRUE, need_colnames = TRUE)
-    check_arg(z_scores, allow_class = "matrix", need_rownames = TRUE,
+  check_arg(z_scores, allow_class = "matrix", need_rownames = TRUE,
               need_colnames = TRUE)
-    check_arg(clusters, allow_class = "factor", need_names = TRUE)
-  }
+  check_arg(clusters, allow_class = "factor", need_names = TRUE)
+  
 
   check_arg(rec_min_thresh, allow_class = c("numeric"), allow_range = c(0, 1))
 
   check_arg(tf_selection_method,
             allow_values = c("clusters", "variable", "all"))
-
-  if (!is.null(ser) & (!is.null(clusters) | !is.null(z_scores) | !is.null(counts))) {
-    warning("Ser and z_score, clusters, or counts provided. Defaulting to ser.")
-  }
 
   # Create object
   dom <- domino()
@@ -400,13 +393,6 @@ create_domino <- function(
   # Get z-score and cluster info
   if (verbose) {
     message("Getting z_scores, clusters, and counts")
-  }
-  if (!is.null(ser)) {
-    z_scores <- ser@assays$RNA@scale.data
-    if (use_clusters) {
-      clusters <- ser@active.ident
-    }
-    counts <- ser@assays$RNA@counts
   }
   dom@z_scores <- z_scores
   if (!is.null(clusters)) {
@@ -624,7 +610,7 @@ convert_genes <- function(
 #' @export
 #' @examples 
 #' lr_name <- data.frame("abbrev" = c("L", "R"), "full" = c("Ligand", "Receptor"))
-#' rl_map_expanded <- add_rl_column(map = domino2:::rl_map_tiny, map_ref = "type_A",
+#' rl_map_expanded <- add_rl_column(map = dominoSignal:::rl_map_tiny, map_ref = "type_A",
 #'  conv = lr_name, new_name = "type_A_full")
 #' 
 add_rl_column <- function(map, map_ref, conv, new_name) {
@@ -665,7 +651,7 @@ add_rl_column <- function(map, map_ref, conv, new_name) {
 #' @return A data frame of ligand expression targeting the specified receptor
 #' @export
 #' @examples
-#' counts <- dom_counts(domino2:::pbmc_dom_built_tiny)
+#' counts <- dom_counts(dominoSignal:::pbmc_dom_built_tiny)
 #' mean_exp <- mean_ligand_expression(counts,
 #'  ligands = c("PTPRC", "FASLG"), cell_ident = "CD14_monocyte",
 #'  cell_barcodes = colnames(counts), destination = "FAS")
