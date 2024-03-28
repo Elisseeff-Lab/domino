@@ -5,7 +5,7 @@ library(dominoSignal)
 
 # load data for generation of test results from zenodo repository
 # Zenodo host of outputs from SCENIC analysis
-data_url <- "https://zenodo.org/records/10884027/files"
+data_url <- "https://zenodo.org/records/10891353/files"
 temp_dir <- tempdir()
 
 pbmc_dir <- paste0(temp_dir, "/pbmc")

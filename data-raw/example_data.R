@@ -76,7 +76,7 @@ sce$cell_type <- annot[as.character(sce$label)]
 saveRDS(sce, paste0(temp_dir, "pbmc_sce.rds"))
 
 # Load SCENIC outputs
-data_url <- "https://zenodo.org/records/10884027/files"
+data_url <- "https://zenodo.org/records/10891353/files"
 
 scenic_dir <- paste0(temp_dir, "/scenic")
 if (!dir.exists(scenic_dir)) {
