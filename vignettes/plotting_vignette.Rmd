@@ -36,7 +36,7 @@ In this tutorial, we will use the domino object we built on the [Getting Started
 ```{r load data}
 cache = rappdirs::user_cache_dir(appname = "dominoSignal")
 bfc <- BiocFileCache::BiocFileCache(cache, ask = FALSE)
-data_url <- "https://zenodo.org/records/10891353/files/pbmc_domino_built.rds"
+data_url <- "https://zenodo.org/records/10891532/files/pbmc_domino_built.rds"
 tmp_path <- BiocFileCache::bfcrpath(bfc, data_url)
 dom <- readRDS(tmp_path)
 ```

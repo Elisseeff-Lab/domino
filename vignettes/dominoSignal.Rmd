@@ -43,7 +43,7 @@ set.seed(123)
 cache = rappdirs::user_cache_dir(appname = "dominoSignal")
 bfc <- BiocFileCache::BiocFileCache(cache, ask = FALSE)
 
-data_url <- "https://zenodo.org/records/10891353/files"
+data_url <- "https://zenodo.org/records/10891532/files"
 
 # download the reduced pbmc files
 # preprocessed PBMC 3K scRNAseq data set as a Seurat object
@@ -76,7 +76,7 @@ if (!dir.exists(input_dir)) {
 
 ## Data preparation
 
-Analysis of cell-cell communication with dominoSignal often follows initial processing and annotation of scRNAseq data.  We used the [OSCA workflow](https://bioconductor.org/books/3.18/OSCA.workflows/unfiltered-human-pbmcs-10x-genomics.html) to prepare the data set for analysis with dominoSignal. The [complete processing script](data-raw/example_data.R) is available in the data-raw directory of the dominoSignal package. The processed data can be downloaded from [Zenodo](https://zenodo.org/records/10891353).
+Analysis of cell-cell communication with dominoSignal often follows initial processing and annotation of scRNAseq data.  We used the [OSCA workflow](https://bioconductor.org/books/3.18/OSCA.workflows/unfiltered-human-pbmcs-10x-genomics.html) to prepare the data set for analysis with dominoSignal. The [complete processing script](data-raw/example_data.R) is available in the data-raw directory of the dominoSignal package. The processed data can be downloaded from [Zenodo](10.5281/zenodo.10124865).
 
 ```{r}
 pbmc <- readRDS(pbmc)
