@@ -39,6 +39,7 @@ signaling_heatmap <- function(
     stop("This domino object wasn't built with clusters so intercluster signaling cannot be generated.")
   }
   mat <- dom@signaling
+
   if (!is.null(clusts)) {
     mat <- mat[paste0("R_", clusts), paste0("L_", clusts)]
   }
@@ -58,6 +59,11 @@ signaling_heatmap <- function(
   } else if (normalize != "none") {
     stop("Do not recognize normalize input")
   }
+  if (any(is.na(mat))) { 
+    warning("Some values are NA, replacing with 0s.")
+    mat[is.na(mat)] <- 0
+  }
+
   Heatmap(
     mat,
     name = "collective\nsignaling",
@@ -103,6 +109,7 @@ incoming_signaling_heatmap <- function(
     message("No signaling found for this cluster under build parameters.")
     return()
   }
+
   if (!is.null(clusts)) {
     mat <- mat[, paste0("L_", clusts), drop = FALSE]
   }
@@ -126,6 +133,12 @@ incoming_signaling_heatmap <- function(
   } else if (normalize != "none") {
     stop("Do not recognize normalize input")
   }
+
+  if (any(is.na(mat))) { 
+    warning("Some values are NA, replacing with 0s.")
+    mat[is.na(mat)] <- 0
+  }
+
   if (title == TRUE) {
     return(
       Heatmap(
@@ -199,6 +212,12 @@ signaling_network <- function(
   }
   # Get signaling matrix
   mat <- dom@signaling
+
+  if (any(is.na(mat))) { 
+    warning("Some values are NA, replacing with 0s.")
+    mat[is.na(mat)] <- 0
+  }
+
   if (!is.null(clusts)) {
     mat <- mat[paste0("R_", clusts), paste0("L_", clusts), drop = FALSE]
   }
@@ -216,6 +235,7 @@ signaling_network <- function(
     cols <- ggplot_col_gen(length(levels(dom@clusters)))
     names(cols) <- levels(dom@clusters)
   }
+
   mat[which(mat > max_thresh)] <- max_thresh
   mat[which(mat < min_thresh)] <- min_thresh
   if (scale == "sqrt") {
