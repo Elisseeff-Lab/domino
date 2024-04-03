@@ -76,6 +76,8 @@ sce$cell_type <- annot[as.character(sce$label)]
 saveRDS(sce, paste0(temp_dir, "pbmc_sce.rds"))
 
 # Load SCENIC outputs
+data_url <- "https://zenodo.org/records/10891532/files"
+
 scenic_dir <- paste0(temp_dir, "/scenic")
 if (!dir.exists(scenic_dir)) {
   dir.create(scenic_dir)
@@ -122,9 +124,10 @@ rl_map <- create_rl_map_cellphonedb(
 )
 
 # Prepare inputs for pbmc object:
-counts = assay(sce, "counts")
-z_scores = t(scale(t(assays(sce, "logcounts"))))
-clusters = sce$cell_type
+counts <- assay(sce, "counts")
+z_scores <- t(scale(t(assay(sce, "logcounts"))))
+clusters <- factor(sce$cell_type)
+names(clusters) <- colnames(sce)
 
 # Create domino object
 pbmc_dom <- create_domino(
@@ -150,4 +153,4 @@ pbmc_dom <- build_domino(
 )
 
 # Save domino object for generating test data
-saveRDS(pbmc_dom, paste0(temp_dir, "pbmc_domino_built.rds"))
+saveRDS(pbmc_dom, file="pbmc_domino_built.rds")
