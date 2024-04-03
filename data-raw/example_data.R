@@ -29,6 +29,14 @@ colData(sce) <- cbind(colData(sce), stats)
 sce$discard <- high.mito
 sce <- sce[,!high.mito]
 
+# Remove features with no expression
+feat_keep <- apply(
+  assay(sce, "counts"), 
+  MARGIN = 1,
+  FUN = function(x) {sum(x) > 0}
+)
+sce <- sce[feat_keep,]
+
 # Normalization
 set.seed(1000)
 clusters <- quickCluster(sce)
