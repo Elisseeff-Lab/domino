@@ -757,7 +757,7 @@ cor_scatter <- function(dom, tf, rec, remove_rec_dropout = TRUE, ...) {
 #' #specify colors
 #' cols = c("red", "orange", "green", "blue", "pink", "purple", "slategrey", "firebrick", "hotpink")
 #' names(cols) = levels(dominoSignal:::pbmc_dom_built_tiny@clusters)
-#' circos_ligand_receptor(dominoSignal:::pbmc_dom_built_tiny, receptor = "FAS", cell_colors = cols)
+#' circos_ligand_receptor(dominoSignal:::pbmc_dom_built_tiny, receptor = "CXCR3", cell_colors = cols)
 #' 
 circos_ligand_receptor <- function(
     dom, receptor, ligand_expression_threshold = 0.01, cell_idents = NULL,
