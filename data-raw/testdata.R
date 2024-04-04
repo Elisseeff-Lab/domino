@@ -47,18 +47,22 @@ proteins <- read.csv(paste0(cellphone_data, "/protein_input.csv"), stringsAsFact
 
 # subset the pbmc data to fewer cells to meet package requirements
 RNA_features <- c(
-  "TNF", "TNFSF13", "FASLG", "FAS", 
-  "ITGAM", "ITGB2", "ITGAV", "ITGB3", "FCER2", 
+  "CCL20", "CXCR3", "CCR6",
   "IL7", "IL7R", "IL2RG",
-  "CD22", "PTPRC",
-  "IGF1", "IGF1R")
-TF_features <- c("ZNF257", "ATF4", "RUNX1")
+  "TGFB3", "TGFBR3",
+  "ITGA6", "ITGB4", "NRG1"
+  )
+TF_features <- c(
+  "DBP",
+  "FLI1", "ZNF431",
+  "ZNF324", "CREM", "FOSL1"
+)
 name_features <- c(
-  "TNF", "TNFSF13", "FASLG", "FAS", 
-  "integrin_aMb2_complex", "integrin_aVb3_complex", "FCER2", 
-  "IL7", "IL7_receptor", 
-  "CD22", "PTPRC",
-  "IGF1", "IGF1R")
+  "CCL20", "CXCR3", "CCR6",
+  "IL7", "IL7_receptor",
+  "TGFB3", "TGFBR3",
+  "integrin_a6b4_complex", "NRG1"
+  )
 cell_types_dwn <- c("CD8_T_cell", "CD14_monocyte", "B_cell")
 n <- 120
 cell_list <- list()
@@ -74,7 +78,7 @@ clusters_tiny <- factor(rep(names(cell_list), lengths(cell_list)))
 names(clusters_tiny) <- barcodes_dwn
 
 counts <- assay(pbmc, "counts")
-z_scores <-  t(scale(t(assay(pbmc, "logcounts"))))
+z_scores <- t(scale(t(assay(pbmc, "logcounts"))))
 
 RNA_count_tiny <- counts[rownames(assay(pbmc, "counts")) %in% RNA_features,
                          colnames(assay(pbmc, "counts")) %in% barcodes_dwn]
