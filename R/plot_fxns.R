@@ -723,7 +723,7 @@ cor_heatmap <- function(
 #' @return a ggplot object
 #' @export cor_scatter
 #' @examples
-#' cor_scatter(dominoSignal:::pbmc_dom_built_tiny, "ATF4","CD22")
+#' cor_scatter(dominoSignal:::pbmc_dom_built_tiny, "FLI1","CXCR3")
 #'
 cor_scatter <- function(dom, tf, rec, remove_rec_dropout = TRUE, ...) {
   if (remove_rec_dropout) {
