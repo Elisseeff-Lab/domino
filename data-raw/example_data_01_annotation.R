@@ -80,4 +80,4 @@ annot <- c(
 
 sce$cell_type <- annot[as.character(sce$label)]
 
-saveRDS(sce, paste0(temp_dir, "/pbmc3k_sce.rds"))
+saveRDS(sce, "pbmc3k_sce.rds")

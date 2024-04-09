@@ -1,4 +1,5 @@
 #!/bin/bash
+# usage example_data_03_SCENIC.sh path_to_loom_counts_data
 
 # example_data_03_SCENIC
 
@@ -8,10 +9,8 @@ mkdir ${SCENIC_DIR}
 # install SCENIC 0.11.0 singularity image
 singularity build "${SCENIC_DIR}/aertslab-pyscenic-0.12.1.sif" docker://aertslab/pyscenic:0.12.1
 
-# download pbmc counts data
-DATA_URL="https://zenodo.org/records/10891532/files"
-curl "${DATA_URL}/pbmc3k_counts.loom"
-  -o "${SCENIC_DIR}/pbmc3k_counts.loom"
+# copy input  pbmc counts data
+cp $1 "${SCENIC_DIR}/"
 
 # Matrix containing motifs as rows and genes as columns and ranking position for each gene and motif (based on CRM scores) as values. URLs provided link to v2 feather files required for the 0.12.1 version of pySENIC.
 curl "https://resources.aertslab.org/cistarget/databases/homo_sapiens/hg38/refseq_r80/mc_v10_clust/gene_based/hg38_10kbp_up_10kbp_down_full_tx_v10_clust.genes_vs_motifs.rankings.feather" \

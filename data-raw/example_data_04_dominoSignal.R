@@ -9,21 +9,14 @@ library(dominoSignal)
 temp_dir <- tempdir()
 
 # obtain expression data
-data_url <- "https://zenodo.org/records/10891532/files"
-download.file(url = paste0(data_url, "/pbmc3k_sce.rds"),
-              destfile = paste0(temp_dir, "/pbmc3k_sce.rds"))
-sce <- readRDS(paste0(temp_dir, "/pbmc3k_sce.rds"))
+sce <- readRDS("pbmc3k_sce.rds")
 
 # obtain SCENIC data
 
-scenic_dir <- paste0(temp_dir, "/scenic")
+scenic_dir <- "scenic"
 if (!dir.exists(scenic_dir)) {
-  dir.create(scenic_dir)
+  stop("there is no scenic dir, have you ran example_data_04 script?")
 }
-download.file(url = paste0(data_url, "/scenic_auc_pbmc_3k.csv"),
-              destfile = paste0(scenic_dir, "/auc_pbmc_3k.csv"))
-download.file(url = paste0(data_url, "/scenic_regulons_pbmc_3k.csv"),
-              destfile = paste0(scenic_dir, "/regulons_pbmc_3k.csv"))
 auc <- read.table(paste0(scenic_dir, "/auc_pbmc_3k.csv"),
                   header = TRUE, row.names = 1,
                   stringsAsFactors = FALSE, sep = ",")
@@ -91,4 +84,4 @@ pbmc_dom <- build_domino(
 )
 
 # Save domino object for generating test data
-saveRDS(pbmc_dom, file= paste0(temp_dir, "/pbmc_domino_built.rds"))
+saveRDS(pbmc_dom, file="pbmc_domino_built.rds")
