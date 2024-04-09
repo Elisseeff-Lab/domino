@@ -5,7 +5,7 @@ library(dominoSignal)
 
 # load data for generation of test results from zenodo repository
 # Zenodo host of outputs from SCENIC analysis
-data_url <- "https://zenodo.org/records/10891532/files"
+data_url <- "https://zenodo.org/records/10951634/files"
 temp_dir <- tempdir()
 
 pbmc_dir <- paste0(temp_dir, "/pbmc")
@@ -14,18 +14,18 @@ if (!dir.exists(pbmc_dir)) {
 }
 
 # SingleCellExperiment object of preprocessed PBMC3K data
-download.file(url = paste0(data_url, "/pbmc_3k_sce.rds"),
-              destfile = paste0(pbmc_dir, "/pbmc_3k_sce.rds"))
-pbmc <- readRDS(paste0(pbmc_dir, "/pbmc_3k_sce.rds"))
+download.file(url = paste0(data_url, "/pbmc3k_sce.rds"),
+              destfile = paste0(pbmc_dir, "/pbmc3k_sce.rds"))
+pbmc <- readRDS(paste0(pbmc_dir, "/pbmc3k_sce.rds"))
 
 # SCENIC input files
 scenic_dir <- paste0(temp_dir, "/scenic")
 if (!dir.exists(scenic_dir)) {
   dir.create(scenic_dir)
 }
-download.file(url = paste0(data_url, "/scenic_auc_pbmc_3k.csv"),
+download.file(url = paste0(data_url, "/auc_pbmc_3k.csv"),
               destfile = paste0(scenic_dir, "/auc_pbmc_3k.csv"))
-download.file(url = paste0(data_url, "/scenic_regulons_pbmc_3k.csv"),
+download.file(url = paste0(data_url, "/regulons_pbmc_3k.csv"),
               destfile = paste0(scenic_dir, "/regulons_pbmc_3k.csv"))
 auc <- read.table(paste0(scenic_dir, "/auc_pbmc_3k.csv"),
                   header = TRUE, row.names = 1,
