@@ -20,7 +20,7 @@ test_that("rename_clusters function works correctly", {
   dom@cl_signaling_matrices <- list(A = mock_sm, B = mock_sm)
 
   # Define the cluster conversion, C=Z does not match data intentionally
-  clust_conv <- c("A" = "X", "B" = "Y")
+  clust_conv <- c("A" = "X", "B" = "Y", "C" = "Z")
 
   # Run the function
   dom_renamed <- rename_clusters(dom, clust_conv)
