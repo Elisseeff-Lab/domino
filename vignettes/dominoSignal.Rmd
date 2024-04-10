@@ -40,10 +40,8 @@ set.seed(123)
 <details><summary>Data used in our vignettes can be downloaded from Zenodo</summary>
 
 ```{r files}
-cache = rappdirs::user_cache_dir(appname = "dominoSignal")
-bfc <- BiocFileCache::BiocFileCache(cache, ask = FALSE)
-
-data_url <- "https://zenodo.org/records/10891532/files"
+bfc <- BiocFileCache::BiocFileCache(ask = FALSE)
+data_url <- "https://zenodo.org/records/10951634/files"
 
 # download the reduced pbmc files
 # preprocessed PBMC 3K scRNAseq data set as a Seurat object
