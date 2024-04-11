@@ -5,7 +5,7 @@ library(dominoSignal)
 
 # load data for generation of test results from zenodo repository
 # Zenodo host of outputs from SCENIC analysis
-data_url <- "https://zenodo.org/records/10891532/files"
+data_url <- "https://zenodo.org/records/10951634/files"
 temp_dir <- tempdir()
 
 pbmc_dir <- paste0(temp_dir, "/pbmc")
@@ -14,18 +14,18 @@ if (!dir.exists(pbmc_dir)) {
 }
 
 # SingleCellExperiment object of preprocessed PBMC3K data
-download.file(url = paste0(data_url, "/pbmc_3k_sce.rds"),
-              destfile = paste0(pbmc_dir, "/pbmc_3k_sce.rds"))
-pbmc <- readRDS(paste0(pbmc_dir, "/pbmc_3k_sce.rds"))
+download.file(url = paste0(data_url, "/pbmc3k_sce.rds"),
+              destfile = paste0(pbmc_dir, "/pbmc3k_sce.rds"))
+pbmc <- readRDS(paste0(pbmc_dir, "/pbmc3k_sce.rds"))
 
 # SCENIC input files
 scenic_dir <- paste0(temp_dir, "/scenic")
 if (!dir.exists(scenic_dir)) {
   dir.create(scenic_dir)
 }
-download.file(url = paste0(data_url, "/scenic_auc_pbmc_3k.csv"),
+download.file(url = paste0(data_url, "/auc_pbmc_3k.csv"),
               destfile = paste0(scenic_dir, "/auc_pbmc_3k.csv"))
-download.file(url = paste0(data_url, "/scenic_regulons_pbmc_3k.csv"),
+download.file(url = paste0(data_url, "/regulons_pbmc_3k.csv"),
               destfile = paste0(scenic_dir, "/regulons_pbmc_3k.csv"))
 auc <- read.table(paste0(scenic_dir, "/auc_pbmc_3k.csv"),
                   header = TRUE, row.names = 1,
@@ -47,18 +47,22 @@ proteins <- read.csv(paste0(cellphone_data, "/protein_input.csv"), stringsAsFact
 
 # subset the pbmc data to fewer cells to meet package requirements
 RNA_features <- c(
-  "TNF", "TNFSF13", "FASLG", "FAS", 
-  "ITGAM", "ITGB2", "ITGAV", "ITGB3", "FCER2", 
+  "CCL20", "CXCR3", "CCR6",
   "IL7", "IL7R", "IL2RG",
-  "CD22", "PTPRC",
-  "IGF1", "IGF1R")
-TF_features <- c("ZNF257", "ATF4", "RUNX1")
+  "TGFB3", "TGFBR3",
+  "ITGA6", "ITGB4", "NRG1"
+  )
+TF_features <- c(
+  "DBP",
+  "FLI1", "ZNF431",
+  "ZNF324", "CREM", "FOSL1"
+)
 name_features <- c(
-  "TNF", "TNFSF13", "FASLG", "FAS", 
-  "integrin_aMb2_complex", "integrin_aVb3_complex", "FCER2", 
-  "IL7", "IL7_receptor", 
-  "CD22", "PTPRC",
-  "IGF1", "IGF1R")
+  "CCL20", "CXCR3", "CCR6",
+  "IL7", "IL7_receptor",
+  "TGFB3", "TGFBR3",
+  "integrin_a6b4_complex", "NRG1"
+  )
 cell_types_dwn <- c("CD8_T_cell", "CD14_monocyte", "B_cell")
 n <- 120
 cell_list <- list()
@@ -74,7 +78,7 @@ clusters_tiny <- factor(rep(names(cell_list), lengths(cell_list)))
 names(clusters_tiny) <- barcodes_dwn
 
 counts <- assay(pbmc, "counts")
-z_scores <-  t(scale(t(assay(pbmc, "logcounts"))))
+z_scores <- t(scale(t(assay(pbmc, "logcounts"))))
 
 RNA_count_tiny <- counts[rownames(assay(pbmc, "counts")) %in% RNA_features,
                          colnames(assay(pbmc, "counts")) %in% barcodes_dwn]

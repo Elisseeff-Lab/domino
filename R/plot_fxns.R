@@ -723,7 +723,7 @@ cor_heatmap <- function(
 #' @return a ggplot object
 #' @export cor_scatter
 #' @examples
-#' cor_scatter(dominoSignal:::pbmc_dom_built_tiny, "ATF4","CD22")
+#' cor_scatter(dominoSignal:::pbmc_dom_built_tiny, "FLI1","CXCR3")
 #'
 cor_scatter <- function(dom, tf, rec, remove_rec_dropout = TRUE, ...) {
   if (remove_rec_dropout) {
@@ -753,11 +753,11 @@ cor_scatter <- function(dom, tf, rec, remove_rec_dropout = TRUE, ...) {
 #' @export circos_ligand_receptor
 #' @examples 
 #' #basic usage
-#' circos_ligand_receptor(dominoSignal:::pbmc_dom_built_tiny, receptor = "FAS")
+#' circos_ligand_receptor(dominoSignal:::pbmc_dom_built_tiny, receptor = "CXCR3")
 #' #specify colors
 #' cols = c("red", "orange", "green", "blue", "pink", "purple", "slategrey", "firebrick", "hotpink")
 #' names(cols) = levels(dominoSignal:::pbmc_dom_built_tiny@clusters)
-#' circos_ligand_receptor(dominoSignal:::pbmc_dom_built_tiny, receptor = "FAS", cell_colors = cols)
+#' circos_ligand_receptor(dominoSignal:::pbmc_dom_built_tiny, receptor = "CXCR3", cell_colors = cols)
 #' 
 circos_ligand_receptor <- function(
     dom, receptor, ligand_expression_threshold = 0.01, cell_idents = NULL,
