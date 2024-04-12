@@ -50,13 +50,9 @@ rename_clusters <- function(dom, clust_conv, warning = FALSE) {
         sig_ligands <- colnames(dom@signaling)
         sig_rec <- rownames(dom@signaling)
         # Remove L_ prefix
-        sig_ligand_clust <- vapply(sig_ligands, function(x) {
-            stringr::str_remove(x, "L_")
-        }, FUN.VALUE = character(1))
+        sig_ligand_clust <- gsub("^L_", "", sig_ligands)
         # Remove R_ prefix
-        sig_rec_clust <- vapply(sig_rec, function(x) {
-            stringr::str_remove(x, "R_")
-        }, FUN.VALUE = character(1))
+        sig_rec_clust <- gsub("^R_", "", sig_rec)
         new_lig_clust <- plyr::revalue(sig_ligand_clust, clust_conv, warn_missing = warning)
         new_rec_clust <- plyr::revalue(sig_rec_clust, clust_conv, warn_missing = warning)
         colnames(dom@signaling) <- paste0("L_", new_lig_clust)
@@ -68,9 +64,7 @@ rename_clusters <- function(dom, clust_conv, warning = FALSE) {
         for (cl in names(dom@cl_signaling_matrices)) {
             cl_sig_ligands <- colnames(dom@cl_signaling_matrices[[cl]])
             # Remove L_ prefix
-            cl_sig_lig_clust <- vapply(cl_sig_ligands, function(x) {
-                stringr::str_remove(x, "L_")
-            }, FUN.VALUE = character(1))
+            cl_sig_lig_clust <- gsub("^L_", "", cl_sig_ligands)
             cl_sig_lig_new <- plyr::revalue(cl_sig_lig_clust, clust_conv, warn_missing = warning)
             colnames(dom@cl_signaling_matrices[[cl]]) <- paste0("L_", cl_sig_lig_new)
         }
