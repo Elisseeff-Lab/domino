@@ -40,21 +40,19 @@ set.seed(123)
 <details><summary>Data used in our vignettes can be downloaded from Zenodo</summary>
 
 ```{r files}
-cache = rappdirs::user_cache_dir(appname = "dominoSignal")
-bfc <- BiocFileCache::BiocFileCache(cache, ask = FALSE)
-
-data_url <- "https://zenodo.org/records/10891532/files"
+bfc <- BiocFileCache::BiocFileCache(ask = FALSE)
+data_url <- "https://zenodo.org/records/10951634/files"
 
 # download the reduced pbmc files
 # preprocessed PBMC 3K scRNAseq data set as a Seurat object
-pbmc_url <- paste0(data_url, "/pbmc_3k_sce.rds")
+pbmc_url <- paste0(data_url, "/pbmc3k_sce.rds")
 pbmc <- BiocFileCache::bfcrpath(bfc, pbmc_url)
 
 # download scenic results
-scenic_auc_url <- paste0(data_url, "/scenic_auc_pbmc_3k.csv")
+scenic_auc_url <- paste0(data_url, "/auc_pbmc_3k.csv")
 scenic_auc <- BiocFileCache::bfcrpath(bfc, scenic_auc_url)
 
-scenic_regulon_url <- paste0(data_url, "/scenic_regulons_pbmc_3k.csv")
+scenic_regulon_url <- paste0(data_url, "/regulons_pbmc_3k.csv")
 scenic_regulon <- BiocFileCache::bfcrpath(bfc, scenic_regulon_url)
 
 # download cellphoneDB files

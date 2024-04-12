@@ -26,7 +26,6 @@ Imports:
     Matrix,
     methods,
     plyr,
-    SingleCellExperiment,
     stats,
     utils
 License: GPL-3 | file LICENSE

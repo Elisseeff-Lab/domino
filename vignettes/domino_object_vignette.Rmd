@@ -25,9 +25,8 @@ library(dominoSignal)
 ```
 
 ```{r setup}
-cache = rappdirs::user_cache_dir(appname = "dominoSignal")
-bfc <- BiocFileCache::BiocFileCache(cache, ask = FALSE)
-data_url <- "https://zenodo.org/records/10891532/files/pbmc_domino_built.rds"
+bfc <- BiocFileCache::BiocFileCache(ask = FALSE)
+data_url <- "https://zenodo.org/records/10951634/files/pbmc_domino_built.rds"
 tmp_path <- BiocFileCache::bfcrpath(bfc, data_url)
 dom <- readRDS(tmp_path)
 ```
