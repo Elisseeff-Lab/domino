@@ -890,13 +890,11 @@ circos_ligand_receptor <- function(
 #' @return a Heatmap-class object of features ranked by test_statistic annotated with the proportion of subjects that showed active linkage of the features.
 #' @export
 #' @examples
-#' \dontrun{
 #' plot_differential_linkages(
-#'  differential_linkages = diff_linkages_tiny,
+#'  differential_linkages = dominoSignal:::tiny_differential_linkage_c1,
 #'  test_statistic = "p.value",
 #'  stat_ranking = "ascending"
 #' )
-#' }
 #'
 plot_differential_linkages <- function(
     differential_linkages, test_statistic, stat_range = c(0, 1),
