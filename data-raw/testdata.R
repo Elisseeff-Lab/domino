@@ -140,7 +140,7 @@ pbmc_dom_built_tiny <- build_domino(
 )
 
 # example linkage summary for comparitive functions
-linkage_sum_tiny <- linkage_summary(
+linkage_sum_tiny <- new("linkage_summary",
   subject_meta = data.frame(
     "subject_names" = paste0("P",1:6),
     "group" = c(rep("G1", 3), rep("G2", 3))
@@ -248,8 +248,18 @@ linkage_sum_tiny <- linkage_summary(
   )
 )
 
+# test result object from differential linkage tests
+tiny_differential_linkage_c1 <- test_differential_linkages(
+  linkage_summary = linkage_sum_tiny, cluster = "C1", group.by = "group", 
+  linkage = "rec", subject_names = linkage_sum_tiny@subject_names, test_name = "fishers.exact"
+)
+tiny_differential_linkage_c2 <- test_differential_linkages(
+  linkage_summary = linkage_sum_tiny, cluster = "C2", group.by = "group", 
+  linkage = "rec", subject_names = linkage_sum_tiny@subject_names, test_name = "fishers.exact"
+)
 
 # Save all test files to internal sysdata object
 usethis::use_data(pbmc_dom_built_tiny, complexes_tiny, genes_tiny, proteins_tiny, interactions_tiny,
     pbmc_dom_tiny, regulon_list_tiny, rl_map_tiny, regulons_tiny, clusters_tiny,
-    RNA_count_tiny, RNA_zscore_tiny, auc_tiny, linkage_sum_tiny, internal = TRUE)
+    RNA_count_tiny, RNA_zscore_tiny, auc_tiny, linkage_sum_tiny, 
+    tiny_differential_linkage_c1, tiny_differential_linkage_c2, internal = TRUE)
