@@ -108,10 +108,9 @@ summarize_linkages <- function(domino_results, subject_meta, subject_names = NUL
 #' @return a data frame with columns for the unique linkage features and the counts of how many times the linkage occured across the compared domino results. If group.by is used, counts of the linkages are also provided as columns named by the unique values of the group.by variable.
 #' @export
 #' @examples
-#' \dontrun{
-#' count_linkage(linkage_summary = linkage_ls, cluster = "CD8_T_cell", 
-#'  group.by = "group", linkage = "rec_lig")
-#' }
+#' count_linkage(
+#'   linkage_summary = dominoSignal:::linkage_sum_tiny, cluster = "C1", 
+#'   group.by = "group", linkage = "rec")
 #' 
 count_linkage <- function(linkage_summary, cluster, group.by = NULL, linkage = "rec_lig", subject_names = NULL) {
   if (is.null(subject_names)) {
@@ -170,10 +169,10 @@ count_linkage <- function(linkage_summary, cluster, group.by = NULL, linkage = "
 #' }
 #' @export
 #' @examples
-#' \dontrun{
-#' test_differential_linkages(linkage_summary = linkage_ls, cluster = "CD8_T_cell", 
-#'  group.by = "group", linkage = "rec_lig", test_name = "fishers.exact")
-#' }
+#' test_differential_linkages(
+#'   linkage_summary = dominoSignal:::linkage_sum_tiny, cluster = "C1", group.by = "group", 
+#'   linkage = "rec", test_name = "fishers.exact"
+#' )
 #' 
 test_differential_linkages <- function(linkage_summary, cluster, group.by, linkage = "rec_lig", subject_names = NULL,
   test_name = "fishers.exact") {
