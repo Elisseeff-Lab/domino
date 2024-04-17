@@ -12,13 +12,12 @@ NULL
 #' @return A linkage summary class object consisting of nested lists of the active transcription factors, active receptors, and incoming ligands for each cluster across multiple domino results.
 #' @export
 #' @examples 
-#' \dontrun{
-#' meta_df <- data.frame("ID" = c("P1", "P2"), "group" = c("A", "B"))
-#' dom_ls <- list("P1" = dom1, "P2" = dom2)
+#' dom_ls <- dominoSignal:::dom_ls_tiny
+#' meta_df <- data.frame("ID" = c("dom1", "dom2"), "group" = c("A", "B"))
 #' summarize_linkages(
 #'  domino_results = dom_ls, subject_meta = meta_df, 
-#'  subject_names = meta_df$ID)
-#' }
+#'  subject_names = meta_df$ID
+#')
 #' 
 summarize_linkages <- function(domino_results, subject_meta, subject_names = NULL) {
   if (!is(domino_results, "list")) {
