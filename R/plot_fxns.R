@@ -365,7 +365,7 @@ gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL,
       # Check if signaling exists for target cluster
       mat <- dom@cl_signaling_matrices[[cl]]
       if (dim(mat)[1] == 0) {
-        message(paste("No signaling found for", cl, "under build parameters."))
+        message("No signaling found for ", cl, " under build parameters.")
         (next)()
       }
       all_sums <- c(all_sums, rowSums(mat))
@@ -553,7 +553,7 @@ feat_heatmap <- function(
     na <- which(is.na(mid))
     na_feats <- paste(feats[na], collapse = " ")
     if (length(na) != 0) {
-      message(paste("Unable to find", na_feats))
+      message("Unable to find ", na_feats)
       feats <- feats[-na]
     }
   } else if (feats == "all") {
@@ -659,7 +659,7 @@ cor_heatmap <- function(
     na <- which(is.na(mid))
     na_feats <- paste(feats[na], collapse = " ")
     if (length(na) != 0) {
-      message(paste("Unable to find", na_feats))
+      message("Unable to find ", na_feats)
       feats <- feats[-na]
     }
   } else if (identical(feats, "all")) {
@@ -783,7 +783,7 @@ circos_ligand_receptor <- function(
       signaling_df <- rbind(signaling_df, df)
     }
   } else {
-    stop(paste0("No clusters have active ", receptor, " signaling"))
+    stop("No clusters have active ", receptor, " signaling")
   }
   signaling_df$mean.expression[is.na(signaling_df$mean.expression)] <- 0
   # create a scaled mean expression plot for coord widths greater than 1 by dividing by the max
@@ -791,7 +791,7 @@ circos_ligand_receptor <- function(
   signaling_df$scaled.mean.expression <- signaling_df$mean.expression / max(signaling_df$mean.expression)
   # exit function if no ligands are expressed above ligand expression threshold
   if (sum(signaling_df[["mean.expression"]] > ligand_expression_threshold) == 0) {
-    stop(paste0("No ligands of ", receptor, " exceed ligand expression threshold."))
+    stop("No ligands of ", receptor, " exceed ligand expression threshold.")
   }
   # initialize chord diagram with even ligand arcs
   arc_df <- signaling_df[, c("origin", "destination")]
@@ -900,7 +900,7 @@ plot_differential_linkages <- function(
     differential_linkages, test_statistic, stat_range = c(0, 1),
     stat_ranking = c("ascending", "descending"), group_palette = NULL) {
   if (!test_statistic %in% colnames(differential_linkages)) {
-    stop(paste0("test statistic '", test_statistic, "' not present in colnames(differential_linkages)"))
+    stop("test statistic '", test_statistic, "' not present in colnames(differential_linkages)")
   }
   if (identical(stat_ranking, c("ascending", "descending"))) {
     warning("stat_ranking order not specified. Defaulting to ascending order")
@@ -913,7 +913,7 @@ plot_differential_linkages <- function(
   df <- differential_linkages[differential_linkages[[test_statistic]] >= stat_range[1] & differential_linkages[[test_statistic]] <=
     stat_range[2], ]
   if (nrow(df) == 0) {
-    stop(paste0("No features with '", test_statistic, "' within stat_range"))
+    stop("No features with '", test_statistic, "' within stat_range")
   }
   # order df by plot statistic
   if (stat_ranking == "ascending") {
