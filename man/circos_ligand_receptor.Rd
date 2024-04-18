@@ -35,7 +35,7 @@ receptor where chord widths correspond to mean ligand expression by the cluster.
 circos_ligand_receptor(dominoSignal:::pbmc_dom_built_tiny, receptor = "CXCR3")
 #specify colors
 cols = c("red", "orange", "green", "blue", "pink", "purple", "slategrey", "firebrick", "hotpink")
-names(cols) = levels(dominoSignal:::pbmc_dom_built_tiny@clusters)
+names(cols) = levels(dom_clusters(dominoSignal:::pbmc_dom_built_tiny))
 circos_ligand_receptor(dominoSignal:::pbmc_dom_built_tiny, receptor = "CXCR3", cell_colors = cols)
 
 }
