@@ -270,7 +270,7 @@ create_regulon_list_scenic <- function(regulons) {
 #' @return A domino object
 #' @export create_domino
 #' @examples 
-#' pbmc_dom_tiny_all <- pbmc_dom_tiny <- create_domino(
+#' pbmc_dom_tiny_all <- create_domino(
 #'  rl_map = dominoSignal:::rl_map_tiny, features = dominoSignal:::auc_tiny, 
 #'  counts = dominoSignal:::RNA_count_tiny, z_scores = dominoSignal:::RNA_zscore_tiny,
 #'  clusters = dominoSignal:::clusters_tiny, tf_targets = dominoSignal:::regulon_list_tiny, 
