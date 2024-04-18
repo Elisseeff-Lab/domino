@@ -75,7 +75,7 @@ create_rl_map_cellphonedb <- function(
   }
   # Step through the interactions and build rl connections.
   rl_map <- NULL
-  for (i in 1:nrow(interactions)) {
+  for (i in seq(nrow(interactions))) {
     inter <- interactions[i, ]
     partner_a <- inter[["partner_a"]]
     partner_b <- inter[["partner_b"]]
@@ -338,7 +338,7 @@ create_domino <- function(
   }
   # Get genes for receptors
   rl_reading <- NULL
-  for (i in 1:nrow(rl_map)) {
+  for (i in seq(nrow(rl_map))) {
     rl <- list()
     inter <- rl_map[i, ]
     p <- ifelse(inter[["type_A"]] == "R", "A", "B")
@@ -366,7 +366,7 @@ create_domino <- function(
   dom@linkages$complexes <- NULL
   if (use_complexes) {
     complex_list <- list()
-    for (i in 1:nrow(rl_reading)) {
+    for (i in seq(nrow(rl_reading))) {
       inter <- rl_reading[i, ]
       if (grepl("\\,", inter[["L.gene"]])) {
         complex_list[[inter[["L.name"]]]] <- unlist(strsplit(inter[["L.gene"]], split = "\\,"))
@@ -502,7 +502,7 @@ create_domino <- function(
   dom@misc$rec_cor <- rho
   # assess correlation among genes in the same receptor complex
   cor_list <- list()
-  for (i in 1:length(names(dom@linkages$rec_lig))) {
+  for (i in seq_along(names(dom@linkages$rec_lig))) {
     r <- names(dom@linkages$rec_lig)[i]
     if (r %in% names(dom@linkages$complexes)) {
       r_genes <- dom@linkages$complexes[[r]]
@@ -623,7 +623,7 @@ add_rl_column <- function(map, map_ref, conv, new_name) {
     not_in_ref_map <- c()
   }
   new_map <- c()
-  for (r_id in 1:nrow(map)) {
+  for (r_id in seq(nrow(map))) {
     row <- map[r_id, ]
     conv_ids <- which(conv[, 1] == row[[map_ref]])
     for (id in conv_ids) {

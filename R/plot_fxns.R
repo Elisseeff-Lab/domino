@@ -289,7 +289,7 @@ signaling_network <- function(
   }
   # Get vert angle for labeling circos plot
   if (layout == "circle") {
-    v_angles <- 1:length(igraph::V(graph))
+    v_angles <- seq(length(igraph::V(graph)))
     v_angles <- -2 * pi * (v_angles - 1) / length(v_angles)
     igraph::V(graph)$label.degree <- v_angles
   }
@@ -465,9 +465,9 @@ gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL,
     l[all_ligs, 1] <- -0.75
     l[all_recs, 1] <- 0
     l[all_tfs, 1] <- 0.75
-    l[all_ligs, 2] <- (1:length(all_ligs) / mean(1:length(all_ligs)) - 1) * 2
-    l[all_recs, 2] <- (1:length(all_recs) / mean(1:length(all_recs)) - 1) * 2
-    l[all_tfs, 2] <- (1:length(all_tfs) / mean(1:length(all_tfs)) - 1) * 2
+    l[all_ligs, 2] <- (seq_along(all_ligs) / mean(seq_along(all_ligs)) - 1) * 2
+    l[all_recs, 2] <- (seq_along(all_recs) / mean(seq_along(all_recs)) - 1) * 2
+    l[all_tfs, 2] <- (seq_along(all_tfs) / mean(seq_along(all_tfs)) - 1) * 2
     rownames(l) <- c()
   } else if (layout == "random") {
     l <- igraph::layout_randomly(graph)
@@ -814,7 +814,7 @@ circos_ligand_receptor <- function(
     names(cell_colors) <- cell_idents
   }
   grid_col <- c("#FFFFFF") # hide the arc corresponding to the receptor by coloring white
-  for (i in 1:length(ligands)) {
+  for (i in seq_along(ligands)) {
     grid_col <- c(grid_col, rep(lig_colors[i], length(cell_idents)))
   }
   names(grid_col) <- c(receptor, signaling_df$origin)
@@ -955,7 +955,7 @@ plot_differential_linkages <- function(
     group_palette <- ggplot_col_gen(length(g_names))
     names(group_palette) <- g_names
   }
-  for (i in 1:length(g_names)) {
+  for (i in seq_along(g_names)) {
     g <- g_names[i]
     g_count <- paste0(g, "_count")
     g_n <- paste0(g, "_n")
@@ -1003,5 +1003,5 @@ do_norm <- function(mat, dir) {
 #' 
 ggplot_col_gen <- function(n) {
   hues <- seq(15, 375, length = n + 1)
-  return(grDevices::hcl(h = hues, l = 65, c = 100)[1:n])
+  return(grDevices::hcl(h = hues, l = 65, c = 100)[seq(n)])
 }

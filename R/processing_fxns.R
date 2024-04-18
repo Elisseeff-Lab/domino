@@ -46,12 +46,12 @@ build_domino <- function(
           fcs <- c(fcs, fc)
         }
         names(fcs) <- zeros
-        sorted <- sort(fcs, decreasing = TRUE)[1:max_tf_per_clust]
+        sorted <- sort(fcs, decreasing = TRUE)[seq(max_tf_per_clust)]
       } else {
         sorted <- ordered[which(ordered < min_tf_pval)]
       }
       if (length(sorted) > max_tf_per_clust) {
-        sorted <- sorted[1:max_tf_per_clust]
+        sorted <- sorted[seq(max_tf_per_clust)]
       }
       clust_tf[[clust]] <- names(sorted)
     }
@@ -62,7 +62,7 @@ build_domino <- function(
       ordered <- sort(dom@cor[, tf], decreasing = TRUE)
       filtered <- ordered[which(ordered > rec_tf_cor_threshold)]
       if (length(filtered) > max_rec_per_tf) {
-        top_receptors <- names(filtered)[1:max_rec_per_tf]
+        top_receptors <- names(filtered)[seq(max_rec_per_tf)]
       } else {
         top_receptors <- names(filtered)
       }
@@ -192,7 +192,7 @@ build_domino <- function(
       ordered <- sort(dom@cor[, tf], decreasing = TRUE)
       filtered <- ordered[which(ordered > rec_tf_cor_threshold)]
       if (length(filtered) > max_rec_per_tf) {
-        top_receptors <- names(filtered)[1:max_rec_per_tf]
+        top_receptors <- names(filtered)[seq(max_rec_per_tf)]
       } else {
         top_receptors <- names(filtered)
       }
