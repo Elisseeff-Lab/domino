@@ -510,7 +510,6 @@ create_domino <- function(
       r_genes <- r
     }
     if (sum(rownames(rho) %in% r_genes) != length(r_genes)) {
-      message(paste0(r, " has component genes that did not pass testing parameters"))
       cor_list[[r]] <- rep(0, ncol(rho))
       next
     }
