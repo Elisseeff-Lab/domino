@@ -100,6 +100,8 @@ create_rl_map_cellphonedb <- function(
             g <- paste(unique(conv_dict[conv_dict[, 1] %in% g, 2]), collapse = ";")
           }
         }
+        # if multiple genes are annotated for the uniprot ID, use only the first unique instance
+        g <- g[1]
         return(g)
       })
       a_features[["gene_A"]] <- paste(gene_a, collapse = ",")
@@ -156,6 +158,8 @@ create_rl_map_cellphonedb <- function(
             g <- paste(unique(conv_dict[conv_dict[, 1] %in% g, 2]), collapse = ";")
           }
         }
+        # if multiple genes are annotated for the uniprot ID, use only the first unique instance
+        g <- g[1]
         return(g)
       })
       b_features[["gene_B"]] <- paste(gene_b, collapse = ",")
