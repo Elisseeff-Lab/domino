@@ -769,7 +769,7 @@ circos_ligand_receptor <- function(
     cell_idents <- sort(unique(dom@clusters))
   }
   # obtain expression values from cl_signaling matrices
-  active_chk <- sapply(dom@linkages$clust_rec, function(x) {
+  active_chk <- vapply(dom@linkages$clust_rec, FUN.VALUE = logical(1), FUN = function(x) {
     receptor %in% x
   })
   if (sum(active_chk)) {

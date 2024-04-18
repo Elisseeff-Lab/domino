@@ -115,7 +115,7 @@ build_domino <- function(
     for (clust in levels(dom@clusters)) {
       inc_ligs <- clust_ligs[[clust]]
       rl_map <- dom@misc[["rl_map"]]
-      inc_ligs <- sapply(inc_ligs, function(l) {
+      inc_ligs <- vapply(inc_ligs, FUN.VALUE = character(1), FUN = function(l) {
         int <- rl_map[rl_map$L.name == l, ][1, ]
         if ((int$L.name != int$L.gene) & !grepl("\\,", int$L.gene)) {
           int$L.gene

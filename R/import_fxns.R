@@ -87,7 +87,7 @@ create_rl_map_cellphonedb <- function(
       component_a <- as.character(complex_a[, c("uniprot_1", "uniprot_2", "uniprot_3", "uniprot_4")])
       component_a <- component_a[component_a != ""]
       a_features[["uniprot_A"]] <- paste(component_a, collapse = ",")
-      gene_a <- sapply(component_a, function(x) {
+      gene_a <- vapply(component_a, FUN.VALUE = character(1), FUN = function(x) {
         g <- unique(genes[genes[["uniprot"]] == x, c("gene_name")])
         if (!is.null(gene_conv) & !identical(gene_conv[1], gene_conv[2])) {
           # if the original gene trying to be converted is not in the gene dictionary the
@@ -143,7 +143,7 @@ create_rl_map_cellphonedb <- function(
       component_b <- as.character(complex_b[, c("uniprot_1", "uniprot_2", "uniprot_3", "uniprot_4")])
       component_b <- component_b[component_b != ""]
       b_features[["uniprot_B"]] <- paste(component_b, collapse = ",")
-      gene_b <- sapply(component_b, function(x) {
+      gene_b <- vapply(component_b, FUN.VALUE = character(1), FUN = function(x) {
         g <- unique(genes[genes[["uniprot"]] == x, c("gene_name")])
         if (!is.null(gene_conv) & !identical(gene_conv[1], gene_conv[2])) {
           # if the original gene trying to be converted is not in the gene dictionary the
@@ -530,7 +530,7 @@ create_domino <- function(
   if (tf_selection_method == "clusters") {
     cl_rec_percent <- NULL
     for (rec in ser_receptors) {
-      rec_percent <- sapply(X = levels(dom@clusters), FUN = function(x) {
+      rec_percent <- vapply(X = levels(dom@clusters), FUN.VALUE = numeric(1), FUN = function(x) {
         # percentage of cells in cluster with non-zero expression of receptor gene
         sum(dom@counts[rec, dom@clusters == x] > 0) / length(dom@counts[rec, dom@clusters ==
           x])
