@@ -238,7 +238,9 @@ dom_network_items <- function(dom, clusters = NULL, return = NULL) {
     for (cl in clusters) {
         all_recs <- c(all_recs, unlist(dom@linkages$clust_tf_rec[[cl]]))
         tfs <- names(dom@linkages$clust_tf_rec[[cl]])
-        tf_wo_rec <- which(sapply(dom@linkages$clust_tf_rec[[cl]], length) == 0)
+        tf_wo_rec <- which(
+          vapply(dom@linkages$clust_tf_rec[[cl]], FUN.VALUE = numeric(1), FUN = length) == 0
+        )
         if (length(tf_wo_rec > 0)) {
         tfs <- tfs[-tf_wo_rec]
         }
