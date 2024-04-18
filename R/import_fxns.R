@@ -325,7 +325,7 @@ create_domino <- function(
   if ("database_name" %in% colnames(rl_map)) {
     dom@db_info <- rl_map
     if (verbose) {
-      message(paste0("Database provided from source: ", unique(rl_map[["database_name"]])))
+      message("Database provided from source: ", unique(rl_map[["database_name"]]))
     }
   } else {
     dom@db_info <- rl_map
@@ -415,7 +415,7 @@ create_domino <- function(
     for (clust in levels(dom@clusters)) {
       if (verbose) {
         cur <- which(levels(dom@clusters) == clust)
-        message(paste0(cur, " of ", clust_n))
+        message(cur, " of ", clust_n)
       }
       cells <- which(dom@clusters == clust)
       for (feat in rownames(dom@features)) {
@@ -463,7 +463,7 @@ create_domino <- function(
     # correlation equal to 0.
     if (verbose) {
       cur <- which(rownames(dom@features) == module)
-      message(paste0(cur, " of ", n_tf))
+      message(cur, " of ", n_tf)
     }
     if (!is.null(dom@linkages$tf_targets)) {
       tf <- gsub(pattern = "\\.\\.\\.", replacement = "", module) # correction for AUC values from pySCENIC that append an elipses to TF names due to (+) characters in the orignial python output
