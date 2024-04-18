@@ -97,10 +97,10 @@ dom_tf_activation <- function(dom) {
 #' 
 dom_correlations <- function(dom, type = "rl") {
     if (type == "complex") {
-        corrs = slot(dom, "cor")
+        corrs <- slot(dom, "cor")
     } else if (type == "rl") {
-        misc = slot(dom, "misc")
-        corrs = misc$rec_cor
+        misc <- slot(dom, "misc")
+        corrs <- misc$rec_cor
     } else {
         stop("Type must be either 'rl' or 'complex'")
     }
