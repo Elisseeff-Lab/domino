@@ -270,7 +270,9 @@ dom_network_items <- function(dom, clusters = NULL, return = NULL) {
 #' @param need_colnames Logical for whether colnames are required
 #' @param need_rownames Logical for whether rownames are required
 #' @param need_names Logical for whether names are required
+#' @return logical
 #' @keywords internal
+#' 
 check_arg <- function(arg, allow_class = NULL, allow_len = NULL,
                       allow_range = NULL, allow_values = NULL,
                       need_vars = c(NULL), need_colnames = FALSE,
