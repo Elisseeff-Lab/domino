@@ -101,8 +101,20 @@ create_rl_map_cellphonedb <- function(
           }
         }
         # if multiple genes are annotated for the uniprot ID, use only the first unique instance
-        g <- g[1]
-        return(g)
+        if(length(g) == 1){
+          res <- g
+        } else {
+          res <- g[1]
+          if(verbose) {
+            g_col <- paste(g, collapse = ", ")
+            message(
+              component_a, " has multiple encoding gene mapped in genes table.\n",
+              g_col, "\n",
+              "The first mapping gene is used: ", res
+            )
+          }
+        }
+        return(res)
       })
       a_features[["gene_A"]] <- paste(gene_a, collapse = ",")
       # annotation as a receptor or ligand is based on the annotation of the complex
@@ -159,8 +171,20 @@ create_rl_map_cellphonedb <- function(
           }
         }
         # if multiple genes are annotated for the uniprot ID, use only the first unique instance
-        g <- g[1]
-        return(g)
+        if(length(g) == 1){
+          res <- g
+        } else {
+          res <- g[1]
+          if(verbose) {
+            g_col <- paste(g, collapse = ", ")
+            message(
+              component_a, " has multiple encoding gene mapped in genes table.\n",
+              g_col, "\n",
+              "The first mapping gene is used: ", res
+            )
+          }
+        }
+        return(res)
       })
       b_features[["gene_B"]] <- paste(gene_b, collapse = ",")
       # annotation as a receptor or ligand is based on the annotation of the complex
