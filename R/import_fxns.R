@@ -390,6 +390,7 @@ create_domino <- function(
     rl <- as.data.frame(rl)
     rl_reading <- rbind(rl_reading, rl)
   }
+  if(nrow(rl_reading) == 0) stop("No genes annotated as receptors included in rl_map")
   # save a list of complexes and their components
   dom@linkages$complexes <- NULL
   if (use_complexes) {
