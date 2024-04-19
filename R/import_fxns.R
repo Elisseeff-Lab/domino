@@ -105,14 +105,12 @@ create_rl_map_cellphonedb <- function(
           res <- g
         } else {
           res <- g[1]
-          if(verbose) {
-            g_col <- paste(g, collapse = ", ")
-            message(
-              component_a, " has multiple encoding gene mapped in genes table.\n",
-              g_col, "\n",
-              "The first mapping gene is used: ", res
-            )
-          }
+          g_col <- paste(g, collapse = ", ")
+          message(
+            component_a, " has multiple encoding gene mapped in genes table.\n",
+            g_col, "\n",
+            "The first mapping gene is used: ", res
+          )
         }
         return(res)
       })
@@ -175,14 +173,12 @@ create_rl_map_cellphonedb <- function(
           res <- g
         } else {
           res <- g[1]
-          if(verbose) {
-            g_col <- paste(g, collapse = ", ")
-            message(
-              component_a, " has multiple encoding gene mapped in genes table.\n",
-              g_col, "\n",
-              "The first mapping gene is used: ", res
-            )
-          }
+          g_col <- paste(g, collapse = ", ")
+          message(
+            component_a, " has multiple encoding gene mapped in genes table.\n",
+            g_col, "\n",
+            "The first mapping gene is used: ", res
+          )
         }
         return(res)
       })
