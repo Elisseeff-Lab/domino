@@ -20,9 +20,8 @@ git config --global user.email 'action@github.com'
 git fetch
 # Checkout target branch                         
 git checkout $TARGET_BRANCH
-# copy files from the branch the action is being run upon
-SRC_BRANCH=$(git symbolic-ref --short HEAD)
-git checkout $SRC_BRANCH -- $FILES
+# Copy files from master branch
+git checkout master -- $FILES
 # Commit to the repository (ignore if no changes)
 git add -A
 git diff-index --quiet HEAD ||  git commit -am "update files"
