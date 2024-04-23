@@ -1003,5 +1003,5 @@ do_norm <- function(mat, dir) {
 #' 
 ggplot_col_gen <- function(n) {
   hues <- seq(15, 375, length = n + 1)
-  return(grDevices::hcl(h = hues, l = 65, c = 100)[seq(n)])
+  return(grDevices::hcl(h = hues, l = 65, c = 100)[seq_len(n)])
 }
