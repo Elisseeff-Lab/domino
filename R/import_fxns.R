@@ -75,7 +75,7 @@ create_rl_map_cellphonedb <- function(
   }
   # Step through the interactions and build rl connections.
   rl_map <- NULL
-  for (i in 1:nrow(interactions)) {
+  for (i in seq_len(nrow(interactions))) {
     inter <- interactions[i, ]
     partner_a <- inter[["partner_a"]]
     partner_b <- inter[["partner_b"]]
@@ -87,7 +87,7 @@ create_rl_map_cellphonedb <- function(
       component_a <- as.character(complex_a[, c("uniprot_1", "uniprot_2", "uniprot_3", "uniprot_4")])
       component_a <- component_a[component_a != ""]
       a_features[["uniprot_A"]] <- paste(component_a, collapse = ",")
-      gene_a <- sapply(component_a, function(x) {
+      gene_a <- vapply(component_a, FUN.VALUE = character(1), FUN = function(x) {
         g <- unique(genes[genes[["uniprot"]] == x, c("gene_name")])
         if (!is.null(gene_conv) & !identical(gene_conv[1], gene_conv[2])) {
           # if the original gene trying to be converted is not in the gene dictionary the
@@ -100,7 +100,19 @@ create_rl_map_cellphonedb <- function(
             g <- paste(unique(conv_dict[conv_dict[, 1] %in% g, 2]), collapse = ";")
           }
         }
-        return(g)
+        # if multiple genes are annotated for the uniprot ID, use only the first unique instance
+        if(length(g) == 1){
+          res <- g
+        } else {
+          res <- g[1]
+          g_col <- paste(g, collapse = ", ")
+          message(
+            component_a, " has multiple encoding gene mapped in genes table.\n",
+            g_col, "\n",
+            "The first mapping gene is used: ", res
+          )
+        }
+        return(res)
       })
       a_features[["gene_A"]] <- paste(gene_a, collapse = ",")
       # annotation as a receptor or ligand is based on the annotation of the complex
@@ -143,7 +155,7 @@ create_rl_map_cellphonedb <- function(
       component_b <- as.character(complex_b[, c("uniprot_1", "uniprot_2", "uniprot_3", "uniprot_4")])
       component_b <- component_b[component_b != ""]
       b_features[["uniprot_B"]] <- paste(component_b, collapse = ",")
-      gene_b <- sapply(component_b, function(x) {
+      gene_b <- vapply(component_b, FUN.VALUE = character(1), FUN = function(x) {
         g <- unique(genes[genes[["uniprot"]] == x, c("gene_name")])
         if (!is.null(gene_conv) & !identical(gene_conv[1], gene_conv[2])) {
           # if the original gene trying to be converted is not in the gene dictionary the
@@ -156,7 +168,19 @@ create_rl_map_cellphonedb <- function(
             g <- paste(unique(conv_dict[conv_dict[, 1] %in% g, 2]), collapse = ";")
           }
         }
-        return(g)
+        # if multiple genes are annotated for the uniprot ID, use only the first unique instance
+        if(length(g) == 1){
+          res <- g
+        } else {
+          res <- g[1]
+          g_col <- paste(g, collapse = ", ")
+          message(
+            component_a, " has multiple encoding gene mapped in genes table.\n",
+            g_col, "\n",
+            "The first mapping gene is used: ", res
+          )
+        }
+        return(res)
       })
       b_features[["gene_B"]] <- paste(gene_b, collapse = ",")
       # annotation as a receptor or ligand is based on the annotation of the complex
@@ -325,7 +349,7 @@ create_domino <- function(
   if ("database_name" %in% colnames(rl_map)) {
     dom@db_info <- rl_map
     if (verbose) {
-      message(paste0("Database provided from source: ", unique(rl_map[["database_name"]])))
+      message("Database provided from source: ", unique(rl_map[["database_name"]]))
     }
   } else {
     dom@db_info <- rl_map
@@ -338,7 +362,7 @@ create_domino <- function(
   }
   # Get genes for receptors
   rl_reading <- NULL
-  for (i in 1:nrow(rl_map)) {
+  for (i in seq_len(nrow(rl_map))) {
     rl <- list()
     inter <- rl_map[i, ]
     p <- ifelse(inter[["type_A"]] == "R", "A", "B")
@@ -362,11 +386,12 @@ create_domino <- function(
     rl <- as.data.frame(rl)
     rl_reading <- rbind(rl_reading, rl)
   }
+  if(nrow(rl_reading) == 0) stop("No genes annotated as receptors included in rl_map")
   # save a list of complexes and their components
   dom@linkages$complexes <- NULL
   if (use_complexes) {
     complex_list <- list()
-    for (i in 1:nrow(rl_reading)) {
+    for (i in seq_len(nrow(rl_reading))) {
       inter <- rl_reading[i, ]
       if (grepl("\\,", inter[["L.gene"]])) {
         complex_list[[inter[["L.name"]]]] <- unlist(strsplit(inter[["L.gene"]], split = "\\,"))
@@ -415,7 +440,7 @@ create_domino <- function(
     for (clust in levels(dom@clusters)) {
       if (verbose) {
         cur <- which(levels(dom@clusters) == clust)
-        message(paste0(cur, " of ", clust_n))
+        message(cur, " of ", clust_n)
       }
       cells <- which(dom@clusters == clust)
       for (feat in rownames(dom@features)) {
@@ -463,7 +488,7 @@ create_domino <- function(
     # correlation equal to 0.
     if (verbose) {
       cur <- which(rownames(dom@features) == module)
-      message(paste0(cur, " of ", n_tf))
+      message(cur, " of ", n_tf)
     }
     if (!is.null(dom@linkages$tf_targets)) {
       tf <- gsub(pattern = "\\.\\.\\.", replacement = "", module) # correction for AUC values from pySCENIC that append an elipses to TF names due to (+) characters in the orignial python output
@@ -502,7 +527,7 @@ create_domino <- function(
   dom@misc$rec_cor <- rho
   # assess correlation among genes in the same receptor complex
   cor_list <- list()
-  for (i in 1:length(names(dom@linkages$rec_lig))) {
+  for (i in seq_along(names(dom@linkages$rec_lig))) {
     r <- names(dom@linkages$rec_lig)[i]
     if (r %in% names(dom@linkages$complexes)) {
       r_genes <- dom@linkages$complexes[[r]]
@@ -510,7 +535,6 @@ create_domino <- function(
       r_genes <- r
     }
     if (sum(rownames(rho) %in% r_genes) != length(r_genes)) {
-      message(paste0(r, " has component genes that did not pass testing parameters"))
       cor_list[[r]] <- rep(0, ncol(rho))
       next
     }
@@ -531,7 +555,7 @@ create_domino <- function(
   if (tf_selection_method == "clusters") {
     cl_rec_percent <- NULL
     for (rec in ser_receptors) {
-      rec_percent <- sapply(X = levels(dom@clusters), FUN = function(x) {
+      rec_percent <- vapply(X = levels(dom@clusters), FUN.VALUE = numeric(1), FUN = function(x) {
         # percentage of cells in cluster with non-zero expression of receptor gene
         sum(dom@counts[rec, dom@clusters == x] > 0) / length(dom@counts[rec, dom@clusters ==
           x])
@@ -624,7 +648,7 @@ add_rl_column <- function(map, map_ref, conv, new_name) {
     not_in_ref_map <- c()
   }
   new_map <- c()
-  for (r_id in 1:nrow(map)) {
+  for (r_id in seq_len(nrow(map))) {
     row <- map[r_id, ]
     conv_ids <- which(conv[, 1] == row[[map_ref]])
     for (id in conv_ids) {

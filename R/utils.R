@@ -97,10 +97,10 @@ dom_tf_activation <- function(dom) {
 #' 
 dom_correlations <- function(dom, type = "rl") {
     if (type == "complex") {
-        corrs = slot(dom, "cor")
+        corrs <- slot(dom, "cor")
     } else if (type == "rl") {
-        misc = slot(dom, "misc")
-        corrs = misc$rec_cor
+        misc <- slot(dom, "misc")
+        corrs <- misc$rec_cor
     } else {
         stop("Type must be either 'rl' or 'complex'")
     }
@@ -238,7 +238,9 @@ dom_network_items <- function(dom, clusters = NULL, return = NULL) {
     for (cl in clusters) {
         all_recs <- c(all_recs, unlist(dom@linkages$clust_tf_rec[[cl]]))
         tfs <- names(dom@linkages$clust_tf_rec[[cl]])
-        tf_wo_rec <- which(sapply(dom@linkages$clust_tf_rec[[cl]], length) == 0)
+        tf_wo_rec <- which(
+          vapply(dom@linkages$clust_tf_rec[[cl]], FUN.VALUE = numeric(1), FUN = length) == 0
+        )
         if (length(tf_wo_rec > 0)) {
         tfs <- tfs[-tf_wo_rec]
         }
@@ -270,7 +272,9 @@ dom_network_items <- function(dom, clusters = NULL, return = NULL) {
 #' @param need_colnames Logical for whether colnames are required
 #' @param need_rownames Logical for whether rownames are required
 #' @param need_names Logical for whether names are required
+#' @return logical
 #' @keywords internal
+#' 
 check_arg <- function(arg, allow_class = NULL, allow_len = NULL,
                       allow_range = NULL, allow_values = NULL,
                       need_vars = c(NULL), need_colnames = FALSE,

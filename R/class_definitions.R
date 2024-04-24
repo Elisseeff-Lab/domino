@@ -23,6 +23,7 @@ NULL
 #' @name domino-class
 #' @rdname domino-class
 #' @exportClass domino
+#' @return an instance of class `domino `
 #'
 domino <- methods::setClass(
   Class = "domino",
@@ -58,6 +59,7 @@ domino <- methods::setClass(
 #' @name linkage_summary-class
 #' @rdname linkage_summary-class
 #' @exportClass linkage_summary
+#' @return an instance of class `linkage_summary`
 #'
 linkage_summary <- setClass(
   Class = "linkage_summary",

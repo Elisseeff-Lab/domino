@@ -289,7 +289,7 @@ signaling_network <- function(
   }
   # Get vert angle for labeling circos plot
   if (layout == "circle") {
-    v_angles <- 1:length(igraph::V(graph))
+    v_angles <- seq(length(igraph::V(graph)))
     v_angles <- -2 * pi * (v_angles - 1) / length(v_angles)
     igraph::V(graph)$label.degree <- v_angles
   }
@@ -365,7 +365,7 @@ gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL,
       # Check if signaling exists for target cluster
       mat <- dom@cl_signaling_matrices[[cl]]
       if (dim(mat)[1] == 0) {
-        message(paste("No signaling found for", cl, "under build parameters."))
+        message("No signaling found for ", cl, " under build parameters.")
         (next)()
       }
       all_sums <- c(all_sums, rowSums(mat))
@@ -465,9 +465,9 @@ gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL,
     l[all_ligs, 1] <- -0.75
     l[all_recs, 1] <- 0
     l[all_tfs, 1] <- 0.75
-    l[all_ligs, 2] <- (1:length(all_ligs) / mean(1:length(all_ligs)) - 1) * 2
-    l[all_recs, 2] <- (1:length(all_recs) / mean(1:length(all_recs)) - 1) * 2
-    l[all_tfs, 2] <- (1:length(all_tfs) / mean(1:length(all_tfs)) - 1) * 2
+    l[all_ligs, 2] <- (seq_along(all_ligs) / mean(seq_along(all_ligs)) - 1) * 2
+    l[all_recs, 2] <- (seq_along(all_recs) / mean(seq_along(all_recs)) - 1) * 2
+    l[all_tfs, 2] <- (seq_along(all_tfs) / mean(seq_along(all_tfs)) - 1) * 2
     rownames(l) <- c()
   } else if (layout == "random") {
     l <- igraph::layout_randomly(graph)
@@ -553,7 +553,7 @@ feat_heatmap <- function(
     na <- which(is.na(mid))
     na_feats <- paste(feats[na], collapse = " ")
     if (length(na) != 0) {
-      message(paste("Unable to find", na_feats))
+      message("Unable to find ", na_feats)
       feats <- feats[-na]
     }
   } else if (feats == "all") {
@@ -659,7 +659,7 @@ cor_heatmap <- function(
     na <- which(is.na(mid))
     na_feats <- paste(feats[na], collapse = " ")
     if (length(na) != 0) {
-      message(paste("Unable to find", na_feats))
+      message("Unable to find ", na_feats)
       feats <- feats[-na]
     }
   } else if (identical(feats, "all")) {
@@ -756,7 +756,7 @@ cor_scatter <- function(dom, tf, rec, remove_rec_dropout = TRUE, ...) {
 #' circos_ligand_receptor(dominoSignal:::pbmc_dom_built_tiny, receptor = "CXCR3")
 #' #specify colors
 #' cols = c("red", "orange", "green", "blue", "pink", "purple", "slategrey", "firebrick", "hotpink")
-#' names(cols) = levels(dominoSignal:::pbmc_dom_built_tiny@clusters)
+#' names(cols) = levels(dom_clusters(dominoSignal:::pbmc_dom_built_tiny))
 #' circos_ligand_receptor(dominoSignal:::pbmc_dom_built_tiny, receptor = "CXCR3", cell_colors = cols)
 #' 
 circos_ligand_receptor <- function(
@@ -769,7 +769,7 @@ circos_ligand_receptor <- function(
     cell_idents <- sort(unique(dom@clusters))
   }
   # obtain expression values from cl_signaling matrices
-  active_chk <- sapply(dom@linkages$clust_rec, function(x) {
+  active_chk <- vapply(dom@linkages$clust_rec, FUN.VALUE = logical(1), FUN = function(x) {
     receptor %in% x
   })
   if (sum(active_chk)) {
@@ -783,7 +783,7 @@ circos_ligand_receptor <- function(
       signaling_df <- rbind(signaling_df, df)
     }
   } else {
-    stop(paste0("No clusters have active ", receptor, " signaling"))
+    stop("No clusters have active ", receptor, " signaling")
   }
   signaling_df$mean.expression[is.na(signaling_df$mean.expression)] <- 0
   # create a scaled mean expression plot for coord widths greater than 1 by dividing by the max
@@ -791,7 +791,7 @@ circos_ligand_receptor <- function(
   signaling_df$scaled.mean.expression <- signaling_df$mean.expression / max(signaling_df$mean.expression)
   # exit function if no ligands are expressed above ligand expression threshold
   if (sum(signaling_df[["mean.expression"]] > ligand_expression_threshold) == 0) {
-    stop(paste0("No ligands of ", receptor, " exceed ligand expression threshold."))
+    stop("No ligands of ", receptor, " exceed ligand expression threshold.")
   }
   # initialize chord diagram with even ligand arcs
   arc_df <- signaling_df[, c("origin", "destination")]
@@ -814,7 +814,7 @@ circos_ligand_receptor <- function(
     names(cell_colors) <- cell_idents
   }
   grid_col <- c("#FFFFFF") # hide the arc corresponding to the receptor by coloring white
-  for (i in 1:length(ligands)) {
+  for (i in seq_along(ligands)) {
     grid_col <- c(grid_col, rep(lig_colors[i], length(cell_idents)))
   }
   names(grid_col) <- c(receptor, signaling_df$origin)
@@ -900,7 +900,7 @@ plot_differential_linkages <- function(
     differential_linkages, test_statistic, stat_range = c(0, 1),
     stat_ranking = c("ascending", "descending"), group_palette = NULL) {
   if (!test_statistic %in% colnames(differential_linkages)) {
-    stop(paste0("test statistic '", test_statistic, "' not present in colnames(differential_linkages)"))
+    stop("test statistic '", test_statistic, "' not present in colnames(differential_linkages)")
   }
   if (identical(stat_ranking, c("ascending", "descending"))) {
     warning("stat_ranking order not specified. Defaulting to ascending order")
@@ -913,7 +913,7 @@ plot_differential_linkages <- function(
   df <- differential_linkages[differential_linkages[[test_statistic]] >= stat_range[1] & differential_linkages[[test_statistic]] <=
     stat_range[2], ]
   if (nrow(df) == 0) {
-    stop(paste0("No features with '", test_statistic, "' within stat_range"))
+    stop("No features with '", test_statistic, "' within stat_range")
   }
   # order df by plot statistic
   if (stat_ranking == "ascending") {
@@ -955,7 +955,7 @@ plot_differential_linkages <- function(
     group_palette <- ggplot_col_gen(length(g_names))
     names(group_palette) <- g_names
   }
-  for (i in 1:length(g_names)) {
+  for (i in seq_along(g_names)) {
     g <- g_names[i]
     g_count <- paste0(g, "_count")
     g_n <- paste0(g, "_n")
@@ -1003,5 +1003,5 @@ do_norm <- function(mat, dir) {
 #' 
 ggplot_col_gen <- function(n) {
   hues <- seq(15, 375, length = n + 1)
-  return(grDevices::hcl(h = hues, l = 65, c = 100)[1:n])
+  return(grDevices::hcl(h = hues, l = 65, c = 100)[seq_len(n)])
 }
