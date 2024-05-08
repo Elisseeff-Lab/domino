@@ -1,3 +1,21 @@
+# dominoSignal v0.99.2
+
+## Package Name
+
+- Update of package name from "domino2" to "dominoSignal"
+
+## Bioconductor Standards
+
+- Update to Vignettes presenting application of the DominoSignal pipeline on data formatted as a SingleCellExperiment object
+- Implemented caching of example data by BiocCache to meet package size limits
+- Removal of depreciated scripts for running SCENIC. Tutorials for running SCENIC are still present in vignettes
+- Corrected BiocCheck notes pertaining to coding practices including paste in conditional statements, functions with dontrun examples, usage of seq_len or seq_along in place of seq, and usage of vapply in place of sapply
+
+
+# dominoSignal v0.99.1
+
+- Update to Bioconductor version numbering conventions for package submission
+
 # dominoSignal v0.2.2
 
 ## Linkage functions
