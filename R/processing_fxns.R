@@ -14,7 +14,7 @@
 #' @export
 #' @examples
 #' pbmc_dom_tiny_built <- build_domino(
-#'  dom = domino2:::pbmc_dom_tiny, min_tf_pval = .001, max_tf_per_clust = 25,
+#'  dom = dominoSignal:::pbmc_dom_tiny, min_tf_pval = .001, max_tf_per_clust = 25,
 #'  max_rec_per_tf = 25, rec_tf_cor_threshold = .25, min_rec_percentage = 0.1
 #' )
 #' 
@@ -46,12 +46,12 @@ build_domino <- function(
           fcs <- c(fcs, fc)
         }
         names(fcs) <- zeros
-        sorted <- sort(fcs, decreasing = TRUE)[1:max_tf_per_clust]
+        sorted <- sort(fcs, decreasing = TRUE)[seq_len(max_tf_per_clust)]
       } else {
         sorted <- ordered[which(ordered < min_tf_pval)]
       }
       if (length(sorted) > max_tf_per_clust) {
-        sorted <- sorted[1:max_tf_per_clust]
+        sorted <- sorted[seq_len(max_tf_per_clust)]
       }
       clust_tf[[clust]] <- names(sorted)
     }
@@ -62,7 +62,7 @@ build_domino <- function(
       ordered <- sort(dom@cor[, tf], decreasing = TRUE)
       filtered <- ordered[which(ordered > rec_tf_cor_threshold)]
       if (length(filtered) > max_rec_per_tf) {
-        top_receptors <- names(filtered)[1:max_rec_per_tf]
+        top_receptors <- names(filtered)[seq_len(max_rec_per_tf)]
       } else {
         top_receptors <- names(filtered)
       }
@@ -115,7 +115,7 @@ build_domino <- function(
     for (clust in levels(dom@clusters)) {
       inc_ligs <- clust_ligs[[clust]]
       rl_map <- dom@misc[["rl_map"]]
-      inc_ligs <- sapply(inc_ligs, function(l) {
+      inc_ligs <- vapply(inc_ligs, FUN.VALUE = character(1), FUN = function(l) {
         int <- rl_map[rl_map$L.name == l, ][1, ]
         if ((int$L.name != int$L.gene) & !grepl("\\,", int$L.gene)) {
           int$L.gene
@@ -192,7 +192,7 @@ build_domino <- function(
       ordered <- sort(dom@cor[, tf], decreasing = TRUE)
       filtered <- ordered[which(ordered > rec_tf_cor_threshold)]
       if (length(filtered) > max_rec_per_tf) {
-        top_receptors <- names(filtered)[1:max_rec_per_tf]
+        top_receptors <- names(filtered)[seq_len(max_rec_per_tf)]
       } else {
         top_receptors <- names(filtered)
       }

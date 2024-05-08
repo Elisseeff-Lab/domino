@@ -23,6 +23,7 @@ NULL
 #' @name domino-class
 #' @rdname domino-class
 #' @exportClass domino
+#' @return an instance of class `domino `
 #'
 domino <- methods::setClass(
   Class = "domino",
@@ -58,6 +59,7 @@ domino <- methods::setClass(
 #' @name linkage_summary-class
 #' @rdname linkage_summary-class
 #' @exportClass linkage_summary
+#' @return an instance of class `linkage_summary`
 #'
 linkage_summary <- setClass(
   Class = "linkage_summary",
@@ -76,7 +78,7 @@ linkage_summary <- setClass(
 #' @return a printed description of the number of cell clusters in the object
 #' @keywords internal
 #' @examples
-#' print(domino2:::pbmc_dom_built_tiny)
+#' print(dominoSignal:::pbmc_dom_built_tiny)
 #' 
 setMethod("print", "domino", function(x, ...) {
   if (x@misc$build) {
@@ -103,9 +105,9 @@ setMethod("print", "domino", function(x, ...) {
 #' @return a printed description of the number of cells in a domino object and its build status
 #' @keywords internal
 #' @examples
-#' domino2:::pbmc_dom_built_tiny
+#' dominoSignal:::pbmc_dom_built_tiny
 #' 
-#' show(domino2:::pbmc_dom_built_tiny)
+#' show(dominoSignal:::pbmc_dom_built_tiny)
 #' 
 setMethod("show", "domino", function(object) {
   if (object@misc$build) {

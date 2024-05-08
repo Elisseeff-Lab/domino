@@ -5,6 +5,9 @@
 \alias{linkage_summary-class}
 \alias{linkage_summary}
 \title{The domino linkage summary class}
+\value{
+an instance of class \code{linkage_summary}
+}
 \description{
 The linkage summary class contains linkages established in multiple domino
 objects through gene regulatory network inference and reference to receptor-

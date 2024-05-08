@@ -23,11 +23,11 @@ NULL
 #' @export signaling_heatmap
 #' @examples
 #' #basic usage
-#' signaling_heatmap(domino2:::pbmc_dom_built_tiny)
+#' signaling_heatmap(dominoSignal:::pbmc_dom_built_tiny)
 #' #scale
-#' signaling_heatmap(domino2:::pbmc_dom_built_tiny, scale = "sqrt")
+#' signaling_heatmap(dominoSignal:::pbmc_dom_built_tiny, scale = "sqrt")
 #' #normalize
-#' signaling_heatmap(domino2:::pbmc_dom_built_tiny, normalize = "rec_norm")
+#' signaling_heatmap(dominoSignal:::pbmc_dom_built_tiny, normalize = "rec_norm")
 #'
 signaling_heatmap <- function(
     dom, clusts = NULL, min_thresh = -Inf, max_thresh = Inf, scale = "none",
@@ -39,6 +39,7 @@ signaling_heatmap <- function(
     stop("This domino object wasn't built with clusters so intercluster signaling cannot be generated.")
   }
   mat <- dom@signaling
+
   if (!is.null(clusts)) {
     mat <- mat[paste0("R_", clusts), paste0("L_", clusts)]
   }
@@ -58,6 +59,11 @@ signaling_heatmap <- function(
   } else if (normalize != "none") {
     stop("Do not recognize normalize input")
   }
+  if (any(is.na(mat))) { 
+    warning("Some values are NA, replacing with 0s.")
+    mat[is.na(mat)] <- 0
+  }
+
   Heatmap(
     mat,
     name = "collective\nsignaling",
@@ -87,7 +93,7 @@ signaling_heatmap <- function(
 #' @export incoming_signaling_heatmap
 #' @examples
 #' #incoming signaling of the CD8  T cells
-#' incoming_signaling_heatmap(domino2:::pbmc_dom_built_tiny, "CD8_T_cell")
+#' incoming_signaling_heatmap(dominoSignal:::pbmc_dom_built_tiny, "CD8_T_cell")
 #'
 incoming_signaling_heatmap <- function(
     dom, rec_clust, clusts = NULL, min_thresh = -Inf, max_thresh = Inf,
@@ -103,6 +109,7 @@ incoming_signaling_heatmap <- function(
     message("No signaling found for this cluster under build parameters.")
     return()
   }
+
   if (!is.null(clusts)) {
     mat <- mat[, paste0("L_", clusts), drop = FALSE]
   }
@@ -126,6 +133,12 @@ incoming_signaling_heatmap <- function(
   } else if (normalize != "none") {
     stop("Do not recognize normalize input")
   }
+
+  if (any(is.na(mat))) { 
+    warning("Some values are NA, replacing with 0s.")
+    mat[is.na(mat)] <- 0
+  }
+
   if (title == TRUE) {
     return(
       Heatmap(
@@ -175,15 +188,15 @@ incoming_signaling_heatmap <- function(
 #' @param scale_by How to size vertices. Options are 'lig_sig' for summed outgoing signaling, 'rec_sig' for summed incoming signaling, and 'none'. In the former two cases the values are scaled with asinh after summing all incoming or outgoing signaling.
 #' @param vert_scale Integer used to scale size of vertices with our without variable scaling from size_verts_by.
 #' @param plot_title Text for the plot's title.
-#' @param ... Other parameters to be passed to plot when used with an `{igraph}` object.
+#' @param ... Other parameters to be passed to plot when used with an igraph object.
 #' @return an igraph rendered to the active graphics device
 #' @export signaling_network
 #' @examples 
 #' #basic usage
-#' signaling_network(domino2:::pbmc_dom_built_tiny)
+#' signaling_network(dominoSignal:::pbmc_dom_built_tiny)
 #' # scaling, thresholds, layouts, selecting clusters
 #' signaling_network(
-#'  domino2:::pbmc_dom_built_tiny, showOutgoingSignalingClusts = "CD14_monocyte", 
+#'  dominoSignal:::pbmc_dom_built_tiny, showOutgoingSignalingClusts = "CD14_monocyte", 
 #'  scale = "none", norm = "none", layout = "fr", scale_by = "none", 
 #'  vert_scale = 5)
 #' 
@@ -199,6 +212,12 @@ signaling_network <- function(
   }
   # Get signaling matrix
   mat <- dom@signaling
+
+  if (any(is.na(mat))) { 
+    warning("Some values are NA, replacing with 0s.")
+    mat[is.na(mat)] <- 0
+  }
+
   if (!is.null(clusts)) {
     mat <- mat[paste0("R_", clusts), paste0("L_", clusts), drop = FALSE]
   }
@@ -216,6 +235,7 @@ signaling_network <- function(
     cols <- ggplot_col_gen(length(levels(dom@clusters)))
     names(cols) <- levels(dom@clusters)
   }
+
   mat[which(mat > max_thresh)] <- max_thresh
   mat[which(mat < min_thresh)] <- min_thresh
   if (scale == "sqrt") {
@@ -269,7 +289,7 @@ signaling_network <- function(
   }
   # Get vert angle for labeling circos plot
   if (layout == "circle") {
-    v_angles <- 1:length(igraph::V(graph))
+    v_angles <- seq(length(igraph::V(graph)))
     v_angles <- -2 * pi * (v_angles - 1) / length(v_angles)
     igraph::V(graph)$label.degree <- v_angles
   }
@@ -323,7 +343,7 @@ signaling_network <- function(
 #' @examples
 #' #basic usage
 #' gene_network(
-#'  domino2:::pbmc_dom_built_tiny, clust = "CD8_T_cell", 
+#'  dominoSignal:::pbmc_dom_built_tiny, clust = "CD8_T_cell", 
 #'  OutgoingSignalingClust = "CD14_monocyte")
 #'
 gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL, 
@@ -345,7 +365,7 @@ gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL,
       # Check if signaling exists for target cluster
       mat <- dom@cl_signaling_matrices[[cl]]
       if (dim(mat)[1] == 0) {
-        message(paste("No signaling found for", cl, "under build parameters."))
+        message("No signaling found for ", cl, " under build parameters.")
         (next)()
       }
       all_sums <- c(all_sums, rowSums(mat))
@@ -445,9 +465,9 @@ gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL,
     l[all_ligs, 1] <- -0.75
     l[all_recs, 1] <- 0
     l[all_tfs, 1] <- 0.75
-    l[all_ligs, 2] <- (1:length(all_ligs) / mean(1:length(all_ligs)) - 1) * 2
-    l[all_recs, 2] <- (1:length(all_recs) / mean(1:length(all_recs)) - 1) * 2
-    l[all_tfs, 2] <- (1:length(all_tfs) / mean(1:length(all_tfs)) - 1) * 2
+    l[all_ligs, 2] <- (seq_along(all_ligs) / mean(seq_along(all_ligs)) - 1) * 2
+    l[all_recs, 2] <- (seq_along(all_recs) / mean(seq_along(all_recs)) - 1) * 2
+    l[all_tfs, 2] <- (seq_along(all_tfs) / mean(seq_along(all_tfs)) - 1) * 2
     rownames(l) <- c()
   } else if (layout == "random") {
     l <- igraph::layout_randomly(graph)
@@ -484,10 +504,10 @@ gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL,
 #' @export feat_heatmap
 #' @examples 
 #' #basic usage
-#' feat_heatmap(domino2:::pbmc_dom_built_tiny)
+#' feat_heatmap(dominoSignal:::pbmc_dom_built_tiny)
 #' #using thresholds
 #' feat_heatmap(
-#'  domino2:::pbmc_dom_built_tiny, min_thresh = 0.1, 
+#'  dominoSignal:::pbmc_dom_built_tiny, min_thresh = 0.1, 
 #'   max_thresh = 0.6, norm = TRUE, bool = FALSE)
 #' 
 feat_heatmap <- function(
@@ -533,7 +553,7 @@ feat_heatmap <- function(
     na <- which(is.na(mid))
     na_feats <- paste(feats[na], collapse = " ")
     if (length(na) != 0) {
-      message(paste("Unable to find", na_feats))
+      message("Unable to find ", na_feats)
       feats <- feats[-na]
     }
   } else if (feats == "all") {
@@ -608,11 +628,11 @@ feat_heatmap <- function(
 #' @export cor_heatmap
 #' @examples 
 #' #basic usage
-#' cor_heatmap(domino2:::pbmc_dom_built_tiny, title = "PBMC R-TF Correlations")
+#' cor_heatmap(dominoSignal:::pbmc_dom_built_tiny, title = "PBMC R-TF Correlations")
 #' #show correlations above a specific value
-#' cor_heatmap(domino2:::pbmc_dom_built_tiny, bool = TRUE, bool_thresh = 0.25)
+#' cor_heatmap(dominoSignal:::pbmc_dom_built_tiny, bool = TRUE, bool_thresh = 0.25)
 #' #identify combinations that are connected
-#' cor_heatmap(domino2:::pbmc_dom_built_tiny, bool = FALSE, mark_connections = TRUE)
+#' cor_heatmap(dominoSignal:::pbmc_dom_built_tiny, bool = FALSE, mark_connections = TRUE)
 #'  
 cor_heatmap <- function(
     dom, bool = FALSE, bool_thresh = 0.15, title = TRUE, feats = NULL, recs = NULL,
@@ -639,7 +659,7 @@ cor_heatmap <- function(
     na <- which(is.na(mid))
     na_feats <- paste(feats[na], collapse = " ")
     if (length(na) != 0) {
-      message(paste("Unable to find", na_feats))
+      message("Unable to find ", na_feats)
       feats <- feats[-na]
     }
   } else if (identical(feats, "all")) {
@@ -703,7 +723,7 @@ cor_heatmap <- function(
 #' @return a ggplot object
 #' @export cor_scatter
 #' @examples
-#' cor_scatter(domino2:::pbmc_dom_built_tiny, "ATF4","CD22")
+#' cor_scatter(dominoSignal:::pbmc_dom_built_tiny, "FLI1","CXCR3")
 #'
 cor_scatter <- function(dom, tf, rec, remove_rec_dropout = TRUE, ...) {
   if (remove_rec_dropout) {
@@ -733,11 +753,11 @@ cor_scatter <- function(dom, tf, rec, remove_rec_dropout = TRUE, ...) {
 #' @export circos_ligand_receptor
 #' @examples 
 #' #basic usage
-#' circos_ligand_receptor(domino2:::pbmc_dom_built_tiny, receptor = "FAS")
+#' circos_ligand_receptor(dominoSignal:::pbmc_dom_built_tiny, receptor = "CXCR3")
 #' #specify colors
 #' cols = c("red", "orange", "green", "blue", "pink", "purple", "slategrey", "firebrick", "hotpink")
-#' names(cols) = levels(domino2:::pbmc_dom_built_tiny@clusters)
-#' circos_ligand_receptor(domino2:::pbmc_dom_built_tiny, receptor = "FAS", cell_colors = cols)
+#' names(cols) = levels(dom_clusters(dominoSignal:::pbmc_dom_built_tiny))
+#' circos_ligand_receptor(dominoSignal:::pbmc_dom_built_tiny, receptor = "CXCR3", cell_colors = cols)
 #' 
 circos_ligand_receptor <- function(
     dom, receptor, ligand_expression_threshold = 0.01, cell_idents = NULL,
@@ -749,7 +769,7 @@ circos_ligand_receptor <- function(
     cell_idents <- sort(unique(dom@clusters))
   }
   # obtain expression values from cl_signaling matrices
-  active_chk <- sapply(dom@linkages$clust_rec, function(x) {
+  active_chk <- vapply(dom@linkages$clust_rec, FUN.VALUE = logical(1), FUN = function(x) {
     receptor %in% x
   })
   if (sum(active_chk)) {
@@ -763,7 +783,7 @@ circos_ligand_receptor <- function(
       signaling_df <- rbind(signaling_df, df)
     }
   } else {
-    stop(paste0("No clusters have active ", receptor, " signaling"))
+    stop("No clusters have active ", receptor, " signaling")
   }
   signaling_df$mean.expression[is.na(signaling_df$mean.expression)] <- 0
   # create a scaled mean expression plot for coord widths greater than 1 by dividing by the max
@@ -771,7 +791,7 @@ circos_ligand_receptor <- function(
   signaling_df$scaled.mean.expression <- signaling_df$mean.expression / max(signaling_df$mean.expression)
   # exit function if no ligands are expressed above ligand expression threshold
   if (sum(signaling_df[["mean.expression"]] > ligand_expression_threshold) == 0) {
-    stop(paste0("No ligands of ", receptor, " exceed ligand expression threshold."))
+    stop("No ligands of ", receptor, " exceed ligand expression threshold.")
   }
   # initialize chord diagram with even ligand arcs
   arc_df <- signaling_df[, c("origin", "destination")]
@@ -794,7 +814,7 @@ circos_ligand_receptor <- function(
     names(cell_colors) <- cell_idents
   }
   grid_col <- c("#FFFFFF") # hide the arc corresponding to the receptor by coloring white
-  for (i in 1:length(ligands)) {
+  for (i in seq_along(ligands)) {
     grid_col <- c(grid_col, rep(lig_colors[i], length(cell_idents)))
   }
   names(grid_col) <- c(receptor, signaling_df$origin)
@@ -870,19 +890,17 @@ circos_ligand_receptor <- function(
 #' @return a Heatmap-class object of features ranked by test_statistic annotated with the proportion of subjects that showed active linkage of the features.
 #' @export
 #' @examples
-#' \dontrun{
 #' plot_differential_linkages(
-#'  differential_linkages = diff_linkages_tiny,
+#'  differential_linkages = dominoSignal:::tiny_differential_linkage_c1,
 #'  test_statistic = "p.value",
 #'  stat_ranking = "ascending"
 #' )
-#' }
 #'
 plot_differential_linkages <- function(
     differential_linkages, test_statistic, stat_range = c(0, 1),
     stat_ranking = c("ascending", "descending"), group_palette = NULL) {
   if (!test_statistic %in% colnames(differential_linkages)) {
-    stop(paste0("test statistic '", test_statistic, "' not present in colnames(differential_linkages)"))
+    stop("test statistic '", test_statistic, "' not present in colnames(differential_linkages)")
   }
   if (identical(stat_ranking, c("ascending", "descending"))) {
     warning("stat_ranking order not specified. Defaulting to ascending order")
@@ -895,7 +913,7 @@ plot_differential_linkages <- function(
   df <- differential_linkages[differential_linkages[[test_statistic]] >= stat_range[1] & differential_linkages[[test_statistic]] <=
     stat_range[2], ]
   if (nrow(df) == 0) {
-    stop(paste0("No features with '", test_statistic, "' within stat_range"))
+    stop("No features with '", test_statistic, "' within stat_range")
   }
   # order df by plot statistic
   if (stat_ranking == "ascending") {
@@ -937,7 +955,7 @@ plot_differential_linkages <- function(
     group_palette <- ggplot_col_gen(length(g_names))
     names(group_palette) <- g_names
   }
-  for (i in 1:length(g_names)) {
+  for (i in seq_along(g_names)) {
     g <- g_names[i]
     g_count <- paste0(g, "_count")
     g_n <- paste0(g, "_n")
@@ -985,5 +1003,5 @@ do_norm <- function(mat, dir) {
 #' 
 ggplot_col_gen <- function(n) {
   hues <- seq(15, 375, length = n + 1)
-  return(grDevices::hcl(h = hues, l = 65, c = 100)[1:n])
+  return(grDevices::hcl(h = hues, l = 65, c = 100)[seq_len(n)])
 }

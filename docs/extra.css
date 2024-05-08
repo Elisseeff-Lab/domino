@@ -1,6 +1,6 @@
 /* Language label for code chunks */
 .codelabel {
-    border: 1px solid #DFD4EC;
+    border: 2px solid #DFD4EC;
     background-color: #fefefe;
     z-index: 100;
     position: absolute;

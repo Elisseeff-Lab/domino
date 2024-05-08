@@ -6,6 +6,7 @@ we just want to avoid storing code that is not OK.
 ## For the submitter
 
 - [ ] `R CMD build` & `R CMD check` pass
+- [ ] `BiocCheck` passes
 - [ ]  Needed tests exist and passing or not needed
 - [ ]  The change is sufficiently small
 

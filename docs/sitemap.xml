@@ -1,171 +1,171 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://FertigLab.github.io/domino2/404.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/404.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/LICENSE-text.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/LICENSE-text.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/articles/domino2.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/articles/articles/cellphonedb_vignette.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/articles/domino_object_vignette.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/articles/articles/tf_scenic_vignette.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/articles/index.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/articles/cellphonedb_vignette.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/articles/plotting_vignette.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/articles/dominoSignal.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/articles/vignette.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/articles/domino_object_vignette.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/authors.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/articles/index.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/index.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/articles/plotting_vignette.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/news/index.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/articles/tf_scenic_vignette.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/news/news-0.2.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/authors.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/old.README.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/index.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/plotting_vignette.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/news/index.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/add_rl_column.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/add_rl_column.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/build_domino.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/build_domino.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/circos_ligand_receptor.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/check_arg.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/collate_network_items.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/circos_ligand_receptor.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/convert_genes.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/conv_py_bools.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/cor_heatmap.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/convert_genes.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/cor_scatter.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/cor_heatmap.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/count_linkage.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/cor_scatter.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/create_domino.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/count_linkage.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/create_regulon_list_scenic.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/create_domino.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/create_rl_map_cellphonedb.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/create_regulon_list_scenic.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/do_norm.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/create_rl_map_cellphonedb.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/dom_clusters.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/do_norm.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/dom_correlations.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/dom_clusters.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/dom_counts.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/dom_correlations.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/dom_database.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/dom_counts.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/dom_de.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/dom_database.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/dom_info.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/dom_de.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/dom_linkages.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/dom_info.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/dom_network_items.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/dom_linkages.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/dom_signaling.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/dom_network_items.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/dom_tf_activation.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/dom_signaling.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/dom_zscores.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/dom_tf_activation.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/domino-class.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/dom_zscores.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/feat_heatmap.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/domino-class.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/gene_network.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/feat_heatmap.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/ggplot_col_gen.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/gene_network.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/incoming_signaling_heatmap.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/ggplot_col_gen.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/index.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/incoming_signaling_heatmap.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/lc.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/index.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/linkage_summary-class.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/lc.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/mean_ligand_expression.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/linkage_summary-class.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/pbmc.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/mean_ligand_expression.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/pbmc_dom.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/plot_differential_linkages.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/plot_differential_linkages.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/print-domino-method.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/print-domino-method.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/read_if_char.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/rename_clusters.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/rename_clusters.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/show-domino-method.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/show-domino-method.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/signaling_heatmap.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/signaling_heatmap.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/signaling_network.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/signaling_network.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/summarize_linkages.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/summarize_linkages.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/table_convert_genes.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/table_convert_genes.html</loc>
   </url>
   <url>
-    <loc>https://FertigLab.github.io/domino2/reference/test_differential_linkages.html</loc>
+    <loc>https://FertigLab.github.io/dominoSignal/reference/test_differential_linkages.html</loc>
   </url>
 </urlset>

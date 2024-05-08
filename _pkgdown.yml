@@ -1,4 +1,4 @@
-url: https://FertigLab.github.io/domino2
+url: https://FertigLab.github.io/dominoSignal
 
 deploy:
   install_metadata: true
@@ -8,6 +8,7 @@ template:
   # bootswatch: pulse
   theme: a11y-light
   bslib:
+    preset: bootstrap
     primary: "#457E78"
     secondary: "#1D132B"
     navbar-bg: "#7DDED2"
@@ -19,22 +20,23 @@ template:
     code-font-size: 95%
     code-bg: "#fefefe"
     link-color: "#8963BA"
-    border-color: "#DFD4EC"
-    dropdown-bg: "#F4F1F9"
+    border-color: "#f4f0fa"
+    code_font: { google: "Fira Code" }
+    border-width: 2px
 
 
 reference:
 - title: "Domino Classes"
   desc: >
     An object class designed to store information used 
-    and produced in Domino2 analysis
+    and produced in dominoSignal analysis
   contents:
   - domino-class
   - linkage_summary
 - title: "Analysis Functions"
   desc: >
     Functions for performing cell-cell communication analysis
-    with the Domino2 package
+    with the dominoSignal package
   contents:
   - create_rl_map_cellphonedb
   - create_regulon_list_scenic
@@ -43,7 +45,7 @@ reference:
   - summarize_linkages
   - test_differential_linkages
 - title: "Plotting Functions"
-  desc: "Functions for visualizing Domino2 analysis results"
+  desc: "Functions for visualizing dominoSignal analysis results"
 - subtitle: "Heatmaps"
   contents:
   - cor_heatmap
@@ -60,7 +62,7 @@ reference:
   - cor_scatter
   - plot_differential_linkages
 - title: "Helper Functions"
-  desc: "Convenience functions for working with Domino2 objects"
+  desc: "Convenience functions for working with dominoSignal objects"
 - subtitle: "Access functions"
   contents:
   - dom_clusters
@@ -87,11 +89,23 @@ navbar:
   structure:
     left:  [intro, articles, reference, news]
     right: [search, github]
+    components:
+      articles:
+        text: Tutorials
+        menu:
+        - text: SCENIC for TF Scoring
+          href: vignettes/articles/tf_scenic_vignette.html
+        - text: Using CellphoneDB
+          href: vignettes/articles/cellphonedb_vignette.html
+        - text: Domino Object Structure
+          href: vignettes/domino_object_vignette.html
+        - text: Plotting and Visualization
+          href: vignettes/plotting_vignette.html
 
 home:
   title: Cell Communication from Single Cell RNA Sequencing Data
   description: >
-    Domino2 uses transcription factor activation and ligand - receptor linkages to infer intra- and inter- cellular signaling from single cell RNA sequencing data.
+    dominoSignal uses transcription factor activation and ligand - receptor linkages to infer intra- and inter- cellular signaling from single cell RNA sequencing data.
   sidebar:
     structure: [toc, authors, labs, citation, license]
     components:
@@ -113,10 +127,10 @@ news:
   one_page: true
   cran_dates: false
   releases:
-  - text: "domino2 v0.2.1"
-    href: https://github.com/FertigLab/domino2/releases/tag/v0.2.1-alpha
-  - text: "domino2 v0.2.2"
-    href: https://github.com/FertigLab/domino2/releases/tag/v0.2.2-alpha
+  - text: "dominoSignal v0.2.1"
+    href: https://github.com/FertigLab/dominoSignal/releases/tag/v0.2.1-alpha
+  - text: "dominoSignal v0.2.2"
+    href: https://github.com/FertigLab/dominoSignal/releases/tag/v0.2.2-alpha
 
 authors:
   footer:

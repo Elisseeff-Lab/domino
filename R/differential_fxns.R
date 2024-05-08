@@ -12,13 +12,12 @@ NULL
 #' @return A linkage summary class object consisting of nested lists of the active transcription factors, active receptors, and incoming ligands for each cluster across multiple domino results.
 #' @export
 #' @examples 
-#' \dontrun{
-#' meta_df <- data.frame("ID" = c("P1", "P2"), "group" = c("A", "B"))
-#' dom_ls <- list("P1" = dom1, "P2" = dom2)
+#' dom_ls <- dominoSignal:::dom_ls_tiny
+#' meta_df <- data.frame("ID" = c("dom1", "dom2"), "group" = c("A", "B"))
 #' summarize_linkages(
 #'  domino_results = dom_ls, subject_meta = meta_df, 
-#'  subject_names = meta_df$ID)
-#' }
+#'  subject_names = meta_df$ID
+#')
 #' 
 summarize_linkages <- function(domino_results, subject_meta, subject_names = NULL) {
   if (!is(domino_results, "list")) {
@@ -108,18 +107,18 @@ summarize_linkages <- function(domino_results, subject_meta, subject_names = NUL
 #' @return a data frame with columns for the unique linkage features and the counts of how many times the linkage occured across the compared domino results. If group.by is used, counts of the linkages are also provided as columns named by the unique values of the group.by variable.
 #' @export
 #' @examples
-#' \dontrun{
-#' count_linkage(linkage_summary = linkage_ls, cluster = "CD8_T_cell", 
-#'  group.by = "group", linkage = "rec_lig")
-#' }
+#' count_linkage(
+#'   linkage_summary = dominoSignal:::linkage_sum_tiny, cluster = "C1", 
+#'   group.by = "group", linkage = "rec")
 #' 
 count_linkage <- function(linkage_summary, cluster, group.by = NULL, linkage = "rec_lig", subject_names = NULL) {
   if (is.null(subject_names)) {
     subject_names <- linkage_summary@subject_names
   }
-  all_int <- sapply(linkage_summary@subject_linkages, FUN = function(x) {
+  all_int_ls <- lapply(linkage_summary@subject_linkages, FUN = function(x) {
     return(x[[cluster]][[linkage]])
   })
+  all_int <- unlist(all_int_ls)
   feature <- table(unlist(all_int))
   df <- data.frame(feature = names(feature), total_count = as.numeric(feature))
   if (!is.null(group.by)) {
@@ -132,7 +131,7 @@ count_linkage <- function(linkage_summary, cluster, group.by = NULL, linkage = "
       g_subjects <- linkage_summary@subject_meta[g_index, 1]
       int_count <- list()
       for (f in df[["feature"]]) {
-        count <- sapply(g_subjects, function(x) {
+        count <- vapply(g_subjects, FUN.VALUE = logical(1), FUN = function(x) {
           f %in% linkage_summary@subject_linkages[[x]][[cluster]][[linkage]]
         })
         int_count[[f]] <- sum(count)
@@ -170,10 +169,10 @@ count_linkage <- function(linkage_summary, cluster, group.by = NULL, linkage = "
 #' }
 #' @export
 #' @examples
-#' \dontrun{
-#' test_differential_linkages(linkage_summary = linkage_ls, cluster = "CD8_T_cell", 
-#'  group.by = "group", linkage = "rec_lig", test_name = "fishers.exact")
-#' }
+#' test_differential_linkages(
+#'   linkage_summary = dominoSignal:::linkage_sum_tiny, cluster = "C1", group.by = "group", 
+#'   linkage = "rec", test_name = "fishers.exact"
+#' )
 #' 
 test_differential_linkages <- function(linkage_summary, cluster, group.by, linkage = "rec_lig", subject_names = NULL,
   test_name = "fishers.exact") {
@@ -200,22 +199,24 @@ test_differential_linkages <- function(linkage_summary, cluster, group.by, linka
   colnames(test_mat) <- c("linkage_present", "linkage_absent")
   test_template <- as.data.frame(test_mat)
   if (test_name == "fishers.exact") {
-    test_result <- as.data.frame(t(sapply(result_df[["feature"]], FUN = function(x) {
-      feat_count <- count_link[count_link[["feature"]] == x, !colnames(count_link) %in% c("feature",
-        "total_count")]
-      feat_count <- sapply(feat_count, as.numeric)
-      # fill contingency table
-      test_df <- test_template
-      test_df[["linkage_present"]] <- feat_count
-      test_df[["linkage_absent"]] <- subject_count[["total"]] - feat_count
-      # conduct test
-      test <- fisher.test(test_df)
-      odds.ratio <- test$estimate
-      p.value <- test$p.value
-      res <- c(odds.ratio, p.value)
-      res <- setNames(res, c("odds.ratio", "p.value"))
-      return(res)
-    })))
+    test_result <- as.data.frame(t(vapply(
+      result_df[["feature"]], FUN.VALUE = numeric(2), FUN = function(x) {
+        feat_count <- count_link[count_link[["feature"]] == x, !colnames(count_link) %in% c("feature",
+          "total_count")]
+        feat_count <- vapply(feat_count, FUN.VALUE = numeric(1), FUN = as.numeric)
+        # fill contingency table
+        test_df <- test_template
+        test_df[["linkage_present"]] <- feat_count
+        test_df[["linkage_absent"]] <- subject_count[["total"]] - feat_count
+        # conduct test
+        test <- fisher.test(test_df)
+        odds.ratio <- test$estimate
+        p.value <- test$p.value
+        res <- c(odds.ratio, p.value)
+        res <- setNames(res, c("odds.ratio", "p.value"))
+        return(res)
+      })
+    ))
     # include fdr-adjusted p-values
     test_result[["p.adj"]] <- p.adjust(p = test_result[["p.value"]], method = "fdr")
   }
@@ -223,13 +224,14 @@ test_differential_linkages <- function(linkage_summary, cluster, group.by, linka
   result_df <- cbind(result_df, test_result)
   # append counts of active linkages for each group
   count_append <- count_link[, !colnames(count_link) == "feature"]
-  colnames(count_append) <- sapply(colnames(count_append), function(x) {
-    if (!grepl("_count$", x)) {
-      return(paste0(x, "_count"))
-    } else {
-      return(x)
-    }
-  })
+  colnames(count_append) <- vapply(
+    colnames(count_append), FUN.VALUE = character(1), FUN = function(x) {
+      if (!grepl("_count$", x)) {
+        return(paste0(x, "_count"))
+      } else {
+        return(x)
+      }
+    })
   result_df <- cbind(result_df, count_append)
   # append total counts of subjects in each group and the total number of subjects
   total_n <- sum(subject_count[["total"]])
