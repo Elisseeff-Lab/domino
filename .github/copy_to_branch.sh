@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # Designate desired directories and files
 FILES=(
 'data-raw/'*
