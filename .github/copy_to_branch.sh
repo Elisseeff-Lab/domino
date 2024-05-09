@@ -20,7 +20,7 @@ git config --global user.email 'action@github.com'
 # Fetch branches
 git fetch
 # Checkout target branch                         
-git checkout $TARGET_BRANCH
+git checkout $SRC_BRANCH
 # copy files from the branch the action is being run upon
 for F in ${FILES}; do
 git checkout $SRC_BRANCH -- ${F}
