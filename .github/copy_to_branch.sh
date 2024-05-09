@@ -22,7 +22,6 @@ git fetch
 # Checkout target branch                         
 git checkout $TARGET_BRANCH
 # copy files from the branch the action is being run upon
-SRC_BRANCH=$(git symbolic-ref --short HEAD)
 for F in ${FILES}; do
 git checkout $SRC_BRANCH -- ${F}
 done
