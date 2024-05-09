@@ -4,10 +4,12 @@
 \alias{dom_correlations}
 \title{Access correlations}
 \usage{
-dom_correlations(dom)
+dom_correlations(dom, type = "rl")
 }
 \arguments{
 \item{dom}{A domino object that has been created with \code{\link[=create_domino]{create_domino()}}}
+
+\item{type}{Either "rl" or "complex", to select between the receptor-ligand or complex correlation matrix}
 }
 \value{
 A matrix containing the correlation values for each receptor (row) by transcription factor (column)
@@ -16,6 +18,6 @@ A matrix containing the correlation values for each receptor (row) by transcript
 A function to pull receptor-transcription factor correlations from a domino object
 }
 \examples{
-cor_matrix <- dom_correlations(domino2:::pbmc_dom_built_tiny)
+cor_matrix <- dom_correlations(dominoSignal:::pbmc_dom_built_tiny, "rl")
 
 }

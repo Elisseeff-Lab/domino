@@ -1,4 +1,4 @@
 library("testthat")
-library("domino2")
+library("dominoSignal")
 
-test_check("domino2")
+test_check("dominoSignal")

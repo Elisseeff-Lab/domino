@@ -21,19 +21,25 @@ knitr::opts_chunk$set(
 options(timeout = 300)
 ```
 
-```{r setup, include = FALSE, eval = TRUE}
-library(domino2)
+In addition to the numerous plotting options available in the original [Domino](https://github.com/Elisseeff-Lab/domino), dominoSignal has added more functionality and new methods to improve visualization and interpretation of analysis results. Here, we will go over the different plotting functions available, as well as different options that can be utilized, and options for customization.
+
+## Setup and Data Load
+```{r setup, eval = TRUE}
+library(dominoSignal)
 library(patchwork)
 ```
 
-In addition to the numerous plotting options available in the original [Domino](https://github.com/Elisseeff-Lab/domino), domino2 has added more functionality and new methods to improve visualization and interpretation of analysis results. Here, we will go over the different plotting functions available, as well as different options that can be utilized, and options for customization. We will be using the domino object (loaded as `dom`) from our example analysis in [Getting Started](vignette("domino2")).
+In this tutorial, we will use the domino object we built on the [Getting Started](vigenttes("dominoSignal")) page. If you have not yet built a domino object, you can do so by following the instructions on the [Getting Started](vignette("dominoSignal")) page.
 
-```{r load data, include = FALSE}
+<details><summary>Instructions to load data</summary>
+
+```{r load data}
 bfc <- BiocFileCache::BiocFileCache(ask = FALSE)
-data_url <- "https://zenodo.org/records/10222767/files/pbmc_domino_built.rds"
+data_url <- "https://zenodo.org/records/10951634/files/pbmc_domino_built.rds"
 tmp_path <- BiocFileCache::bfcrpath(bfc, data_url)
 dom <- readRDS(tmp_path)
 ```
+</details>
 
 ## Heatmaps
 
@@ -60,7 +66,7 @@ tfs <- c("PAX5", "JUNB", "FOXJ3", "FOSB")
 cor_heatmap(dom, feats = tfs, recs = receptors)
 ```
 
-The heatmap functions in domino2 are based on `ComplexHeatmap::Heatmap()` and will also accept additional arguments meant for that function. For example, while an argument for clustering rows or columns of the heatmap is not explicitly stated, they can still be passed to `ComplexHeatmap::Heatmap()` through `cor_heatmap()`.
+The heatmap functions in dominoSignal are based on `ComplexHeatmap::Heatmap()` and will also accept additional arguments meant for that function. For example, while an argument for clustering rows or columns of the heatmap is not explicitly stated, they can still be passed to `ComplexHeatmap::Heatmap()` through `cor_heatmap()`.
 
 ```{r corheatmap-ComplexHeatmap-args}
 cor_heatmap(
@@ -167,7 +173,7 @@ signaling_network(dom,
 ## Other Types of Plot
 
 ### Chord Diagrams Connecting Ligands and Receptors
-A new addition to domino2, `circos_ligand_receptor()` creates a chord plot showing ligands that can activate a specific receptor, displaying mean cluster expression of the ligand with the width of the chord.
+A new addition to dominoSignal, `circos_ligand_receptor()` creates a chord plot showing ligands that can activate a specific receptor, displaying mean cluster expression of the ligand with the width of the chord.
 
 ```{r circos, fig.asp = 0.6, out.width = "90%"}
 circos_ligand_receptor(dom, receptor = "CD74")
@@ -196,7 +202,7 @@ Do keep in mind that there is an argument for `remove_rec_dropout` that should m
 
 ## Continued Development
 
-Since domino2 is a package still being developed, there are new functions and features that will be implemented in future versions. In the meantime, to view an example analysis, see our [Getting Started](vignette("domino2")) page, or see our [domino object structure](vignette("domino_object_vignette")) page to get familiar with the object structure. Additionally, if you find any bugs, have further questions, or want to share an idea, please let us know [here](https://github.com/FertigLab/domino_development/issues).
+Since dominoSignal is a package still being developed, there are new functions and features that will be implemented in future versions. In the meantime, to view an example analysis, see our [Getting Started](vignette("dominoSignal")) page, or see our [domino object structure](vignette("domino_object_vignette")) page to get familiar with the object structure. Additionally, if you find any bugs, have further questions, or want to share an idea, please let us know [here](https://github.com/FertigLab/domino_development/issues).
 
 <details><summary>Vignette Build Information</summary>
 Date last built and session information:

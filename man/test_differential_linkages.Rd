@@ -48,9 +48,9 @@ a data frame of results from the test of the differential linkages. Rows corresp
 Statistical test for differential linkages across multiple domino results
 }
 \examples{
-\dontrun{
-test_differential_linkages(linkage_summary = linkage_ls, cluster = "CD8_T_cell", 
- group.by = "group", linkage = "rec_lig", test_name = "fishers.exact")
-}
+test_differential_linkages(
+  linkage_summary = dominoSignal:::linkage_sum_tiny, cluster = "C1", group.by = "group", 
+  linkage = "rec", test_name = "fishers.exact"
+)
 
 }
