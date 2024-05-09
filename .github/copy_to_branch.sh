@@ -1,15 +1,18 @@
+#!/bin/bash
+
 # Designate desired directories and files
-SRC_FOLDER_PATHS=(data-raw man R tests vignettes)
-SRC_FILE_PATHS=(DESCRIPTION LICENSE NAMESPACE NEWS.md README.md inst/CITATION)
-
-# Get files from directories
-FILES=$(find "${SRC_FOLDER_PATHS[@]}" -type f)
-
-# Add indicated individual files
-for F in "${SRC_FILE_PATHS[@]}"
-do
-FILES+=" ${F}"
-done
+FILES=(
+'data-raw/'*
+'man/'*
+'R/'*
+'tests/'*
+'vignettes/'*
+'DESCRIPTION'
+'NAMESPACE'
+'NEWS.md'
+'README.md'
+'inst/CITATION'
+)
 
 echo "${FILES[@]}"
 
@@ -22,7 +25,9 @@ git fetch
 git checkout $TARGET_BRANCH
 # copy files from the branch the action is being run upon
 SRC_BRANCH=$(git symbolic-ref --short HEAD)
-git checkout $SRC_BRANCH -- $FILES
+for F in ${FILES}; do
+git checkout $SRC_BRANCH -- ${F}
+done
 # Commit to the repository (ignore if no changes)
 git add -A
 git diff-index --quiet HEAD ||  git commit -am "update files"
