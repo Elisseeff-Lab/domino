@@ -12,7 +12,7 @@ The current stable version is currently hosted on the [FertigLab dominoSignal re
 if(!require(remotes)){
     install.packages('remotes')
 }
-remotes::install_github('FertigLab/domino2')
+remotes::install_github('FertigLab/dominoSignal')
 ```
 
 ## Usage Overview
@@ -58,9 +58,9 @@ If you use our package in your analysis, please cite us:
 
 > Cherry C, Maestas DR, Han J, Andorko JI, Cahan P, Fertig EJ, Garmire LX, Elisseeff JH. Computational reconstruction of the signalling networks surrounding implanted biomaterials from single-cell transcriptomics. Nat Biomed Eng. 2021 Oct;5(10):1228-1238. doi: 10.1038/s41551-021-00770-5. Epub 2021 Aug 2. PMID: 34341534; PMCID: PMC9894531.
 
-> Cherry C, Mitchell J, Nagaraj S, Krishnan K, Fertig E, Elisseeff J
+> Cherry C, Mitchell J, Nagaraj S, Krishnan K, Lvovs D, Fertig E, Elisseeff J
 (2024). *dominoSignal: Cell Communication Analysis for Single Cell RNA
-Sequencing*. R package version 0.99.0.
+Sequencing*. R package version 0.99.2.
 
 ## Contact Us
 If you find any bugs, have questions, or want to contribute, please let us know [here](https://github.com/FertigLab/dominoSignal/issues).
