@@ -1,7 +1,8 @@
 test_that("rename_clusters function works correctly", {
   # Test domino object:
-  dom <- dominoSignal:::pbmc_dom_built_tiny
-  
+  data(pbmc_dom_built_tiny)
+  dom <- pbmc_dom_built_tiny
+
   # Define the cluster conversion, Z/new_clust does not match data intentionally
   clust_conv <- c("W", "X", "Y", "Z")
   names(clust_conv) <- c(levels(dom@clusters[1:3]), "new_clust")

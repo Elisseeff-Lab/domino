@@ -23,8 +23,9 @@ This function adds a column to the internal rl 'map' used to map all
 receptor and receptor complexes to all ligand and ligand complexes.
 }
 \examples{
+data(rl_map_tiny)
 lr_name <- data.frame("abbrev" = c("L", "R"), "full" = c("Ligand", "Receptor"))
-rl_map_expanded <- add_rl_column(map = dominoSignal:::rl_map_tiny, map_ref = "type_A",
+rl_map_expanded <- add_rl_column(map = rl_map_tiny, map_ref = "type_A",
  conv = lr_name, new_name = "type_A_full")
 
 }

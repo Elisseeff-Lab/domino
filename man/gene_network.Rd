@@ -43,8 +43,9 @@ will be included in the plot.
 }
 \examples{
 #basic usage
+data(pbmc_dom_built_tiny)
 gene_network(
- dominoSignal:::pbmc_dom_built_tiny, clust = "CD8_T_cell", 
+ pbmc_dom_built_tiny, clust = "CD8_T_cell", 
  OutgoingSignalingClust = "CD14_monocyte")
 
 }

@@ -2,6 +2,7 @@
 
 test_that("build_domino runs correctly", {
   # use rl_map created in domino2 v0.2.1
+  data(pbmc_dom_built_tiny, pbmc_dom_tiny)
   dom_build <- build_domino(
     pbmc_dom_tiny,
     min_tf_pval = .05,

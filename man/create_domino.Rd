@@ -60,18 +60,20 @@ domino object prepared for \code{\link[=build_domino]{build_domino()}}, which wi
 network.
 }
 \examples{
+data(rl_map_tiny, regulon_list_tiny, auc_tiny, RNA_count_tiny, RNA_zscore_tiny, clusters_tiny)
+
 pbmc_dom_tiny_all <- create_domino(
- rl_map = dominoSignal:::rl_map_tiny, features = dominoSignal:::auc_tiny, 
- counts = dominoSignal:::RNA_count_tiny, z_scores = dominoSignal:::RNA_zscore_tiny,
- clusters = dominoSignal:::clusters_tiny, tf_targets = dominoSignal:::regulon_list_tiny, 
- use_clusters = FALSE, use_complexes = FALSE, 
+ rl_map = rl_map_tiny, features = auc_tiny,
+ counts = RNA_count_tiny, z_scores = RNA_zscore_tiny,
+ clusters = clusters_tiny, tf_targets = regulon_list_tiny,
+ use_clusters = FALSE, use_complexes = FALSE,
  rec_min_thresh = 0.1, remove_rec_dropout = TRUE,
  tf_selection_method = "all")
 
 pbmc_dom_tiny_clustered <- create_domino(
- rl_map = dominoSignal:::rl_map_tiny, features = dominoSignal:::auc_tiny, 
- counts = dominoSignal:::RNA_count_tiny, z_scores = dominoSignal:::RNA_zscore_tiny,
- clusters = dominoSignal:::clusters_tiny, tf_targets = dominoSignal:::regulon_list_tiny,
+ rl_map = rl_map_tiny, features = auc_tiny,
+ counts = RNA_count_tiny, z_scores = RNA_zscore_tiny,
+ clusters = clusters_tiny, tf_targets = regulon_list_tiny,
  use_clusters = TRUE, use_complexes = TRUE, remove_rec_dropout = FALSE)
 
 }

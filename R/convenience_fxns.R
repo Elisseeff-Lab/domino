@@ -19,9 +19,10 @@ NULL
 #' @return A domino object with clusters renamed in all applicable slots.
 #' @export
 #' @examples 
+#' data(pbmc_dom_built_tiny)
 #' new_clust <- c("CD8_T_cell" = "CD8+ T Cells",
 #'  "CD14_monocyte" = "CD14+ Monocytes", "B_cell" = "B Cells")
-#' pbmc_dom_built_tiny <- rename_clusters(dominoSignal:::pbmc_dom_built_tiny, new_clust)
+#' pbmc_dom_built_tiny <- rename_clusters(pbmc_dom_built_tiny, new_clust)
 #'
 rename_clusters <- function(dom, clust_conv, warning = FALSE) {
     if (is.null(dom@clusters)) {

@@ -11,8 +11,9 @@ NULL
 #' @param subject_names vector of subject names in domino_results. If NULL, defaults to first column of subject_meta.
 #' @return A linkage summary class object consisting of nested lists of the active transcription factors, active receptors, and incoming ligands for each cluster across multiple domino results.
 #' @export
-#' @examples 
-#' dom_ls <- dominoSignal:::dom_ls_tiny
+#' @examples
+#' data(dom_ls_tiny)
+#' dom_ls <- dom_ls_tiny
 #' meta_df <- data.frame("ID" = c("dom1", "dom2"), "group" = c("A", "B"))
 #' summarize_linkages(
 #'  domino_results = dom_ls, subject_meta = meta_df, 
@@ -107,8 +108,9 @@ summarize_linkages <- function(domino_results, subject_meta, subject_names = NUL
 #' @return a data frame with columns for the unique linkage features and the counts of how many times the linkage occured across the compared domino results. If group.by is used, counts of the linkages are also provided as columns named by the unique values of the group.by variable.
 #' @export
 #' @examples
+#' data(linkage_sum_tiny)
 #' count_linkage(
-#'   linkage_summary = dominoSignal:::linkage_sum_tiny, cluster = "C1", 
+#'   linkage_summary = linkage_sum_tiny, cluster = "C1", 
 #'   group.by = "group", linkage = "rec")
 #' 
 count_linkage <- function(linkage_summary, cluster, group.by = NULL, linkage = "rec_lig", subject_names = NULL) {
@@ -169,8 +171,9 @@ count_linkage <- function(linkage_summary, cluster, group.by = NULL, linkage = "
 #' }
 #' @export
 #' @examples
+#' data(linkage_sum_tiny)
 #' test_differential_linkages(
-#'   linkage_summary = dominoSignal:::linkage_sum_tiny, cluster = "C1", group.by = "group", 
+#'   linkage_summary = linkage_sum_tiny, cluster = "C1", group.by = "group",
 #'   linkage = "rec", test_name = "fishers.exact"
 #' )
 #' 

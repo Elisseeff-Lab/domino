@@ -20,7 +20,8 @@ a data frame that includes the database information used in the domino object cr
 A function to pull database information from a domino object
 }
 \examples{
-database_name <- dom_database(dominoSignal:::pbmc_dom_built_tiny)
-full_database <- dom_database(dominoSignal:::pbmc_dom_built_tiny, name_only = FALSE)
+data(pbmc_dom_built_tiny)
+database_name <- dom_database(pbmc_dom_built_tiny)
+full_database <- dom_database(pbmc_dom_built_tiny, name_only = FALSE)
 
 }

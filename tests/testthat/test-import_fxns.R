@@ -3,6 +3,7 @@
 ## large scale test that processing functions generate results matching the state of the code in v0.2.1
 test_that("creation of rl_map from CellPhoneDB v4 input", {
   # use rl_map created in domino2 v0.2.1
+  data(genes_tiny, proteins_tiny, interactions_tiny, complexes_tiny, rl_map_tiny)
   rl_map <- create_rl_map_cellphonedb(
     genes = genes_tiny,
     proteins = proteins_tiny,
@@ -14,6 +15,7 @@ test_that("creation of rl_map from CellPhoneDB v4 input", {
 
 test_that("formating of SCENIC regulons output as a list", {
   # use regulon list created in domino2 v0.2.1
+  data(regulons_tiny, regulon_list_tiny)
   regulon_ls <- create_regulon_list_scenic(regulons = regulons_tiny)
   expect_equal(regulon_ls, regulon_list_tiny)
 })
@@ -25,6 +27,8 @@ test_that("creation of a domino object from SCENIC and CellPhoneDB inputs", {
   # minimal expression data from 360 cells in 3 cell types,
   # expression features for 16 genes
   # 360 cell barcodes have annotations of cell type assignment in clusters_tiny
+  data(rl_map_tiny, regulon_list_tiny, auc_tiny, 
+       RNA_count_tiny, RNA_zscore_tiny, clusters_tiny, pbmc_dom_tiny)
   pbmc_dom <- create_domino(
     rl_map = rl_map_tiny,
     features = auc_tiny,
@@ -46,6 +50,7 @@ test_that("creation of a domino object from SCENIC and CellPhoneDB inputs", {
 test_that("building a domino object under set parameters", {
   # built domino object created in domino2 v0.2.1
   # domino object created in domino2 v0.2.1
+  data(pbmc_dom_built_tiny, pbmc_dom_tiny)
   pbmc_dom_built <- build_domino(
     dom = pbmc_dom_tiny,
     min_tf_pval = .05,
@@ -77,6 +82,7 @@ test_that("building a domino object under set parameters", {
 })
 
 test_that("create_rl_map_cellphonedb fails on wrong input arg type.", {
+  data(genes_tiny, proteins_tiny, interactions_tiny, complexes_tiny)
 
   expect_error(create_rl_map_cellphonedb(
     genes = list(), proteins = proteins_tiny,
@@ -114,9 +120,9 @@ test_that("create_rl_map_cellphonedb fails on wrong input arg type.", {
 
 test_that("create_domino fails on wrong input arg type.", {
   #bad rl map
+  data(rl_map_tiny, auc_tiny, RNA_count_tiny, RNA_zscore_tiny, clusters_tiny)
   bad_rl_map <- "rl_map"
   expect_error(create_domino(bad_rl_map,
-                             features_tiny,
                              counts = RNA_count_tiny,
                              z_scores = RNA_zscore_tiny,
                              clusters = clusters_tiny),
@@ -125,7 +131,6 @@ test_that("create_domino fails on wrong input arg type.", {
   bad_rl_map <- rl_map_tiny
   colnames(bad_rl_map) <- paste(colnames(bad_rl_map), "qq")
   expect_error(create_domino(bad_rl_map,
-                             features_tiny,
                              counts = RNA_count_tiny,
                              z_scores = RNA_zscore_tiny,
                              clusters = clusters_tiny),

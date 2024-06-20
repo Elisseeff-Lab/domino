@@ -50,10 +50,11 @@ activation scores) by cells organized by cluster.
 }
 \examples{
 #basic usage
-feat_heatmap(dominoSignal:::pbmc_dom_built_tiny)
+data(pbmc_dom_built_tiny)
+feat_heatmap(pbmc_dom_built_tiny)
 #using thresholds
 feat_heatmap(
- dominoSignal:::pbmc_dom_built_tiny, min_thresh = 0.1, 
+ pbmc_dom_built_tiny, min_thresh = 0.1, 
   max_thresh = 0.6, norm = TRUE, bool = FALSE)
 
 }

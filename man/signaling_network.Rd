@@ -62,11 +62,12 @@ and directed edges indicate signaling from one cluster to another. Edges are
 colored based on the color scheme of the ligand expressing cluster.
 }
 \examples{
+data(pbmc_dom_built_tiny)
 #basic usage
-signaling_network(dominoSignal:::pbmc_dom_built_tiny)
+signaling_network(pbmc_dom_built_tiny)
 # scaling, thresholds, layouts, selecting clusters
 signaling_network(
- dominoSignal:::pbmc_dom_built_tiny, showOutgoingSignalingClusts = "CD14_monocyte", 
+ pbmc_dom_built_tiny, showOutgoingSignalingClusts = "CD14_monocyte", 
  scale = "none", norm = "none", layout = "fr", scale_by = "none", 
  vert_scale = 5)
 

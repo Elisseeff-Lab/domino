@@ -290,7 +290,6 @@ tiny_differential_linkage_c2 <- test_differential_linkages(
 usethis::use_data(
   pbmc_dom_built_tiny, complexes_tiny, genes_tiny, proteins_tiny, interactions_tiny,
   pbmc_dom_tiny, regulon_list_tiny, rl_map_tiny, regulons_tiny, clusters_tiny,
-  RNA_count_tiny, RNA_zscore_tiny, auc_tiny, 
-  dom_ls_tiny, linkage_sum_tiny, tiny_differential_linkage_c1, tiny_differential_linkage_c2, 
-  internal = TRUE
+  RNA_count_tiny, RNA_zscore_tiny, auc_tiny,
+  dom_ls_tiny, linkage_sum_tiny, tiny_differential_linkage_c1, tiny_differential_linkage_c2
 )
