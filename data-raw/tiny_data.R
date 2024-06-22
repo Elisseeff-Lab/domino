@@ -257,10 +257,6 @@ tiny_differential_linkage_c1 <- test_differential_linkages(
   linkage_summary = linkage_sum_tiny, cluster = "C1", group.by = "group",
   linkage = "rec", subject_names = linkage_sum_tiny@subject_names, test_name = "fishers.exact"
 )
-tiny_differential_linkage_c2 <- test_differential_linkages(
-  linkage_summary = linkage_sum_tiny, cluster = "C2", group.by = "group",
-  linkage = "rec", subject_names = linkage_sum_tiny@subject_names, test_name = "fishers.exact"
-)
 
 # save all data to be used in tests and examples
 CellPhoneDB <- list(complexes_tiny=complexes_tiny,
@@ -280,8 +276,7 @@ save(PBMC, file = "data/PBMC.RData")
 
 mockdata <- list(
               linkage_sum_tiny=linkage_sum_tiny,
-              tiny_differential_linkage_c1=tiny_differential_linkage_c1,
-              tiny_differential_linkage_c2=tiny_differential_linkage_c2)
+              tiny_differential_linkage_c1=tiny_differential_linkage_c1)
 save(mockdata, file = "data/mockdata.RData")
 
 
