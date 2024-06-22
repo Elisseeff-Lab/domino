@@ -1,7 +1,27 @@
 test_that("rename_clusters function works correctly", {
   # Test domino object:
-  data(pbmc_dom_built_tiny)
-  dom <- pbmc_dom_built_tiny
+  data(CellPhoneDB)
+  rl_map_tiny <- create_rl_map_cellphonedb(
+    genes = CellPhoneDB$genes_tiny,
+    proteins = CellPhoneDB$proteins_tiny,
+    interactions = CellPhoneDB$interactions_tiny,
+    complexes = CellPhoneDB$complexes_tiny)
+
+  data(SCENIC)
+  regulon_list_tiny <- create_regulon_list_scenic(
+    regulons = SCENIC$regulons_tiny)
+  
+  data(PBMC)
+  pbmc_dom_tiny <- create_domino(
+    rl_map = rl_map_tiny, features = SCENIC$auc_tiny,
+    counts = PBMC$RNA_count_tiny, z_scores = PBMC$RNA_zscore_tiny,
+    clusters = PBMC$clusters_tiny, tf_targets = regulon_list_tiny,
+    use_clusters = TRUE, use_complexes = TRUE, remove_rec_dropout = FALSE)
+
+  dom <- build_domino(
+    dom = pbmc_dom_tiny, min_tf_pval = .05, max_tf_per_clust = Inf,
+    max_rec_per_tf = Inf, rec_tf_cor_threshold = .1, min_rec_percentage = 0.01
+  )
 
   # Define the cluster conversion, Z/new_clust does not match data intentionally
   clust_conv <- c("W", "X", "Y", "Z")
