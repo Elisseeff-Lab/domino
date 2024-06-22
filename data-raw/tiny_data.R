@@ -142,33 +142,6 @@ pbmc_dom_built_tiny <- build_domino(
   min_rec_percentage = 0.01
 )
 
-# create a second tiny domino object for list comparison functions
-clusters_tiny_alt <- clusters_tiny[c(121:240, 1:120, 241:360)]
-names(clusters_tiny_alt) <- names(clusters_tiny)
-pbmc_dom_tiny_alt <- create_domino(
-  rl_map = rl_map_tiny,
-  features = auc_tiny,
-  counts = RNA_count_tiny,
-  z_scores = RNA_zscore_tiny,
-  # reassigned clusters
-  clusters = clusters_tiny_alt,
-  tf_targets = regulon_list_tiny,
-  use_clusters = TRUE,
-  use_complexes = TRUE,
-  remove_rec_dropout = FALSE
-)
-pbmc_dom_built_tiny_alt <- build_domino(
-  dom = pbmc_dom_tiny_alt,
-  min_tf_pval = .05,
-  max_tf_per_clust = Inf,
-  max_rec_per_tf = Inf,
-  rec_tf_cor_threshold = .1,
-  min_rec_percentage = 0.01
-)
-dom_ls_tiny <- list(
-  dom1 = pbmc_dom_built_tiny,
-  dom2 = pbmc_dom_built_tiny_alt
-)
 
 # example linkage summary for comparitive functions
 linkage_sum_tiny <- new("linkage_summary",
@@ -305,7 +278,7 @@ PBMC <- list(RNA_count_tiny=RNA_count_tiny,
              clusters_tiny=clusters_tiny)
 save(PBMC, file = "data/PBMC.RData")
 
-mockdata <- list(dom_ls_tiny=dom_ls_tiny,
+mockdata <- list(
               linkage_sum_tiny=linkage_sum_tiny,
               tiny_differential_linkage_c1=tiny_differential_linkage_c1,
               tiny_differential_linkage_c2=tiny_differential_linkage_c2)

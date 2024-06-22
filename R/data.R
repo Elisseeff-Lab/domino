@@ -50,8 +50,7 @@
 #'
 #' @format A list of:
 #' \describe{
-#'  \item{dom_ls_tiny}{List of two differential domino objecs}
-#'  \item{linkage_sum_tiny}{Mock of linkage summary}
+#'  \item{linkage_sum_tiny}{Mock of a linkage summary}
 #'  \item{tiny_differential_linkage_c1}{An examlpe of diff linkage}
 #'  \item{tiny_differential_linkage_c2}{Another example of diff linkage}
 #' }
