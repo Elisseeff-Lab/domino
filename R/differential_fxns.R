@@ -140,9 +140,8 @@ summarize_linkages <- function(domino_results, subject_meta, subject_names = NUL
 #' @return a data frame with columns for the unique linkage features and the counts of how many times the linkage occured across the compared domino results. If group.by is used, counts of the linkages are also provided as columns named by the unique values of the group.by variable.
 #' @export
 #' @examples
-#' data(mockdata)
 #' count_linkage(
-#'   linkage_summary = mock_linkage_sumary, cluster = "C1", 
+#'   linkage_summary = mock_linkage_sumary(), cluster = "C1", 
 #'   group.by = "group", linkage = "rec")
 #' 
 count_linkage <- function(linkage_summary, cluster, group.by = NULL, linkage = "rec_lig", subject_names = NULL) {

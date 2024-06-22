@@ -42,17 +42,3 @@
 #' 
 #' @source <https://github.com/ventolab/cellphonedb-data/archive/refs/tags/v4.0.0.tar.gz>
 "CellPhoneDB"
-
-#' dominoSignal object mocks
-#'
-#' A list of four mocks of dominoSignal data.
-#'
-#'
-#' @format A list of:
-#' \describe{
-#'  \item{linkage_sum_tiny}{Mock of a linkage summary}
-#'  \item{tiny_differential_linkage_c1}{An examlpe of diff linkage}
-#'  \item{tiny_differential_linkage_c2}{Another example of diff linkage}
-#' }
-#'
-"mockdata"
