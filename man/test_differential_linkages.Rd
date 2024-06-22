@@ -48,9 +48,9 @@ a data frame of results from the test of the differential linkages. Rows corresp
 Statistical test for differential linkages across multiple domino results
 }
 \examples{
-data(linkage_sum_tiny)
+data(mockdata)
 test_differential_linkages(
-  linkage_summary = linkage_sum_tiny, cluster = "C1", group.by = "group",
+  linkage_summary = mockdata$linkage_sum_tiny, cluster = "C1", group.by = "group",
   linkage = "rec", test_name = "fishers.exact"
 )
 

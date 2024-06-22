@@ -25,7 +25,7 @@ Creates a data frame of mean ligand expression for use in plotting a circos
 plot of ligand expression and saving tables of mean expression.
 }
 \examples{
-data(pbmc_dom_built_tiny)
+example(build_domino)
 counts <- dom_counts(pbmc_dom_built_tiny)
 mean_exp <- mean_ligand_expression(counts,
  ligands = c("PTPRC", "FASLG"), cell_ident = "CD14_monocyte",

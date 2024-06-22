@@ -16,7 +16,7 @@ A matrix containing the transcription factor activation scores for each feature 
 A function to pull transcription factor activation scores from a domino object
 }
 \examples{
-data(pbmc_dom_built_tiny)
+example(build_domino)
 tf_activation <- dom_tf_activation(pbmc_dom_built_tiny)
 
 }

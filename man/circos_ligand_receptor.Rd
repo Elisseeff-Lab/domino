@@ -31,7 +31,7 @@ Creates a chord plot of expression of ligands that can activate a specified
 receptor where chord widths correspond to mean ligand expression by the cluster.
 }
 \examples{
-data(pbmc_dom_built_tiny)
+example(build_domino)
 #basic usage
 circos_ligand_receptor(pbmc_dom_built_tiny, receptor = "CXCR3")
 #specify colors

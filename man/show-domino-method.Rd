@@ -16,7 +16,7 @@ a printed description of the number of cells in a domino object and its build st
 Shows content overview of domino object
 }
 \examples{
-data(pbmc_dom_built_tiny)
+example(build_domino)
 show(pbmc_dom_built_tiny)
 
 }

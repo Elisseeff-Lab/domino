@@ -78,7 +78,7 @@ linkage_summary <- setClass(
 #' @return a printed description of the number of cell clusters in the object
 #' @keywords internal
 #' @examples
-#' data(pbmc_dom_built_tiny)
+#' example(build_domino)
 #' print(pbmc_dom_built_tiny)
 #'
 setMethod("print", "domino", function(x, ...) {
@@ -106,7 +106,7 @@ setMethod("print", "domino", function(x, ...) {
 #' @return a printed description of the number of cells in a domino object and its build status
 #' @keywords internal
 #' @examples
-#' data(pbmc_dom_built_tiny)
+#' example(build_domino)
 #' show(pbmc_dom_built_tiny)
 #' 
 setMethod("show", "domino", function(object) {

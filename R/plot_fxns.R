@@ -22,7 +22,7 @@ NULL
 #' @return a Heatmap rendered to the active graphics device
 #' @export signaling_heatmap
 #' @examples
-#' data(pbmc_dom_built_tiny)
+#' example(build_domino)
 #' #basic usage
 #' signaling_heatmap(pbmc_dom_built_tiny)
 #' #scale
@@ -93,7 +93,7 @@ signaling_heatmap <- function(
 #' @return a Heatmap rendered to the active graphics device
 #' @export incoming_signaling_heatmap
 #' @examples
-#' data(pbmc_dom_built_tiny)
+#' example(build_domino)
 #' #incoming signaling of the CD8  T cells
 #' incoming_signaling_heatmap(pbmc_dom_built_tiny, "CD8_T_cell")
 #'
@@ -194,7 +194,7 @@ incoming_signaling_heatmap <- function(
 #' @return an igraph rendered to the active graphics device
 #' @export signaling_network
 #' @examples 
-#' data(pbmc_dom_built_tiny)
+#' example(build_domino)
 #' #basic usage
 #' signaling_network(pbmc_dom_built_tiny)
 #' # scaling, thresholds, layouts, selecting clusters
@@ -345,7 +345,7 @@ signaling_network <- function(
 #' @export gene_network
 #' @examples
 #' #basic usage
-#' data(pbmc_dom_built_tiny)
+#' example(build_domino)
 #' gene_network(
 #'  pbmc_dom_built_tiny, clust = "CD8_T_cell", 
 #'  OutgoingSignalingClust = "CD14_monocyte")
@@ -508,12 +508,12 @@ gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL,
 #' @export feat_heatmap
 #' @examples 
 #' #basic usage
-#' data(pbmc_dom_built_tiny)
+#' example(build_domino)
 #' feat_heatmap(pbmc_dom_built_tiny)
 #' #using thresholds
 #' feat_heatmap(
 #'  pbmc_dom_built_tiny, min_thresh = 0.1, 
-#'   max_thresh = 0.6, norm = TRUE, bool = FALSE)
+#'  max_thresh = 0.6, norm = TRUE, bool = FALSE)
 #' 
 feat_heatmap <- function(
     dom, feats = NULL, bool = FALSE, bool_thresh = 0.2, title = TRUE, norm = FALSE,
@@ -632,7 +632,7 @@ feat_heatmap <- function(
 #' @return a Heatmap rendered to the active graphics device
 #' @export cor_heatmap
 #' @examples 
-#' data(pbmc_dom_built_tiny)
+#' example(build_domino)
 #' #basic usage
 #' cor_heatmap(pbmc_dom_built_tiny, title = "PBMC R-TF Correlations")
 #' #show correlations above a specific value
@@ -729,7 +729,7 @@ cor_heatmap <- function(
 #' @return a ggplot object
 #' @export cor_scatter
 #' @examples
-#' data(pbmc_dom_built_tiny)
+#' example(build_domino)
 #' cor_scatter(pbmc_dom_built_tiny, "FLI1","CXCR3")
 #'
 cor_scatter <- function(dom, tf, rec, remove_rec_dropout = TRUE, ...) {
@@ -759,7 +759,7 @@ cor_scatter <- function(dom, tf, rec, remove_rec_dropout = TRUE, ...) {
 #' @return renders a circos plot to the active graphics device
 #' @export circos_ligand_receptor
 #' @examples 
-#' data(pbmc_dom_built_tiny)
+#' example(build_domino)
 #' #basic usage
 #' circos_ligand_receptor(pbmc_dom_built_tiny, receptor = "CXCR3")
 #' #specify colors
@@ -898,9 +898,10 @@ circos_ligand_receptor <- function(
 #' @return a Heatmap-class object of features ranked by test_statistic annotated with the proportion of subjects that showed active linkage of the features.
 #' @export
 #' @examples
-#' data(pbmc_dom_built_tiny, tiny_differential_linkage_c1)
+#' example(build_domino)
+#' data(mockdata)
 #' plot_differential_linkages(
-#'  differential_linkages = tiny_differential_linkage_c1,
+#'  differential_linkages = mockdata$tiny_differential_linkage_c1,
 #'  test_statistic = "p.value",
 #'  stat_ranking = "ascending"
 #' )

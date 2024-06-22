@@ -9,7 +9,7 @@
 #'          a data frame that includes the database information used in the domino object creation
 #' @export
 #' @examples
-#' data(pbmc_dom_built_tiny)
+#' example(build_domino)
 #' database_name <- dom_database(pbmc_dom_built_tiny)
 #' full_database <- dom_database(pbmc_dom_built_tiny, name_only = FALSE)
 #' 
@@ -30,7 +30,7 @@ dom_database <- function(dom, name_only = TRUE) {
 #' @return  A matrix containing the z-scored gene expression values for each gene (row) by cell (column)
 #' @export
 #' @examples
-#' data(pbmc_dom_built_tiny)
+#' example(build_domino)
 #' zscores <- dom_zscores(pbmc_dom_built_tiny)
 #'
 dom_zscores <- function(dom) {
@@ -45,7 +45,7 @@ dom_zscores <- function(dom) {
 #' @return  A matrix containing the gene expression values for each gene (row) by cell (column)
 #' @export
 #' @examples
-#' data(pbmc_dom_built_tiny)
+#' example(build_domino)
 #' counts <- dom_counts(pbmc_dom_built_tiny)
 #' 
 dom_counts <- function(dom) {
@@ -61,7 +61,7 @@ dom_counts <- function(dom) {
 #' @return  A vector containing either the names of the clusters used OR factors of the cluster label for each individual cell
 #' @export
 #' @examples
-#' data(pbmc_dom_built_tiny)
+#' example(build_domino)
 #' cluster_names <- dom_clusters(pbmc_dom_built_tiny)
 #' cell_cluster_label <- dom_clusters(pbmc_dom_built_tiny, labels = TRUE)
 #' 
@@ -82,7 +82,7 @@ dom_clusters <- function(dom, labels = FALSE) {
 #' @return  A matrix containing the transcription factor activation scores for each feature (row) by cell (column)
 #' @export
 #' @examples
-#' data(pbmc_dom_built_tiny)
+#' example(build_domino)
 #' tf_activation <- dom_tf_activation(pbmc_dom_built_tiny)
 #' 
 dom_tf_activation <- function(dom) {
@@ -98,7 +98,7 @@ dom_tf_activation <- function(dom) {
 #' @return  A matrix containing the correlation values for each receptor (row) by transcription factor (column)
 #' @export
 #' @examples
-#' data(pbmc_dom_built_tiny)
+#' example(build_domino)
 #' cor_matrix <- dom_correlations(pbmc_dom_built_tiny, "rl")
 #' 
 dom_correlations <- function(dom, type = "rl") {
@@ -125,7 +125,7 @@ dom_correlations <- function(dom, type = "rl") {
 #' @return  A list containing linkages between some combination of receptors, ligands, transcription factors, and clusters
 #' @export
 #' @examples
-#' data(pbmc_dom_built_tiny)
+#' example(build_domino)
 #' complexes <- dom_linkages(pbmc_dom_built_tiny, "complexes")
 #' tf_rec_by_cluster <- dom_linkages(pbmc_dom_built_tiny, "tf-receptor", TRUE)
 #' 
@@ -169,7 +169,7 @@ dom_linkages <- function(dom, link_type = c(
 #'          a data.frame containing the global summed signaling scores between receptors (rows) and ligands (columns) of each cluster
 #' @export
 #' @examples
-#' data(pbmc_dom_built_tiny)
+#' example(build_domino)
 #' monocyte_signaling <- dom_signaling(pbmc_dom_built_tiny, cluster = "CD14_monocyte")
 #' 
 dom_signaling <- function(dom, cluster = NULL) {
@@ -188,7 +188,7 @@ dom_signaling <- function(dom, cluster = NULL) {
 #' @return  A matrix containing the p values for differential expression of transcription factors (rows) in each cluster (columns)
 #' @export
 #' @examples
-#' data(pbmc_dom_built_tiny)
+#' example(build_domino)
 #' de_mat <- dom_de(pbmc_dom_built_tiny)
 #' 
 dom_de <- function(dom) {
@@ -204,7 +204,7 @@ dom_de <- function(dom) {
 #'          build parameters that were used in [build_domino()] to infer the signaling network
 #' @export
 #' @examples
-#' data(pbmc_dom_built_tiny)
+#' example(build_domino)
 #' build_details <- dom_info(pbmc_dom_built_tiny)
 #' 
 dom_info <- function(dom) {
@@ -228,7 +228,7 @@ dom_info <- function(dom) {
 #' @return A vector containing all features, receptors, or ligands in the data set or a list containing all three.
 #' @export
 #' @examples
-#' data(pbmc_dom_built_tiny)
+#' example(build_domino)
 #' monocyte_receptors <- dom_network_items(pbmc_dom_built_tiny, "CD14_monocyte", "receptors")
 #' all_tfs <- dom_network_items(pbmc_dom_built_tiny, return = "features")
 #' 

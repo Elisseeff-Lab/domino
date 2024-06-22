@@ -16,7 +16,7 @@ a printed description of the number of cell clusters in the object
 Prints a summary of a domino object
 }
 \examples{
-data(pbmc_dom_built_tiny)
+example(build_domino)
 print(pbmc_dom_built_tiny)
 
 }

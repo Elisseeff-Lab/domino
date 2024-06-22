@@ -35,7 +35,10 @@ regulons <- read.csv(paste0(scenic_dir, "/regulons_pbmc_3k.csv"))
 # CellPhoneDB Database
 cellphone_url <- "https://github.com/ventolab/cellphonedb-data/archive/refs/tags/v4.0.0.tar.gz"
 cellphone_tar <- paste0(temp_dir, "/cellphoneDB_v4.tar.gz")
-download.file(url = cellphone_url, destfile = cellphone_tar)
+if(!file.exists(cellphone_tar)){
+  download.file(url = cellphone_url, destfile = cellphone_tar)
+}
+
 cellphone_dir <- paste0(temp_dir, "/cellphoneDB_v4")
 untar(tarfile = cellphone_tar, exdir = cellphone_dir)
 cellphone_data <- paste0(cellphone_dir, "/cellphonedb-data-4.0.0/data")
@@ -278,18 +281,35 @@ linkage_sum_tiny <- new("linkage_summary",
 
 # test result object from differential linkage tests
 tiny_differential_linkage_c1 <- test_differential_linkages(
-  linkage_summary = linkage_sum_tiny, cluster = "C1", group.by = "group", 
+  linkage_summary = linkage_sum_tiny, cluster = "C1", group.by = "group",
   linkage = "rec", subject_names = linkage_sum_tiny@subject_names, test_name = "fishers.exact"
 )
 tiny_differential_linkage_c2 <- test_differential_linkages(
-  linkage_summary = linkage_sum_tiny, cluster = "C2", group.by = "group", 
+  linkage_summary = linkage_sum_tiny, cluster = "C2", group.by = "group",
   linkage = "rec", subject_names = linkage_sum_tiny@subject_names, test_name = "fishers.exact"
 )
 
-# Save all test files to internal sysdata object
-usethis::use_data(
-  pbmc_dom_built_tiny, complexes_tiny, genes_tiny, proteins_tiny, interactions_tiny,
-  pbmc_dom_tiny, regulon_list_tiny, rl_map_tiny, regulons_tiny, clusters_tiny,
-  RNA_count_tiny, RNA_zscore_tiny, auc_tiny,
-  dom_ls_tiny, linkage_sum_tiny, tiny_differential_linkage_c1, tiny_differential_linkage_c2
-)
+# save all data to be used in tests and examples
+CellPhoneDB <- list(complexes_tiny=complexes_tiny,
+                         genes_tiny=genes_tiny,
+                         proteins_tiny=proteins_tiny,
+                         interactions_tiny=interactions_tiny)
+save(CellPhoneDB, file = "data/CellPhoneDB.RData")
+
+SCENIC <- list(auc_tiny=auc_tiny,
+               regulons_tiny=regulons_tiny)
+save(SCENIC, file = "data/SCENIC.RData")
+
+PBMC <- list(RNA_count_tiny=RNA_count_tiny,
+             RNA_zscore_tiny=RNA_zscore_tiny,
+             clusters_tiny=clusters_tiny)
+save(PBMC, file = "data/PBMC.RData")
+
+mockdata <- list(dom_ls_tiny=dom_ls_tiny,
+              linkage_sum_tiny=linkage_sum_tiny,
+              tiny_differential_linkage_c1=tiny_differential_linkage_c1,
+              tiny_differential_linkage_c2=tiny_differential_linkage_c2)
+save(mockdata, file = "data/mockdata.RData")
+
+
+save(pbmc_dom_built_tiny, file = "data/pbmc_dom_built_tiny.RData")
