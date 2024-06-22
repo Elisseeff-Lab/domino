@@ -142,7 +142,7 @@ summarize_linkages <- function(domino_results, subject_meta, subject_names = NUL
 #' @examples
 #' data(mockdata)
 #' count_linkage(
-#'   linkage_summary = mockdata$linkage_sum_tiny, cluster = "C1", 
+#'   linkage_summary = mock_linkage_sumary, cluster = "C1", 
 #'   group.by = "group", linkage = "rec")
 #' 
 count_linkage <- function(linkage_summary, cluster, group.by = NULL, linkage = "rec_lig", subject_names = NULL) {
@@ -203,9 +203,8 @@ count_linkage <- function(linkage_summary, cluster, group.by = NULL, linkage = "
 #' }
 #' @export
 #' @examples
-#' data(mockdata)
 #' tiny_differential_linkage_c1 <- test_differential_linkages(
-#'   linkage_summary = mockdata$linkage_sum_tiny, cluster = "C1", group.by = "group",
+#'   linkage_summary = mock_linkage_summary(), cluster = "C1", group.by = "group",
 #'   linkage = "rec", test_name = "fishers.exact"
 #' )
 #' 
