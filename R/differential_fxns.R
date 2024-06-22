@@ -204,7 +204,7 @@ count_linkage <- function(linkage_summary, cluster, group.by = NULL, linkage = "
 #' @export
 #' @examples
 #' data(mockdata)
-#' test_differential_linkages(
+#' tiny_differential_linkage_c1 <- test_differential_linkages(
 #'   linkage_summary = mockdata$linkage_sum_tiny, cluster = "C1", group.by = "group",
 #'   linkage = "rec", test_name = "fishers.exact"
 #' )

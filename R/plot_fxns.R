@@ -899,9 +899,9 @@ circos_ligand_receptor <- function(
 #' @export
 #' @examples
 #' example(build_domino)
-#' data(mockdata)
+#' example(test_differential_linkages)
 #' plot_differential_linkages(
-#'  differential_linkages = mockdata$tiny_differential_linkage_c1,
+#'  differential_linkages = tiny_differential_linkage_c1,
 #'  test_statistic = "p.value",
 #'  stat_ranking = "ascending"
 #' )
