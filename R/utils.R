@@ -376,10 +376,10 @@ conv_py_bools <- function(obj) {
 }
 
 
-#' Create a mock linkage summary object for testing
+#' Create a mock linkage summary object
 #'
 #' @return obj a linkage summary object
-#' @keywords internal
+#' @export
 mock_linkage_summary <- function() {
   linkage_sum_tiny <- new("linkage_summary",
   subject_meta = data.frame(
