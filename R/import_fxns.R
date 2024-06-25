@@ -666,7 +666,8 @@ add_rl_column <- function(map, map_ref, conv, new_name) {
 #'
 #' Creates a data frame of mean ligand expression for use in plotting a circos
 #' plot of ligand expression and saving tables of mean expression.
-#'
+#'us
+
 #' @param x Gene by cell expression matrix
 #' @param ligands Character vector of ligand genes to be quantified
 #' @param cell_ident Vector of cell type (identity) names for which to calculate mean ligand gene expression

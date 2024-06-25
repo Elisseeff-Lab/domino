@@ -116,7 +116,55 @@
 </details><div class="section level2">
 <h2 id="object-contents">Object contents<a class="anchor" aria-label="anchor" href="#object-contents"></a>
 </h2>
-<p>There is a great deal of information stored with the <a href="%5Bdomino-class()%5D">domino object class</a>: - Input Data - Information about the database used to construct the rl_map - Inputted counts matrix - Inputted z-scored counts matrix - Inputted cluster labels - Inputted transcription factor activation scores - Calculated values - Differential expression p-values of transcription factors in each cluster - Correlation values between ligands and receptors - Median correlation between components of receptor complexes - Linkages - Complexes show the component genes of any complexes in the rl map - Receptor - ligand linkages as determined from the rl map - Transcription factor - target linkages as determined from the SCENIC analysis (or other regulon inference method) - Transcription factors that are differentially expressed in each cluster - Transcription factors that are correlated with receptors - Transcription factors that are correlated with receptors in each cluster - Receptors which are active in each cluster - Ligands that may activate a receptor in a given cluster (so-called incoming ligands; these may include ligands from outside the data set) - Signaling matrices - For each cluster, incoming ligands and the clusters within the data set that they are coming from - A summary of signaling between all clusters - Miscellaneous Information - Build information, which includes the parameters used to build the object in the <code><a href="../reference/build_domino.html">build_domino()</a></code> functions - The pared down receptor ligand map information used in building the object - The percent expression of receptors within each cluster</p>
+<p>There is a great deal of information stored with the <a href="https://fertiglab.github.io/dominoSignal/reference/domino-class.html" class="external-link">domino object class</a>. The domino object is an S4 class object that contains a variety of information about the data set used to build the object, the calculated values, and the linkages between receptors, ligands, and transcription factors. The object is structured as follows (with some examples of the information stored within each slot:</p>
+<ul>
+<li>
+<p>Input Data</p>
+<ul>
+<li><p>Information about the database used to construct the rl_map</p></li>
+<li><p>Inputted counts matrix</p></li>
+<li><p>Inputted z-scored counts matrix</p></li>
+<li><p>Inputted cluster labels</p></li>
+<li><p>Inputted transcription factor activation scores</p></li>
+</ul>
+</li>
+<li>
+<p>Calculated values</p>
+<ul>
+<li><p>Differential expression p-values of transcription factors in each cluster</p></li>
+<li><p>Correlation values between ligands and receptors</p></li>
+<li><p>Median correlation between components of receptor complexes</p></li>
+</ul>
+</li>
+<li>
+<p>Linkages</p>
+<ul>
+<li><p>Complexes show the component genes of any complexes in the rl map</p></li>
+<li><p>Receptor - ligand linkages as determined from the rl map</p></li>
+<li><p>Transcription factor - target linkages as determined from the SCENIC analysis (or other regulon inference method)</p></li>
+<li><p>Transcription factors that are differentially expressed in each cluster</p></li>
+<li><p>Transcription factors that are correlated with receptors</p></li>
+<li><p>Transcription factors that are correlated with receptors in each cluster</p></li>
+<li><p>Receptors which are active in each cluster</p></li>
+<li><p>Ligands that may activate a receptor in a given cluster (so-called incoming ligands; these may include ligands from outside the data set)</p></li>
+</ul>
+</li>
+<li>
+<p>Signaling matrices</p>
+<ul>
+<li><p>For each cluster, incoming ligands and the clusters within the data set that they are coming from</p></li>
+<li><p>A summary of signaling between all clusters</p></li>
+</ul>
+</li>
+<li>
+<p>Miscellaneous Information</p>
+<ul>
+<li><p>Build information, which includes the parameters used to build the object in the <code><a href="../reference/build_domino.html">build_domino()</a></code> functions</p></li>
+<li><p>The pared down receptor ligand map information used in building the object</p></li>
+<li><p>The percent expression of receptors within each cluster</p></li>
+</ul>
+</li>
+</ul>
 <p>For commonly accessed information (the number of cells, clusters, and some build information), the show and print methods for domino objects can be used.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dom</span></span>
@@ -548,7 +596,7 @@
 <span><span class="co">#&gt; [25] "CXCL12"                "CXCL14"                "CD58"</span></span></code></pre></div>
 <p>If, for some reason, you find yourself in need of the entire linkage structure (not recommended), it can be accessed through its slot name; domino objects are S4 objects.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">all_linkages</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/methods/slot.html" class="external-link">slot</a></span><span class="op">(</span><span class="va">dom</span>, <span class="st">"linkages"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">all_linkages</span> <span class="op">&lt;-</span> <span class="fu">slot</span><span class="op">(</span><span class="va">dom</span>, <span class="st">"linkages"</span><span class="op">)</span></span>
 <span><span class="co"># Names of all sub-structures:</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">all_linkages</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "complexes"          "rec_lig"            "tf_targets"        </span></span>
