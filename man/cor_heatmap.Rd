@@ -33,18 +33,18 @@ cor_heatmap(
 \item{...}{Other parameters to pass to  \code{\link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap()}} . Note that to use the 'main' parameter of  \code{\link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap()}}  you must set title = FALSE and to use 'annCol' or 'annColors' ann_cols must be FALSE.}
 }
 \value{
-a Heatmap rendered to the active graphics device
+A heatmap rendered to the active graphics device
 }
 \description{
 Creates a heatmap of correlation values between receptors and transcription
 factors either with boolean threshold or with continuous values displayed
 }
 \examples{
-#basic usage
+# basic usage
 cor_heatmap(dominoSignal:::pbmc_dom_built_tiny, title = "PBMC R-TF Correlations")
-#show correlations above a specific value
+# show correlations above a specific value
 cor_heatmap(dominoSignal:::pbmc_dom_built_tiny, bool = TRUE, bool_thresh = 0.25)
-#identify combinations that are connected
+# identify combinations that are connected
 cor_heatmap(dominoSignal:::pbmc_dom_built_tiny, bool = FALSE, mark_connections = TRUE)
  
 }

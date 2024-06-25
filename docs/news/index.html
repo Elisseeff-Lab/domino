@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">dominoSignal</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -24,9 +24,9 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/cellphonedb_vignette.html">Using the cellphoneDB Database</a>
+    <a class="dropdown-item" href="../articles/cellphonedb_vignette.html">Using the CellPhoneDB Database</a>
     <a class="dropdown-item" href="../articles/tf_scenic_vignette.html">SCENIC for TF Activation Scoring</a>
-    <a class="dropdown-item" href="../articles/domino_object_vignette.html">Interacting with dominoSignal Objects</a>
+    <a class="dropdown-item" href="../articles/domino_object_vignette.html">Interacting with domino Objects</a>
     <a class="dropdown-item" href="../articles/plotting_vignette.html">Plotting Functions and Options</a>
   </div>
 </li>
@@ -37,6 +37,7 @@
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-news">News</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-news">
     <h6 class="dropdown-header" data-toc-skip>Releases</h6>
+    <a class="external-link dropdown-item" href="https://github.com/FertigLab/dominoSignal/releases/tag/v0.99.2-alpha">dominoSignal v0.99.2</a>
     <a class="external-link dropdown-item" href="https://github.com/FertigLab/dominoSignal/releases/tag/v0.2.1-alpha">dominoSignal v0.2.1</a>
     <a class="external-link dropdown-item" href="https://github.com/FertigLab/dominoSignal/releases/tag/v0.2.2-alpha">dominoSignal v0.2.2</a>
     <div class="dropdown-divider"></div>
@@ -64,6 +65,22 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.99.2" id="dominosignal-v0992">dominoSignal v0.99.2<a class="anchor" aria-label="anchor" href="#dominosignal-v0992"></a></h2>
+<div class="section level3">
+<h3 id="package-name-0-99-2">Package Name<a class="anchor" aria-label="anchor" href="#package-name-0-99-2"></a></h3>
+<ul><li>Update of package name from “domino2” to “dominoSignal”</li></ul></div>
+<div class="section level3">
+<h3 id="bioconductor-standards-0-99-2">Bioconductor Standards<a class="anchor" aria-label="anchor" href="#bioconductor-standards-0-99-2"></a></h3>
+<ul><li>Update to vignettes presenting application of the DominoSignal pipeline on data formatted as a SingleCellExperiment object</li>
+<li>Implemented caching of example data by BiocCache to meet package size limits</li>
+<li>Removal of deprecated scripts for running SCENIC. Tutorials for running SCENIC are still present in vignettes</li>
+<li>Corrected BiocCheck notes pertaining to coding practices including paste in conditional statements, functions with dontrun examples, usage of seq_len or seq_along in place of seq, and usage of vapply in place of sapply</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.99.1" id="dominosignal-v0991">dominoSignal v0.99.1<a class="anchor" aria-label="anchor" href="#dominosignal-v0991"></a></h2>
+<ul><li>Update to Bioconductor version numbering conventions for package submission</li></ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.2" id="dominosignal-v022">dominoSignal v0.2.2<a class="anchor" aria-label="anchor" href="#dominosignal-v022"></a></h2>
 <div class="section level3">
 <h3 id="linkage-functions-0-2-2">Linkage functions<a class="anchor" aria-label="anchor" href="#linkage-functions-0-2-2"></a></h3>
@@ -73,18 +90,18 @@
 </ul></div>
 <div class="section level3">
 <h3 id="package-structure-0-2-2">Package structure<a class="anchor" aria-label="anchor" href="#package-structure-0-2-2"></a></h3>
-<ul><li>Adjustments made to meet BioConductor standards</li></ul></div>
+<ul><li>Adjustments made to meet Bioconductor standards</li></ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.1" id="dominosignal-v021">dominoSignal v0.2.1<a class="anchor" aria-label="anchor" href="#dominosignal-v021"></a></h2>
 <div class="section level3">
 <h3 id="updates-to-domino-object-construction-0-2-1">Updates to domino object construction<a class="anchor" aria-label="anchor" href="#updates-to-domino-object-construction-0-2-1"></a></h3>
-<ul><li>Uniform formats for inputs of receptor-ligand interaction databases, transcription factor activity features, and regulon gene lists for operability with alternative databases and transcription factor activation inference methods</li>
+<ul><li>Uniform formats for inputs of receptor - ligand interaction databases, transcription factor activity features, and regulon gene lists for operability with alternative databases and transcription factor activation inference methods</li>
 <li>Helper functions for reformatting pySCENIC outputs and CellPhoneDB database files to domino-readable uniform formats</li>
 <li>Assessment of transcription factor linkage with receptors that function as a heteromeric complex based on correlation between transcription factor activity and all receptor component genes</li>
 <li>Assessment of complex ligand expression as the mean of component gene expression for plotting functions</li>
 <li>Minimum threshold for the percentage of cells in a cluster expressing a receptor gene for the receptor to be called active within the cluster</li>
-<li>Additional linkage slots for active receptors in each cluster, transcription factor-receptor linkages for each cluster, and incoming ligands for active receptors on each cluster</li>
+<li>Additional linkage slots for active receptors in each cluster, transcription factor - receptor linkages for each cluster, and incoming ligands for active receptors on each cluster</li>
 </ul></div>
 <div class="section level3">
 <h3 id="plotting-functions-0-2-1">Plotting functions<a class="anchor" aria-label="anchor" href="#plotting-functions-0-2-1"></a></h3>
@@ -95,7 +112,7 @@
 <div class="section level3">
 <h3 id="bugfixes-0-2-1">Bugfixes<a class="anchor" aria-label="anchor" href="#bugfixes-0-2-1"></a></h3>
 <ul><li>Added host option for gene ortholog conversions using <code>{biomaRt}</code> for access to maintained mirrors</li>
-<li>Transcription factor-target linkages are now properly stored so that receptors in a transcription factor’s regulon are excluded from linkage</li>
+<li>Transcription factor - target linkages are now properly stored so that receptors in a transcription factor’s regulon are excluded from linkage</li>
 <li>Ligand nodes sizes in gene networks correspond to quantity of ligand expression</li>
 <li>
 <code><a href="../reference/create_domino.html">create_domino()</a></code> can be run without providing a regulon list</li>

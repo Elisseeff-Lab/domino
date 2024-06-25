@@ -7,7 +7,7 @@
 create_regulon_list_scenic(regulons)
 }
 \arguments{
-\item{regulons}{Dataframe or file path to the table of the output of the grn (gene regulatory network) function from pySCENIC}
+\item{regulons}{Data frame or file path to the table of the output of the ctx function from pySCENIC}
 }
 \value{
 A list where names are transcription factors and the stored values are character vectors of genes in the inferred regulons

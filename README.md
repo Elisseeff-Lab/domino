@@ -22,7 +22,7 @@ remotes::install_github('FertigLab/dominoSignal')
 Here is an overview of how dominoSignal might be used in analysis of a single cell RNA sequencing data set:
 
 1. Transcription factor activation scores are calculated (we recommend using [pySCENIC](https://pyscenic.readthedocs.io/en/latest/), but other methods can be used as well)
-2. A ligand-receptor database is used to map linkages between ligands and receptors (we recommend using [CellphoneDB](https://www.cellphonedb.org/), but other methods can be used as well).
+2. A ligand-receptor database is used to map linkages between ligands and receptors (we recommend using [CellPhoneDB](https://www.cellphonedb.org/), but other methods can be used as well).
 3. A domino object is created using counts, z-scored counts, clustering information, and the data from steps 1 and 2.
 4. Parameters such as the maximum number of transcription factors and receptors or the minimum correlation threshold (among others) are used to make a cell communication network
 5. Communication networks can be extracted from within the domino object or visualized using a variety of plotting functions

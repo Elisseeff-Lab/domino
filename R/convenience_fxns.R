@@ -5,17 +5,11 @@ NULL
 
 #' Renames clusters in a domino object
 #'
-#' This function reads in a receptor ligand signaling database, cell level
-#' features of some kind (ie. output from pySCENIC), z-scored single cell data,
-#' and cluster id for single cell data, calculates a correlation matrix between
-#' receptors and other features (this is transcription factor module scores if
-#' using pySCENIC), and finds features enriched by cluster. It will return a
-#' domino object prepared for [build_domino()], which will calculate a signaling
-#' network.
+#' This function renames the clusters used to build a domino object
 #'
-#' @param dom Domino object to rename clusters in
-#' @param clust_conv Named vector of conversions from old to new clusters. Values are taken as new clusters IDs and names as old cluster IDs.
-#' @param warning Logical. If TRUE, will warn if a cluster is not found in the conversion table. Default is FALSE.
+#' @param dom a domino object to rename clusters in
+#' @param clust_conv named vector of conversions from old to new clusters. Values are taken as new clusters IDs and names as old cluster IDs.
+#' @param warning logical. If TRUE, will warn if a cluster is not found in the conversion table. Default is FALSE.
 #' @return A domino object with clusters renamed in all applicable slots.
 #' @export
 #' @examples 
@@ -73,17 +67,17 @@ rename_clusters <- function(dom, clust_conv, warning = FALSE) {
 }
 
 
-#' Convert Genes Using Table
+#' Convert genes using a table
 #'
-#' Takes a vector of gene inputs and a conversion table  and returns a 
+#' Takes a vector of gene inputs and a conversion table and returns a
 #' converted gene table
 #'
-#' @param genes The genes to convert.
-#' @param from  Gene symbol type of the input (ENSG, ENSMUSG, HGNC, MGI)
-#' @param to    Desired gene symbol type for the output (HGNC, MGI)
-#' @param conversion_table A data.frame with column names corresponding to gene symbol types (mm.ens, hs.ens, mgi, hgnc)
+#' @param genes the genes to convert
+#' @param from  gene symbol type of the input (ENSG, ENSMUSG, HGNC, MGI)
+#' @param to    desired gene symbol type for the output (HGNC, MGI)
+#' @param conversion_table a data frame with column names corresponding to gene symbol types (mm.ens, hs.ens, mgi, hgnc)
 #' and rows corresponding to the gene symbols themselves
-#' @return Data frame of genes with original and corresponding converted symbols
+#' @return A data frame of genes with original and corresponding converted symbols
 #' @keywords internal
 #'
 table_convert_genes <- function(genes, from, to, conversion_table) {

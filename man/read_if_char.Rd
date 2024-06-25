@@ -2,17 +2,17 @@
 % Please edit documentation in R/utils.R
 \name{read_if_char}
 \alias{read_if_char}
-\title{Read in data if an object looks like path to it.}
+\title{Read in data if an object looks like path to it}
 \usage{
 read_if_char(obj)
 }
 \arguments{
-\item{obj}{Object to read if not already object}
+\item{obj}{object to read if not already object}
 }
 \value{
-obj Object itself in case its not a character
+Object itself or data read in from path
 }
 \description{
-Read in data if an object looks like path to it.
+Read in data if an object looks like path to it
 }
 \keyword{internal}

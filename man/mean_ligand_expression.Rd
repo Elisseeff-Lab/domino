@@ -2,7 +2,7 @@
 % Please edit documentation in R/import_fxns.R
 \name{mean_ligand_expression}
 \alias{mean_ligand_expression}
-\title{Calculate mean ligand expression as a data.frame for plotting in circos plot}
+\title{Calculate mean ligand expression as a data frame for plotting in circos plot}
 \usage{
 mean_ligand_expression(x, ligands, cell_ident, cell_barcodes, destination)
 }

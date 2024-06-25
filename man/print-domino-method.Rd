@@ -7,10 +7,10 @@
 \S4method{print}{domino}(x, ...)
 }
 \arguments{
-\item{x}{Domino object}
+\item{x}{A domino object}
 }
 \value{
-a printed description of the number of cell clusters in the object
+A printed description of the number of cells and clusters in the domino object
 }
 \description{
 Prints a summary of a domino object
@@ -19,4 +19,3 @@ Prints a summary of a domino object
 print(dominoSignal:::pbmc_dom_built_tiny)
 
 }
-\keyword{internal}

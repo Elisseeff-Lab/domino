@@ -1,8 +1,8 @@
 ---
-title: "Interacting with dominoSignal Objects"
+title: "Interacting with domino Objects"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Interacting with dominoSignal Objects}
+  %\VignetteIndexEntry{Interacting with domino Objects}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -20,22 +20,27 @@ knitr::opts_chunk$set(
 options(timeout = 600)
 ```
 
-```{r libraries, include=FALSE}
-library(dominoSignal)
-```
+
+In this tutorial, we will go into more detail on the structure of a domino object and the ways in which to access the data stored within. We will be using the domino object we built on the [Getting Started](https://fertiglab.github.io/dominoSignal) page. If you have not yet built a domino object, you can do so by following the instructions on the [Getting Started](https://fertiglab.github.io/dominoSignal/articles/dominoSignal) page.
+
+<details><summary>Instructions to load data</summary>
 
 ```{r setup}
+set.seed(42)
+library(dominoSignal)
+
+# BiocFileCache helps with file management across sessions
 bfc <- BiocFileCache::BiocFileCache(ask = FALSE)
 data_url <- "https://zenodo.org/records/10951634/files/pbmc_domino_built.rds"
 tmp_path <- BiocFileCache::bfcrpath(bfc, data_url)
 dom <- readRDS(tmp_path)
 ```
 
-
+</details>
 
 ## Object contents
 
-There is a great deal of information stored with the [domino object class](`domino-class`):
+There is a great deal of information stored with the [domino object class]([domino-class()]):
 - Input Data
   - Information about the database used to construct the rl\_map
   - Inputted counts matrix
@@ -48,8 +53,8 @@ There is a great deal of information stored with the [domino object class](`domi
   - Median correlation between components of receptor complexes
 - Linkages
   - Complexes show the component genes of any complexes in the rl map
-  - Receptor ligand linkages as determined from the rl map
-  - Transcription factor target linkages as determined from the SCENIC analysis (or other regulon inference method)
+  - Receptor - ligand linkages as determined from the rl map
+  - Transcription factor - target linkages as determined from the SCENIC analysis (or other regulon inference method)
   - Transcription factors that are differentially expressed in each cluster
   - Transcription factors that are correlated with receptors
   - Transcription factors that are correlated with receptors in each cluster
@@ -75,7 +80,7 @@ print(dom)
 
 ## Access functions
 
-In order to facilitate access to the information stored in the domino object, we have provided a collection of functions to retrieve specific items. These functions begin with "dom_" and can be listed using `ls()`.
+To facilitate access to the information stored in the domino object, we have provided a collection of functions to retrieve specific items. These functions begin with "dom_" and can be listed using `ls()`.
 
 ```{r list-functions}
 ls("package:dominoSignal", pattern = "^dom_")
@@ -114,13 +119,13 @@ activation_matrix <- dom_tf_activation(dom)
 knitr::kable(activation_matrix[1:5, 1:5])
 ```
 
-Information about the database referenced for ligand-receptor pairs and composition of protien complexes can be extracted from the `dom_database()` function. By default, the function returns the name(s) of the database(s) used:
+Information about the database referenced for ligand - receptor pairs and composition of protein complexes can be extracted from the `dom_database()` function. By default, the function returns the name(s) of the database(s) used:
 
 ```{r db-name}
 dom_database(dom)
 ```
 
-If you would like to view the entire ligand-receptor map, set `name_only = FALSE`:
+If you would like to view the entire ligand - receptor map, set `name_only = FALSE`:
 
 ```{r db-all}
 db_matrix <- dom_database(dom, name_only = FALSE)
@@ -129,14 +134,14 @@ knitr::kable(db_matrix[1:5, 1:5])
 
 ### Calculations
 
-Active transcription factors in each cluster are determined by conducting wilcoxon rank sum tests for each transcription factor where the transcription factor activity scores amongst all cells in a cluster are tested against the activity scores of all cells outside of the cluster. The p-values for the one-sided test for greater activity within the cluster compared to outside can be accessed with the `dom_de()` function.
+Active transcription factors in each cluster are determined by conducting Wilcoxon rank sum tests for each transcription factor where the transcription factor activity scores amongst all cells in a cluster are tested against the activity scores of all cells outside of the cluster. The p-values for the one-sided test for greater activity within the cluster compared to other cells can be accessed with the `dom_de()` function.
 
 ```{r de}
 de_matrix <- dom_de(dom)
 knitr::kable(de_matrix[1:5, 1:5])
 ```
 
-Linkage between receptors and transcription factors is assessed by Spearman correlation between transcription factor activity scores and scaled expression of receptor-encoding genes across all cells in the data set. Spearman coefficients can be accessed with the `dom_correlations()` function. Setting `type` to "complex" will return the median correlation between components of receptor complexes; the default ("rl") will return receptor-ligand correlations.
+Linkage between receptors and transcription factors is assessed by Spearman correlation between transcription factor activity scores and scaled expression of receptor-encoding genes across all cells in the data set. Spearman coefficients can be accessed with the `dom_correlations()` function. Setting `type` to "complex" will return the median correlation between components of receptor complexes; the default ("rl") will return receptor - ligand correlations.
 
 ```{r correlations}
 cor_matrix <- dom_correlations(dom)
@@ -145,7 +150,7 @@ knitr::kable(cor_matrix[1:5, 1:5])
 
 ### Linkages
 
-Linkages between ligands, receptors, and transcription factors can be accessed in several different ways, depending on the specific link and the scope desired. The `dom_linkages()` function has three arguments - the first, like all of our access functions, is for the domino object. The second, `link_type`, is used to specify which linkages are desired (options are complexes, receptor-ligand, tf-target, or tf-receptor). The third argument, `by_cluster`, determines whether the linkages returned are arranged by cluster (though this does change the available linkage types to tf-receptor, receptor, or incoming-ligand). For example, to access the complexes used across the dataset:
+Linkages between ligands, receptors, and transcription factors can be accessed in several different ways, depending on the specific link and the scope desired. The `dom_linkages()` function has three arguments - the first, like all of our access functions, is for the domino object. The second, `link_type`, is used to specify which linkages are desired (options are complexes, receptor - ligand, tf - target, or tf - receptor). The third argument, `by_cluster`, determines whether the linkages returned are arranged by cluster (though this does change the available linkage types to tf - receptor, receptor, or incoming-ligand). For example, to access the complexes used across the dataset:
 
 ```{r, complex}
 complex_links <- dom_linkages(dom, link_type = "complexes")
@@ -202,7 +207,7 @@ dom_info(dom)
 
 ## Continued Development
 
-Since dominoSignal is a package still being developed, there are new functions and features that will be implemented in future versions. In the meantime, we have put together further information on [plotting](vignette("plotting_vignette")) and an example analysis can be viewed on our [Getting Started](vignette("dominoSignal")) page. Additionally, if you find any bugs, have further questions, or want to share an idea, please let us know [here](https://github.com/FertigLab/domino_development/issues).
+Since dominoSignal is a package still being developed, there are new functions and features that will be implemented in future versions. In the meantime, we have put together further information on [plotting](https://fertiglab.github.io/dominoSignal/articles/plotting_vignette) and an example analysis can be viewed on our [Getting Started](https://fertiglab.github.io/dominoSignal/articles/dominoSignal) page. Additionally, if you find any bugs, have further questions, or want to share an idea, please let us know [here](https://github.com/FertigLab/dominoSignal/issues).
 
 <details><summary>Vignette Build Information</summary>
 Date last built and session information:

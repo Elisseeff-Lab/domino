@@ -32,6 +32,8 @@ reference:
     and produced in dominoSignal analysis
   contents:
   - domino-class
+  - print,domino-method
+  - show,domino-method
   - linkage_summary
 - title: "Analysis Functions"
   desc: >
@@ -95,7 +97,7 @@ navbar:
         menu:
         - text: SCENIC for TF Scoring
           href: vignettes/articles/tf_scenic_vignette.html
-        - text: Using CellphoneDB
+        - text: Using CellPhoneDB
           href: vignettes/articles/cellphonedb_vignette.html
         - text: Domino Object Structure
           href: vignettes/domino_object_vignette.html
@@ -127,6 +129,8 @@ news:
   one_page: true
   cran_dates: false
   releases:
+  - text: "dominoSignal v0.99.2"
+    href: https://github.com/FertigLab/dominoSignal/releases/tag/v0.99.2-alpha
   - text: "dominoSignal v0.2.1"
     href: https://github.com/FertigLab/dominoSignal/releases/tag/v0.2.1-alpha
   - text: "dominoSignal v0.2.2"

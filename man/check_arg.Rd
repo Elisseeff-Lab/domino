@@ -17,28 +17,28 @@ check_arg(
 )
 }
 \arguments{
-\item{arg}{The argument to check}
+\item{arg}{the argument to check}
 
-\item{allow_class}{Vector of allowed classes}
+\item{allow_class}{vector of allowed classes}
 
-\item{allow_len}{Vector of allowed lengths}
+\item{allow_len}{vector of allowed lengths}
 
 \item{allow_range}{range of minimum and maximum values i.e. c(1, 5)}
 
-\item{allow_values}{Vector of allowed values}
+\item{allow_values}{vector of allowed values}
 
-\item{need_vars}{Vector of required variables}
+\item{need_vars}{vector of required variables}
 
-\item{need_colnames}{Logical for whether colnames are required}
+\item{need_colnames}{vogical for whether colnames are required}
 
-\item{need_rownames}{Logical for whether rownames are required}
+\item{need_rownames}{logical for whether rownames are required}
 
-\item{need_names}{Logical for whether names are required}
+\item{need_names}{logical for whether names are required}
 }
 \value{
-logical
+Logical indicating whether the argument meets the requirements
 }
 \description{
-Accepts an object and rules for checking, stops if rules not met.
+Accepts an object and rules to check against; stops if requirements are not met
 }
 \keyword{internal}
