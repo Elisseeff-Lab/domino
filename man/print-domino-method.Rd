@@ -8,6 +8,8 @@
 }
 \arguments{
 \item{x}{A domino object}
+
+\item{...}{Additional arguments to be passed to other methods}
 }
 \value{
 A printed description of the number of cells and clusters in the domino object

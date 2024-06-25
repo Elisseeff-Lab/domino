@@ -75,6 +75,7 @@ linkage_summary <- setClass(
 #' Prints a summary of a domino object
 #'
 #' @param x A domino object
+#' @param ... Additional arguments to be passed to other methods
 #' @return A printed description of the number of cells and clusters in the domino object
 #' @export
 #' @examples
