@@ -23,23 +23,24 @@ knitr::opts_chunk$set(
 options(timeout = 300)
 ```
 
-<details><summary>Required libraries</summary>
+<details><summary>Libraries and set up</summary>
 
 ```{r libraries}
+set.seed(42)
+
 library(dominoSignal)
 library(SingleCellExperiment)
 library(plyr)
 library(circlize)
 library(ComplexHeatmap)
 library(knitr)
-
-set.seed(123)
 ```
 </details>
 
 <details><summary>Data used in our vignettes can be downloaded from Zenodo</summary>
 
 ```{r files}
+# BiocFileCache helps with managing files across sessions
 bfc <- BiocFileCache::BiocFileCache(ask = FALSE)
 data_url <- "https://zenodo.org/records/10951634/files"
 
@@ -55,7 +56,7 @@ scenic_auc <- BiocFileCache::bfcrpath(bfc, scenic_auc_url)
 scenic_regulon_url <- paste0(data_url, "/regulons_pbmc_3k.csv")
 scenic_regulon <- BiocFileCache::bfcrpath(bfc, scenic_regulon_url)
 
-# download cellphoneDB files
+# download CellPhoneDB files
 cellphone_url <- "https://github.com/ventolab/cellphonedb-data/archive/refs/tags/v4.0.0.tar.gz"
 cellphone_tar <- BiocFileCache::bfcrpath(bfc, cellphone_url)
 cellphone_dir <- paste0(tempdir(), "/cellphone")
@@ -63,7 +64,7 @@ untar(tarfile = cellphone_tar, exdir = cellphone_dir)
 cellphone_data <- paste0(cellphone_dir, "/cellphonedb-data-4.0.0/data")
 
 
-# directory for created inputs to pySCENIC and domino2
+# directory for created inputs to pySCENIC and dominoSignal
 input_dir <- paste0(tempdir(), "/inputs")
 if (!dir.exists(input_dir)) {
     dir.create(input_dir)
@@ -74,7 +75,7 @@ if (!dir.exists(input_dir)) {
 
 ## Data preparation
 
-Analysis of cell-cell communication with dominoSignal often follows initial processing and annotation of scRNAseq data.  We used the [OSCA workflow](https://bioconductor.org/books/3.18/OSCA.workflows/unfiltered-human-pbmcs-10x-genomics.html) to prepare the data set for analysis with dominoSignal. The [complete processing script](data-raw/example_data.R) is available in the data-raw directory of the dominoSignal package. The processed data can be downloaded from [Zenodo](10.5281/zenodo.10124865).
+Analysis of cell-cell communication with dominoSignal often follows initial processing and annotation of scRNAseq data.  We used the [OSCA workflow](https://bioconductor.org/books/3.18/OSCA.workflows/unfiltered-human-pbmcs-10x-genomics.html) to prepare the data set for analysis with dominoSignal. The complete processing script is available in the data-raw directory of the dominoSignal package. The processed data can be downloaded from [Zenodo](10.5281/zenodo.10124865).
 
 ```{r}
 pbmc <- readRDS(pbmc)
@@ -91,7 +92,7 @@ if(!require(remotes)){
 remotes::install_github("FertigLab/dominoSignal")
 ```
 
-## Loading TF and R-L data
+## Loading TF and R - L data
 
 ### Loading SCENIC Results
 
@@ -105,7 +106,7 @@ auc <- read.table(scenic_auc,
 )
 ```
 
-The initial regulons data frame read into R from the ctx function has 2 rows of column names that need to be replaced with one succinct description. dominoSignal has changed the input format for TF regulons to be a list storing vectors of target genes in each regulon, where the names of the list are the TF genes. This facilitates the use of alternative methods for TF activity quantification. We provide a helper function, `create_regulon_list_scenic()` for easy retrieval of TF regulons from the output of the [pySCENIC](https://pyscenic.readthedocs.io/en/latest/) ctx function.
+The initial regulons data frame read into R from the ctx function has two rows of column names that need to be replaced with one succinct description. dominoSignal has changed the input format for TF regulons to be a list storing vectors of target genes in each regulon, where the names of the list are the TF genes. This facilitates the use of alternative methods for TF activity quantification. We provide a helper function, `create_regulon_list_scenic()` for easy retrieval of TF regulons from the output of the [pySCENIC](https://pyscenic.readthedocs.io/en/latest/) ctx function.
 
 ```{r Create Regulon List}
 regulons <- regulons[-1:-2, ]
@@ -116,7 +117,7 @@ colnames(regulons) <- c(
 regulon_list <- create_regulon_list_scenic(regulons = regulons)
 ```
 
-Users should be aware that the AUC matrix from [SCENIC](https://scenic.aertslab.org/) is loaded in a cell x TF orientation and should be transposed to TF x cell orientation. pySCENIC also appends "(+)" to TF names that are converted to "..." upon loading into R. These characters can be included without affecting the results of dominoSignal analysis, but can be confusing when querying TF features in the data. We recommend comprehensive removal of the "..." characters using the `gsub()` function.
+Users should be aware that the AUC matrix from [SCENIC](https://scenic.aertslab.org/) is loaded in a cell x TF orientation and should be transposed to TF x cell orientation. pySCENIC also appends "(+)" to TF names that are converted to "..." upon loading into R. These characters can be included without affecting the results of dominoSignal analysis but can be confusing when querying TF features in the data. We recommend comprehensive removal of the "..." characters using the `gsub()` function.
 
 ```{r Orient AUC Matrix}
 auc_in <- as.data.frame(t(auc))
@@ -126,7 +127,7 @@ rownames(auc_in) <- gsub("\\.\\.\\.$", "", rownames(auc_in))
 
 ### Load CellPhoneDB Database
 
-dominoSignal has been updated to read ligand-receptor data bases in a uniform data.frame format referred to as a receptor-ligand map (rl\_map) to enable the use of alternative or updated reference databases as opposed to a particular version of CellPhoneDB's database in older versions of Domino. Each row corresponds to a ligand-receptor interaction. Genes participating in an interaction are referred to as "partner A" and "partner B" without a requirement for fixed ordering of whether A or B is the ligand and vice versa. The minimum required columns of this data frame are:
+dominoSignal has been updated to read ligand - receptor data bases in a uniform data frame format referred to as a receptor-ligand map (rl\_map) to enable the use of alternative or updated reference databases in addition to the particular version of CellPhoneDB's database in older versions of Domino. Each row corresponds to a ligand - receptor interaction. Genes participating in an interaction are referred to as "partner A" and "partner B" without requiring for fixed ordering of whether A or B is the ligand and vice versa. The minimum required columns of this data frame are:
 
 - int\_pair: the names of the interacting ligand and receptor separated by " & "
 - gene\_A: the gene or genes encoding partner A
@@ -134,9 +135,9 @@ dominoSignal has been updated to read ligand-receptor data bases in a uniform da
 - type\_A: ("L", "R") - indicates whether partner A is a ligand ("L") or receptor ("R")
 - type\_B: ("L", "R") - indicates whether partner B is a ligand ("L") or receptor ("R")
 
-Additional annotation columns can be provided such as name\_A and name\_B for ligands or receptors whose name in the interaction database does not match the names of their encoding genes. This formatting also allows for the consideration of ligand and receptor complexes comprised of a heteromeric combination of multiple proteins that must be co-expressed to function. In these cases, the "name\_\*" column shows the name of the protein complex, and the "gene\_\*" column shows the names of the genes encoding the components of the complex separated by commas ",". When plotting results from the build domino object, the names of the interacting ligands and receptors will be used based on combinatorial expression of the complex components.
+Additional annotation columns can be provided such as name\_A and name\_B for ligands or receptors whose name in the interaction database does not match the names of their encoding genes. This formatting also allows for the consideration of ligand and receptor complexes comprised of a heteromeric combination of multiple proteins that must be co-expressed to function. In these cases, the "name\_\*" column shows the name of the protein complex, and the "gene\_\*" column shows the names of the genes encoding the components of the complex separated by commas ",". When plotting results from the build domino object, the names of the interacting ligands and receptors will be used based on combined expression of the complex components.
 
-To facilitate the use of this formatting with the CellPhoneDB database, we include a helper function, `create_rl_map_cellphonedb()`, that automatically parses files from the cellPhoneDB database to arrive at the rl\_map format.
+To facilitate the use of this formatting with the CellPhoneDB database, we include a helper function, `create_rl_map_cellphonedb()`, that automatically parses files from the CellPhoneDB database to arrive at the rl\_map format.
 
 ```{r Load CellPhoneDB Database}
 complexes <- read.csv(
@@ -176,7 +177,7 @@ knitr::kable(head(rl_map))
 ```
 
 #### Optional: Adding interactions manually
-The change to use rl\_map formatting also enables users to manually append interactions of interest that are not included in the interaction database if need be. This can be attained by formatting the desired interactions as a data.frame with the same column headers as the rl\_map and using the `rbind()` function.
+The change to use rl\_map formatting also enables users to manually append interactions of interest that are not included in the interaction database if need be. This can be attained by formatting the desired interactions as a data frame with the same column headers as the rl\_map and using the `rbind()` function.
 
 ```{r Appending interactions}
 # Integrin complexes are not annotated as receptors in CellPhoneDB_v4.0
@@ -201,7 +202,7 @@ dominoSignal analysis takes place in two steps.
 
     a. initializes the domino result object
 
-    b. assesses differential TF activity across cell clusters by wilcoxon rank-sum test
+    b. assesses differential TF activity across cell clusters by Wilcoxon rank-sum test
 
     c. establishes TF-receptor linkages based on Spearman correlation of TF activities with receptor expression across the queried data set. 
 
@@ -213,7 +214,7 @@ dominoSignal analysis takes place in two steps.
 
 ### Required inputs from data set
 
-dominoSignal infers active receipt of signals via receptors based on the correlation of the receptor's expression with TF activity across the data set and differential activity of the TF within a cell cluster. Correlations are conducted using scaled expression values rather than raw counts or normalized counts. For assessment of receptor activity on a per cell type basis, a named vector of cell cluster assignments, where the names are cell barcodes matching the expression matrix, are provided. Assessing signaling based on other categorical groupings of cells can be achieved by passing these groupings as "clusters" to `build_domino()` in place of cell types. dominoSignal accepts a matrix of counts, a matrix of scaled counts, and a $\text{\underline{named}}$ vector of cell cluster labels as factors. Shown below is how to extract these elements from a `{SingleCellExperiment}` object. Note that since the data is scaled by gene, genes with no expression in any cell need to be removed.
+dominoSignal infers active receipt of signals via receptors based on the correlation of the receptor's expression with TF activity across the data set and differential activity of the TF within a cell cluster. Correlations are conducted using scaled expression values rather than raw counts or normalized counts. For assessment of receptor activity on a per cell type basis, a named vector of cell cluster assignments, where the names are cell barcodes matching the expression matrix, are provided. Assessing signaling based on other categorical groupings of cells can be achieved by passing these groupings as "clusters" to `build_domino()` in place of cell types. dominoSignal accepts a matrix of counts, a matrix of scaled counts, and a **named** vector of cell cluster labels as factors. Shown below is how to extract these elements from a [SingleCellExperiment](https://doi.org/doi:10.18129/B9.bioc.SingleCellExperiment) object. Note that since the data is scaled by gene, genes with no expression in any cell need to be removed.
 
 ```{r load cell features}
 counts = assay(pbmc, "counts")
@@ -224,11 +225,11 @@ clusters = factor(pbmc$cell_type)
 names(clusters) = colnames(pbmc)
 ```
 
-Note: Ligand and receptor expression can only be assessed for genes included in the z\_scores matrix. Many scRNAseq analysis pipelines recommend storing only genes with high variance in scaled expression slots for these data objects, thereby missing many genes encoding ligands and receptors. **Ensure that all your genes of interest are included in the rows of your z\_scores matrix.** Scaled expression was calculated for all genes in this PBMC data set after removal of genes expressed in less than 3 cells. 
+Note: Ligand and receptor expression can only be assessed for genes included in the z\_scores matrix. Many scRNAseq analysis pipelines recommend storing only genes with high variance in scaled expression slots for these data objects, thereby missing many genes encoding ligands and receptors. **Ensure that all your genes of interest are included in the rows of your z\_scores matrix.** Scaled expression was calculated for all genes in this PBMC data set after removal of genes expressed in less than three cells. 
 
 ### Create Domino object
 
-At this point, the `create_domino()` function can be used to make the object. Parameters of note include "use\_clusters" which is required to assess signaling between cell types rather than linkage of TFs and receptors broadly across the data set. "use\_complexes" decides if receptors that function in heteromeric complexes will be considered in testing linkages between TFs and receptors. If TRUE, a receptor complex is only linked to a TF if a majority of the component genes meet the Spearman correlation threshold. "remove\_rec\_dropout" decides whether receptor values of 0 will be considered in correlation calculations; this measure is intended to reduce the effect of dropout on receptors with low expression.
+At this point, the `create_domino()` function can be used to make the object. Parameters of note include "use\_clusters" which is required to assess signaling between cell types rather than linkage of TFs and receptors broadly across the data set. "use\_complexes" decides if receptors that function in heteromeric complexes will be considered in testing linkages between TFs and receptors. If TRUE, a receptor complex is only linked to a TF if a majority of the component genes meet the Spearman correlation threshold. "remove\_rec\_dropout" decides whether receptor values of zero will be considered in correlation calculations; this measure is intended to reduce the effect of dropout on receptors with low expression.
 
 To run `create_domino()` with matrix and vector inputs:
 ```{r Create Domino, results='hide', warning=FALSE}
@@ -243,8 +244,8 @@ pbmc_dom <- create_domino(
     use_complexes = TRUE,
     remove_rec_dropout = FALSE
 )
-# rl_map: receptor-ligand map data frame
-# features: TF scores (AUC matrix)
+# rl_map: receptor - ligand map data frame
+# features: TF activation scores (AUC matrix)
 # counts: counts matrix
 # z_scores: scaled expression data
 # clusters: named vector of cell cluster assignments
@@ -254,13 +255,13 @@ pbmc_dom <- create_domino(
 # remove_rec_dropout: whether to remove zeroes from correlation calculations
 ```
 
-For information on what is stored in a domino object and how to access it, please see our [vignette on the structure of domino objects](vignette("domino_object_vignette")).
+For information on what is stored in a domino object and how to access it, please see our [vignette on the structure of domino objects](https://fertiglab.github.io/dominoSignal/articles/domino_object_vignette).
 
 ### Build Domino Network
 
 `build_domino()` finalizes the construction of the domino object by setting parameters for identifying TFs with differential activation between clusters, receptor linkage with TFs based on magnitude of positive correlation, and the minimum percentage of cells within a cluster that have expression of a receptor for the receptor to be called as active.
 
-There are also options for thresholds of the number of TFs that may be called active in a cluster and the number of receptors that may be linked to any one TF. For thresholds of _n_ TFs and _m_ receptors, the bottom _n_ TFs by lowest p-values from the wilcoxon rank sum test and the top _m_ receptors by Spearman correlation coefficient are chosen.
+There are also options for thresholds of the number of TFs that may be called active in a cluster and the number of receptors that may be linked to any one TF. For thresholds of _n_ TFs and _m_ receptors, the bottom _n_ TFs by lowest p-values from the Wilcoxon rank sum test and the top _m_ receptors by Spearman correlation coefficient are chosen.
 
 ```{r Build Domino}
 pbmc_dom <- build_domino(
@@ -276,7 +277,7 @@ pbmc_dom <- build_domino(
 # min_rec_percentage: Minimum percent of cells that must express receptor
 ```
 
-Both of the thresholds for the number of receptors and TFs can be sent to infinity (Inf) to collect all receptors and TFs that meet statistical significance thresholds.
+Both thresholds for the number of receptors and TFs can be sent to infinity (Inf) to collect all receptors and TFs that meet statistical significance thresholds.
 
 ```{r Build Domino All Significant Interactions, eval=FALSE}
 pbmc_dom_all <- build_domino(
@@ -291,7 +292,7 @@ pbmc_dom_all <- build_domino(
 
 ## Visualization of Domino Results
 
-Multiple functions are available to visualize the intracellular networks between receptors and TFs and the ligand-receptor mediated intercellular networks between cell types.
+Multiple functions are available to visualize the intracellular networks between receptors and TFs and the ligand - receptor mediated intercellular networks between cell types.
 
 ### Summarize TF Activity and Linkage
 
@@ -312,11 +313,11 @@ The cumulative degree of signaling between clusters is assessed as the sum of th
 signaling_network(pbmc_dom, edge_weight = 0.5, max_thresh = 3)
 ```
 
-Signaling networks can also be drawn with the edges only rendering the signals directed towards a given cell type or signals from one cell type directed to others. To see those options in use, as well as other plotting functions and their options, please see our [plotting vignette](vignette("plotting_vignette")).
+Signaling networks can also be drawn with the edges only rendering the signals directed towards a given cell type or signals from one cell type directed to others. To see those options in use, as well as other plotting functions and their options, please see our [plotting vignette](https://fertiglab.github.io/dominoSignal/articles/plotting_vignette).
 
 ### Specific Signaling Interactions between Clusters
 
-Beyond the aggregated degree of signaling between cell types, the degrees of signaling through specific ligand-receptor interactions can be assessed. `gene_network()` provides a graph of linkages between active TFs in a cluster, the linked receptors in that cluster, and the possible ligands of these active receptors.
+Beyond the aggregated degree of signaling between cell types, the degrees of signaling through specific ligand - receptor interactions can be assessed. `gene_network()` provides a graph of linkages between active TFs in a cluster, the linked receptors in that cluster, and the possible ligands of these active receptors.
 
 ```{r}
 gene_network(pbmc_dom, clust = "dendritic_cell", layout = "grid")
@@ -345,7 +346,7 @@ circos_ligand_receptor(pbmc_dom, receptor = "CD74")
 
 ## Continued Development
 
-Since dominoSignal is a package still being developed, there are new functions and features that will be implemented in future versions. In the meantime, we have put together further information on [plotting](vignette("plotting_vignette")) and the [domino object structure](vignette("domino_object_vignette")) if you would like to explore more of the package's functionality. Additionally, if you find any bugs, have further questions, or want to share an idea, please let us know [here](https://github.com/FertigLab/domino_development/issues).
+Since dominoSignal is a package still being developed, there are new functions and features that will be implemented in future versions. In the meantime, we have put together further information on [plotting](https://fertiglab.github.io/dominoSignal/articles/plotting_vignette) and the [domino object structure](https://fertiglab.github.io/dominoSignal/articles/domino_object_vignette) if you would like to explore more of the package's functionality. Additionally, if you find any bugs, have further questions, or want to share an idea, please let us know [here](https://github.com/FertigLab/dominoSIgnal/issues).
 
 <details><summary>Vignette Build Information</summary>
 Date last built and session information:

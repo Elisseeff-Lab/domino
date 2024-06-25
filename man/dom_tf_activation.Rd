@@ -7,10 +7,10 @@
 dom_tf_activation(dom)
 }
 \arguments{
-\item{dom}{A domino object that has been created with \code{\link[=create_domino]{create_domino()}}}
+\item{dom}{a domino object that has been created with \code{\link[=create_domino]{create_domino()}}}
 }
 \value{
-A matrix containing the transcription factor activation scores for each feature (row) by cell (column)
+A matrix containing the transcription factor activation scores for each TF (row) by cell (column)
 }
 \description{
 A function to pull transcription factor activation scores from a domino object

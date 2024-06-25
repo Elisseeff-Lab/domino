@@ -7,11 +7,11 @@
 dom_network_items(dom, clusters = NULL, return = NULL)
 }
 \arguments{
-\item{dom}{Domino object containing a signaling network (i.e. \code{\link[=build_domino]{build_domino()}} was run)}
+\item{dom}{a domino object containing a signaling network (i.e. \code{\link[=build_domino]{build_domino()}} was run)}
 
-\item{clusters}{Vector indicating clusters to collate network items from. If left as NULL then all clusters will be included.}
+\item{clusters}{vector indicating clusters to collate network items from. If left as NULL then all clusters will be included.}
 
-\item{return}{String indicating where to collate "features", "receptors", or "ligands". If "all" then a list of all three will be returned.}
+\item{return}{string indicating whether to collate "features", "receptors", or "ligands". If "all" then a list of all three will be returned.}
 }
 \value{
 A vector containing all features, receptors, or ligands in the data set or a list containing all three.

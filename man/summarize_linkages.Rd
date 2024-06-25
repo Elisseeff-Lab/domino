@@ -7,17 +7,17 @@
 summarize_linkages(domino_results, subject_meta, subject_names = NULL)
 }
 \arguments{
-\item{domino_results}{list of domino result with one domino object per subject. Names from the list must match subject_names.}
+\item{domino_results}{list of domino result with one domino object per subject. Names from the list must match subject_names}
 
-\item{subject_meta}{dataframe that includes the subject features by which the objects could be grouped. The first column should must be subject names}
+\item{subject_meta}{data frame that includes the subject features by which the objects could be grouped. The first column should must be subject names}
 
 \item{subject_names}{vector of subject names in domino_results. If NULL, defaults to first column of subject_meta.}
 }
 \value{
-A linkage summary class object consisting of nested lists of the active transcription factors, active receptors, and incoming ligands for each cluster across multiple domino results.
+A linkage summary class object consisting of nested lists of the active transcription factors, active receptors, and incoming ligands for each cluster across multiple domino results
 }
 \description{
-Creates a linkage_summary object storing the linkages learned in different domino objects as nested lists to facilitate comparisons of networks learned by domino across subject covariates.
+Creates a \code{\link[=linkage_summary]{linkage_summary()}} object storing the linkages learned in different domino objects as nested lists to facilitate comparisons of networks learned by domino across subject covariates.
 }
 \examples{
 dom_ls <- dominoSignal:::dom_ls_tiny

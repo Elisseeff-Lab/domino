@@ -35,7 +35,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">dominoSignal</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -50,9 +50,9 @@
 <li class="active nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/cellphonedb_vignette.html">Using the cellphoneDB Database</a>
+    <a class="dropdown-item" href="../articles/cellphonedb_vignette.html">Using the CellPhoneDB Database</a>
     <a class="dropdown-item" href="../articles/tf_scenic_vignette.html">SCENIC for TF Activation Scoring</a>
-    <a class="dropdown-item" href="../articles/domino_object_vignette.html">Interacting with dominoSignal Objects</a>
+    <a class="dropdown-item" href="../articles/domino_object_vignette.html">Interacting with domino Objects</a>
     <a class="dropdown-item" href="../articles/plotting_vignette.html">Plotting Functions and Options</a>
   </div>
 </li>
@@ -63,6 +63,7 @@
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-news">News</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-news">
     <h6 class="dropdown-header" data-toc-skip>Releases</h6>
+    <a class="external-link dropdown-item" href="https://github.com/FertigLab/dominoSignal/releases/tag/v0.99.2-alpha">dominoSignal v0.99.2</a>
     <a class="external-link dropdown-item" href="https://github.com/FertigLab/dominoSignal/releases/tag/v0.2.1-alpha">dominoSignal v0.2.1</a>
     <a class="external-link dropdown-item" href="https://github.com/FertigLab/dominoSignal/releases/tag/v0.2.2-alpha">dominoSignal v0.2.2</a>
     <div class="dropdown-divider"></div>
@@ -101,7 +102,7 @@
 
     
     
-<p>SCENIC is our lab’s preferred software for TF activity scoring. We recommend using the Python implementation (<a href="https://pyscenic.readthedocs.io/en/latest/" class="external-link">pySCENIC</a>) as it is faster than the original R implementation. Be aware, the use of <a href="https://scenic.aertslab.org/" class="external-link">SCENIC</a> is often the slowest and most memory intensive step of this analysis pipeline. <a href="https://scenic.aertslab.org/" class="external-link">SCENIC</a> should be run on computing resources with access to multi-core processing and large amounts of memory.</p>
+<p><a href="https://scenic.aertslab.org/" class="external-link">SCENIC</a> is our preferred software for TF activity scoring. We recommend using the Python implementation (<a href="https://pyscenic.readthedocs.io/en/latest/" class="external-link">pySCENIC</a>) as it is faster than the original R implementation. Be aware, the use of <a href="https://scenic.aertslab.org/" class="external-link">SCENIC</a> is often the slowest and most memory intensive step of this analysis pipeline. <a href="https://scenic.aertslab.org/" class="external-link">SCENIC</a> should be run on computing resources with access to multi-core processing and large amounts of memory.</p>
 <div class="section level2">
 <h2 id="file-downloads-for-scenic">File Downloads for SCENIC<a class="anchor" aria-label="anchor" href="#file-downloads-for-scenic"></a>
 </h2>
@@ -139,12 +140,12 @@
 <div class="section level3">
 <h3 id="preparing-preprocessed-data">Preparing Preprocessed Data:<a class="anchor" aria-label="anchor" href="#preparing-preprocessed-data"></a>
 </h3>
-<p>dominoSignal was designed to be compatible with single cell workflows, accepting gene by cell matrices for counts and scaled counts. However, <a href="https://pyscenic.readthedocs.io/en/latest/" class="external-link">pySCENIC</a> is used for TF activation inference, and it requires as input a cell by gene matrix. This is the opposite orientation of many R based single cell packages (such as <a href="https://satijalab.org/seurat" class="external-link">Seurat</a> or <code>{SingleCellExperiment}</code>) but is the default for Python based tools such as <a href="https://scanpy.readthedocs.io/en/stable/" class="external-link">scanpy</a>. The RNA counts matrix can be saved as a tab-seperated value (.tsv) or comma-sperated value (.csv) file after transposing the matrix to cell by gene orientation. Below is an example of extracting the counts from a <code>{SingleCellExperiment}</code> object and saving it as a .tsv file.</p>
+<p>dominoSignal was designed to be compatible with single cell workflows, accepting gene by cell matrices for counts and scaled counts. However, <a href="https://pyscenic.readthedocs.io/en/latest/" class="external-link">pySCENIC</a> is used for TF activation inference, and it requires as input a cell by gene matrix. This is the opposite orientation of many R based single cell packages (such as <a href="https://satijalab.org/seurat" class="external-link">Seurat</a> or <a href="https://doi.org/doi:10.18129/B9.bioc.SingleCellExperiment" class="external-link">SingleCellExperiment</a>) but is the default for Python based tools such as <a href="https://scanpy.readthedocs.io/en/stable/" class="external-link">scanpy</a>. The RNA counts matrix can be saved as a tab-seperated value (.tsv) or comma-sperated value (.csv) file after transposing the matrix to cell by gene orientation. Below is an example of extracting the counts from a <a href="https://doi.org/doi:10.18129/B9.bioc.SingleCellExperiment" class="external-link">SingleCellExperiment</a> object and saving it as a .tsv file.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pbmc_counts</span> <span class="op">&lt;-</span> <span class="fu">assay</span><span class="op">(</span><span class="va">pbmc</span>, <span class="st">"counts"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">pbmc_counts</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">input_dir</span>, <span class="st">"/pbmc3k_counts.tsv"</span><span class="op">)</span>, sep <span class="op">=</span> <span class="st">"\t"</span>,</span>
 <span>    col.names <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></span></code></pre></div>
-<p>tsv and csv files are very inefficient for storing large matrices. As an alternative, the counts matrix can be saved as a loom file and directly passed to <a href="https://pyscenic.readthedocs.io/en/latest/" class="external-link">pySCENIC</a> in this format. Generating a loom file in R requires use of the <a href="https://github.com/mojaveazure/loomR" class="external-link">loomR</a> package. The package automatically handles the transposition of the counts matrix to cell by gene orientation as well. We recommend this approach to passing a counts matrix to pySCENIC. However, users should be aware that <a href="https://github.com/mojaveazure/loomR" class="external-link">loomR</a> is not hosted on CRAN or BioConductor at the time of this vignette’s creation.</p>
+<p>tsv and csv files are very inefficient for storing large matrices. As an alternative, the counts matrix can be saved as a loom file and directly passed to <a href="https://pyscenic.readthedocs.io/en/latest/" class="external-link">pySCENIC</a> in this format. Generating a loom file in R requires use of the <a href="https://github.com/mojaveazure/loomR" class="external-link">loomR</a> package. The package automatically handles the transposition of the counts matrix to cell by gene orientation as well. We recommend this approach to passing a counts matrix to pySCENIC. However, users should be aware that <a href="https://github.com/mojaveazure/loomR" class="external-link">loomR</a> is not hosted on CRAN or Bioconductor at the time of this vignette’s creation.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mojaveazure/loomR" class="external-link">loomR</a></span><span class="op">)</span></span>
 <span></span>
@@ -159,7 +160,7 @@
 <div class="section level2">
 <h2 id="running-scenic">Running SCENIC<a class="anchor" aria-label="anchor" href="#running-scenic"></a>
 </h2>
-<p><a href="https://pyscenic.readthedocs.io/en/latest/" class="external-link">pySCENIC</a> is initiated using bash scripting in the terminal. The analysis consists of 3 steps to score genes for TF motif enrichment, construct TF regulons consisting of genes targeted by the TFs, and arrive at AUC scores for enrichment of regulon gene transcription within each cell.</p>
+<p><a href="https://pyscenic.readthedocs.io/en/latest/" class="external-link">pySCENIC</a> is initiated using bash scripting in the terminal. The analysis consists of three steps to score genes for TF motif enrichment, construct TF regulons consisting of genes targeted by the TFs, and arrive at AUC scores for enrichment of regulon gene transcription within each cell.</p>
 <div class="section level3">
 <h3 id="grn-construct-tf-modules">grn: construct TF-modules<a class="anchor" aria-label="anchor" href="#grn-construct-tf-modules"></a>
 </h3>
@@ -215,11 +216,11 @@
 <span id="cb7-7"><a href="#cb7-7"></a>    <span class="co"># counts matrix loom file</span></span>
 <span id="cb7-8"><a href="#cb7-8"></a>    <span class="co"># regulon table output from ctx</span></span>
 <span id="cb7-9"><a href="#cb7-9"></a>    <span class="co"># cell x TF matrix of TF enrichment AUC values</span></span></code></pre></div>
-<p>The csv files created in this analysis can be used as the TF activation inputs in a dominoSignal analysis. Please see our <a href="vignette(%22dominoSignal%22)">Getting Started</a> page for more information on how to perform an analysis with dominoSignal. For a brief tutorial on the download of the necessary files for using cellphonedb, please see the <a href="vignette(%22cellphonedb_vignette%22)">Using the cellphoneDB database</a> vignette.</p>
+<p>The csv files created in this analysis can be used as the TF activation inputs in a dominoSignal analysis. Please see our <a href="https://fertiglab.github.io/dominoSignal/articles/dominoSignal" class="external-link">Getting Started</a> page for more information on how to perform an analysis with dominoSignal. For a brief tutorial on the download of the necessary files for using CellPhoneDB, please see the <a href="https://fertiglab.github.io/dominoSignal/articles/articles/cellphonedb_vignette" class="external-link">Using the CellPhoneDB database</a> vignette.</p>
 <details><p><summary>Vignette Build Information</summary> Date last built and session information:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "2024-03-27"</span></span>
+<span><span class="co">#&gt; [1] "2024-06-25"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; R version 4.2.1 (2022-06-23)</span></span>
 <span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu (64-bit)</span></span>

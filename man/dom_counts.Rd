@@ -7,7 +7,7 @@
 dom_counts(dom)
 }
 \arguments{
-\item{dom}{A domino object that has been created with \code{\link[=create_domino]{create_domino()}}}
+\item{dom}{a domino object that has been created with \code{\link[=create_domino]{create_domino()}}}
 }
 \value{
 A matrix containing the gene expression values for each gene (row) by cell (column)

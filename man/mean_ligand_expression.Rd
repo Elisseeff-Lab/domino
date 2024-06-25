@@ -2,7 +2,7 @@
 % Please edit documentation in R/import_fxns.R
 \name{mean_ligand_expression}
 \alias{mean_ligand_expression}
-\title{Calculate mean ligand expression as a data.frame for plotting in circos plot}
+\title{Calculate mean ligand expression as a data frame for plotting in circos plot}
 \usage{
 mean_ligand_expression(x, ligands, cell_ident, cell_barcodes, destination)
 }
@@ -23,6 +23,7 @@ A data frame of ligand expression targeting the specified receptor
 \description{
 Creates a data frame of mean ligand expression for use in plotting a circos
 plot of ligand expression and saving tables of mean expression.
+us
 }
 \examples{
 counts <- dom_counts(dominoSignal:::pbmc_dom_built_tiny)

@@ -7,23 +7,17 @@
 rename_clusters(dom, clust_conv, warning = FALSE)
 }
 \arguments{
-\item{dom}{Domino object to rename clusters in}
+\item{dom}{a domino object to rename clusters in}
 
-\item{clust_conv}{Named vector of conversions from old to new clusters. Values are taken as new clusters IDs and names as old cluster IDs.}
+\item{clust_conv}{named vector of conversions from old to new clusters. Values are taken as new clusters IDs and names as old cluster IDs.}
 
-\item{warning}{Logical. If TRUE, will warn if a cluster is not found in the conversion table. Default is FALSE.}
+\item{warning}{logical. If TRUE, will warn if a cluster is not found in the conversion table. Default is FALSE.}
 }
 \value{
 A domino object with clusters renamed in all applicable slots.
 }
 \description{
-This function reads in a receptor ligand signaling database, cell level
-features of some kind (ie. output from pySCENIC), z-scored single cell data,
-and cluster id for single cell data, calculates a correlation matrix between
-receptors and other features (this is transcription factor module scores if
-using pySCENIC), and finds features enriched by cluster. It will return a
-domino object prepared for \code{\link[=build_domino]{build_domino()}}, which will calculate a signaling
-network.
+This function renames the clusters used to build a domino object
 }
 \examples{
 new_clust <- c("CD8_T_cell" = "CD8+ T Cells",

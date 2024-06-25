@@ -4,9 +4,9 @@
 \name{domino-class}
 \alias{domino-class}
 \alias{domino}
-\title{The domino Class}
+\title{The domino class}
 \value{
-an instance of class \code{domino }
+An instance of class \code{domino }
 }
 \description{
 The domino class contains all information necessary to calculate receptor-ligand
@@ -17,7 +17,7 @@ Calculated intermediate values are also stored.
 \section{Slots}{
 
 \describe{
-\item{\code{db_info}}{List of data sets from lr database.}
+\item{\code{db_info}}{List of data sets from ligand - receptor database}
 
 \item{\code{counts}}{Raw count gene expression data}
 
@@ -25,7 +25,7 @@ Calculated intermediate values are also stored.
 
 \item{\code{clusters}}{Named factor with cluster identity of each cell}
 
-\item{\code{features}}{Matrix of features to correlate receptor-ligand expression with. Cells are columns and features are rows.}
+\item{\code{features}}{Matrix of features (TFs) to correlate receptor - ligand expression with. Cells are columns and features are rows.}
 
 \item{\code{cor}}{Correlation matrix of receptor expression to features.}
 

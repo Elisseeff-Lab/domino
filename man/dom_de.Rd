@@ -7,13 +7,13 @@
 dom_de(dom)
 }
 \arguments{
-\item{dom}{A domino object that has been created with \code{\link[=create_domino]{create_domino()}}}
+\item{dom}{a domino object that has been created with \code{\link[=create_domino]{create_domino()}}}
 }
 \value{
-A matrix containing the p values for differential expression of transcription factors (rows) in each cluster (columns)
+A matrix containing the p-values for differential expression of transcription factors (rows) in each cluster (columns)
 }
 \description{
-A function to pull differential expression p values from a domino object
+A function to pull differential expression p-values from a domino object
 }
 \examples{
 de_mat <- dom_de(dominoSignal:::pbmc_dom_built_tiny)

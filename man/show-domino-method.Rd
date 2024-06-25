@@ -7,10 +7,10 @@
 \S4method{show}{domino}(object)
 }
 \arguments{
-\item{object}{Domino object}
+\item{object}{A domino object}
 }
 \value{
-a printed description of the number of cells in a domino object and its build status
+A printed description of cell numbers and clusters in the object
 }
 \description{
 Shows content overview of domino object
@@ -21,4 +21,3 @@ dominoSignal:::pbmc_dom_built_tiny
 show(dominoSignal:::pbmc_dom_built_tiny)
 
 }
-\keyword{internal}

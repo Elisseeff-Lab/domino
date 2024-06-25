@@ -9,7 +9,7 @@ do_norm(mat, dir)
 \arguments{
 \item{mat}{Matrix to be normalized}
 
-\item{dir}{Direction to normalize the matrix c('row', 'col')}
+\item{dir}{Direction to normalize the matrix (either "row" for row or "col" for column)}
 }
 \value{
 A normalized matrix in the direction specified.
