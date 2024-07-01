@@ -16,12 +16,12 @@ convert_genes(
 
 \item{from}{Format of gene input (ENSMUSG, ENSG, MGI, or HGNC)}
 
-\item{to}{Format of gene output (MGI, or HGNC)}
+\item{to}{Format of gene output (MGI or HGNC)}
 
 \item{host}{Host to connect to. Defaults to https://www.ensembl.org following the useMart default, but can be changed to archived hosts if useMart fails to connect.}
 }
 \value{
-A data frame with input genes as col 1 and output as col 2
+A data frame with input genes as column 1 and converted genes as column 2
 }
 \description{
 This function reads in a vector of genes and converts the genes to specified symbol type

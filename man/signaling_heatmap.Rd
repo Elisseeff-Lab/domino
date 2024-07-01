@@ -15,26 +15,27 @@ signaling_heatmap(
 )
 }
 \arguments{
-\item{dom}{Domino object with network built (\code{\link[=build_domino]{build_domino()}})}
+\item{dom}{domino object with network built (\code{\link[=build_domino]{build_domino()}})}
 
-\item{clusts}{Vector of clusters to be included. If NULL then all clusters are used.}
+\item{clusts}{vector of clusters to be included. If NULL then all clusters are used.}
 
-\item{min_thresh}{Minimum signaling threshold for plotting. Defaults to -Inf for no threshold.}
+\item{min_thresh}{minimum signaling threshold for plotting. Defaults to -Inf for no threshold.}
 
-\item{max_thresh}{Maximum signaling threshold for plotting. Defaults to Inf for no threshold.}
+\item{max_thresh}{maximum signaling threshold for plotting. Defaults to Inf for no threshold.}
 
-\item{scale}{How to scale the values (after thresholding). Options are 'none', 'sqrt' for square root, or 'log' for log10.}
+\item{scale}{how to scale the values (after thresholding). Options are 'none', 'sqrt' for square root, or 'log' for log10.}
 
-\item{normalize}{Options to normalize the matrix. Normalization is done after thresholding and scaling. Accepted inputs are 'none' for no normalization, 'rec_norm' to normalize to the maximum value with each receptor cluster, or 'lig_norm' to normalize to the maximum value within each ligand cluster}
+\item{normalize}{options to normalize the matrix. Normalization is done after thresholding and scaling. Accepted inputs are 'none' for no normalization, 'rec_norm' to normalize to the maximum value with each receptor cluster, or 'lig_norm' to normalize to the maximum value within each ligand cluster}
 
-\item{...}{Other parameters to pass to  \code{\link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap()}}}
+\item{...}{other parameters to pass to  \code{\link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap()}}}
 }
 \value{
-a Heatmap rendered to the active graphics device
+A heatmap rendered to the active graphics device
 }
 \description{
 Creates a heatmap of the signaling network. Alternatively, the network
-matrix can be accessed directly in the signaling slot of a domino object.
+matrix can be accessed directly in the signaling slot of a domino object using
+the \code{\link[=dom_signaling]{dom_signaling()}} function.
 }
 \examples{
 example(build_domino)

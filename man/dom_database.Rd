@@ -7,9 +7,9 @@
 dom_database(dom, name_only = TRUE)
 }
 \arguments{
-\item{dom}{A domino object that has been created}
+\item{dom}{a domino object that has been created}
 
-\item{name_only}{A boolean for whether to return only the name of the database used
+\item{name_only}{a boolean for whether to return only the name of the database used
 or the entire database that is stored. Default TRUE.}
 }
 \value{

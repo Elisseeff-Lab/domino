@@ -1,0 +1,14 @@
+pandoc: 2.7.3
+pkgdown: 2.0.7
+pkgdown_sha: ~
+articles:
+  cellphonedb_vignette: cellphonedb_vignette.html
+  tf_scenic_vignette: tf_scenic_vignette.html
+  dominoSignal: dominoSignal.html
+  domino_object_vignette: domino_object_vignette.html
+  plotting_vignette: plotting_vignette.html
+last_built: 2024-06-25T18:20Z
+urls:
+  reference: https://FertigLab.github.io/dominoSignal/reference
+  article: https://FertigLab.github.io/dominoSignal/articles
+

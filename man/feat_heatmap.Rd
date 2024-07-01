@@ -33,7 +33,7 @@ feat_heatmap(
 
 \item{cols}{Named vector of colors to annotate cells by cluster color. Values are taken as colors and names as cluster. If left as NULL then default ggplot colors will be generated.}
 
-\item{ann_cols}{Boolean indicating whether to include cell cluster as a column annotation. Colors can be defined with cols. If FALSE then custom annotations can be passed to NMF.}
+\item{ann_cols}{Boolean indicating whether to include cell cluster as a column annotation. Colors can be defined with cols. If FALSE then custom annotations can be passed to \code{\link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap()}}.}
 
 \item{min_thresh}{Minimum threshold for color scaling if not a boolean heatmap}
 
@@ -42,11 +42,10 @@ feat_heatmap(
 \item{...}{Other parameters to pass to  \code{\link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap()}} . Note that to use the 'main' parameter of  \code{\link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap()}}  you must set title = FALSE and to use 'annCol' or 'annColors' ann_cols must be FALSE.}
 }
 \value{
-a Heatmap rendered to the active graphics device
+A heatmap rendered to the active graphics device
 }
 \description{
-Creates a heatmap of feature expression (typically transcription factor
-activation scores) by cells organized by cluster.
+Creates a heatmap of transcription factor activation scores by cells grouped by cluster.
 }
 \examples{
 #basic usage

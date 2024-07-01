@@ -30,10 +30,10 @@ gene_network(
 
 \item{layout}{Type of layout to use. Options are 'grid', 'random', 'sphere', 'circle', 'fr' for Fruchterman-Reingold force directed layout, and 'kk' for Kamada Kawai for directed layout.}
 
-\item{...}{Other parameters to pass to plot() with an \link{igraph} object. See \link{igraph} manual for options.}
+\item{...}{Other parameters to pass to plot() with an \href{https://r.igraph.org/}{igraph} object. See \href{https://r.igraph.org/}{igraph} manual for options.}
 }
 \value{
-an igraph rendered to the active graphics device
+An igraph plot rendered to the active graphics device
 }
 \description{
 Create a gene association network for genes from a given cluster. The

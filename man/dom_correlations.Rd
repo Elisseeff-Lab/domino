@@ -7,9 +7,9 @@
 dom_correlations(dom, type = "rl")
 }
 \arguments{
-\item{dom}{A domino object that has been created with \code{\link[=create_domino]{create_domino()}}}
+\item{dom}{a domino object that has been created with \code{\link[=create_domino]{create_domino()}}}
 
-\item{type}{Either "rl" or "complex", to select between the receptor-ligand or complex correlation matrix}
+\item{type}{either "rl" or "complex", to select between the receptor-ligand or complex correlation matrix}
 }
 \value{
 A matrix containing the correlation values for each receptor (row) by transcription factor (column)

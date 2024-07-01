@@ -33,7 +33,7 @@ cor_heatmap(
 \item{...}{Other parameters to pass to  \code{\link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap()}} . Note that to use the 'main' parameter of  \code{\link[ComplexHeatmap:Heatmap]{ComplexHeatmap::Heatmap()}}  you must set title = FALSE and to use 'annCol' or 'annColors' ann_cols must be FALSE.}
 }
 \value{
-a Heatmap rendered to the active graphics device
+A heatmap rendered to the active graphics device
 }
 \description{
 Creates a heatmap of correlation values between receptors and transcription

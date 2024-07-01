@@ -7,13 +7,13 @@
 dom_signaling(dom, cluster = NULL)
 }
 \arguments{
-\item{dom}{A domino object that has been created with \code{\link[=create_domino]{create_domino()}}}
+\item{dom}{a domino object that has been created with \code{\link[=create_domino]{create_domino()}}}
 
-\item{cluster}{Either NULL to indicate global signaling or a specific cluster for which a}
+\item{cluster}{either NULL to indicate global signaling or a specific cluster for which a signaling matrix is desired}
 }
 \value{
-A data.frame containing the signaling score through each ligand (row) by each cluster (column) OR
-a data.frame containing the global summed signaling scores between receptors (rows) and ligands (columns) of each cluster
+A data frame containing the signaling score through each ligand (row) by each cluster (column) OR
+a data frame containing the global summed signaling scores between receptors (rows) and ligands (columns) of each cluster
 }
 \description{
 A function to pull signaling matrices from a domino object

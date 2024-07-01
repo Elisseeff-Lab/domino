@@ -2,7 +2,7 @@
 % Please edit documentation in R/import_fxns.R
 \name{create_rl_map_cellphonedb}
 \alias{create_rl_map_cellphonedb}
-\title{Create a receptor-ligand map from a cellphonedb signaling database}
+\title{Create a receptor - ligand map from a CellPhoneDB signaling database}
 \usage{
 create_rl_map_cellphonedb(
   genes,
@@ -17,13 +17,13 @@ create_rl_map_cellphonedb(
 )
 }
 \arguments{
-\item{genes}{dataframe or file path to table of gene names in uniprot, hgnc_symbol, or ensembl format in cellphonedb database format}
+\item{genes}{data frame or file path to table of gene names in uniprot, hgnc_symbol, or ensembl format in CellPhoneDB database format}
 
-\item{proteins}{dataframe or file path to table of protein features in cellphonedb format}
+\item{proteins}{data frame or file path to table of protein features in CellPhoneDB format}
 
-\item{interactions}{dataframe or file path to table of protein-protein interactions in cellphonedb format}
+\item{interactions}{data frame or file path to table of protein-protein interactions in CellPhoneDB format}
 
-\item{complexes}{optional: dataframe or file path to table of protein complexes in cellphonedb format}
+\item{complexes}{optional: data frame or file path to table of protein complexes in CellPhoneDB format}
 
 \item{database_name}{name of the database being used, stored in output}
 
