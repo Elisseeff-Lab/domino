@@ -1,0 +1,10 @@
+name: r-build-check
+on:
+    pull_request:
+        branches: ['master', 'dev']
+    workflow_dispatch:
+
+jobs:
+    build-check:
+        uses: FertigLab/actions/.github/workflows/r-build-check.yml@v1
+        secrets: inherit
