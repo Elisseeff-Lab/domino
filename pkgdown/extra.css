@@ -1,0 +1,14 @@
+/* Language label for code chunks */
+.codelabel {
+    border: 2px solid #DFD4EC;
+    background-color: #fefefe;
+    z-index: 100;
+    position: absolute;
+    font-size: 80%;
+    font-weight: bold;
+    padding: 1px;
+    display: inline-block;
+}
+.codelabelspacer {
+    height: 8px;
+}
