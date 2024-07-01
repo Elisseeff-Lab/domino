@@ -1,6 +1,6 @@
 Package: dominoSignal
 Title: Cell Communication Analysis for Single Cell RNA Sequencing
-Version: 0.99.2
+Version: 0.99.3
 Authors@R: c(
     person("Christopher", "Cherry", role = c("aut"), email = "ccherry.6574@gmail.com", comment = c(ORCID = "0000-0002-5481-0055")),
     person("Jacob T", "Mitchell", role = c("aut", "cre"), email = "jmitch81@jhmi.edu", comment = c(ORCID = "0000-0002-5370-9692")),
