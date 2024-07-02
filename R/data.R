@@ -10,7 +10,6 @@
 #'
 #' @source <https://zenodo.org/records/10951634/files>
 #' @usage data("SCENIC")
-#' @export
 "SCENIC"
 
 
@@ -27,7 +26,6 @@
 #'
 #' @source <https://zenodo.org/records/10951634/files/pbmc3k_sce.rds>
 #' @usage data("PBMC")
-#' @export
 "PBMC"
 
 
@@ -46,5 +44,4 @@
 #' 
 #' @source <https://github.com/ventolab/cellphonedb-data/archive/refs/tags/v4.0.0.tar.gz>
 #' @usage data("CellPhoneDB")
-#' @export
 "CellPhoneDB"
