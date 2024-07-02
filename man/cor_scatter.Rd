@@ -24,6 +24,7 @@ A ggplot scatter plot rendered in the active graphics device
 Create a correlation plot between transcription factor activation score and receptor expression
 }
 \examples{
-cor_scatter(dominoSignal:::pbmc_dom_built_tiny, "FLI1","CXCR3")
+example(build_domino)
+cor_scatter(pbmc_dom_built_tiny, "FLI1","CXCR3")
 
 }

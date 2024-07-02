@@ -31,7 +31,7 @@ Count occurrences of linkages across multiple domino results from a linkage summ
 }
 \examples{
 count_linkage(
-  linkage_summary = dominoSignal:::linkage_sum_tiny, cluster = "C1", 
+  linkage_summary = mock_linkage_summary(), cluster = "C1", 
   group.by = "group", linkage = "rec")
 
 }

@@ -11,14 +11,47 @@ NULL
 #' @param subject_names vector of subject names in domino_results. If NULL, defaults to first column of subject_meta.
 #' @return A linkage summary class object consisting of nested lists of the active transcription factors, active receptors, and incoming ligands for each cluster across multiple domino results
 #' @export
-#' @examples 
-#' dom_ls <- dominoSignal:::dom_ls_tiny
+#' @examples
+#' example(build_domino)
+#' 
+#' #create alternative clustering
+#' clusters_tiny_alt <- setNames(c(121:240, 1:120, 241:360), names(PBMC$clusters_tiny))
+#' clusters_tiny_alt <- as.factor(clusters_tiny_alt)
+#' 
+#' #build an alternative domino object
+#' pbmc_dom_tiny_alt <- create_domino(
+#'   rl_map = rl_map_tiny,
+#'   features = SCENIC$auc_tiny,
+#'   counts = PBMC$RNA_count_tiny,
+#'   z_scores = PBMC$RNA_zscore_tiny,
+#'   clusters = clusters_tiny_alt,
+#'   tf_targets = regulon_list_tiny,
+#'   use_clusters = TRUE,
+#'   use_complexes = TRUE,
+#'   remove_rec_dropout = FALSE
+#' )
+#' 
+#' pbmc_dom_built_tiny_alt <- build_domino(
+#'   dom = pbmc_dom_tiny_alt,
+#'   min_tf_pval = .05,
+#'   max_tf_per_clust = Inf,
+#'   max_rec_per_tf = Inf,
+#'   rec_tf_cor_threshold = .1,
+#'   min_rec_percentage = 0.01
+#' )
+#'
+#' #create a list of domino objects
+#' dom_ls <- list(
+#'  dom1 = pbmc_dom_built_tiny,
+#'  dom2 = pbmc_dom_built_tiny_alt
+#')
+#'
+#' #compare the linkages across the two domino objects
 #' meta_df <- data.frame("ID" = c("dom1", "dom2"), "group" = c("A", "B"))
 #' summarize_linkages(
-#'  domino_results = dom_ls, subject_meta = meta_df, 
+#'  domino_results = dom_ls, subject_meta = meta_df,
 #'  subject_names = meta_df$ID
 #')
-#' 
 summarize_linkages <- function(domino_results, subject_meta, subject_names = NULL) {
   if (!is(domino_results, "list")) {
     stop("domino_results must be provided as a named list where names correspond to subject names")
@@ -108,7 +141,7 @@ summarize_linkages <- function(domino_results, subject_meta, subject_names = NUL
 #' @export
 #' @examples
 #' count_linkage(
-#'   linkage_summary = dominoSignal:::linkage_sum_tiny, cluster = "C1", 
+#'   linkage_summary = mock_linkage_summary(), cluster = "C1", 
 #'   group.by = "group", linkage = "rec")
 #' 
 count_linkage <- function(linkage_summary, cluster, group.by = NULL, linkage = "rec_lig", subject_names = NULL) {
@@ -169,8 +202,8 @@ count_linkage <- function(linkage_summary, cluster, group.by = NULL, linkage = "
 #' }
 #' @export
 #' @examples
-#' test_differential_linkages(
-#'   linkage_summary = dominoSignal:::linkage_sum_tiny, cluster = "C1", group.by = "group", 
+#' tiny_differential_linkage_c1 <- test_differential_linkages(
+#'   linkage_summary = mock_linkage_summary(), cluster = "C1", group.by = "group",
 #'   linkage = "rec", test_name = "fishers.exact"
 #' )
 #' 

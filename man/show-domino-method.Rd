@@ -16,8 +16,7 @@ A printed description of cell numbers and clusters in the object
 Shows content overview of domino object
 }
 \examples{
-dominoSignal:::pbmc_dom_built_tiny
-
-show(dominoSignal:::pbmc_dom_built_tiny)
+example(build_domino)
+show(pbmc_dom_built_tiny)
 
 }

@@ -22,9 +22,11 @@ NULL
 #' @return Data frame where each row describes a possible receptor-ligand interaction
 #' @export create_rl_map_cellphonedb
 #' @examples
-#' rl_map_tiny <- create_rl_map_cellphonedb(genes = dominoSignal:::genes_tiny, 
-#'  proteins = dominoSignal:::proteins_tiny, interactions = dominoSignal:::interactions_tiny, 
-#'  complexes = dominoSignal:::complexes_tiny)
+#' data(CellPhoneDB)
+#' rl_map_tiny <- create_rl_map_cellphonedb(genes = CellPhoneDB$genes_tiny,
+#'  proteins = CellPhoneDB$proteins_tiny,
+#'  interactions = CellPhoneDB$interactions_tiny,
+#'  complexes =CellPhoneDB$complexes_tiny)
 #' 
 create_rl_map_cellphonedb <- function(
     genes, proteins, interactions, complexes = NULL, database_name = "CellPhoneDB",
@@ -242,7 +244,8 @@ create_rl_map_cellphonedb <- function(
 #' @return A list where names are transcription factors and the stored values are character vectors of genes in the inferred regulons
 #' @export create_regulon_list_scenic
 #' @examples
-#' regulon_list_tiny <- create_regulon_list_scenic(regulons = dominoSignal:::regulons_tiny)
+#' data(SCENIC)
+#' regulon_list_tiny <- create_regulon_list_scenic(regulons = SCENIC$regulons_tiny)
 #'
 create_regulon_list_scenic <- function(regulons) {
   if (is(regulons, "character")) {
@@ -293,21 +296,26 @@ create_regulon_list_scenic <- function(regulons) {
 #' @param tf_variance_quantile What proportion of variable features to take if using variance to threshold features. Default is 0.5. Higher numbers will keep more features. Ignored if tf_selection_method is not 'variable'
 #' @return A domino object
 #' @export create_domino
-#' @examples 
-#' pbmc_dom_tiny_all <- create_domino(
-#'  rl_map = dominoSignal:::rl_map_tiny, features = dominoSignal:::auc_tiny, 
-#'  counts = dominoSignal:::RNA_count_tiny, z_scores = dominoSignal:::RNA_zscore_tiny,
-#'  clusters = dominoSignal:::clusters_tiny, tf_targets = dominoSignal:::regulon_list_tiny, 
-#'  use_clusters = FALSE, use_complexes = FALSE, 
+#' @examples
+#' example(create_rl_map_cellphonedb)
+#' example(create_regulon_list_scenic)
+#' data(SCENIC)
+#' data(PBMC)
+#'
+#' pbmc_dom_tiny <- create_domino(
+#'  rl_map = rl_map_tiny, features = SCENIC$auc_tiny,
+#'  counts = PBMC$RNA_count_tiny, z_scores = PBMC$RNA_zscore_tiny,
+#'  clusters = PBMC$clusters_tiny, tf_targets = regulon_list_tiny,
+#'  use_clusters = TRUE, use_complexes = TRUE, remove_rec_dropout = FALSE)
+#'
+#' pbmc_dom_tiny_no_clusters <- create_domino(
+#'  rl_map = rl_map_tiny, features = SCENIC$auc_tiny,
+#'  counts = PBMC$RNA_count_tiny, z_scores =PBMC$RNA_zscore_tiny,
+#'  clusters = PBMC$clusters_tiny, tf_targets = regulon_list_tiny,
+#'  use_clusters = FALSE, use_complexes = FALSE,
 #'  rec_min_thresh = 0.1, remove_rec_dropout = TRUE,
 #'  tf_selection_method = "all")
-#' 
-#' pbmc_dom_tiny_clustered <- create_domino(
-#'  rl_map = dominoSignal:::rl_map_tiny, features = dominoSignal:::auc_tiny, 
-#'  counts = dominoSignal:::RNA_count_tiny, z_scores = dominoSignal:::RNA_zscore_tiny,
-#'  clusters = dominoSignal:::clusters_tiny, tf_targets = dominoSignal:::regulon_list_tiny,
-#'  use_clusters = TRUE, use_complexes = TRUE, remove_rec_dropout = FALSE)
-#' 
+#'
 create_domino <- function(
     rl_map, features, counts = NULL, z_scores = NULL,
     clusters = NULL, use_clusters = TRUE, tf_targets = NULL, verbose = TRUE,
@@ -633,9 +641,10 @@ convert_genes <- function(
 #' @return An updated RL signaling data frame
 #' @export
 #' @examples 
+#' example(create_rl_map_cellphonedb)
 #' lr_name <- data.frame("abbrev" = c("L", "R"), "full" = c("Ligand", "Receptor"))
-#' rl_map_expanded <- add_rl_column(map = dominoSignal:::rl_map_tiny, map_ref = "type_A",
-#'  conv = lr_name, new_name = "type_A_full")
+#' rl_map_expanded <- add_rl_column(map = rl_map_tiny, map_ref = "type_A",
+#' conv = lr_name, new_name = "type_A_full")
 #' 
 add_rl_column <- function(map, map_ref, conv, new_name) {
   map_in_ref <- match(map[[map_ref]], conv[, 1])
@@ -676,7 +685,8 @@ add_rl_column <- function(map, map_ref, conv, new_name) {
 #' @return A data frame of ligand expression targeting the specified receptor
 #' @export
 #' @examples
-#' counts <- dom_counts(dominoSignal:::pbmc_dom_built_tiny)
+#' example(build_domino)
+#' counts <- dom_counts(pbmc_dom_built_tiny)
 #' mean_exp <- mean_ligand_expression(counts,
 #'  ligands = c("PTPRC", "FASLG"), cell_ident = "CD14_monocyte",
 #'  cell_barcodes = colnames(counts), destination = "FAS")
