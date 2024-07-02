@@ -15,7 +15,7 @@ A list of:
 \url{https://zenodo.org/records/10951634/files}
 }
 \usage{
-SCENIC
+data("SCENIC")
 }
 \description{
 A subset of SCENIC AUCs as applied to PBMC data.

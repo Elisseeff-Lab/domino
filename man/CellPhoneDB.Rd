@@ -17,7 +17,7 @@ A list of:
 \url{https://github.com/ventolab/cellphonedb-data/archive/refs/tags/v4.0.0.tar.gz}
 }
 \usage{
-CellPhoneDB
+data("CellPhoneDB")
 }
 \description{
 A list of four subsets of CellPhoneDB data.

@@ -16,7 +16,7 @@ A list of::
 \url{https://zenodo.org/records/10951634/files/pbmc3k_sce.rds}
 }
 \usage{
-PBMC
+data("PBMC")
 }
 \description{
 A subset of the results of PBMC RNA-seq data.
