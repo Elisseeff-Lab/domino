@@ -21,4 +21,4 @@ data("PBMC")
 \description{
 A subset of the results of PBMC RNA-seq data.
 }
-\keyword{internal}
+\keyword{datasets}
