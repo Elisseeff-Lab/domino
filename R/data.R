@@ -10,7 +10,7 @@
 #'
 #' @source <https://zenodo.org/records/10951634/files>
 #' @usage data("SCENIC")
-#' @internal
+#' @keywords internal
 "SCENIC"
 
 
@@ -27,7 +27,7 @@
 #'
 #' @source <https://zenodo.org/records/10951634/files/pbmc3k_sce.rds>
 #' @usage data("PBMC")
-#' @internal
+#' @keywords internal
 "PBMC"
 
 
@@ -46,5 +46,5 @@
 #' 
 #' @source <https://github.com/ventolab/cellphonedb-data/archive/refs/tags/v4.0.0.tar.gz>
 #' @usage data("CellPhoneDB")
-#' @internal
+#' @keywords internal
 "CellPhoneDB"
