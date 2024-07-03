@@ -20,4 +20,4 @@ data("SCENIC")
 \description{
 A subset of SCENIC AUCs as applied to PBMC data.
 }
-\keyword{datasets}
+\keyword{internal}

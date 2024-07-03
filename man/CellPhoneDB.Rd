@@ -22,4 +22,4 @@ data("CellPhoneDB")
 \description{
 A list of four subsets of CellPhoneDB data.
 }
-\keyword{datasets}
+\keyword{internal}
