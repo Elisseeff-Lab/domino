@@ -835,6 +835,7 @@ circos_ligand_receptor <- function(
 #' @param dom Domino object that has undergone network building with [build_domino()]
 #' @param receptor Name of a receptor active in at least one cell type in the domino object
 #' @param ligand Name of a ligand active in at least one cell type in the domino object
+#' @param which_v If both receptor and ligand are set, this must be set to either "receptor" or "ligand" to determine which to use.
 #' @param expression_threshold Minimum mean expression value of a ligand by a cell type for a chord to be rendered between the cell type and the receptor
 #' @param cell_idents Vector of cell types from cluster assignments in the domino object to be included in the plot.
 #' @param cell_colors Named vector of color names or hex codes where names correspond to the plotted cell types and the color values
@@ -845,16 +846,42 @@ circos_ligand_receptor <- function(
 #' @export circos_ligand_receptor_general
 #' 
 circos_ligand_receptor_general <- function(
-    dom, receptor = NULL, ligand = NULL, expression_threshold = 0.01, cell_idents = NULL,
+    dom, receptor = NULL, ligand = NULL, which_v = NULL, expression_threshold = 0.01, cell_idents = NULL,
     cell_colors = NULL, title = "Signaling", label_arcs = T, multi_plot = NULL) {
   
   if (!is.null(receptor) & !is.null(ligand)) {
-    stop("Both receptor and ligand are set. Must choose one or the other.\n")
+    
+    if (is.null(which_v)) {
+      
+      stop("Both receptor and ligand are set and neither is specified with which_v. Must choose one or the other.\n")
+      
+    } else if (which_v == "receptor") {
+      
+      arc_genes <- dom@linkages$rec_lig[[receptor]]
+      arc_genes <- intersect(arc_genes, ligand)
+      sig_mat <- "cl"
+      dest <- receptor
+      
+    } else if (which_v == "ligand") {
+      
+      if (!"lig_rec" %in% names(dom@linkages)) {
+        warning("ligand argument set, but dom@linkages$lig_rec doesn't exist. Running internally.\n")
+        dom <- invert_rec_lig_linkages(dom)
+      } # fi
+      arc_genes <- dom@linkages$lig_rec[[ligand]]
+      arc_genes <- intersect(arc_genes, receptor)
+      sig_mat <- "cr"
+      dest <- ligand
+    } # fi
+    
   } else if (!is.null(receptor)) {
+    
     arc_genes <- dom@linkages$rec_lig[[receptor]]
     sig_mat <- "cl"
     dest <- receptor
+    
   } else if (!is.null(ligand)) {
+    
     if (!"lig_rec" %in% names(dom@linkages)) {
       warning("ligand argument set, but dom@linkages$lig_rec doesn't exist. Running internally.\n")
       dom <- invert_rec_lig_linkages(dom)
@@ -862,7 +889,7 @@ circos_ligand_receptor_general <- function(
     arc_genes <- dom@linkages$lig_rec[[ligand]]
     sig_mat <- "cr"
     dest <- ligand
-  }
+  } # fi
   
   signaling_df <- NULL
   if (is.null(cell_idents)) {
@@ -897,7 +924,8 @@ circos_ligand_receptor_general <- function(
       signaling_df <- rbind(signaling_df, df)
     }
   } else {
-    stop(paste0("No clusters have active ", dest, " signaling"))
+    warning(paste0("No clusters have active ", dest, " signaling"))
+    return()
   }
   arc_genes <- intersect(arc_genes, unique(gsub("^.*-", "", signaling_df$origin)))
   signaling_df$mean.expression[is.na(signaling_df$mean.expression)] <- 0
@@ -906,7 +934,8 @@ circos_ligand_receptor_general <- function(
   signaling_df$scaled.mean.expression <- signaling_df$mean.expression / max(signaling_df$mean.expression)
   # exit function if no ligands are expressed above ligand expression threshold
   if (sum(signaling_df[["mean.expression"]] > expression_threshold) == 0) {
-    stop(paste0("No pairs of ", dest, " exceed expression threshold."))
+    warning(paste0("No pairs of ", dest, " exceed expression threshold."))
+    return()
   }
   # initialize chord diagram with even ligand arcs
   arc_df <- signaling_df[, c("origin", "destination")]

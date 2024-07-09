@@ -8,6 +8,7 @@ circos_ligand_receptor_general(
   dom,
   receptor = NULL,
   ligand = NULL,
+  which_v = NULL,
   expression_threshold = 0.01,
   cell_idents = NULL,
   cell_colors = NULL,
@@ -22,6 +23,8 @@ circos_ligand_receptor_general(
 \item{receptor}{Name of a receptor active in at least one cell type in the domino object}
 
 \item{ligand}{Name of a ligand active in at least one cell type in the domino object}
+
+\item{which_v}{If both receptor and ligand are set, this must be set to either "receptor" or "ligand" to determine which to use.}
 
 \item{expression_threshold}{Minimum mean expression value of a ligand by a cell type for a chord to be rendered between the cell type and the receptor}
 
