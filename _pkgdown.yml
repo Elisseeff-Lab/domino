@@ -84,6 +84,13 @@ reference:
   - count_linkage
   - mean_ligand_expression
   - rename_clusters
+  - mock_linkage_summary
+- title: "Data"
+  contents:
+  - CellPhoneDB
+  - PBMC
+  - SCENIC
+  
 
 navbar:
   type: light

@@ -14,8 +14,11 @@ NULL
 #' @examples
 #' example(build_domino)
 #' 
-#' #create alternative clustering
-#' clusters_tiny_alt <- setNames(c(121:240, 1:120, 241:360), names(PBMC$clusters_tiny))
+#' #create alternative clustering by shuffling cluster assignments
+#' clusters_tiny_alt <- setNames(
+#'   PBMC$clusters_tiny[c(121:240, 1:120, 241:360)], 
+#'   names(PBMC$clusters_tiny)
+#' )
 #' clusters_tiny_alt <- as.factor(clusters_tiny_alt)
 #' 
 #' #build an alternative domino object
