@@ -297,8 +297,8 @@ create_regulon_list_scenic <- function(regulons) {
 #' @return A domino object
 #' @export create_domino
 #' @examples
-#' example(create_rl_map_cellphonedb)
-#' example(create_regulon_list_scenic)
+#' example(create_rl_map_cellphonedb, echo = FALSE)
+#' example(create_regulon_list_scenic, echo = FALSE)
 #' data(SCENIC)
 #' data(PBMC)
 #'
@@ -644,7 +644,7 @@ convert_genes <- function(
 #' @return An updated RL signaling data frame
 #' @export
 #' @examples 
-#' example(create_rl_map_cellphonedb)
+#' example(create_rl_map_cellphonedb, echo = FALSE)
 #' lr_name <- data.frame("abbrev" = c("L", "R"), "full" = c("Ligand", "Receptor"))
 #' rl_map_expanded <- add_rl_column(map = rl_map_tiny, map_ref = "type_A",
 #' conv = lr_name, new_name = "type_A_full")
@@ -688,7 +688,7 @@ add_rl_column <- function(map, map_ref, conv, new_name) {
 #' @return A data frame of ligand expression targeting the specified receptor
 #' @export
 #' @examples
-#' example(build_domino)
+#' example(build_domino, echo = FALSE)
 #' counts <- dom_counts(pbmc_dom_built_tiny)
 #' mean_exp <- mean_ligand_expression(counts,
 #'  ligands = c("PTPRC", "FASLG"), cell_ident = "CD14_monocyte",

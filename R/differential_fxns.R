@@ -12,7 +12,7 @@ NULL
 #' @return A linkage summary class object consisting of nested lists of the active transcription factors, active receptors, and incoming ligands for each cluster across multiple domino results
 #' @export
 #' @examples
-#' example(build_domino)
+#' example(build_domino, echo = FALSE)
 #' 
 #' #create alternative clustering by shuffling cluster assignments
 #' clusters_tiny_alt <- setNames(
