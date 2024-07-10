@@ -523,7 +523,10 @@ create_domino <- function(
         rhorow[rec] <- 0
         next
       }
-      cor <- stats::cor.test(rec_z_scores, tar_tf_scores, method = "spearman", alternative = "greater")
+      cor <- stats::cor.test(
+        rec_z_scores, tar_tf_scores, method = "spearman", 
+        alternative = "greater", exact = FALSE
+      )
       rhorow[rec] <- cor$estimate
     }
     if (length(module_rec_targets > 0)) {
