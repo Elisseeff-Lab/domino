@@ -475,7 +475,7 @@ create_domino <- function(
   # store tf_targets in linkages if they are provided as a list
   if (!is(tf_targets, "list")) {
     dom@linkages[["tf_targets"]] <- NULL
-    warning("tf_targets is not a list. No regulons stored")
+    message("tf_targets is not a list. No regulons stored")
   } else {
     dom@linkages[["tf_targets"]] <- tf_targets
   }
