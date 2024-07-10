@@ -1,3 +1,17 @@
+# dominoSignal v0.99.3
+
+## Vignettes
+
+- Outdated and non-functional links updated to functional URLs
+- All vignettes explicitly state the seed used when executing their code
+- The dominoSignal Object vignette states the purpose of the code used to download and import data from a BioFileCache to demonstrate applications of the domino objects on a real data object that is too large to include inside the package
+
+## Testing Data
+
+- Data used for examples and unit tests is now stored in the package's data/ directory.
+- All usage of the triple colon operator to access internal data from sysdata have been replaced with usage of data()
+- Linkage summaries for demonstrating differential linkage testing and plotting are generated within unit test scripts rather than being stored within the package.
+
 # dominoSignal v0.99.2
 
 ## Package Name
