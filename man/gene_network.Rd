@@ -43,7 +43,7 @@ will be included in the plot.
 }
 \examples{
 #basic usage
-example(build_domino)
+example(build_domino, echo = FALSE)
 gene_network(
  pbmc_dom_built_tiny, clust = "CD8_T_cell", 
  OutgoingSignalingClust = "CD14_monocyte")

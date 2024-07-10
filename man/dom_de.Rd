@@ -16,7 +16,7 @@ A matrix containing the p-values for differential expression of transcription fa
 A function to pull differential expression p-values from a domino object
 }
 \examples{
-example(build_domino)
+example(build_domino, echo = FALSE)
 de_mat <- dom_de(pbmc_dom_built_tiny)
 
 }

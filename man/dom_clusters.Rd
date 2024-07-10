@@ -18,7 +18,7 @@ A vector containing either the names of the clusters used OR factors of the clus
 A function to pull cluster information from a domino object
 }
 \examples{
-example(build_domino)
+example(build_domino, echo = FALSE)
 cluster_names <- dom_clusters(pbmc_dom_built_tiny)
 cell_cluster_label <- dom_clusters(pbmc_dom_built_tiny, labels = TRUE)
 

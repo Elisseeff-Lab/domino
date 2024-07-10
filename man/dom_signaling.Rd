@@ -19,7 +19,7 @@ a data frame containing the global summed signaling scores between receptors (ro
 A function to pull signaling matrices from a domino object
 }
 \examples{
-example(build_domino)
+example(build_domino, echo = FALSE)
 monocyte_signaling <- dom_signaling(pbmc_dom_built_tiny, cluster = "CD14_monocyte")
 
 }

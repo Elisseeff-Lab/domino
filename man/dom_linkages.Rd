@@ -27,7 +27,7 @@ A list containing linkages between some combination of receptors, ligands, trans
 A function to pull linkages from a domino object
 }
 \examples{
-example(build_domino)
+example(build_domino, echo = FALSE)
 complexes <- dom_linkages(pbmc_dom_built_tiny, "complexes")
 tf_rec_by_cluster <- dom_linkages(pbmc_dom_built_tiny, "tf-receptor", TRUE)
 

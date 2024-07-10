@@ -20,7 +20,7 @@ A linkage summary class object consisting of nested lists of the active transcri
 Creates a \code{\link[=linkage_summary]{linkage_summary()}} object storing the linkages learned in different domino objects as nested lists to facilitate comparisons of networks learned by domino across subject covariates.
 }
 \examples{
-example(build_domino)
+example(build_domino, echo = FALSE)
 
 #create alternative clustering by shuffling cluster assignments
 clusters_tiny_alt <- setNames(
