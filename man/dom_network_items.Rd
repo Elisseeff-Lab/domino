@@ -23,7 +23,7 @@ comparing signaling networks across two separate conditions. In order to run
 this \code{\link[=build_domino]{build_domino()}} must be run on the object previously.
 }
 \examples{
-example(build_domino)
+example(build_domino, echo = FALSE)
 monocyte_receptors <- dom_network_items(pbmc_dom_built_tiny, "CD14_monocyte", "receptors")
 all_tfs <- dom_network_items(pbmc_dom_built_tiny, return = "features")
 

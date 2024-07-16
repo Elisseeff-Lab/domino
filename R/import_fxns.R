@@ -297,8 +297,8 @@ create_regulon_list_scenic <- function(regulons) {
 #' @return A domino object
 #' @export create_domino
 #' @examples
-#' example(create_rl_map_cellphonedb)
-#' example(create_regulon_list_scenic)
+#' example(create_rl_map_cellphonedb, echo = FALSE)
+#' example(create_regulon_list_scenic, echo = FALSE)
 #' data(SCENIC)
 #' data(PBMC)
 #'
@@ -475,7 +475,7 @@ create_domino <- function(
   # store tf_targets in linkages if they are provided as a list
   if (!is(tf_targets, "list")) {
     dom@linkages[["tf_targets"]] <- NULL
-    warning("tf_targets is not a list. No regulons stored")
+    message("tf_targets is not a list. No regulons stored")
   } else {
     dom@linkages[["tf_targets"]] <- tf_targets
   }
@@ -523,7 +523,10 @@ create_domino <- function(
         rhorow[rec] <- 0
         next
       }
-      cor <- stats::cor.test(rec_z_scores, tar_tf_scores, method = "spearman", alternative = "greater")
+      cor <- stats::cor.test(
+        rec_z_scores, tar_tf_scores, method = "spearman", 
+        alternative = "greater", exact = FALSE
+      )
       rhorow[rec] <- cor$estimate
     }
     if (length(module_rec_targets > 0)) {
@@ -641,7 +644,7 @@ convert_genes <- function(
 #' @return An updated RL signaling data frame
 #' @export
 #' @examples 
-#' example(create_rl_map_cellphonedb)
+#' example(create_rl_map_cellphonedb, echo = FALSE)
 #' lr_name <- data.frame("abbrev" = c("L", "R"), "full" = c("Ligand", "Receptor"))
 #' rl_map_expanded <- add_rl_column(map = rl_map_tiny, map_ref = "type_A",
 #' conv = lr_name, new_name = "type_A_full")
@@ -685,7 +688,7 @@ add_rl_column <- function(map, map_ref, conv, new_name) {
 #' @return A data frame of ligand expression targeting the specified receptor
 #' @export
 #' @examples
-#' example(build_domino)
+#' example(build_domino, echo = FALSE)
 #' counts <- dom_counts(pbmc_dom_built_tiny)
 #' mean_exp <- mean_ligand_expression(counts,
 #'  ligands = c("PTPRC", "FASLG"), cell_ident = "CD14_monocyte",

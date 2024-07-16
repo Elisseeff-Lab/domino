@@ -23,7 +23,7 @@ This function adds a column to the internal rl 'map' used to map all
 receptor and receptor complexes to all ligand and ligand complexes.
 }
 \examples{
-example(create_rl_map_cellphonedb)
+example(create_rl_map_cellphonedb, echo = FALSE)
 lr_name <- data.frame("abbrev" = c("L", "R"), "full" = c("Ligand", "Receptor"))
 rl_map_expanded <- add_rl_column(map = rl_map_tiny, map_ref = "type_A",
 conv = lr_name, new_name = "type_A_full")

@@ -40,7 +40,7 @@ Creates a heatmap of correlation values between receptors and transcription
 factors either with boolean threshold or with continuous values displayed
 }
 \examples{
-example(build_domino)
+example(build_domino, echo = FALSE)
 #basic usage
 cor_heatmap(pbmc_dom_built_tiny, title = "PBMC R-TF Correlations")
 #show correlations above a specific value

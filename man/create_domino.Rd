@@ -60,8 +60,8 @@ domino object prepared for \code{\link[=build_domino]{build_domino()}}, which wi
 network.
 }
 \examples{
-example(create_rl_map_cellphonedb)
-example(create_regulon_list_scenic)
+example(create_rl_map_cellphonedb, echo = FALSE)
+example(create_regulon_list_scenic, echo = FALSE)
 data(SCENIC)
 data(PBMC)
 

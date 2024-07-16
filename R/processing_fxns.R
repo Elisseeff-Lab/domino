@@ -13,7 +13,7 @@
 #' @return A domino object with a signaling network built
 #' @export
 #' @examples
-#' example(create_domino)
+#' example(create_domino, echo = FALSE)
 #'
 #' #a relaxed example
 #' pbmc_dom_built_tiny <- build_domino(

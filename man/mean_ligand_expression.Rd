@@ -26,7 +26,7 @@ plot of ligand expression and saving tables of mean expression.
 us
 }
 \examples{
-example(build_domino)
+example(build_domino, echo = FALSE)
 counts <- dom_counts(pbmc_dom_built_tiny)
 mean_exp <- mean_ligand_expression(counts,
  ligands = c("PTPRC", "FASLG"), cell_ident = "CD14_monocyte",

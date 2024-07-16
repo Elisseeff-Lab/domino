@@ -56,7 +56,6 @@ test_that("create_domino fails on wrong input arg type.", {
   clusters_tiny <- PBMC$clusters_tiny
 
   #bad rl map
-  data(rl_map_tiny, auc_tiny, RNA_count_tiny, RNA_zscore_tiny, clusters_tiny)
   bad_rl_map <- "rl_map"
   expect_error(create_domino(bad_rl_map,
                              counts = RNA_count_tiny,

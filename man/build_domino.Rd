@@ -35,7 +35,7 @@ preprocessed from create_domino and returns a domino object prepared for
 plotting with the various plotting functions in this package.
 }
 \examples{
-example(create_domino)
+example(create_domino, echo = FALSE)
 
 #a relaxed example
 pbmc_dom_built_tiny <- build_domino(

@@ -38,7 +38,7 @@ matrix can be accessed directly in the signaling slot of a domino object using
 the \code{\link[=dom_signaling]{dom_signaling()}} function.
 }
 \examples{
-example(build_domino)
+example(build_domino, echo = FALSE)
 #basic usage
 signaling_heatmap(pbmc_dom_built_tiny)
 #scale
