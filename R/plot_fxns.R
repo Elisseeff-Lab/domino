@@ -23,7 +23,7 @@ NULL
 #' @return A heatmap rendered to the active graphics device
 #' @export signaling_heatmap
 #' @examples
-#' example(build_domino, echo = FALSE, verbose = FALSE)
+#' example(build_domino, echo = FALSE)
 #' #basic usage
 #' signaling_heatmap(pbmc_dom_built_tiny)
 #' #scale
@@ -94,7 +94,7 @@ signaling_heatmap <- function(
 #' @return a Heatmap rendered to the active graphics device
 #' @export incoming_signaling_heatmap
 #' @examples
-#' example(build_domino, echo = FALSE, verbose = FALSE)
+#' example(build_domino, echo = FALSE)
 #' #incoming signaling of the CD8  T cells
 #' incoming_signaling_heatmap(pbmc_dom_built_tiny, "CD8_T_cell")
 #'
@@ -195,7 +195,7 @@ incoming_signaling_heatmap <- function(
 #' @return An igraph plot rendered to the active graphics device
 #' @export signaling_network
 #' @examples 
-#' example(build_domino, echo = FALSE, verbose = FALSE)
+#' example(build_domino, echo = FALSE)
 #' #basic usage
 #' signaling_network(pbmc_dom_built_tiny, edge_weight = 2)
 #' # scaling, thresholds, layouts, selecting clusters
@@ -346,7 +346,7 @@ signaling_network <- function(
 #' @export gene_network
 #' @examples
 #' #basic usage
-#' example(build_domino, echo = FALSE, verbose = FALSE)
+#' example(build_domino, echo = FALSE)
 #' gene_network(
 #'  pbmc_dom_built_tiny, clust = "CD8_T_cell", 
 #'  OutgoingSignalingClust = "CD14_monocyte")
@@ -508,7 +508,7 @@ gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL,
 #' @export feat_heatmap
 #' @examples 
 #' #basic usage
-#' example(build_domino, echo = FALSE, verbose = FALSE)
+#' example(build_domino, echo = FALSE)
 #' feat_heatmap(pbmc_dom_built_tiny)
 #' #using thresholds
 #' feat_heatmap(
@@ -632,7 +632,7 @@ feat_heatmap <- function(
 #' @return A heatmap rendered to the active graphics device
 #' @export cor_heatmap
 #' @examples 
-#' example(build_domino, echo = FALSE, verbose = FALSE)
+#' example(build_domino, echo = FALSE)
 #' #basic usage
 #' cor_heatmap(pbmc_dom_built_tiny, title = "PBMC R-TF Correlations")
 #' #show correlations above a specific value
@@ -729,7 +729,7 @@ cor_heatmap <- function(
 #' @return A ggplot scatter plot rendered in the active graphics device
 #' @export cor_scatter
 #' @examples
-#' example(build_domino, echo = FALSE, verbose = FALSE)
+#' example(build_domino, echo = FALSE)
 #' cor_scatter(pbmc_dom_built_tiny, "FLI1","CXCR3")
 #'
 cor_scatter <- function(dom, tf, rec, remove_rec_dropout = TRUE, ...) {
@@ -759,7 +759,7 @@ cor_scatter <- function(dom, tf, rec, remove_rec_dropout = TRUE, ...) {
 #' @return Renders a circos plot to the active graphics device
 #' @export circos_ligand_receptor
 #' @examples 
-#' example(build_domino, echo = FALSE, verbose = FALSE)
+#' example(build_domino, echo = FALSE)
 #' #basic usage
 #' circos_ligand_receptor(pbmc_dom_built_tiny, receptor = "CXCR3")
 #' #specify colors
@@ -898,8 +898,8 @@ circos_ligand_receptor <- function(
 #' @return A heatmap-class object of features ranked by test_statistic annotated with the proportion of subjects that showed active linkage of the features.
 #' @export
 #' @examples
-#' example(build_domino, echo = FALSE, verbose = FALSE)
-#' example(test_differential_linkages, echo = FALSE, verbose = FALSE)
+#' example(build_domino, echo = FALSE)
+#' example(test_differential_linkages, echo = FALSE)
 #' plot_differential_linkages(
 #'  differential_linkages = tiny_differential_linkage_c1,
 #'  test_statistic = "p.value",
