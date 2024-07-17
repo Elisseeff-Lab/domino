@@ -36,7 +36,7 @@ example(build_domino, echo = FALSE)
 circos_ligand_receptor(pbmc_dom_built_tiny, receptor = "CXCR3")
 #specify colors
 cols = c("red", "orange", "green")
-names(cols) = levels(dom_clusters(pbmc_dom_built_tiny))
+names(cols) = dom_clusters(pbmc_dom_built_tiny)
 circos_ligand_receptor(pbmc_dom_built_tiny, receptor = "CXCR3", cell_colors = cols)
 
 }
