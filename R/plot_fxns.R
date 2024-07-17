@@ -197,12 +197,12 @@ incoming_signaling_heatmap <- function(
 #' @examples 
 #' example(build_domino, echo = FALSE)
 #' #basic usage
-#' signaling_network(pbmc_dom_built_tiny)
+#' signaling_network(pbmc_dom_built_tiny, edge_weight = 2)
 #' # scaling, thresholds, layouts, selecting clusters
 #' signaling_network(
 #'  pbmc_dom_built_tiny, showOutgoingSignalingClusts = "CD14_monocyte", 
 #'  scale = "none", norm = "none", layout = "fr", scale_by = "none", 
-#'  vert_scale = 5)
+#'  vert_scale = 5, edge_weight = 2)
 #' 
 signaling_network <- function(
     dom, cols = NULL, edge_weight = 0.3, clusts = NULL, showOutgoingSignalingClusts = NULL,
@@ -636,7 +636,7 @@ feat_heatmap <- function(
 #' #basic usage
 #' cor_heatmap(pbmc_dom_built_tiny, title = "PBMC R-TF Correlations")
 #' #show correlations above a specific value
-#' cor_heatmap(pbmc_dom_built_tiny, bool = TRUE, bool_thresh = 0.25)
+#' cor_heatmap(pbmc_dom_built_tiny, bool = TRUE, bool_thresh = 0.1)
 #' #identify combinations that are connected
 #' cor_heatmap(pbmc_dom_built_tiny, bool = FALSE, mark_connections = TRUE)
 #'  
