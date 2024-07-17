@@ -40,11 +40,11 @@ Creates a heatmap of correlation values between receptors and transcription
 factors either with boolean threshold or with continuous values displayed
 }
 \examples{
-example(build_domino, echo = FALSE)
+example(build_domino, echo = FALSE, verbose = FALSE)
 #basic usage
 cor_heatmap(pbmc_dom_built_tiny, title = "PBMC R-TF Correlations")
 #show correlations above a specific value
-cor_heatmap(pbmc_dom_built_tiny, bool = TRUE, bool_thresh = 0.25)
+cor_heatmap(pbmc_dom_built_tiny, bool = TRUE, bool_thresh = 0.1)
 #identify combinations that are connected
 cor_heatmap(pbmc_dom_built_tiny, bool = FALSE, mark_connections = TRUE)
  

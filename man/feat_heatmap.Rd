@@ -49,7 +49,7 @@ Creates a heatmap of transcription factor activation scores by cells grouped by 
 }
 \examples{
 #basic usage
-example(build_domino, echo = FALSE)
+example(build_domino, echo = FALSE, verbose = FALSE)
 feat_heatmap(pbmc_dom_built_tiny)
 #using thresholds
 feat_heatmap(
