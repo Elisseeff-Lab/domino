@@ -15,6 +15,10 @@
 - Data used for examples and unit tests is now stored in the package's data/ directory.
 - All usage of the triple colon operator to access internal data from sysdata have been replaced with usage of data()
 - Linkage summaries for demonstrating differential linkage testing and plotting are generated within unit test scripts rather than being stored within the package.
+- Examples are run with echo = FALSE to cut down on lines of code printed in example pages.
+- Examples for create_domino are run with verbose = FALSE
+- Fixed example of changing colors for circos_ligand_receptor
+- Fixed example of boolean representation of cor_heatmap
 
 # dominoSignal v0.99.2
 
