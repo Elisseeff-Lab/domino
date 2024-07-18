@@ -13,7 +13,7 @@ plot_differential_linkages(
 )
 }
 \arguments{
-\item{differential_linkages}{a data.frame output from the test_differential_linkages function}
+\item{differential_linkages}{a data frame output from the \code{\link[=test_differential_linkages]{test_differential_linkages()}} function}
 
 \item{test_statistic}{column name of differential_linkages where the test statistic used for ranking linkages is stored (ex. 'p.value')}
 
@@ -24,14 +24,16 @@ plot_differential_linkages(
 \item{group_palette}{a named vector of colors to use for each group being compared}
 }
 \value{
-a Heatmap-class object of features ranked by test_statistic annotated with the proportion of subjects that showed active linkage of the features.
+A heatmap-class object of features ranked by test_statistic annotated with the proportion of subjects that showed active linkage of the features.
 }
 \description{
 Plot differential linkages among domino results ranked by a comparative statistic
 }
 \examples{
+example(build_domino, echo = FALSE)
+example(test_differential_linkages, echo = FALSE)
 plot_differential_linkages(
- differential_linkages = dominoSignal:::tiny_differential_linkage_c1,
+ differential_linkages = tiny_differential_linkage_c1,
  test_statistic = "p.value",
  stat_ranking = "ascending"
 )

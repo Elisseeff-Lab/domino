@@ -24,18 +24,19 @@ circos_ligand_receptor(
 \item{cell_colors}{Named vector of color names or hex codes where names correspond to the plotted cell types and the color values}
 }
 \value{
-renders a circos plot to the active graphics device
+Renders a circos plot to the active graphics device
 }
 \description{
 Creates a chord plot of expression of ligands that can activate a specified
 receptor where chord widths correspond to mean ligand expression by the cluster.
 }
 \examples{
+example(build_domino, echo = FALSE)
 #basic usage
-circos_ligand_receptor(dominoSignal:::pbmc_dom_built_tiny, receptor = "CXCR3")
+circos_ligand_receptor(pbmc_dom_built_tiny, receptor = "CXCR3")
 #specify colors
-cols = c("red", "orange", "green", "blue", "pink", "purple", "slategrey", "firebrick", "hotpink")
-names(cols) = levels(dom_clusters(dominoSignal:::pbmc_dom_built_tiny))
-circos_ligand_receptor(dominoSignal:::pbmc_dom_built_tiny, receptor = "CXCR3", cell_colors = cols)
+cols = c("red", "orange", "green")
+names(cols) = dom_clusters(pbmc_dom_built_tiny)
+circos_ligand_receptor(pbmc_dom_built_tiny, receptor = "CXCR3", cell_colors = cols)
 
 }

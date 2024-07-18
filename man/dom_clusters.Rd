@@ -7,9 +7,9 @@
 dom_clusters(dom, labels = FALSE)
 }
 \arguments{
-\item{dom}{A domino object that has been created with \code{\link[=create_domino]{create_domino()}}}
+\item{dom}{a domino object that has been created with \code{\link[=create_domino]{create_domino()}}}
 
-\item{labels}{A boolean for whether to return the cluster labels for each cell or the clusters used for inferring communication}
+\item{labels}{a boolean for whether to return the cluster labels for each cell or the clusters used for inferring communication}
 }
 \value{
 A vector containing either the names of the clusters used OR factors of the cluster label for each individual cell
@@ -18,7 +18,8 @@ A vector containing either the names of the clusters used OR factors of the clus
 A function to pull cluster information from a domino object
 }
 \examples{
-cluster_names <- dom_clusters(dominoSignal:::pbmc_dom_built_tiny)
-cell_cluster_label <- dom_clusters(dominoSignal:::pbmc_dom_built_tiny, labels = TRUE)
+example(build_domino, echo = FALSE)
+cluster_names <- dom_clusters(pbmc_dom_built_tiny)
+cell_cluster_label <- dom_clusters(pbmc_dom_built_tiny, labels = TRUE)
 
 }

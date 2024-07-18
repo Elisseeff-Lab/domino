@@ -7,16 +7,17 @@
 dom_info(dom)
 }
 \arguments{
-\item{dom}{A domino object that has been created with \code{\link[=create_domino]{create_domino()}}}
+\item{dom}{a domino object that has been created with \code{\link[=create_domino]{create_domino()}}}
 }
 \value{
-A list containing booleans for whether the object has been created and build, and a list of the
+A list containing booleans for whether the object has been created and built and a list of the
 build parameters that were used in \code{\link[=build_domino]{build_domino()}} to infer the signaling network
 }
 \description{
 A function to pull the parameters used when running \code{\link[=build_domino]{build_domino()}} from a domino object
 }
 \examples{
-build_details <- dom_info(dominoSignal:::pbmc_dom_built_tiny)
+example(build_domino, echo = FALSE)
+build_details <- dom_info(pbmc_dom_built_tiny)
 
 }

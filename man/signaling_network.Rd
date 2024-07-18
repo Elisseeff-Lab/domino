@@ -23,51 +23,52 @@ signaling_network(
 )
 }
 \arguments{
-\item{dom}{Domino object with network built (\code{\link[=build_domino]{build_domino()}})}
+\item{dom}{a domino object with network built (\code{\link[=build_domino]{build_domino()}})}
 
-\item{cols}{Named vector indicating the colors for clusters. Values are colors and names must match clusters in the domino object. If left as NULL then ggplot colors are generated for the clusters.}
+\item{cols}{named vector indicating the colors for clusters. Values are colors and names must match clusters in the domino object. If left as NULL then ggplot colors are generated for the clusters}
 
-\item{edge_weight}{Weight for determining thickness of edges on plot. Signaling values are multiplied by this value.}
+\item{edge_weight}{weight for determining thickness of edges on plot. Signaling values are multiplied by this value}
 
-\item{clusts}{Vector of clusters to be included in the network plot.}
+\item{clusts}{vector of clusters to be included in the network plot}
 
-\item{showOutgoingSignalingClusts}{Vector of clusters to plot the outgoing signaling from}
+\item{showOutgoingSignalingClusts}{vector of clusters to plot the outgoing signaling from}
 
-\item{showIncomingSignalingClusts}{Vector of clusters to plot the incoming signaling on}
+\item{showIncomingSignalingClusts}{vector of clusters to plot the incoming signaling on}
 
-\item{min_thresh}{Minimum signaling threshold. Values lower than the threshold will be set to the threshold. Defaults to -Inf for no threshold.}
+\item{min_thresh}{minimum signaling threshold. Values lower than the threshold will be set to the threshold. Defaults to -Inf for no threshold}
 
-\item{max_thresh}{Maximum signaling threshold for plotting. Values higher than the threshold will be set to the threshold. Defaults to Inf for no threshold.}
+\item{max_thresh}{maximum signaling threshold for plotting. Values higher than the threshold will be set to the threshold. Defaults to Inf for no threshold}
 
-\item{normalize}{Options to normalize the signaling matrix. Accepted inputs are 'none' for no normalization, 'rec_norm' to normalize to the maximum value with each receptor cluster, or 'lig_norm' to normalize to the maximum value within each ligand cluster}
+\item{normalize}{options to normalize the signaling matrix. Accepted inputs are 'none' for no normalization, 'rec_norm' to normalize to the maximum value with each receptor cluster, or 'lig_norm' to normalize to the maximum value within each ligand cluster}
 
-\item{scale}{How to scale the values (after thresholding). Options are 'none', 'sqrt' for square root, 'log' for log10, or 'sq' for square.}
+\item{scale}{how to scale the values (after thresholding). Options are 'none', 'sqrt' for square root, 'log' for log10, or 'sq' for square}
 
-\item{layout}{Type of layout to use. Options are 'random', 'sphere', 'circle', 'fr' for Fruchterman-Reingold force directed layout, and 'kk' for Kamada Kawai for directed layout.}
+\item{layout}{type of layout to use. Options are 'random', 'sphere', 'circle', 'fr' for Fruchterman-Reingold force directed layout, and 'kk' for Kamada Kawai for directed layout}
 
-\item{scale_by}{How to size vertices. Options are 'lig_sig' for summed outgoing signaling, 'rec_sig' for summed incoming signaling, and 'none'. In the former two cases the values are scaled with asinh after summing all incoming or outgoing signaling.}
+\item{scale_by}{how to size vertices. Options are 'lig_sig' for summed outgoing signaling, 'rec_sig' for summed incoming signaling, and 'none'. In the former two cases the values are scaled with asinh after summing all incoming or outgoing signaling}
 
-\item{vert_scale}{Integer used to scale size of vertices with our without variable scaling from size_verts_by.}
+\item{vert_scale}{integer used to scale size of vertices with our without variable scaling from size_verts_by.}
 
-\item{plot_title}{Text for the plot's title.}
+\item{plot_title}{text for the plot's title.}
 
-\item{...}{Other parameters to be passed to plot when used with an igraph object.}
+\item{...}{other parameters to be passed to plot when used with an igraph object.}
 }
 \value{
-an igraph rendered to the active graphics device
+An igraph plot rendered to the active graphics device
 }
 \description{
 Creates a network diagram of signaling between clusters. Nodes are clusters
 and directed edges indicate signaling from one cluster to another. Edges are
-colored based on the color scheme of the ligand expressing cluster.
+colored based on the color scheme of the ligand expressing cluster
 }
 \examples{
+example(build_domino, echo = FALSE)
 #basic usage
-signaling_network(dominoSignal:::pbmc_dom_built_tiny)
+signaling_network(pbmc_dom_built_tiny, edge_weight = 2)
 # scaling, thresholds, layouts, selecting clusters
 signaling_network(
- dominoSignal:::pbmc_dom_built_tiny, showOutgoingSignalingClusts = "CD14_monocyte", 
+ pbmc_dom_built_tiny, showOutgoingSignalingClusts = "CD14_monocyte", 
  scale = "none", norm = "none", layout = "fr", scale_by = "none", 
- vert_scale = 5)
+ vert_scale = 5, edge_weight = 2)
 
 }

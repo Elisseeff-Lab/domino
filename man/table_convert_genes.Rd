@@ -2,25 +2,25 @@
 % Please edit documentation in R/convenience_fxns.R
 \name{table_convert_genes}
 \alias{table_convert_genes}
-\title{Convert Genes Using Table}
+\title{Convert genes using a table}
 \usage{
 table_convert_genes(genes, from, to, conversion_table)
 }
 \arguments{
-\item{genes}{The genes to convert.}
+\item{genes}{the genes to convert}
 
-\item{from}{Gene symbol type of the input (ENSG, ENSMUSG, HGNC, MGI)}
+\item{from}{gene symbol type of the input (ENSG, ENSMUSG, HGNC, MGI)}
 
-\item{to}{Desired gene symbol type for the output (HGNC, MGI)}
+\item{to}{desired gene symbol type for the output (HGNC, MGI)}
 
-\item{conversion_table}{A data.frame with column names corresponding to gene symbol types (mm.ens, hs.ens, mgi, hgnc)
+\item{conversion_table}{a data frame with column names corresponding to gene symbol types (mm.ens, hs.ens, mgi, hgnc)
 and rows corresponding to the gene symbols themselves}
 }
 \value{
-Data frame of genes with original and corresponding converted symbols
+A data frame of genes with original and corresponding converted symbols
 }
 \description{
-Takes a vector of gene inputs and a conversion table  and returns a
+Takes a vector of gene inputs and a conversion table and returns a
 converted gene table
 }
 \keyword{internal}

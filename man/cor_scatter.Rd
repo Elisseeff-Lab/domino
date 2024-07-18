@@ -2,28 +2,29 @@
 % Please edit documentation in R/plot_fxns.R
 \name{cor_scatter}
 \alias{cor_scatter}
-\title{Create a correlation plot between transcription factor activation score and receptor}
+\title{Create a correlation plot between TF and receptor}
 \usage{
 cor_scatter(dom, tf, rec, remove_rec_dropout = TRUE, ...)
 }
 \arguments{
 \item{dom}{Domino object with network built (\code{\link[=build_domino]{build_domino()}})}
 
-\item{tf}{Target TF module for plotting with receptor}
+\item{tf}{Target TF for plottting AUC score}
 
-\item{rec}{Target receptor for plotting with TF}
+\item{rec}{Target receptor for plotting expression}
 
-\item{remove_rec_dropout}{Whether to remove cells with zero expression for plot. This should match the same setting as in build_domino.}
+\item{remove_rec_dropout}{Whether to remove cells with zero expression for plot. This should match the same setting as in \code{\link[=build_domino]{build_domino()}}.}
 
-\item{...}{Other parameters to pass to ggscatter.}
+\item{...}{Other parameters to pass to \code{\link[ggpubr:ggscatter]{ggpubr::ggscatter()}}.}
 }
 \value{
-a ggplot object
+A ggplot scatter plot rendered in the active graphics device
 }
 \description{
-Create a correlation plot between transcription factor activation score and receptor
+Create a correlation plot between transcription factor activation score and receptor expression
 }
 \examples{
-cor_scatter(dominoSignal:::pbmc_dom_built_tiny, "FLI1","CXCR3")
+example(build_domino, echo = FALSE)
+cor_scatter(pbmc_dom_built_tiny, "FLI1","CXCR3")
 
 }

@@ -7,9 +7,9 @@
 dom_database(dom, name_only = TRUE)
 }
 \arguments{
-\item{dom}{A domino object that has been created}
+\item{dom}{a domino object that has been created}
 
-\item{name_only}{A boolean for whether to return only the name of the database used
+\item{name_only}{a boolean for whether to return only the name of the database used
 or the entire database that is stored. Default TRUE.}
 }
 \value{
@@ -20,7 +20,8 @@ a data frame that includes the database information used in the domino object cr
 A function to pull database information from a domino object
 }
 \examples{
-database_name <- dom_database(dominoSignal:::pbmc_dom_built_tiny)
-full_database <- dom_database(dominoSignal:::pbmc_dom_built_tiny, name_only = FALSE)
+example(build_domino, echo = FALSE)
+database_name <- dom_database(pbmc_dom_built_tiny)
+full_database <- dom_database(pbmc_dom_built_tiny, name_only = FALSE)
 
 }

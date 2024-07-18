@@ -25,15 +25,17 @@ In addition to the numerous plotting options available in the original [Domino](
 
 ## Setup and Data Load
 ```{r setup, eval = TRUE}
+set.seed(42)
 library(dominoSignal)
 library(patchwork)
 ```
 
-In this tutorial, we will use the domino object we built on the [Getting Started](vigenttes("dominoSignal")) page. If you have not yet built a domino object, you can do so by following the instructions on the [Getting Started](vignette("dominoSignal")) page.
+In this tutorial, we will use the domino object we built on the [Getting Started](https://fertiglab.github.io/dominoSignal/articles/dominoSignal) page. If you have not yet built a domino object, you can do so by following the instructions on the [Getting Started](https://fertiglab.github.io/dominoSignal/articles/dominoSignal) page.
 
 <details><summary>Instructions to load data</summary>
 
 ```{r load data}
+# BiocFileCache helps with managing files across sessions
 bfc <- BiocFileCache::BiocFileCache(ask = FALSE)
 data_url <- "https://zenodo.org/records/10951634/files/pbmc_domino_built.rds"
 tmp_path <- BiocFileCache::bfcrpath(bfc, data_url)
@@ -84,7 +86,7 @@ cor_heatmap(
 feat_heatmap(dom, use_raster = FALSE, row_names_gp = grid::gpar(fontsize = 4))
 ```
 
-It functions similarly to `cor_heatmap()`, with arguments to select a specific vector of features, to use a boolean view with a threshold, and to pass other arguments to `ComplexHeatmap::Heatmap()`. Specific to this function though are arguments for setting the range of values to be visualized and one to choose whether or not to normalize the scores to the max value.
+It functions similarly to `cor_heatmap()`, with arguments to select a specific vector of features, to use a boolean view with a threshold, and to pass other arguments to `ComplexHeatmap::Heatmap()`. Specific to this function though are arguments for setting the range of values to be visualized and one to choose to normalize the scores to the max value.
 
 ```{r featheatmap-options, fig.show="hold", out.width = "50%"}
 feat_heatmap(dom,
@@ -127,7 +129,7 @@ signaling_heatmap(dom, normalize = "rec_norm")
 
 ## Network Plots
 
-### Network showing L-R-TF signaling between clusters
+### Network showing L - R - TF signaling between clusters
 
 `gene_network()` makes a network plot to display signaling in selected clusters such that ligands, receptors and features associated with those clusters are displayed as nodes with edges as linkages. To look at signaling to the CD16 Monocytes from the CD14 Monocytes:
 
@@ -161,7 +163,7 @@ gene_network(dom,
 signaling_network(dom)
 ```
 
-In addition to changes such as scaling, thresholds, or layouts, this plot can be modified by selecting incoming or outgoing clusters (or both!). An example to view signaling from the CD14 Monocytes to other cluster:
+In addition to changes such as scaling, thresholds, or layouts, this plot can be modified by selecting incoming or outgoing clusters (or both!). An example to view signaling from the CD14 Monocytes to other clusters:
 
 ```{r signalingnet-clusts}
 signaling_network(dom,
@@ -170,7 +172,7 @@ signaling_network(dom,
 )
 ```
 
-## Other Types of Plot
+## Other Types of Plots
 
 ### Chord Diagrams Connecting Ligands and Receptors
 A new addition to dominoSignal, `circos_ligand_receptor()` creates a chord plot showing ligands that can activate a specific receptor, displaying mean cluster expression of the ligand with the width of the chord.
@@ -192,7 +194,7 @@ circos_ligand_receptor(dom, receptor = "CD74", cell_colors = cols)
 
 ### Scatter Plot to Visualize Correlation
 
-`cor_scatter()` can be used to plot each cell based on expression of the selected TF and receptor. This produces a scatter plot as well as a line of best fit to look at receptor-TF correlation.
+`cor_scatter()` can be used to plot each cell based on activation of the selected TF and expression of the receptor. This produces a scatter plot as well as a line of best fit to look at receptor - TF correlation.
 
 ```{r corscatter}
 cor_scatter(dom, "FOSB", "CD74")
@@ -202,7 +204,7 @@ Do keep in mind that there is an argument for `remove_rec_dropout` that should m
 
 ## Continued Development
 
-Since dominoSignal is a package still being developed, there are new functions and features that will be implemented in future versions. In the meantime, to view an example analysis, see our [Getting Started](vignette("dominoSignal")) page, or see our [domino object structure](vignette("domino_object_vignette")) page to get familiar with the object structure. Additionally, if you find any bugs, have further questions, or want to share an idea, please let us know [here](https://github.com/FertigLab/domino_development/issues).
+Since dominoSignal is a package still being developed, there are new functions and features that will be implemented in future versions. In the meantime, to view an example analysis, see our [Getting Started](https://fertiglab.github.io/dominoSignal/articles/dominoSignal) page, or see our [domino object structure](https://fertiglab.github.io/dominoSignal/articles/domino_object_vignette) page to get familiar with the object structure. Additionally, if you find any bugs, have further questions, or want to share an idea, please let us know [here](https://github.com/FertigLab/dominoSignal/issues).
 
 <details><summary>Vignette Build Information</summary>
 Date last built and session information:

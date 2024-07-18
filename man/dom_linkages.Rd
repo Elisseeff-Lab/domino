@@ -12,13 +12,13 @@ dom_linkages(
 )
 }
 \arguments{
-\item{dom}{A domino object that has been created with \code{\link[=create_domino]{create_domino()}}}
+\item{dom}{a domino object that has been created with \code{\link[=create_domino]{create_domino()}}}
 
-\item{link_type}{One value (out of "complexes", "receptor-ligand",
+\item{link_type}{one value (out of "complexes", "receptor-ligand",
 "tf-target", "tf-receptor", "receptor", "incoming-ligand") used
 to select the desired type of linkage}
 
-\item{by_cluster}{A boolean to indicate whether the linkages should be returned overall or by cluster}
+\item{by_cluster}{a boolean to indicate whether the linkages should be returned overall or by cluster}
 }
 \value{
 A list containing linkages between some combination of receptors, ligands, transcription factors, and clusters
@@ -27,7 +27,8 @@ A list containing linkages between some combination of receptors, ligands, trans
 A function to pull linkages from a domino object
 }
 \examples{
-complexes <- dom_linkages(dominoSignal:::pbmc_dom_built_tiny, "complexes")
-tf_rec_by_cluster <- dom_linkages(dominoSignal:::pbmc_dom_built_tiny, "tf-receptor", TRUE)
+example(build_domino, echo = FALSE)
+complexes <- dom_linkages(pbmc_dom_built_tiny, "complexes")
+tf_rec_by_cluster <- dom_linkages(pbmc_dom_built_tiny, "tf-receptor", TRUE)
 
 }

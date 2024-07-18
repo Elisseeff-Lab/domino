@@ -7,11 +7,11 @@
 dom_network_items(dom, clusters = NULL, return = NULL)
 }
 \arguments{
-\item{dom}{Domino object containing a signaling network (i.e. \code{\link[=build_domino]{build_domino()}} was run)}
+\item{dom}{a domino object containing a signaling network (i.e. \code{\link[=build_domino]{build_domino()}} was run)}
 
-\item{clusters}{Vector indicating clusters to collate network items from. If left as NULL then all clusters will be included.}
+\item{clusters}{vector indicating clusters to collate network items from. If left as NULL then all clusters will be included.}
 
-\item{return}{String indicating where to collate "features", "receptors", or "ligands". If "all" then a list of all three will be returned.}
+\item{return}{string indicating whether to collate "features", "receptors", or "ligands". If "all" then a list of all three will be returned.}
 }
 \value{
 A vector containing all features, receptors, or ligands in the data set or a list containing all three.
@@ -23,7 +23,8 @@ comparing signaling networks across two separate conditions. In order to run
 this \code{\link[=build_domino]{build_domino()}} must be run on the object previously.
 }
 \examples{
-monocyte_receptors <- dom_network_items(dominoSignal:::pbmc_dom_built_tiny, "CD14_monocyte", "receptors")
-all_tfs <- dom_network_items(dominoSignal:::pbmc_dom_built_tiny, return = "features")
+example(build_domino, echo = FALSE)
+monocyte_receptors <- dom_network_items(pbmc_dom_built_tiny, "CD14_monocyte", "receptors")
+all_tfs <- dom_network_items(pbmc_dom_built_tiny, return = "features")
 
 }

@@ -14,13 +14,13 @@ test_differential_linkages(
 )
 }
 \arguments{
-\item{linkage_summary}{a linkage_summary object}
+\item{linkage_summary}{a \code{\link[=linkage_summary]{linkage_summary()}} object}
 
 \item{cluster}{the name of the cell cluster being compared across multiple domino results}
 
-\item{group.by}{the name of the column in linkage_summary\@subject_meta by which to group subjects for counting.}
+\item{group.by}{the name of the column in \code{linkage_summary@subject_meta} by which to group subjects for counting.}
 
-\item{linkage}{a stored linkage from the domino object. Can compare ('tfs', 'rec', 'incoming_lig', 'tfs_rec', 'rec_lig')}
+\item{linkage}{a stored linkage from the domino object. Can compare any of 'tfs', 'rec', 'incoming_lig', 'tfs_rec', or 'rec_lig'}
 
 \item{subject_names}{a vector of subject_names from the linkage_summary to be compared. If NULL, all subject_names in the linkage summary are included in counting.}
 
@@ -30,7 +30,7 @@ test_differential_linkages(
 }}
 }
 \value{
-a data frame of results from the test of the differential linkages. Rows correspond to each linkage tested. Columns correspond to:
+A data frame of results from the test of the differential linkages. Rows correspond to each linkage tested. Columns correspond to:
 \itemize{
 \item{'cluster'} : the name of the cell cluster being compared
 \item{'linkage'} : the type of linkage being compared
@@ -48,8 +48,8 @@ a data frame of results from the test of the differential linkages. Rows corresp
 Statistical test for differential linkages across multiple domino results
 }
 \examples{
-test_differential_linkages(
-  linkage_summary = dominoSignal:::linkage_sum_tiny, cluster = "C1", group.by = "group", 
+tiny_differential_linkage_c1 <- test_differential_linkages(
+  linkage_summary = mock_linkage_summary(), cluster = "C1", group.by = "group",
   linkage = "rec", test_name = "fishers.exact"
 )
 

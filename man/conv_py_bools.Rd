@@ -7,10 +7,10 @@
 conv_py_bools(obj)
 }
 \arguments{
-\item{obj}{Object that will be converted}
+\item{obj}{object that will be converted}
 }
 \value{
-obj The converted object
+The converted object
 }
 \description{
 Change cases of True/False syntax from Python to TRUE/FALSE R syntax

@@ -6,14 +6,14 @@
 #'
 NULL
 
-#' Create a receptor-ligand map from a cellphonedb signaling database
+#' Create a receptor - ligand map from a CellPhoneDB signaling database
 #'
 #' Generates a data frame of ligand-receptor interactions from a CellPhoneDB database annotating the genes encoding the interacting ligands and receptors to be queried in transcriptomic data.
 #'
-#' @param genes dataframe or file path to table of gene names in uniprot, hgnc_symbol, or ensembl format in cellphonedb database format
-#' @param proteins dataframe or file path to table of protein features in cellphonedb format
-#' @param interactions dataframe or file path to table of protein-protein interactions in cellphonedb format
-#' @param complexes optional: dataframe or file path to table of protein complexes in cellphonedb format
+#' @param genes data frame or file path to table of gene names in uniprot, hgnc_symbol, or ensembl format in CellPhoneDB database format
+#' @param proteins data frame or file path to table of protein features in CellPhoneDB format
+#' @param interactions data frame or file path to table of protein-protein interactions in CellPhoneDB format
+#' @param complexes optional: data frame or file path to table of protein complexes in CellPhoneDB format
 #' @param database_name name of the database being used, stored in output
 #' @param gene_conv a tuple of (from, to) or (source, target) if gene conversion to orthologs is desired; options are ENSMUSG, ENSG, MGI, or HGNC
 #' @param gene_conv_host host for conversion; default ensembl, could also use mirrors if desired
@@ -22,9 +22,11 @@ NULL
 #' @return Data frame where each row describes a possible receptor-ligand interaction
 #' @export create_rl_map_cellphonedb
 #' @examples
-#' rl_map_tiny <- create_rl_map_cellphonedb(genes = dominoSignal:::genes_tiny, 
-#'  proteins = dominoSignal:::proteins_tiny, interactions = dominoSignal:::interactions_tiny, 
-#'  complexes = dominoSignal:::complexes_tiny)
+#' data(CellPhoneDB)
+#' rl_map_tiny <- create_rl_map_cellphonedb(genes = CellPhoneDB$genes_tiny,
+#'  proteins = CellPhoneDB$proteins_tiny,
+#'  interactions = CellPhoneDB$interactions_tiny,
+#'  complexes =CellPhoneDB$complexes_tiny)
 #' 
 create_rl_map_cellphonedb <- function(
     genes, proteins, interactions, complexes = NULL, database_name = "CellPhoneDB",
@@ -238,11 +240,12 @@ create_rl_map_cellphonedb <- function(
 #'
 #' Generates a list of transcription factors and the genes targeted by the transcription factor as part of their regulon inferred by pySCENIC
 #'
-#' @param regulons Dataframe or file path to the table of the output of the grn (gene regulatory network) function from pySCENIC
+#' @param regulons Data frame or file path to the table of the output of the ctx function from pySCENIC
 #' @return A list where names are transcription factors and the stored values are character vectors of genes in the inferred regulons
 #' @export create_regulon_list_scenic
 #' @examples
-#' regulon_list_tiny <- create_regulon_list_scenic(regulons = dominoSignal:::regulons_tiny)
+#' data(SCENIC)
+#' regulon_list_tiny <- create_regulon_list_scenic(regulons = SCENIC$regulons_tiny)
 #'
 create_regulon_list_scenic <- function(regulons) {
   if (is(regulons, "character")) {
@@ -293,21 +296,30 @@ create_regulon_list_scenic <- function(regulons) {
 #' @param tf_variance_quantile What proportion of variable features to take if using variance to threshold features. Default is 0.5. Higher numbers will keep more features. Ignored if tf_selection_method is not 'variable'
 #' @return A domino object
 #' @export create_domino
-#' @examples 
-#' pbmc_dom_tiny_all <- create_domino(
-#'  rl_map = dominoSignal:::rl_map_tiny, features = dominoSignal:::auc_tiny, 
-#'  counts = dominoSignal:::RNA_count_tiny, z_scores = dominoSignal:::RNA_zscore_tiny,
-#'  clusters = dominoSignal:::clusters_tiny, tf_targets = dominoSignal:::regulon_list_tiny, 
-#'  use_clusters = FALSE, use_complexes = FALSE, 
+#' @examples
+#' example(create_rl_map_cellphonedb, echo = FALSE)
+#' example(create_regulon_list_scenic, echo = FALSE)
+#' data(SCENIC)
+#' data(PBMC)
+#'
+#' pbmc_dom_tiny <- create_domino(
+#'  rl_map = rl_map_tiny, features = SCENIC$auc_tiny,
+#'  counts = PBMC$RNA_count_tiny, z_scores = PBMC$RNA_zscore_tiny,
+#'  clusters = PBMC$clusters_tiny, tf_targets = regulon_list_tiny,
+#'  use_clusters = TRUE, use_complexes = TRUE, remove_rec_dropout = FALSE,
+#'  verbose = FALSE
+#'  )
+#'
+#' pbmc_dom_tiny_no_clusters <- create_domino(
+#'  rl_map = rl_map_tiny, features = SCENIC$auc_tiny,
+#'  counts = PBMC$RNA_count_tiny, z_scores =PBMC$RNA_zscore_tiny,
+#'  clusters = PBMC$clusters_tiny, tf_targets = regulon_list_tiny,
+#'  use_clusters = FALSE, use_complexes = FALSE,
 #'  rec_min_thresh = 0.1, remove_rec_dropout = TRUE,
-#'  tf_selection_method = "all")
-#' 
-#' pbmc_dom_tiny_clustered <- create_domino(
-#'  rl_map = dominoSignal:::rl_map_tiny, features = dominoSignal:::auc_tiny, 
-#'  counts = dominoSignal:::RNA_count_tiny, z_scores = dominoSignal:::RNA_zscore_tiny,
-#'  clusters = dominoSignal:::clusters_tiny, tf_targets = dominoSignal:::regulon_list_tiny,
-#'  use_clusters = TRUE, use_complexes = TRUE, remove_rec_dropout = FALSE)
-#' 
+#'  tf_selection_method = "all",
+#'  verbose = FALSE
+#'  )
+#'
 create_domino <- function(
     rl_map, features, counts = NULL, z_scores = NULL,
     clusters = NULL, use_clusters = TRUE, tf_targets = NULL, verbose = TRUE,
@@ -467,7 +479,7 @@ create_domino <- function(
   # store tf_targets in linkages if they are provided as a list
   if (!is(tf_targets, "list")) {
     dom@linkages[["tf_targets"]] <- NULL
-    warning("tf_targets is not a list. No regulons stored")
+    message("tf_targets is not a list. No regulons stored")
   } else {
     dom@linkages[["tf_targets"]] <- tf_targets
   }
@@ -515,7 +527,10 @@ create_domino <- function(
         rhorow[rec] <- 0
         next
       }
-      cor <- stats::cor.test(rec_z_scores, tar_tf_scores, method = "spearman", alternative = "greater")
+      cor <- stats::cor.test(
+        rec_z_scores, tar_tf_scores, method = "spearman", 
+        alternative = "greater", exact = FALSE
+      )
       rhorow[rec] <- cor$estimate
     }
     if (length(module_rec_targets > 0)) {
@@ -574,9 +589,9 @@ create_domino <- function(
 #'
 #' @param genes Vector of genes to convert.
 #' @param from Format of gene input (ENSMUSG, ENSG, MGI, or HGNC)
-#' @param to Format of gene output (MGI, or HGNC)
+#' @param to Format of gene output (MGI or HGNC)
 #' @param host Host to connect to. Defaults to https://www.ensembl.org following the useMart default, but can be changed to archived hosts if useMart fails to connect.
-#' @return A data frame with input genes as col 1 and output as col 2
+#' @return A data frame with input genes as column 1 and converted genes as column 2
 #' @keywords internal
 #'
 convert_genes <- function(
@@ -633,9 +648,10 @@ convert_genes <- function(
 #' @return An updated RL signaling data frame
 #' @export
 #' @examples 
+#' example(create_rl_map_cellphonedb, echo = FALSE)
 #' lr_name <- data.frame("abbrev" = c("L", "R"), "full" = c("Ligand", "Receptor"))
-#' rl_map_expanded <- add_rl_column(map = dominoSignal:::rl_map_tiny, map_ref = "type_A",
-#'  conv = lr_name, new_name = "type_A_full")
+#' rl_map_expanded <- add_rl_column(map = rl_map_tiny, map_ref = "type_A",
+#' conv = lr_name, new_name = "type_A_full")
 #' 
 add_rl_column <- function(map, map_ref, conv, new_name) {
   map_in_ref <- match(map[[map_ref]], conv[, 1])
@@ -662,11 +678,12 @@ add_rl_column <- function(map, map_ref, conv, new_name) {
   new_map <- data.frame(new_map, stringsAsFactors = FALSE)
 }
 
-#' Calculate mean ligand expression as a data.frame for plotting in circos plot
+#' Calculate mean ligand expression as a data frame for plotting in circos plot
 #'
 #' Creates a data frame of mean ligand expression for use in plotting a circos
 #' plot of ligand expression and saving tables of mean expression.
-#'
+#'us
+
 #' @param x Gene by cell expression matrix
 #' @param ligands Character vector of ligand genes to be quantified
 #' @param cell_ident Vector of cell type (identity) names for which to calculate mean ligand gene expression
@@ -675,7 +692,8 @@ add_rl_column <- function(map, map_ref, conv, new_name) {
 #' @return A data frame of ligand expression targeting the specified receptor
 #' @export
 #' @examples
-#' counts <- dom_counts(dominoSignal:::pbmc_dom_built_tiny)
+#' example(build_domino, echo = FALSE)
+#' counts <- dom_counts(pbmc_dom_built_tiny)
 #' mean_exp <- mean_ligand_expression(counts,
 #'  ligands = c("PTPRC", "FASLG"), cell_ident = "CD14_monocyte",
 #'  cell_barcodes = colnames(counts), destination = "FAS")

@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">dominoSignal</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -24,9 +24,9 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/cellphonedb_vignette.html">Using the cellphoneDB Database</a>
+    <a class="dropdown-item" href="../articles/cellphonedb_vignette.html">Using the CellPhoneDB Database</a>
     <a class="dropdown-item" href="../articles/tf_scenic_vignette.html">SCENIC for TF Activation Scoring</a>
-    <a class="dropdown-item" href="../articles/domino_object_vignette.html">Interacting with dominoSignal Objects</a>
+    <a class="dropdown-item" href="../articles/domino_object_vignette.html">Interacting with domino Objects</a>
     <a class="dropdown-item" href="../articles/plotting_vignette.html">Plotting Functions and Options</a>
   </div>
 </li>
@@ -37,6 +37,7 @@
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-news">News</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-news">
     <h6 class="dropdown-header" data-toc-skip>Releases</h6>
+    <a class="external-link dropdown-item" href="https://github.com/FertigLab/dominoSignal/releases/tag/v0.99.2-alpha">dominoSignal v0.99.2</a>
     <a class="external-link dropdown-item" href="https://github.com/FertigLab/dominoSignal/releases/tag/v0.2.1-alpha">dominoSignal v0.2.1</a>
     <a class="external-link dropdown-item" href="https://github.com/FertigLab/dominoSignal/releases/tag/v0.2.2-alpha">dominoSignal v0.2.2</a>
     <div class="dropdown-divider"></div>
@@ -82,7 +83,7 @@
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>linkage_summary</dt>
-<dd><p>a linkage_summary object</p></dd>
+<dd><p>a <code><a href="linkage_summary-class.html">linkage_summary()</a></code> object</p></dd>
 
 
 <dt>cluster</dt>
@@ -90,11 +91,11 @@
 
 
 <dt>group.by</dt>
-<dd><p>the name of the column in linkage_summary\@subject_meta by which to group subjects for counting. If NULL, only total counts of linkages for linkages in the cluster across all subjects is given.</p></dd>
+<dd><p>the name of the column in <code>linkage_summary@subject_meta</code> by which to group subjects for counting. If NULL, only total counts of linkages for linkages in the cluster across all subjects is given.</p></dd>
 
 
 <dt>linkage</dt>
-<dd><p>a stored linkage from the domino object. Can compare ('tfs', 'rec', 'incoming_lig', 'tfs_rec', 'rec_lig')</p></dd>
+<dd><p>a stored linkage from the domino object. Can compare any of 'tfs', 'rec', 'incoming_lig', 'tfs_rec', or 'rec_lig'</p></dd>
 
 
 <dt>subject_names</dt>
@@ -105,15 +106,19 @@
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>a data frame with columns for the unique linkage features and the counts of how many times the linkage occured across the compared domino results. If group.by is used, counts of the linkages are also provided as columns named by the unique values of the group.by variable.</p>
+<p>A data frame with columns for the unique linkage features and the counts of how many times the linkage occured across the compared domino results. If group.by is used, counts of the linkages are also provided as columns named by the unique values of the group.by variable.</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span><span class="fu">count_linkage</span><span class="op">(</span>linkage_summary <span class="op">=</span> <span class="va">linkage_ls</span>, cluster <span class="op">=</span> <span class="st">"CD8_T_cell"</span>, </span></span>
-<span class="r-in"><span> group.by <span class="op">=</span> <span class="st">"group"</span>, linkage <span class="op">=</span> <span class="st">"rec_lig"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">count_linkage</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  linkage_summary <span class="op">=</span> <span class="fu">dominoSignal</span><span class="fu">:::</span><span class="va">linkage_sum_tiny</span>, cluster <span class="op">=</span> <span class="st">"C1"</span>, </span></span>
+<span class="r-in"><span>  group.by <span class="op">=</span> <span class="st">"group"</span>, linkage <span class="op">=</span> <span class="st">"rec"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   feature total_count G1 G2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1      R1           3  3  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2      R2           4  3  1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3      R3           3  1  2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4      R4           2  1  1</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

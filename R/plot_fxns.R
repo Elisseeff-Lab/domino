@@ -10,24 +10,26 @@ NULL
 #' Create a network heatmap
 #'
 #' Creates a heatmap of the signaling network. Alternatively, the network
-#' matrix can be accessed directly in the signaling slot of a domino object.
+#' matrix can be accessed directly in the signaling slot of a domino object using 
+#' the [dom_signaling()] function.
 #'
-#' @param dom Domino object with network built ([build_domino()])
-#' @param clusts Vector of clusters to be included. If NULL then all clusters are used.
-#' @param min_thresh Minimum signaling threshold for plotting. Defaults to -Inf for no threshold.
-#' @param max_thresh Maximum signaling threshold for plotting. Defaults to Inf for no threshold.
-#' @param scale How to scale the values (after thresholding). Options are 'none', 'sqrt' for square root, or 'log' for log10.
-#' @param normalize Options to normalize the matrix. Normalization is done after thresholding and scaling. Accepted inputs are 'none' for no normalization, 'rec_norm' to normalize to the maximum value with each receptor cluster, or 'lig_norm' to normalize to the maximum value within each ligand cluster 
-#' @param ... Other parameters to pass to  [ComplexHeatmap::Heatmap()]
-#' @return a Heatmap rendered to the active graphics device
+#' @param dom domino object with network built ([build_domino()])
+#' @param clusts vector of clusters to be included. If NULL then all clusters are used.
+#' @param min_thresh minimum signaling threshold for plotting. Defaults to -Inf for no threshold.
+#' @param max_thresh maximum signaling threshold for plotting. Defaults to Inf for no threshold.
+#' @param scale how to scale the values (after thresholding). Options are 'none', 'sqrt' for square root, or 'log' for log10.
+#' @param normalize options to normalize the matrix. Normalization is done after thresholding and scaling. Accepted inputs are 'none' for no normalization, 'rec_norm' to normalize to the maximum value with each receptor cluster, or 'lig_norm' to normalize to the maximum value within each ligand cluster 
+#' @param ... other parameters to pass to  [ComplexHeatmap::Heatmap()]
+#' @return A heatmap rendered to the active graphics device
 #' @export signaling_heatmap
 #' @examples
+#' example(build_domino, echo = FALSE)
 #' #basic usage
-#' signaling_heatmap(dominoSignal:::pbmc_dom_built_tiny)
+#' signaling_heatmap(pbmc_dom_built_tiny)
 #' #scale
-#' signaling_heatmap(dominoSignal:::pbmc_dom_built_tiny, scale = "sqrt")
+#' signaling_heatmap(pbmc_dom_built_tiny, scale = "sqrt")
 #' #normalize
-#' signaling_heatmap(dominoSignal:::pbmc_dom_built_tiny, normalize = "rec_norm")
+#' signaling_heatmap(pbmc_dom_built_tiny, normalize = "rec_norm")
 #'
 signaling_heatmap <- function(
     dom, clusts = NULL, min_thresh = -Inf, max_thresh = Inf, scale = "none",
@@ -92,8 +94,9 @@ signaling_heatmap <- function(
 #' @return a Heatmap rendered to the active graphics device
 #' @export incoming_signaling_heatmap
 #' @examples
+#' example(build_domino, echo = FALSE)
 #' #incoming signaling of the CD8  T cells
-#' incoming_signaling_heatmap(dominoSignal:::pbmc_dom_built_tiny, "CD8_T_cell")
+#' incoming_signaling_heatmap(pbmc_dom_built_tiny, "CD8_T_cell")
 #'
 incoming_signaling_heatmap <- function(
     dom, rec_clust, clusts = NULL, min_thresh = -Inf, max_thresh = Inf,
@@ -172,33 +175,34 @@ incoming_signaling_heatmap <- function(
 #'
 #' Creates a network diagram of signaling between clusters. Nodes are clusters
 #' and directed edges indicate signaling from one cluster to another. Edges are
-#' colored based on the color scheme of the ligand expressing cluster.
+#' colored based on the color scheme of the ligand expressing cluster
 #'
-#' @param dom Domino object with network built ([build_domino()])
-#' @param cols Named vector indicating the colors for clusters. Values are colors and names must match clusters in the domino object. If left as NULL then ggplot colors are generated for the clusters.
-#' @param edge_weight Weight for determining thickness of edges on plot. Signaling values are multiplied by this value.
-#' @param clusts Vector of clusters to be included in the network plot.
-#' @param showOutgoingSignalingClusts Vector of clusters to plot the outgoing signaling from
-#' @param showIncomingSignalingClusts Vector of clusters to plot the incoming signaling on
-#' @param min_thresh Minimum signaling threshold. Values lower than the threshold will be set to the threshold. Defaults to -Inf for no threshold.
-#' @param max_thresh Maximum signaling threshold for plotting. Values higher than the threshold will be set to the threshold. Defaults to Inf for no threshold.
-#' @param normalize Options to normalize the signaling matrix. Accepted inputs are 'none' for no normalization, 'rec_norm' to normalize to the maximum value with each receptor cluster, or 'lig_norm' to normalize to the maximum value within each ligand cluster
-#' @param scale How to scale the values (after thresholding). Options are 'none', 'sqrt' for square root, 'log' for log10, or 'sq' for square.
-#' @param layout Type of layout to use. Options are 'random', 'sphere', 'circle', 'fr' for Fruchterman-Reingold force directed layout, and 'kk' for Kamada Kawai for directed layout.
-#' @param scale_by How to size vertices. Options are 'lig_sig' for summed outgoing signaling, 'rec_sig' for summed incoming signaling, and 'none'. In the former two cases the values are scaled with asinh after summing all incoming or outgoing signaling.
-#' @param vert_scale Integer used to scale size of vertices with our without variable scaling from size_verts_by.
-#' @param plot_title Text for the plot's title.
-#' @param ... Other parameters to be passed to plot when used with an igraph object.
-#' @return an igraph rendered to the active graphics device
+#' @param dom a domino object with network built ([build_domino()])
+#' @param cols named vector indicating the colors for clusters. Values are colors and names must match clusters in the domino object. If left as NULL then ggplot colors are generated for the clusters
+#' @param edge_weight weight for determining thickness of edges on plot. Signaling values are multiplied by this value
+#' @param clusts vector of clusters to be included in the network plot
+#' @param showOutgoingSignalingClusts vector of clusters to plot the outgoing signaling from
+#' @param showIncomingSignalingClusts vector of clusters to plot the incoming signaling on
+#' @param min_thresh minimum signaling threshold. Values lower than the threshold will be set to the threshold. Defaults to -Inf for no threshold
+#' @param max_thresh maximum signaling threshold for plotting. Values higher than the threshold will be set to the threshold. Defaults to Inf for no threshold
+#' @param normalize options to normalize the signaling matrix. Accepted inputs are 'none' for no normalization, 'rec_norm' to normalize to the maximum value with each receptor cluster, or 'lig_norm' to normalize to the maximum value within each ligand cluster
+#' @param scale how to scale the values (after thresholding). Options are 'none', 'sqrt' for square root, 'log' for log10, or 'sq' for square
+#' @param layout type of layout to use. Options are 'random', 'sphere', 'circle', 'fr' for Fruchterman-Reingold force directed layout, and 'kk' for Kamada Kawai for directed layout
+#' @param scale_by how to size vertices. Options are 'lig_sig' for summed outgoing signaling, 'rec_sig' for summed incoming signaling, and 'none'. In the former two cases the values are scaled with asinh after summing all incoming or outgoing signaling
+#' @param vert_scale integer used to scale size of vertices with our without variable scaling from size_verts_by.
+#' @param plot_title text for the plot's title.
+#' @param ... other parameters to be passed to plot when used with an igraph object.
+#' @return An igraph plot rendered to the active graphics device
 #' @export signaling_network
 #' @examples 
+#' example(build_domino, echo = FALSE)
 #' #basic usage
-#' signaling_network(dominoSignal:::pbmc_dom_built_tiny)
+#' signaling_network(pbmc_dom_built_tiny, edge_weight = 2)
 #' # scaling, thresholds, layouts, selecting clusters
 #' signaling_network(
-#'  dominoSignal:::pbmc_dom_built_tiny, showOutgoingSignalingClusts = "CD14_monocyte", 
+#'  pbmc_dom_built_tiny, showOutgoingSignalingClusts = "CD14_monocyte", 
 #'  scale = "none", norm = "none", layout = "fr", scale_by = "none", 
-#'  vert_scale = 5)
+#'  vert_scale = 5, edge_weight = 2)
 #' 
 signaling_network <- function(
     dom, cols = NULL, edge_weight = 0.3, clusts = NULL, showOutgoingSignalingClusts = NULL,
@@ -337,13 +341,14 @@ signaling_network <- function(
 #' @param cols Named vector of colors for individual genes. Genes not included in this vector will be colored according to class_cols.
 #' @param lig_scale FALSE or a numeric value to scale the size of ligand vertices based on z-scored expression in the data set.
 #' @param layout Type of layout to use. Options are 'grid', 'random', 'sphere', 'circle', 'fr' for Fruchterman-Reingold force directed layout, and 'kk' for Kamada Kawai for directed layout.
-#' @param ... Other parameters to pass to plot() with an [igraph] object. See [igraph] manual for options.
-#' @return an igraph rendered to the active graphics device
+#' @param ... Other parameters to pass to plot() with an [igraph](https://r.igraph.org/) object. See [igraph](https://r.igraph.org/) manual for options.
+#' @return An igraph plot rendered to the active graphics device
 #' @export gene_network
 #' @examples
 #' #basic usage
+#' example(build_domino, echo = FALSE)
 #' gene_network(
-#'  dominoSignal:::pbmc_dom_built_tiny, clust = "CD8_T_cell", 
+#'  pbmc_dom_built_tiny, clust = "CD8_T_cell", 
 #'  OutgoingSignalingClust = "CD14_monocyte")
 #'
 gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL, 
@@ -486,8 +491,7 @@ gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL,
 
 #' Create a heatmap of features organized by cluster
 #'
-#' Creates a heatmap of feature expression (typically transcription factor
-#' activation scores) by cells organized by cluster.
+#' Creates a heatmap of transcription factor activation scores by cells grouped by cluster.
 #'
 #' @param dom Domino object with network built ([build_domino()])
 #' @param bool Boolean indicating whether the heatmap should be continuous or boolean. If boolean then bool_thresh will be used to determine how to define activity as positive or negative.
@@ -495,20 +499,21 @@ gene_network <- function(dom, clust = NULL, OutgoingSignalingClust = NULL,
 #' @param title Either a string to use as the title or a boolean describing whether to include a title. In order to pass the 'main' parameter to  [ComplexHeatmap::Heatmap()]  you must set title to FALSE.
 #' @param norm Boolean indicating whether or not to normalize the transcrption factors to their max value.
 #' @param feats Either a vector of features to include in the heatmap or 'all' for all features. If left NULL then the features selected for the signaling network will be shown.
-#' @param ann_cols Boolean indicating whether to include cell cluster as a column annotation. Colors can be defined with cols. If FALSE then custom annotations can be passed to NMF.
+#' @param ann_cols Boolean indicating whether to include cell cluster as a column annotation. Colors can be defined with cols. If FALSE then custom annotations can be passed to [ComplexHeatmap::Heatmap()].
 #' @param cols Named vector of colors to annotate cells by cluster color. Values are taken as colors and names as cluster. If left as NULL then default ggplot colors will be generated.
 #' @param min_thresh Minimum threshold for color scaling if not a boolean heatmap
 #' @param max_thresh Maximum threshold for color scaling if not a boolean heatmap
 #' @param ... Other parameters to pass to  [ComplexHeatmap::Heatmap()] . Note that to use the 'main' parameter of  [ComplexHeatmap::Heatmap()]  you must set title = FALSE and to use 'annCol' or 'annColors' ann_cols must be FALSE.
-#' @return a Heatmap rendered to the active graphics device
+#' @return A heatmap rendered to the active graphics device
 #' @export feat_heatmap
 #' @examples 
 #' #basic usage
-#' feat_heatmap(dominoSignal:::pbmc_dom_built_tiny)
+#' example(build_domino, echo = FALSE)
+#' feat_heatmap(pbmc_dom_built_tiny)
 #' #using thresholds
 #' feat_heatmap(
-#'  dominoSignal:::pbmc_dom_built_tiny, min_thresh = 0.1, 
-#'   max_thresh = 0.6, norm = TRUE, bool = FALSE)
+#'  pbmc_dom_built_tiny, min_thresh = 0.1, 
+#'  max_thresh = 0.6, norm = TRUE, bool = FALSE)
 #' 
 feat_heatmap <- function(
     dom, feats = NULL, bool = FALSE, bool_thresh = 0.2, title = TRUE, norm = FALSE,
@@ -624,15 +629,16 @@ feat_heatmap <- function(
 #' @param recs Either a vector of receptors to include in the heatmap or 'all' for all receptors. If left NULL then the receptors selected in the signaling network connected to the features plotted will be shown.
 #' @param mark_connections Boolean indicating whether to add an 'x' in cells where there is a connected receptor or TF. Default FALSE.
 #' @param ... Other parameters to pass to  [ComplexHeatmap::Heatmap()] . Note that to use the 'main' parameter of  [ComplexHeatmap::Heatmap()]  you must set title = FALSE and to use 'annCol' or 'annColors' ann_cols must be FALSE.
-#' @return a Heatmap rendered to the active graphics device
+#' @return A heatmap rendered to the active graphics device
 #' @export cor_heatmap
 #' @examples 
+#' example(build_domino, echo = FALSE)
 #' #basic usage
-#' cor_heatmap(dominoSignal:::pbmc_dom_built_tiny, title = "PBMC R-TF Correlations")
+#' cor_heatmap(pbmc_dom_built_tiny, title = "PBMC R-TF Correlations")
 #' #show correlations above a specific value
-#' cor_heatmap(dominoSignal:::pbmc_dom_built_tiny, bool = TRUE, bool_thresh = 0.25)
+#' cor_heatmap(pbmc_dom_built_tiny, bool = TRUE, bool_thresh = 0.1)
 #' #identify combinations that are connected
-#' cor_heatmap(dominoSignal:::pbmc_dom_built_tiny, bool = FALSE, mark_connections = TRUE)
+#' cor_heatmap(pbmc_dom_built_tiny, bool = FALSE, mark_connections = TRUE)
 #'  
 cor_heatmap <- function(
     dom, bool = FALSE, bool_thresh = 0.15, title = TRUE, feats = NULL, recs = NULL,
@@ -711,19 +717,20 @@ cor_heatmap <- function(
   }
 }
 
-#' Create a correlation plot between transcription factor activation score and receptor
+#' Create a correlation plot between TF and receptor
 #'
-#' Create a correlation plot between transcription factor activation score and receptor
+#' Create a correlation plot between transcription factor activation score and receptor expression
 #'
 #' @param dom Domino object with network built ([build_domino()])
-#' @param tf Target TF module for plotting with receptor
-#' @param rec Target receptor for plotting with TF
-#' @param remove_rec_dropout Whether to remove cells with zero expression for plot. This should match the same setting as in build_domino.
-#' @param ... Other parameters to pass to ggscatter.
-#' @return a ggplot object
+#' @param tf Target TF for plottting AUC score
+#' @param rec Target receptor for plotting expression
+#' @param remove_rec_dropout Whether to remove cells with zero expression for plot. This should match the same setting as in [build_domino()].
+#' @param ... Other parameters to pass to [ggpubr::ggscatter()].
+#' @return A ggplot scatter plot rendered in the active graphics device
 #' @export cor_scatter
 #' @examples
-#' cor_scatter(dominoSignal:::pbmc_dom_built_tiny, "FLI1","CXCR3")
+#' example(build_domino, echo = FALSE)
+#' cor_scatter(pbmc_dom_built_tiny, "FLI1","CXCR3")
 #'
 cor_scatter <- function(dom, tf, rec, remove_rec_dropout = TRUE, ...) {
   if (remove_rec_dropout) {
@@ -749,15 +756,16 @@ cor_scatter <- function(dom, tf, rec, remove_rec_dropout = TRUE, ...) {
 #' @param ligand_expression_threshold Minimum mean expression value of a ligand by a cell type for a chord to be rendered between the cell type and the receptor
 #' @param cell_idents Vector of cell types from cluster assignments in the domino object to be included in the plot.
 #' @param cell_colors Named vector of color names or hex codes where names correspond to the plotted cell types and the color values
-#' @return renders a circos plot to the active graphics device
+#' @return Renders a circos plot to the active graphics device
 #' @export circos_ligand_receptor
 #' @examples 
+#' example(build_domino, echo = FALSE)
 #' #basic usage
-#' circos_ligand_receptor(dominoSignal:::pbmc_dom_built_tiny, receptor = "CXCR3")
+#' circos_ligand_receptor(pbmc_dom_built_tiny, receptor = "CXCR3")
 #' #specify colors
-#' cols = c("red", "orange", "green", "blue", "pink", "purple", "slategrey", "firebrick", "hotpink")
-#' names(cols) = levels(dom_clusters(dominoSignal:::pbmc_dom_built_tiny))
-#' circos_ligand_receptor(dominoSignal:::pbmc_dom_built_tiny, receptor = "CXCR3", cell_colors = cols)
+#' cols = c("red", "orange", "green")
+#' names(cols) = dom_clusters(pbmc_dom_built_tiny)
+#' circos_ligand_receptor(pbmc_dom_built_tiny, receptor = "CXCR3", cell_colors = cols)
 #' 
 circos_ligand_receptor <- function(
     dom, receptor, ligand_expression_threshold = 0.01, cell_idents = NULL,
@@ -882,16 +890,18 @@ circos_ligand_receptor <- function(
 #'
 #' Plot differential linkages among domino results ranked by a comparative statistic
 #'
-#' @param differential_linkages a data.frame output from the test_differential_linkages function
+#' @param differential_linkages a data frame output from the [test_differential_linkages()] function
 #' @param test_statistic column name of differential_linkages where the test statistic used for ranking linkages is stored (ex. 'p.value')
 #' @param stat_range a two value vector of the minimum and maximum values of test_statistic for plotting linkage features
 #' @param stat_ranking 'ascending' (lowest value of test statisic is colored red and plotted at the top) or 'descending' (highest value of test statistic is colored red and plotted at the top).
 #' @param group_palette a named vector of colors to use for each group being compared
-#' @return a Heatmap-class object of features ranked by test_statistic annotated with the proportion of subjects that showed active linkage of the features.
+#' @return A heatmap-class object of features ranked by test_statistic annotated with the proportion of subjects that showed active linkage of the features.
 #' @export
 #' @examples
+#' example(build_domino, echo = FALSE)
+#' example(test_differential_linkages, echo = FALSE)
 #' plot_differential_linkages(
-#'  differential_linkages = dominoSignal:::tiny_differential_linkage_c1,
+#'  differential_linkages = tiny_differential_linkage_c1,
 #'  test_statistic = "p.value",
 #'  stat_ranking = "ascending"
 #' )
@@ -975,7 +985,7 @@ plot_differential_linkages <- function(
 #' Normalizes a matrix to its max value by row or column
 #'
 #' @param mat Matrix to be normalized
-#' @param dir Direction to normalize the matrix c('row', 'col')
+#' @param dir Direction to normalize the matrix (either "row" for row or "col" for column)
 #' @return A normalized matrix in the direction specified.
 #' @keywords internal
 #'
