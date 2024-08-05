@@ -1,3 +1,9 @@
+# dominoSignal v0.99.4
+
+## Vignettes
+
+- Updated download instructions to use the bioconductor URL
+
 # dominoSignal v0.99.3
 
 ## create_domino Function Warnings
