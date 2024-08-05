@@ -3,7 +3,7 @@
 
 ## large scale test that processing functions generate results matching the state of the code in v0.2.1
 test_that("creation of rl_map from CellPhoneDB v4 input", {
-  # use rl_map created in domino2 v0.2.1
+  # use rl_map created in dominoSignal v0.2.1
   rl_map <- create_rl_map_cellphonedb(
     genes = v0.2.1$genes_tiny,
     proteins = v0.2.1$proteins_tiny,
@@ -14,14 +14,14 @@ test_that("creation of rl_map from CellPhoneDB v4 input", {
 })
 
 test_that("formating of SCENIC regulons output as a list", {
-  # use regulon list created in domino2 v0.2.1
+  # use regulon list created in dominoSignal v0.2.1
   regulon_ls <- create_regulon_list_scenic(regulons = v0.2.1$regulons_tiny)
   expect_equal(regulon_ls, v0.2.1$regulon_list_tiny)
 })
 
 test_that("creation of a domino object from SCENIC and CellPhoneDB inputs", {
-  # domino object created in domino2 v0.2.1
-  # rl_map created in domino2 v0.2.1 from CellPhoneDB v4
+  # domino object created in dominoSignal v0.2.1
+  # rl_map created in dominoSignal v0.2.1 from CellPhoneDB v4
   # scenic inputs from pySCENIC v0.11.0
   # minimal expression data from 360 cells in 3 cell types,
   # expression features for 16 genes
@@ -45,8 +45,8 @@ test_that("creation of a domino object from SCENIC and CellPhoneDB inputs", {
 })
 
 test_that("building a domino object under set parameters", {
-  # built domino object created in domino2 v0.2.1
-  # domino object created in domino2 v0.2.1
+  # built domino object created in dominoSignal v0.2.1
+  # domino object created in dominoSignal v0.2.1
   pbmc_dom_built <- build_domino(
     dom = v0.2.1$pbmc_dom_tiny,
     min_tf_pval = .05,

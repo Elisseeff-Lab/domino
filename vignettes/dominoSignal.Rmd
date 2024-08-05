@@ -83,13 +83,14 @@ pbmc <- readRDS(pbmc)
 
 ## Installation
 
-Installation of dominoSignal from Github can be achieved using the `{remotes}` package.
+Installation of dominoSignal from Bioconductor can be achieved using the `{BiocManager}` package.
 
-```{r, eval = FALSE}
-if(!require(remotes)){
-    install.packages("remotes")
+```{r, eval=FALSE}
+if (!require("BiocManager", quietly = TRUE)){
+  install.packages("BiocManager")
 }
-remotes::install_github("FertigLab/dominoSignal")
+
+BiocManager::install("dominoSignal")
 ```
 
 ## Loading TF and R - L data
