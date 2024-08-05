@@ -90,7 +90,7 @@ if (!require("BiocManager", quietly = TRUE)){
   install.packages("BiocManager")
 }
 
-BiocManager::install("DominoSignal")
+BiocManager::install("dominoSignal")
 ```
 
 ## Loading TF and R - L data
