@@ -490,3 +490,43 @@ mock_linkage_summary <- function() {
 )
 return(linkage_sum_tiny)
 }
+
+#' Convert between ligand names and gene names
+#'
+#' @param dom A domino object
+#' @param genes A vector of genes on which to resolve ligand and gene names
+#'
+#' @return A vector of names where ligand names have been replaced with gene names if applicable
+#' @keywords internal
+resolve_names <- function(dom, genes) {
+  rl_map = dom@misc[["rl_map"]]
+  genes_resolved <- vapply(genes, FUN.VALUE = character(1), FUN = function(l){
+    int <- rl_map[rl_map$L.name == l, ][1,] 
+    if((int$L.name != int$L.gene) & !grepl("\\,", int$L.gene)){
+      int$L.gene
+    } else { 
+      int$L.name
+    }
+  })
+  return(genes_resolved)
+}
+
+#' Convert between complex names and gene names
+#'
+#' @param dom A domino object
+#' @param genes A vector of genes, some of which may be complexes
+#'
+#' @return A list where any complexes are mapped to a vector of
+#'   component genes. The list names are set to the input gene names.
+#' @keywords internal
+resolve_complexes <- function(dom, genes) {
+  genes_list <- lapply(genes, function(l){
+    if(l %in% names(dom@linkages$complexes)){
+      return(dom@linkages$complexes[[l]])
+    } else {
+      return(l)
+    }
+  })
+  names(genes_list) <- genes
+  return(genes_list)
+}
