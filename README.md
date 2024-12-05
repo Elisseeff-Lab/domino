@@ -6,7 +6,16 @@ dominoSignal is an updated version of the original `Domino` R package published 
 
 dominoSignal is undergoing active development to improve analysis capabilities and interpretability, so the codebase is subject to change as new features and fixes are implemented.
 
-The current stable version is currently hosted on the [FertigLab dominoSignal repository](https://github.com/FertigLab/dominoSignal) It was forked from this repository ($\textcolor{orange}{\textsf{which is no longer being maintained!}}$) and can be installed using the remotes package.
+The current stable version is currently available on [Bioconductor](https://www.bioconductor.org/packages/release/bioc/html/dominoSignal.html). It can be installed through Bioconductor:
+
+```r
+if (!requireNamespace("BiocManager")) {
+    install.packages("BiocManager")
+}
+BiocManager::install("dominoSignal")
+```
+
+The development version is hosted on the [FertigLab dominoSignal repository](https://github.com/FertigLab/dominoSignal). It was forked from this repository ($\textcolor{orange}{\textsf{which is no longer being maintained!}}$) and can be installed using the remotes package.
 
 ```r
 if(!require(remotes)){
@@ -47,7 +56,7 @@ Some new features have been introduced:
 - Addition of helper functions to count linkages and compare between objects
 - Plotting function for differential linkages
 
-Lastly, the package is being updated to ensure it conforms to BioConductor standards.
+Lastly, the package was updated to ensure it conforms to BioConductor standards.
 
 ## Accessing the Original `Domino` Package
 Code used in the version of `Domino` published in 2021 has been uploaded to [Zenodo](https://zenodo.org/record/8277233) and is also released here as [domino v1.0.0](https://github.com/Elisseeff-Lab/domino/tree/v1.0.0). Again, $\textcolor{orange}{\textsf{please note that this repository is no longer being actively maintained.}}$ To ask questions, report issues, and access new features, please view the [dominoSignal repository](https://github.com/FertigLab/dominoSignal).
