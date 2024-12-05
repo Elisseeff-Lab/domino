@@ -32,5 +32,5 @@ bibentry(
     person("Jennifer", "Elisseeff", role = "ctb", email = "jhe@jhu.edu", comment = c(ORCID = "0000-0002-5066-1996"))
     ),
   year     = 2024,
-  note     = "R package version 0.99.2"
+  note     = "R package version 1.0.0"
 )
